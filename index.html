@@ -290,7 +290,7 @@ const TOPS = {pink:["#e3628f","#b9446f"], blush:["#e9a6a0","#c47f79"], ivory:["#
 const BOTS = {grey:["#8e9299","#6a6e76"], olive:["#7f8358","#5f633f"], denim:["#5b78a8","#425c86"], sand:["#cdbb98","#a99674"]};
 
 let S = null;               // the whole state (one document)
-let docRef = null, sampleFn = null, assetsApi = null;
+let docRef = null, sampleFn = null, assetsApi = null, downloadsApi = null;
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const ymd = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -1815,6 +1815,12 @@ function renderAccount(){
     <section><h2 class="sec" style="margin-bottom:10px">Honest numbers</h2>
       <div class="stats"><div><b>${S.entries.length}</b><span>entries</span></div><div><b>${done.length}</b><span>goals done</span></div><div><b>${met}/${done.length}</b><span>on time</span></div><div><b>${moved}</b><span>dates moved</span></div></div>
       <p class="muted" style="font-size:13px;margin:10px 0 0">Progress and punctuality are tracked separately. ${done.length ? `${metOrig} of ${done.length} finished by their original date; ${met} by the date you last set.` : "Finish a goal to see both."} Clear views earned: ${clearViewsEarned()}, used: ${S.rewards.clearViewsUsed || 0}.</p></section>
+    <section class="panel"><div class="eyebrow">Backup</div>
+      <p style="margin:0;font-size:14px">Download your whole journal as one file: dreams, goals, steps, entries, reflections and images kept on this device. Restore it here any time, or into a future version of the app.</p>
+      <p class="muted" style="margin:0;font-size:13px">${S.lastBackup ? `Last backup: ${fmt(S.lastBackup, {day: "numeric", month: "short", year: "numeric"})}.` : "No backup yet."}</p>
+      <div class="actions"><button class="btn" id="backupBtn" type="button">Download backup</button>
+        <label class="btn ghost" style="cursor:pointer">Restore from file<input type="file" id="restoreFile" accept="application/json,.json" hidden></label></div>
+      <div class="notice" id="restoreConfirm" hidden></div></section>
     <section class="panel"><div class="eyebrow">Data</div>
       <p style="margin:0;font-size:14px">${esc(storageNote)}${assetsApi ? "" : " Reference images stay on this device."}</p>
       ${S.demo ? `<p style="margin:0;font-size:14px">You're looking at an <b>example world</b>. Its entries are samples, not things you did.</p>` : ""}
@@ -1829,9 +1835,49 @@ function renderAccount(){
 
   const cd = $("clearDemo"); if (cd) cd.onclick = () => { S = Object.assign(blankState(), {onboarded: true, profile: S.profile}); afterChange(); save(); toast("Example cleared. Start with a dream."); go("dreams"); };
   const ld = $("loadDemo"); if (ld) ld.onclick = () => { if (S.aspirations.length || S.goals.length || S.entries.length) { ld.textContent = "This replaces your data. Tap again"; if (ld.dataset.c !== "1") { ld.dataset.c = "1"; return; } } S = demoState(S.profile); afterChange(); save(); go("home"); };
+  $("backupBtn").onclick = downloadBackup;
+  $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
   $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
   $("wipeNo").onclick = () => { $("wipeConfirm").hidden = true; };
   $("wipeYes").onclick = () => { S = Object.assign(blankState(), {onboarded: true}); afterChange(); save(); toast("Everything deleted"); go("home"); };
+}
+
+/* --- backup and restore: one JSON file holding everything --- */
+function backupData(){
+  const images = {};
+  for (const a of S.aspirations) if (a.image && a.image.local) { const d = localImg(a.image.local); if (d) images[a.image.local] = d; }
+  return JSON.stringify({app: "dream-life", version: 2, exportedAt: new Date().toISOString(), state: S, images});
+}
+async function downloadBackup(){
+  const btn = $("backupBtn"), filename = `dream-life-backup-${today()}.json`;
+  btn.disabled = true;
+  const done = () => { S.lastBackup = today(); save(); toast("Backup saved. Keep the file somewhere safe."); renderAccount(); };
+  try {
+    if (downloadsApi) { await downloadsApi.save({filename, data: backupData()}); done(); }
+    else if (window.claude?.use) toast("Downloads aren't available in this view. Open the app in your browser to back up.");
+    else { // the standalone copy outside claude.ai
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([backupData()], {type: "application/json"})); a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); done();
+    }
+  } catch (e) { toast(e && e.code === "cancelled" ? "Backup not saved." : "Couldn't save the backup file. Try again."); }
+  finally { if ($("backupBtn")) $("backupBtn").disabled = false; }
+}
+async function restoreBackup(file){
+  let parsed = null;
+  try { parsed = JSON.parse(await file.text()); } catch (e) {}
+  const st = parsed && parsed.app === "dream-life" && parsed.state;
+  if (!st || !Array.isArray(st.goals) || !Array.isArray(st.entries)) { toast("That file isn't a Dream Life backup."); return; }
+  const incoming = migrate(st), box = $("restoreConfirm");
+  const when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleDateString(undefined, {day: "numeric", month: "short", year: "numeric"}) : "an earlier date";
+  box.innerHTML = `<div><b>Restore the backup from ${esc(when)}?</b> It has ${incoming.aspirations.length} dreams, ${incoming.goals.length} goals and ${incoming.entries.length} entries. It replaces what's here now, so download a backup of the current data first if you might want it.</div>
+    <div class="actions"><button class="btn sm" id="restoreYes" type="button">Replace with backup</button><button class="btn sm ghost" id="restoreNo" type="button">Cancel</button></div>`;
+  box.hidden = false;
+  $("restoreNo").onclick = () => { box.hidden = true; };
+  $("restoreYes").onclick = () => {
+    for (const [k, v] of Object.entries(parsed.images || {})) { try { localStorage.setItem("dreamLife.img." + k, v); } catch (e) {} }
+    S = incoming; S.onboarded = true; bgKey = ""; afterChange(); save();
+    toast("Restored. Everything from the backup is back."); renderAccount();
+  };
 }
 
 /* --- example world (clearly labelled) --- */
@@ -1888,6 +1934,7 @@ if (!S.onboarded) setTimeout(() => { if (!S.onboarded) welcome(); }, 600);
   if (!window.claude?.use) return;
   window.claude.use("sample").then(s => { sampleFn = s; });
   window.claude.use("assets").then(a => { assetsApi = a; });
+  window.claude.use("downloads").then(d => { downloadsApi = d; });
   const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
   const id = user ? await user.id() : null;
   if (!db || !id) return;

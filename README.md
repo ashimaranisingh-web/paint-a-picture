@@ -16,3 +16,6 @@ python3 -m http.server 8000
 - Data is saved in the browser (`localStorage`). When opened as a claude.ai artifact it also syncs to the owner's private store and can use Claude for goal matching; outside claude.ai it falls back to local keyword matching.
 
 Live artifact: https://claude.ai/artifact/B4MDarDt35HqJsXJCguokv
+
+## Backup
+Account → Download backup saves everything (dreams, goals, steps, entries, reflections, device-only images) as one JSON file. Account → Restore from file loads it back, after a confirmation.
