@@ -266,7 +266,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
 
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span>Your world</span></button>
-    <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Dream life<small>Describe the life you're building</small></span></button>
+    <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint Reality<small>Describe the life you're building</small></span></button>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small>Profile, character, data</small></span></button>
   </div>
   <div class="scrim" id="scrim" hidden></div>
@@ -1349,7 +1349,7 @@ function renderHomeChips(){
   const n = clearViewsLeft(), el = $("homeChips"), parts = [];
   if (S.demo) parts.push(`<button class="chip-g" data-go="account">Example world · make it yours</button>`);
   if (n && !vision) parts.push(`<button class="chip-g gold" id="useVision"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>See everything for 10s · ${n} earned</button>`);
-  if (!S.aspirations.length) parts.push(`<button class="chip-g" data-go="dreams">Describe your dream life to place your first landmark</button>`);
+  if (!S.aspirations.length) parts.push(`<button class="chip-g" data-go="dreams">Open Paint Reality to place your first landmark</button>`);
   el.innerHTML = parts.join("");
   const v = $("useVision");
   if (v) v.onclick = () => {
@@ -1518,7 +1518,7 @@ function editGoal(id, preset){
     <label class="field"><span>Goal</span><input type="text" id="gTitle" value="${esc(g.title)}" placeholder="e.g. Take 10 surf lessons" required></label>
     <label class="field"><span>Why it matters (optional)</span><textarea id="gDesc" placeholder="A sentence about what this unlocks for you">${esc(g.desc)}</textarea></label>
     <label class="field"><span>Part of which dream?</span><select id="gAsp"><option value="">Not linked yet</option>${asps.map(a => `<option value="${a.id}" ${g.aspirationId === a.id ? "selected" : ""}>${esc(a.title)}</option>`).join("")}</select>
-      <small>${asps.length ? "Work logged on this goal makes that place clearer in your world." : "Add dreams in Dream life to link goals to places in your world."}</small></label>
+      <small>${asps.length ? "Work logged on this goal makes that place clearer in your world." : "Add dreams in Paint Reality to link goals to places in your world."}</small></label>
     <div class="grid2"><label class="field"><span>Start</span><input type="date" id="gStart" value="${g.start}"></label>
       <label class="field"><span>Deadline</span><input type="date" id="gDeadline" value="${g.deadline}"></label></div>
     ${id ? `<label class="field" id="gNoteWrap" hidden><span>Why the new date? (optional)</span><input type="text" id="gNote" placeholder="The old date stays in history"></label>` : ""}
@@ -1677,7 +1677,7 @@ function renderDreams(){
   const orphan = S.aspirations.filter(a => !S.categories.includes(a.category));
   if (orphan.length) byCat.push(["Other", orphan]);
   el.innerHTML = `
-    <div class="phead"><div><h1>Dream life</h1><div class="sub">The life you're building by ${yr}</div></div><button class="btn" id="newAsp">${ICON.plus}New dream</button></div>
+    <div class="phead"><div><h1>Paint Reality</h1><div class="sub">The life you're building by ${yr}</div></div><button class="btn" id="newAsp">${ICON.plus}New dream</button></div>
     <p class="muted" style="margin:0;font-size:14px">Each dream becomes a place in your world. It starts in the dark and gets clearer as you log work on goals linked to it.${S.aspirations.length > SLOTS.length ? ` Your world has room for ${SLOTS.length} places; the rest wait for a spot.` : ""}</p>
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" style="width:auto;padding:7px 10px;font-size:14px">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
       <button class="btn quiet sm" id="editCats">Edit categories</button></div>
