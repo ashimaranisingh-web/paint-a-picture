@@ -15,9 +15,9 @@
 :root{
   --paper:#f7f4ee; --surface:#fffdf9; --sunk:#f0ece3;
   --ink:#1f2420; --ink-2:#474c46; --muted:#7a7b73; --line:#e6e0d4; --line-2:#d6cfbf;
-  --accent:#2f5d4e; --accent-2:#244a3e; --accent-soft:#e5eee8;
+  --accent:#f04f85; --accent-strong:#cf3367; --accent-2:#b82a5a; --accent-ink:#c22f60; --accent-soft:#fde8ef;
   --amber:#8f5c14; --amber-soft:#f5ead6; --sea:#2c6a88; --sea-soft:#e2edf2; --danger:#9b3b2a;
-  --night:#0f1420; --glass:rgba(18,22,30,.62); --glass-line:rgba(255,255,255,.14);
+  --night:#0f1420; --glass:rgba(16,19,27,.84); --glass-line:rgba(255,255,255,.14);
   --serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --sans:"Manrope", "Helvetica Neue", system-ui, sans-serif;
   --r-sm:8px; --r:12px; --r-lg:18px;
@@ -29,7 +29,7 @@ html,body{height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
 #app{height:100%;max-width:520px;margin:0 auto;position:relative;overflow:hidden;background:var(--paper)}
 @media (min-width:560px){#app{box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(31,36,32,.14)}}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column}
@@ -47,25 +47,25 @@ button{cursor:pointer}
 .mark-name{font-family:var(--serif);font-size:27px;line-height:1;letter-spacing:.005em}
 .mark-sub{font-size:12px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.02em}
 .gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  }
 .gbtn:hover{background:rgba(30,36,48,.75)}
 .home-chips{position:absolute;top:66px;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:5;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
 .chip-g{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;border-radius:99px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
-  font-size:12px;font-weight:700;padding:6px 11px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  font-size:12px;font-weight:700;padding:6px 11px;}
 .chip-g.gold{background:rgba(232,196,110,.92);color:#2b2108;border-color:transparent}
 .chip-g .ico{width:14px;height:14px}
 .mapctl{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:1px;border-radius:14px;overflow:hidden;
-  border:1px solid var(--glass-line);background:var(--glass-line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  border:1px solid var(--glass-line);background:var(--glass-line);}
 .mapctl button{width:40px;height:40px;display:grid;place-items:center;border:0;background:var(--glass);color:#fff}
 .mapctl button:hover{background:rgba(30,36,48,.8)}
 .mapctl .ico{width:17px;height:17px}
 .home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:16px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
-  font-weight:700;font-size:15px;letter-spacing:.01em;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  font-weight:700;font-size:15px;letter-spacing:.01em;}
 .htab:hover{background:rgba(30,36,48,.8)}
 .htab.main{background:rgba(247,244,238,.95);color:var(--ink);border-color:transparent}
-.loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:6;
+.loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(120px + env(safe-area-inset-bottom,0px));z-index:6;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px 14px 12px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .loccard .row{display:flex;gap:12px;align-items:flex-start}
 .loccard h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.1;margin:0}
@@ -80,8 +80,15 @@ button{cursor:pointer}
 .bubble{position:absolute;z-index:6;transform:translate(-50%,-100%);background:rgba(247,244,238,.97);color:var(--ink);border-radius:12px;padding:7px 11px;
   font-size:13px;font-weight:600;max-width:220px;text-align:center;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.3)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(247,244,238,.97);border-bottom:0}
-.hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--glass);border:1px solid var(--glass-line);
-  color:rgba(255,255,255,.9);font-size:12px;font-weight:600;padding:7px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(120px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--glass);border:1px solid var(--glass-line);
+  color:rgba(255,255,255,.9);font-size:12px;font-weight:600;padding:7px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;}
+.journey{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;
+  display:grid;grid-template-columns:repeat(5,1fr);align-items:center;height:30px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line);padding:0 6px}
+.journey::before{content:"";position:absolute;left:18px;right:18px;top:50%;height:1px;background:rgba(255,255,255,.22)}
+.journey button{all:unset;cursor:pointer;position:relative;z-index:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.62);padding:6px 0}
+.journey button[aria-current="true"]{color:#fff}
+.journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
+.journey .you{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,79,133,.3);transition:left .2s;pointer-events:none}
 .vision-banner{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
@@ -95,18 +102,20 @@ button{cursor:pointer}
 .page{padding:22px max(18px,env(safe-area-inset-right,0px)) 32px max(18px,env(safe-area-inset-left,0px));display:grid;gap:22px;align-content:start}
 .pnav{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
 .pnav button{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;padding:9px 0 10px;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.02em}
-.pnav button[aria-current="page"]{color:var(--accent)}
+.pnav button[aria-current="page"]{color:var(--accent-ink)}
 .pnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .phead h1{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1;margin:0;letter-spacing:-.005em}
 .phead .sub{font-size:13.5px;color:var(--muted);font-weight:600;margin-top:6px}
 .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 h2.sec{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.1}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:var(--r);padding:10px 15px;font-weight:700;font-size:14px;background:var(--accent);color:#fff;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:var(--r);padding:10px 15px;font-weight:700;font-size:14px;background:var(--accent-strong);color:#fff;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:default}
 .btn:hover{background:var(--accent-2)}
 .btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line-2)}
 .btn.ghost:hover{background:var(--sunk)}
-.btn.quiet{background:transparent;color:var(--accent);padding:6px 8px}
+.btn.quiet{background:transparent;color:var(--accent-ink);padding:6px 8px}
 .btn.quiet:hover{background:var(--accent-soft)}
 .btn.danger{background:var(--surface);color:var(--danger);border-color:#e7c6bd}
 .btn.sm{padding:7px 11px;font-size:13px;border-radius:10px}
@@ -121,7 +130,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-hei
 .rtitle{font-weight:700;font-size:16px;line-height:1.3}
 .rmeta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--muted);font-weight:600;align-items:center}
 .tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:99px;background:var(--sunk);color:var(--ink-2);letter-spacing:.01em}
-.tag.green{background:var(--accent-soft);color:var(--accent)} .tag.amber{background:var(--amber-soft);color:var(--amber)} .tag.sea{background:var(--sea-soft);color:var(--sea)}
+.tag.green{background:var(--accent-soft);color:#ad2856} .tag.amber{background:var(--amber-soft);color:var(--amber)} .tag.sea{background:var(--sea-soft);color:var(--sea)}
 .tag.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .bar{height:4px;border-radius:9px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
@@ -136,7 +145,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-hei
 .steps li{display:flex;gap:10px;align-items:center;font-size:14px;padding:5px 0}
 .steps li.done span{color:var(--muted);text-decoration:line-through}
 .cb{width:20px;height:20px;flex:none;border:1.5px solid var(--line-2);border-radius:6px;background:var(--surface);display:grid;place-items:center;padding:0}
-.cb[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.cb[aria-checked="true"]{background:var(--accent-strong);border-color:var(--accent-strong)}
 .cb[aria-checked="true"]::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
 .notice{border-radius:var(--r);background:var(--amber-soft);padding:12px 13px;display:grid;gap:10px;font-size:13.5px;color:#5d4316}
 .notice b{color:#3d2c0c}
@@ -168,7 +177,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-hei
 input[type=text],input[type=date],input[type=number],select,textarea{width:100%;min-width:0;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);padding:11px 12px;font-size:15px;font-weight:500;line-height:1.35}
 textarea{resize:vertical;min-height:84px}
 input::placeholder,textarea::placeholder{color:#a3a39a}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);outline-offset:0;border-color:transparent}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .scrim{position:absolute;inset:0;background:rgba(20,22,20,.38);z-index:20}
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:92%;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;
@@ -188,7 +197,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .sugg-item b{font-size:14.5px}
 .sugg-item small{font-size:12.5px;color:var(--muted);font-weight:600}
 .pill{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;background:var(--surface)}
-.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--accent-soft);color:#ad2856;border-color:var(--accent)}
 .pills{display:flex;flex-wrap:wrap;gap:7px}
 .imgdrop{display:flex;gap:12px;align-items:center}
 .imgdrop img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--sunk)}
@@ -205,8 +214,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .toast.top{bottom:auto;top:calc(118px + env(safe-area-inset-top,0px))}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .sw{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-2);padding:0}
-.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
-#avatarPrev{width:84px;height:112px;border-radius:14px;image-rendering:pixelated;background:#6f9c4a;flex:none}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent-strong)}
+#avatarPrev{width:77px;height:112px;border-radius:14px;image-rendering:pixelated;background:#6f9c4a;flex:none}
 .muted{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -226,7 +235,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
       <button id="recenter" aria-label="Show me"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
     </div>
     <div class="vision-banner" id="visionBanner" hidden></div>
-    <div class="hint" id="hint">Drag to move the lens · two fingers or scroll to explore</div>
+    <div class="hint" id="hint">Drag to move the lens · two fingers to travel east</div>
+    <nav class="journey" id="journey" aria-label="Journey"><span class="you" aria-hidden="true"></span><button data-reg="delhi">Delhi</button><button data-reg="road">Road</button><button data-reg="mumbai">Mumbai</button><button data-reg="ocean">Ocean</button><button data-reg="la">LA</button></nav>
     <div class="loccard" id="loccard" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
     <nav class="home-tabs" aria-label="Primary">
@@ -338,7 +348,9 @@ async function save(){
     storageNote = e && e.code === "quota_exceeded" ? "Your storage is full. Delete some old entries or images." : "Couldn't reach your account, so changes are kept in this browser for now.";
   } finally { saving = false; if (route === "account") renderAccount(); }
 }
-let storageNote = "Saved in this browser.";
+let storageNote = "Saved in this browser.", lastSynced = "", pendingRender = false;
+const typingInPage = () => { const a = document.activeElement; return !!(a && a.closest && a.closest("#pmain") && /INPUT|TEXTAREA|SELECT/.test(a.tagName)); };
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender && !typingInPage()) { pendingRender = false; afterChange(); } }, 0));
 function commit(fn){ fn(S); afterChange(); save(); }
 
 /* =====================================================================
@@ -356,7 +368,13 @@ function goalProgress(g){
   return {steps: ms.length, done, ratio: g.status === "done" ? 1 : ms.length ? done / ms.length : null, entries: goalActivity(g).length};
 }
 // How clearly an aspiration shows in the world. Comes only from logged work on goals linked to it.
+let modelVer = 0, clarVer = -1, discVal = 0; const clarCache = new Map();
 function clarityOf(a){
+  if (clarVer !== modelVer) { clarCache.clear(); clarVer = modelVer; discVal = -1; }
+  if (clarCache.has(a.id)) return clarCache.get(a.id);
+  const r = clarityRaw(a); clarCache.set(a.id, r); return r;
+}
+function clarityRaw(a){
   const gs = S.goals.filter(g => g.aspirationId === a.id && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
   let score = 0, entries = 0, steps = 0, done = 0;
   for (const e of S.entries) if (e.goalIds.some(id => ids.has(id))) { score += e.size || 1; entries++; }
@@ -365,10 +383,12 @@ function clarityOf(a){
 }
 // Overall discovery: any logged work, linked or not, slowly lifts the dark and widens the lens.
 function discovery(){
+  if (clarVer === modelVer && discVal >= 0) return discVal;
+  if (clarVer !== modelVer) { clarCache.clear(); clarVer = modelVer; }
   let s = 0;
   for (const e of S.entries) s += e.size || 1;
   for (const g of S.goals) { s += g.milestones.filter(m => m.doneAt).length * 2; if (g.status === "done") s += 5; }
-  return Math.min(1, s / 60);
+  return (discVal = Math.min(1, s / 60));
 }
 const clearViewsEarned = () => S.goals.filter(metDeadline).length;
 const clearViewsLeft = () => Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0));
@@ -376,7 +396,7 @@ const clearViewsLeft = () => Math.max(0, clearViewsEarned() - (S.rewards.clearVi
 /* =====================================================================
    3. MATCHING — local keyword matcher (always) + optional Claude
    ===================================================================== */
-const STOP = new Set("the a an and or to of for in on at my i me with did got done this that was is it by from up out some more new get just about into over then than our your their week today".split(" "));
+const STOP = new Set("the a an and or to of for in on at my i me with did got done this that was is it by from up out some more new get just about into over then than our your their week today one two three four five six seven eight nine ten first second last few many lot".split(" "));
 const SYN = [["surf", "wave", "ocean", "beach", "board", "lesson", "swim"], ["save", "money", "budget", "fund", "bank", "invest", "saving", "income", "salary", "debt"],
   ["portfolio", "website", "site", "case", "design", "project", "client"], ["move", "relocat", "apartment", "rent", "visa", "city", "lease"],
   ["car", "porsche", "drive", "license", "vehicle"], ["fitness", "gym", "workout", "run", "yoga", "train", "health"], ["learn", "course", "study", "class", "read", "book", "degree"],
@@ -414,38 +434,53 @@ async function claudeMatches(text){
 }
 
 /* =====================================================================
-   4. WORLD — procedural pixel art, fog of the future, lens, camera
+   4. WORLD — one continuous map from Delhi to Los Angeles.
+   Layers: terrain (built once) → landmarks (rebuilt only when dreams change) → per-frame life, character, fog + lens.
    ===================================================================== */
 const C = {
-  grass: ["#4f8a37", "#609f42", "#74b24f", "#8cc35c"], floor: "#3f7130",
-  dirt: ["#86603a", "#a47a4c", "#bd9262", "#d3ab7b"],
-  stone: ["#53585e", "#767c82", "#9da2a6", "#c3c6c5"],
-  water: ["#245f86", "#3483a8", "#55a9c6", "#cdeff3"], sea: ["#1b4b72", "#245f8a", "#2f78a2", "#4f9cc0"],
-  sand: ["#c3a26a", "#d8bd86", "#e9d6a6"],
+  stone: ["#4f5359", "#737980", "#9ca1a6", "#c6c9c8"],
+  water: ["#245f86", "#3483a8", "#55a9c6", "#d4f1f4"],
+  sand: ["#c9a467", "#dcbf86", "#ecd9a8"],
   wood: ["#4a2f1d", "#6c472a", "#8f6038", "#b8834f"],
   leaf: ["#24502c", "#326934", "#47853b", "#68a347", "#97c75b"],
+  neem: ["#1f4527", "#2b5c2f", "#3d7638", "#5a9444"],
   pine: ["#1a412f", "#255a3e", "#36734d", "#53925c"],
   wall: ["#857360", "#c1ae8f", "#dfd0b2", "#f2e8d1"], stoneWall: ["#5c5f65", "#888b8f", "#adafb0", "#cfd0cd"],
-  glass: ["#2b4a64", "#5a8fb6", "#a3d1ea"], out: "#261b17"
+  glass: ["#25415a", "#4f84ad", "#a3d1ea"], asphalt: ["#3b3a3c", "#4a494b", "#5a595a"], out: "#241a16",
+  grass: ["#6a9a45", "#7aaa4f", "#8cbb5a", "#a2cb68"]
 };
 const ROOF = {home: ["#6a281e", "#983b28", "#c35435", "#e47f4e"], library: ["#253760", "#355086", "#4f73b2", "#7d9ed5"], studio: ["#3b3a36", "#575550", "#76736b", "#9a968b"]};
-const W = 288, H = 528;
-const SLOTS = [
-  {x: 44, y: 150, z: "home"}, {x: 152, y: 150, z: "city"}, {x: 198, y: 150, z: "city"}, {x: 222, y: 238, z: "coast"},
-  {x: 44, y: 252, z: "home"}, {x: 150, y: 256, z: "any"}, {x: 44, y: 392, z: "field"}, {x: 150, y: 384, z: "field"},
-  {x: 206, y: 424, z: "coast"}, {x: 44, y: 476, z: "field"}, {x: 150, y: 478, z: "any"}, {x: 112, y: 210, z: "city"}
+const W = 1280, H = 520;
+const ROADS = [140, 290, 420];
+const coastM = y => Math.round(606 + 5 * Math.sin(y / 37) + 3 * Math.sin(y / 11 + 1)); // Mumbai's shore, sea to the east
+const coastL = y => Math.round(938 + 6 * Math.sin(y / 43 + 2) + 3 * Math.sin(y / 13));  // LA's shore, sea to the west
+const REGIONS = [
+  {id: "delhi", name: "Delhi", sub: "Where it began", x0: 0, x1: 340},
+  {id: "road", name: "The road south", sub: "Delhi to Mumbai", x0: 340, x1: 430},
+  {id: "mumbai", name: "Mumbai", sub: "A city you love", x0: 430, x1: 640},
+  {id: "ocean", name: "The crossing", sub: "Arabian Sea to the Pacific", x0: 640, x1: 930},
+  {id: "la", name: "Los Angeles", sub: "Where you're headed", x0: 930, x1: W}
 ];
-const PATH_X = 96, PROM_Y = 151, RIVER_Y = 322;
+const regionAt = x => REGIONS.find(r => x >= r.x0 && x < r.x1) || REGIONS[REGIONS.length - 1];
+// Places a dream can occupy. India lots are for dreams set in India; the LA lots and beach are for the future.
+const SLOTS = [
+  {x: 1052, y: 138, place: "la", z: "city"}, {x: 1236, y: 138, place: "la", z: "city"}, {x: 1052, y: 288, place: "la", z: "home"},
+  {x: 1236, y: 288, place: "la", z: "any"}, {x: 1052, y: 418, place: "la", z: "field"}, {x: 961, y: 348, place: "la", z: "coast"},
+  {x: 961, y: 468, place: "la", z: "coast"}, {x: 1118, y: 138, place: "la", z: "any"},
+  {x: 520, y: 138, place: "mumbai", z: "any"}, {x: 520, y: 418, place: "mumbai", z: "any"},
+  {x: 128, y: 288, place: "delhi", z: "any"}, {x: 248, y: 138, place: "delhi", z: "any"}
+];
+const DREAM_HOME = {x: 1214, y: 418}, PORSCHE = {x: 1152, y: 416};
+
 const cv = $("scene"), ctx = cv.getContext("2d");
+const terrain = document.createElement("canvas"), tctx = terrain.getContext("2d");
 const bg = document.createElement("canvas"), bctx = bg.getContext("2d");
-const wf = document.createElement("canvas"), wctx = wf.getContext("2d");
 const fog = document.createElement("canvas"), fctx = fog.getContext("2d");
-bg.width = wf.width = W; bg.height = wf.height = H;
+terrain.width = bg.width = W; terrain.height = bg.height = H;
 let baseVW = 176, baseVH = 380, zoom = 1, VW = 176, VH = 380, camX = 0, camY = 0, scale = 2, t = 0;
-let locs = [], chimneys = [], lights = [], fountains = [], sparkles = [], riverTop = [], riverBot = [], riverMid = [], coastAt = [], fx = [];
-let lens = {x: 120, y: 220}, bgKey = "", lensHover = null, holdStart = 0, preview = null, vision = null;
+let locs = [], chimneys = [], fountains = [], sparkles = [], foam = [], fx = [], lampsM = [], terrainBuilt = false;
+let lens = {x: 140, y: 250}, bgKey = "", lensHover = null, holdStart = 0, preview = null, vision = null, viewDirty = true, pendingZoom = null, regionShown = "";
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const REG = g => g === bctx; // only the world background registers lights, chimneys and fountains
 
 function hash(x, y, s){ let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul((s | 0) + 1, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
 function vnoise(x, y, s, seed){
@@ -455,217 +490,297 @@ function vnoise(x, y, s, seed){
   return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
 }
 const F = (g, x, y, w, h, c) => { g.fillStyle = c; g.fillRect(Math.round(x), Math.round(y), w, h); };
-function oval(g, cx, cy, rx, ry, c){ for (let y = -ry; y <= ry; y++) { const w = Math.round(rx * Math.sqrt(Math.max(0, 1 - (y * y) / (ry * ry + .6)))); F(g, cx - w, cy + y, 2 * w + 1, 1, c); } }
+function oval(g, cx, cy, rx, ry, c){ g.fillStyle = c; for (let y = -ry; y <= ry; y++) { const w = Math.round(rx * Math.sqrt(Math.max(0, 1 - (y * y) / (ry * ry + .6)))); g.fillRect(Math.round(cx - w), Math.round(cy + y), 2 * w + 1, 1); } }
+function line(g, x0, y0, x1, y1, c){ g.fillStyle = c; const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) | 0; for (let i = 0; i <= n; i++) g.fillRect(Math.round(x0 + (x1 - x0) * i / n), Math.round(y0 + (y1 - y0) * i / n), 1, 1); }
 const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 const toHex = rgb => "#" + rgb.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
 const shade = (h, k) => toHex(hex(h).map(v => k < 0 ? v * (1 + k) : v + (255 - v) * k));
 const tintPal = h => [shade(h, -.55), shade(h, -.3), h, shade(h, .3)];
-const coastX = y => Math.round(240 + 8 * Math.sin(y / 41) + 4 * Math.sin(y / 13 + 2));
-const riverCenter = x => Math.round(RIVER_Y + 5 * Math.sin(x / 23) + 2 * Math.sin(x / 9 + 1));
+const pick = (arr, k) => arr[Math.floor(k * arr.length) % arr.length];
 
-/* --- scenery pieces --- */
-function roundTree(g, x, by, r, fruit){
-  oval(g, x + 3, by, r, Math.max(2, r * .38 | 0), "rgba(20,45,20,.32)");
-  F(g, x - 2, by - r - 2, 4, r + 2, C.wood[1]); F(g, x + 1, by - r - 2, 1, r + 2, C.wood[0]); F(g, x - 3, by - 1, 1, 1, C.wood[1]); F(g, x + 2, by - 1, 1, 1, C.wood[0]);
+/* ---------------- vegetation ---------------- */
+function roundTree(g, x, by, r, pal, fruit){
+  pal = pal || C.leaf;
+  oval(g, x + 3, by, r, Math.max(2, r * .38 | 0), "rgba(20,40,15,.32)");
+  F(g, x - 2, by - r - 2, 4, r + 2, C.wood[1]); F(g, x + 1, by - r - 2, 1, r + 2, C.wood[0]);
   const cy = by - r - 4 - r * .6 | 0;
-  oval(g, x, cy, r + 1, r, C.leaf[0]); oval(g, x, cy - 1, r, r - 1, C.leaf[1]); oval(g, x - 1, cy - 2, r - 2, r - 3, C.leaf[2]);
-  for (let i = 0; i < r * 3; i++) {
-    const a = hash(x, i + by, 11) * 6.28, d = hash(x, i + by, 12) * (r - 2);
-    const px = x + Math.cos(a) * d - 1 | 0, py = cy - 2 + Math.sin(a) * d * .9 | 0;
-    F(g, px, py, 2, 1, py < cy ? C.leaf[3] : C.leaf[1]);
-  }
-  oval(g, x - r * .35 | 0, cy - r * .4 | 0, Math.max(1, r * .35 | 0), Math.max(1, r * .25 | 0), C.leaf[3]);
-  F(g, x - r * .4 | 0, cy - r * .5 | 0, 2, 1, C.leaf[4]);
-  if (fruit) for (let i = 0; i < 5; i++) F(g, x - r + 2 + hash(x, i, 13) * (2 * r - 3) | 0, cy - r + 3 + hash(x, i, 14) * (r + 2) | 0, 1, 1, fruit);
+  oval(g, x, cy, r + 1, r, pal[0]); oval(g, x, cy - 1, r, r - 1, pal[1]); oval(g, x - 1, cy - 2, r - 2, Math.max(1, r - 3), pal[2]);
+  for (let i = 0; i < r * 3; i++) { const a = hash(x, i + by, 11) * 6.28, d = hash(x, i + by, 12) * (r - 2); const px = x + Math.cos(a) * d - 1 | 0, py = cy - 2 + Math.sin(a) * d * .9 | 0; F(g, px, py, 2, 1, py < cy ? pal[3] : pal[1]); }
+  oval(g, x - r * .35 | 0, cy - r * .4 | 0, Math.max(1, r * .35 | 0), Math.max(1, r * .25 | 0), pal[3]);
+  if (fruit) for (let i = 0; i < 6; i++) F(g, x - r + 2 + hash(x, i, 13) * (2 * r - 3) | 0, cy - r + 2 + hash(x, i, 14) * (r + 3) | 0, 1, 1, fruit);
 }
-function pine(g, x, by, h){
-  oval(g, x + 2, by, 5, 2, "rgba(15,40,25,.35)");
-  F(g, x - 1, by - 3, 2, 3, C.wood[0]);
-  const tiers = 3, th = h / tiers;
-  for (let k = 0; k < tiers; k++) {
-    const top = by - h - 2 + k * th * .75, rows = th + 2 | 0;
-    for (let r = 0; r < rows; r++) {
-      const half = Math.round((r + 1) * (3 + k) / rows * 1.6) + 1, y = top + r | 0;
-      F(g, x - half, y, half * 2, 1, C.pine[0]); F(g, x - half + 1, y, half - 1, 1, C.pine[2]); F(g, x, y, half - 1, 1, C.pine[1]);
-      if (r % 2 === 0) F(g, x - half + 1, y, 1, 1, C.pine[3]);
-    }
-  }
-}
-function bush(g, x, y, r, berry){
-  oval(g, x + 1, y + 1, r + 1, r * .5 | 0, "rgba(15,40,20,.3)");
-  oval(g, x, y - r * .4 | 0, r, r * .75 | 0, C.leaf[1]); oval(g, x - 1, y - r * .6 | 0, r - 1, Math.max(1, r * .5 | 0), C.leaf[2]);
-  F(g, x - r * .5 | 0, y - r | 0, 2, 1, C.leaf[3]);
-  if (berry) for (let i = 0; i < 3; i++) F(g, x - r + 1 + hash(x, i, 15) * (2 * r - 2) | 0, y - r + 1 + hash(y, i, 16) * r | 0, 1, 1, berry);
-}
-function rock(g, x, y, w, h){
-  for (let r = 0; r < h; r++) { const inset = (r === 0 || r === h - 1) ? 1 : 0; F(g, x + inset, y + r, w - inset * 2, 1, r === 0 ? C.stone[2] : r === h - 1 ? C.stone[0] : C.stone[1]); }
-  F(g, x + 1, y + 1, 1, 1, C.stone[3]);
-}
-function palm(g, x, by, h){
-  oval(g, x + 4, by, 6, 2, "rgba(20,45,20,.3)");
+function palm(g, x, by, h, lush){
+  oval(g, x + 4, by, 6, 2, "rgba(20,40,15,.3)");
   let tx = x;
-  for (let i = 0; i < h; i++) { tx = x + Math.round(Math.sin(i / h * 1.6) * 3); F(g, tx, by - i, 2, 1, i % 3 ? C.wood[2] : C.wood[1]); }
-  const ty = by - h;
-  for (const [dx, dy] of [[-1, -.2], [1, -.2], [-.8, .5], [.8, .5], [-.3, -.9], [.4, -.8]]) for (let i = 1; i < 8; i++) {
-    const px = tx + 1 + dx * i | 0, py = ty + dy * i + (i * i) / 14 | 0;
-    F(g, px, py, 1, 2, C.leaf[1]); F(g, px, py, 1, 1, C.leaf[3]);
-  }
-  F(g, tx, ty + 1, 2, 2, C.wood[1]);
+  for (let i = 0; i < h; i++) { tx = x + Math.round(Math.sin(i / h * 1.6) * 3); F(g, tx, by - i, 2, 1, i % 3 ? "#9a7a52" : "#7a5c3a"); }
+  const ty = by - h, L = lush ? ["#2f6a31", "#4f9a3e"] : ["#3f6f35", "#6a9a48"];
+  for (const [dx, dy] of [[-1, -.2], [1, -.2], [-.8, .5], [.8, .5], [-.3, -.9], [.4, -.8], [0, .7]]) for (let i = 1; i < (lush ? 9 : 7); i++) { const px = tx + 1 + dx * i | 0, py = ty + dy * i + (i * i) / 14 | 0; F(g, px, py, 1, 2, L[0]); F(g, px, py, 1, 1, L[1]); }
+  F(g, tx, ty + 1, 2, 2, lush ? "#8a6a2a" : C.wood[1]);
 }
-function lamp(g, x, by){
-  F(g, x, by - 12, 1, 12, C.out); F(g, x - 1, by - 14, 3, 2, "#f2d68a"); F(g, x - 1, by - 15, 3, 1, C.out);
-  if (REG(g)) lights.push({x: x - 1, y: by - 14, w: 3, h: 2});
+function bush(g, x, y, r, flower, pal){
+  pal = pal || C.leaf;
+  oval(g, x + 1, y + 1, r + 1, r * .5 | 0, "rgba(15,35,15,.3)");
+  oval(g, x, y - r * .4 | 0, r, r * .75 | 0, pal[1]); oval(g, x - 1, y - r * .6 | 0, r - 1, Math.max(1, r * .5 | 0), pal[2]);
+  if (flower) for (let i = 0; i < r + 2; i++) F(g, x - r + 1 + hash(x, i, 15) * (2 * r - 1) | 0, y - r + hash(y, i, 16) * r | 0, 1, 1, flower);
+}
+function rock(g, x, y, w, h){ for (let r = 0; r < h; r++) { const i = (r === 0 || r === h - 1) ? 1 : 0; F(g, x + i, y + r, w - i * 2, 1, r === 0 ? C.stone[2] : r === h - 1 ? C.stone[0] : C.stone[1]); } F(g, x + 1, y + 1, 1, 1, C.stone[3]); }
+function lamp(g, x, by, warm){ F(g, x, by - 12, 1, 12, C.out); F(g, x - 1, by - 14, 3, 2, warm ? "#ffd98a" : "#f2e6c2"); F(g, x - 1, by - 15, 3, 1, C.out); }
+
+/* ---------------- Delhi & Mumbai architecture ---------------- */
+const DELHI_WALLS = ["#e8c49b", "#d9a79c", "#c9d2ae", "#e5cf8a", "#bfcad6", "#e0b487", "#efe0c8"];
+function indianHouse(g, x, by, w, floors, col, k){
+  const fh = 8, top = by - floors * fh, dark = shade(col, -.22), light = shade(col, .25);
+  oval(g, x + w / 2 + 3, by, w / 2 + 2, 3, "rgba(30,25,15,.28)");
+  // roof terrace seen from above, with parapet, black water tank and a washing line
+  F(g, x - 1, top - 8, w + 2, 9, C.out); F(g, x, top - 7, w, 7, "#cfc5b2"); F(g, x, top - 7, w, 1, "#e2dacb"); F(g, x, top - 1, w, 1, "#a99f8c");
+  F(g, x + 1, top - 6, w - 2, 5, "#bdb39f");
+  const tx = x + (k > .5 ? w - 7 : 2);
+  F(g, tx, top - 7, 5, 5, "#141416"); F(g, tx + 1, top - 7, 3, 1, "#3a3a40"); F(g, tx + 1, top - 5, 1, 2, "#2b2b30");
+  if (k > .3) { line(g, x + 3, top - 4, x + w - 9, top - 4, "#8c8478"); for (let i = x + 4; i < x + w - 9; i += 3) F(g, i, top - 3, 2, 2, pick(["#e2574a", "#f2cf5b", "#5a8fd6", "#f4f1e8", "#d36aa6"], hash(i, top, 5))); }
+  if (k < .25) { F(g, x + w - 6, top - 6, 3, 2, "#d9dbe0"); F(g, x + w - 5, top - 4, 1, 1, "#6b6e75"); }
+  // facade
+  F(g, x - 1, top, w + 2, floors * fh + 1, C.out);
+  F(g, x, top, w, floors * fh, col); F(g, x + w - 3, top, 3, floors * fh, dark); F(g, x, top, w, 1, light);
+  for (let f = 0; f < floors; f++) {
+    const fy = top + f * fh, ground = f === floors - 1;
+    if (ground && k > .45) { // shop with rolling shutter and a painted sign band
+      F(g, x + 1, fy, w - 4, 2, pick(["#c0392b", "#2e86c1", "#d4ac0d", "#239b56"], k));
+      F(g, x + 2, fy + 2, w - 6, 6, "#8d9299"); for (let i = fy + 3; i < fy + 8; i += 2) F(g, x + 2, i, w - 6, 1, "#6e737a");
+      continue;
+    }
+    for (let wx = x + 2; wx < x + w - 6; wx += 7) {
+      F(g, wx, fy + 2, 4, 4, "#2f3b48"); F(g, wx + 1, fy + 2, 1, 4, "#596675"); F(g, wx + 3, fy + 2, 1, 4, "#596675"); F(g, wx, fy + 2, 4, 1, light);
+      if (ground) F(g, wx + 1, fy + 4, 2, 4, C.wood[1]);
+      if (hash(wx, fy, 6) > .7 && !ground) F(g, wx + 4, fy + 3, 2, 2, "#d5d8dc");
+    }
+    if (!ground) { F(g, x - 1, fy + 7, w + 1, 1, shade(col, -.35)); for (let i = x; i < x + w - 3; i += 2) F(g, i, fy + 6, 1, 1, "#3d3d40"); }
+  }
+  if (k > .62) { const bx = x + (k > .8 ? 1 : w - 9); for (let i = 0; i < 9; i++) F(g, bx + hash(x, i, 7) * 8 | 0, top + 6 + hash(x, i, 8) * 9 | 0, 2, 1, i % 3 ? "#d4237a" : "#a3175c"); }
+  return floors * fh + 8;
+}
+function tower(g, x, by, w, floors, col){
+  const fh = 5, top = by - floors * fh, dark = shade(col, -.2);
+  oval(g, x + w / 2 + 3, by, w / 2 + 3, 3, "rgba(20,25,30,.3)");
+  F(g, x - 1, top - 6, w + 2, 7, C.out); F(g, x, top - 5, w, 5, "#b7b4ad"); F(g, x + 2, top - 5, 5, 4, "#9a968d"); F(g, x + w - 6, top - 4, 4, 3, "#141416");
+  F(g, x - 1, top, w + 2, floors * fh + 1, C.out); F(g, x, top, w, floors * fh, col); F(g, x + w - 4, top, 4, floors * fh, dark);
+  for (let f = 0; f < floors; f++) for (let wx = x + 2; wx < x + w - 4; wx += 4) {
+    const lit = hash(wx, f, 31);
+    F(g, wx, top + f * fh + 1, 3, 3, lit > .8 ? "#e9d9a6" : "#33465a");
+    if (lit < .15) F(g, wx, top + f * fh + 4, 3, 1, "#d6d8db");
+  }
+  return floors * fh + 6;
+}
+function artDeco(g, x, by, w, col){
+  const floors = 4, fh = 7, top = by - floors * fh, dark = shade(col, -.2), band = shade(col, -.12);
+  oval(g, x + w / 2 + 3, by, w / 2 + 2, 3, "rgba(20,25,30,.28)");
+  F(g, x - 1, top - 6, w + 2, 7, C.out); F(g, x, top - 5, w, 5, "#d8d0bf"); F(g, x, top - 5, 1, 1, C.out); F(g, x + w - 1, top - 5, 1, 1, C.out);
+  F(g, x + w / 2 - 3, top - 9, 6, 4, C.out); F(g, x + w / 2 - 2, top - 8, 4, 3, col); // stepped crown
+  F(g, x - 1, top, w + 2, floors * fh + 1, C.out); F(g, x, top, w, floors * fh, col); F(g, x + w - 3, top, 3, floors * fh, dark);
+  F(g, x, top, 1, 1, C.out); F(g, x + w - 1, top, 1, 1, C.out); // rounded corners
+  for (let f = 0; f < floors; f++) {
+    const fy = top + f * fh;
+    F(g, x, fy + 6, w, 1, band); F(g, x + 1, fy + 6, w - 2, 1, shade(col, .3));
+    for (let wx = x + 3; wx < x + w - 5; wx += 6) { F(g, wx, fy + 2, 4, 3, "#2f4256"); F(g, wx, fy + 1, 4, 1, dark); }
+  }
+  F(g, x + w / 2 - 2, by - 6, 4, 6, C.wood[1]);
+  return floors * fh + 9;
+}
+function lodhiDome(g, x, by){ // a sandstone tomb in a garden, after Delhi's Lodhi-era monuments
+  oval(g, x + 4, by + 1, 24, 6, "rgba(30,30,15,.28)");
+  F(g, x - 22, by - 12, 44, 12, C.out); F(g, x - 21, by - 11, 42, 11, "#b0573e"); F(g, x - 21, by - 11, 42, 1, "#cf7a5c"); F(g, x + 14, by - 11, 7, 11, "#8e4532");
+  for (const ax of [x - 15, x - 4, x + 7]) { F(g, ax, by - 9, 7, 9, "#3c241c"); F(g, ax + 1, by - 10, 5, 1, "#3c241c"); F(g, ax + 1, by - 8, 5, 1, "#e7d1a6"); }
+  F(g, x - 16, by - 19, 32, 8, C.out); F(g, x - 15, by - 18, 30, 7, "#c9b48f"); F(g, x - 15, by - 18, 30, 1, "#e3d3b0");
+  for (let y = -12; y <= 0; y++) { const w = Math.round(12 * Math.sqrt(1 - (y * y) / 150)); F(g, x - w - 1, by - 19 + y - 1, 2 * w + 2, 1, C.out); F(g, x - w, by - 19 + y - 1, 2 * w, 1, y < -6 ? "#e3d8c2" : "#d2c4a8"); F(g, x + w - 4, by - 19 + y - 1, 3, 1, "#b5a68a"); }
+  F(g, x, by - 36, 1, 5, "#c9a24a"); F(g, x - 1, by - 33, 3, 1, "#c9a24a");
+  for (const cx of [x - 18, x + 18]) { F(g, cx - 3, by - 24, 7, 5, C.out); F(g, cx - 2, by - 23, 5, 4, "#c9b48f"); oval(g, cx + 1, by - 25, 3, 2, "#e3d8c2"); }
+  return 36;
+}
+function autoRickshaw(g, x, y, right){
+  F(g, x - 1, y - 7, 11, 8, C.out); F(g, x, y - 6, 9, 3, "#f2c230"); F(g, x, y - 3, 9, 3, "#2c8a4a"); F(g, right ? x + 6 : x, y - 5, 3, 2, "#2f3b48");
+  F(g, x + 1, y, 2, 1, "#141416"); F(g, x + 7, y, 2, 1, "#141416");
+}
+function taxi(g, x, y){ F(g, x - 1, y - 1, 7, 12, C.out); F(g, x, y, 5, 10, "#f2c230"); F(g, x, y + 3, 5, 4, "#1d1d20"); F(g, x + 1, y + 4, 3, 2, "#3b4f66"); }
+function tetrapod(g, x, y){ F(g, x, y, 3, 1, "#9a9690"); F(g, x + 1, y - 1, 1, 3, "#b7b3ac"); F(g, x - 1, y + 1, 1, 1, "#7a766f"); F(g, x + 3, y + 1, 1, 1, "#7a766f"); }
+
+/* ---------------- Los Angeles architecture ---------------- */
+const STUCCO = ["#f3ece0", "#efe2cf", "#f2d9cf", "#e9e4d8", "#f6efe6"];
+function spanishHouse(g, x, by, w, col, k){
+  const top = by - 14;
+  oval(g, x + w / 2 + 3, by + 1, w / 2 + 2, 3, "rgba(30,30,15,.28)");
+  F(g, x - 2, by + 1, w + 4, 4, "#7fae52"); F(g, x - 2, by + 4, w + 4, 1, "#6a9a45"); // front lawn
+  F(g, x - 1, top, w + 2, 15, C.out); F(g, x, top, w, 14, col); F(g, x + w - 3, top, 3, 14, shade(col, -.1)); F(g, x, by - 1, w, 1, shade(col, -.15));
+  for (let r = 0; r < 12; r++) { // terracotta tile roof with scalloped rows
+    const y = top - 12 + r, inset = Math.max(0, 5 - r);
+    F(g, x - 2 + inset, y, w + 4 - inset * 2, 1, C.out);
+    for (let i = x - 1 + inset; i < x + w + 1 - inset; i++) F(g, i, y, 1, 1, (r % 3 === 2) ? "#8f3f27" : ((i + r) % 4 === 0 ? "#c96a45" : i > x + w / 2 ? "#a9502f" : "#bd5b38"));
+  }
+  F(g, x - 3, top - 1, w + 6, 1, C.out);
+  F(g, x + 3, top + 4, 5, 6, C.out); F(g, x + 4, top + 5, 3, 5, "#2f4256"); F(g, x + 4, top + 4, 3, 1, col); // arched window
+  if (w > 26) { F(g, x + w - 11, top + 4, 5, 6, C.out); F(g, x + w - 10, top + 5, 3, 5, "#2f4256"); }
+  F(g, x + w / 2 - 2, by - 8, 5, 8, C.wood[1]); F(g, x + w / 2 - 2, by - 9, 5, 1, C.out);
+  if (k > .5) bush(g, x + 2, by + 2, 3, "#c63a8f");
+  return 26;
+}
+function lifeguard(g, x, by, col){
+  F(g, x - 4, by - 6, 1, 6, "#d8d2c6"); F(g, x + 4, by - 6, 1, 6, "#d8d2c6");
+  F(g, x - 7, by - 15, 15, 10, C.out); F(g, x - 6, by - 14, 13, 8, col); F(g, x - 6, by - 14, 13, 2, shade(col, .35));
+  F(g, x - 3, by - 11, 6, 3, "#2f4256"); F(g, x - 8, by - 16, 17, 2, "#f2efe8");
+  for (let i = 0; i < 6; i++) F(g, x + 8 + i, by - 6 + i, 2, 1, "#d8d2c6");
+  return 18;
+}
+function dreamHome(g, x, by){
+  oval(g, x + 4, by + 2, 34, 6, "rgba(25,35,20,.3)");
+  F(g, x - 34, by + 2, 70, 9, "#8fbb5c"); F(g, x - 30, by + 3, 22, 6, C.stone[2]); F(g, x - 29, by + 4, 20, 4, "#56b8cf"); F(g, x - 27, by + 4, 7, 1, "#d4f1f4"); // lawn and pool
+  F(g, x - 6, by + 4, 3, 2, "#f2efe8"); F(g, x - 1, by + 4, 3, 2, "#f2efe8");
+  // lower volume: wood and full-height glass
+  F(g, x - 33, by - 16, 54, 17, C.out); F(g, x - 32, by - 15, 52, 15, "#efe9de");
+  F(g, x - 30, by - 13, 28, 13, "#25415a"); for (let i = x - 30; i < x - 2; i += 7) F(g, i, by - 13, 1, 13, C.out); F(g, x - 28, by - 12, 3, 1, "#a3d1ea"); F(g, x - 21, by - 12, 3, 1, "#a3d1ea");
+  F(g, x, by - 15, 18, 15, "#a2703f"); for (let i = by - 14; i < by; i += 2) F(g, x, i, 18, 1, "#8a5c33");
+  // cantilevered upper volume
+  F(g, x - 22, by - 30, 58, 15, C.out); F(g, x - 21, by - 29, 56, 13, "#f6f1e7"); F(g, x + 25, by - 29, 10, 13, "#e3dccd");
+  F(g, x - 18, by - 26, 38, 6, "#2b4a64"); F(g, x - 17, by - 25, 3, 1, "#a3d1ea"); F(g, x - 2, by - 25, 3, 1, "#a3d1ea");
+  F(g, x - 23, by - 33, 60, 4, C.out); F(g, x - 22, by - 32, 58, 2, "#c9ccc9"); F(g, x - 22, by - 32, 58, 1, "#e6e8e5");
+  palm(g, x - 40, by + 1, 24); palm(g, x + 40, by + 3, 20); bush(g, x + 30, by + 5, 4, "#c63a8f");
+  F(g, x - 60, by - 1, 26, 10, C.stone[2]); for (let i = x - 59; i < x - 35; i += 4) F(g, i, by, 3, 8, C.stone[3]); // driveway
+  return 36;
 }
 
-/* --- landmarks: each aspiration kind (tint = colour from her reference image) --- */
+/* ---------------- the Porsche: original 911-style coupé, 3/4 top-down, facing right ---------------- */
+const PORSCHE_SILVER = ["#2e3138", "#5b616b", "#8c939d", "#bcc2ca", "#eef1f4"];
+// Profile of an air-cooled 911-style fastback: rear bumper, long sloping roof, steep screen, low bonnet, frog-eye front.
+const PORSCHE_KP = [[0, -7], [1, -9], [3, -11], [5, -12.5], [7, -14], [9, -15.5], [11, -16.6], [13, -17.2], [15, -17.4], [17, -17.2], [19, -16.4], [21, -14.6], [23, -12.6], [25, -11.8], [28, -11.3], [31, -10.6], [33, -9.6], [35, -7.5]];
+function porscheTop(x){ for (let i = 1; i < PORSCHE_KP.length; i++) { const [x0, y0] = PORSCHE_KP[i - 1], [x1, y1] = PORSCHE_KP[i]; if (x <= x1) return Math.round(-4 + (y0 + (y1 - y0) * (x - x0) / (x1 - x0) + 4) * .74); } return -6; }
+function porsche(g, cx, by, body){
+  const P = body || PORSCHE_SILVER, o = "#141519", X = cx - 18, Y = by, D = 4; // D = depth of the roof and bonnet seen from above
+  oval(g, cx + 1, Y - 2, 20, 3, "rgba(8,10,14,.42)");
+  for (let x = -1; x <= 36; x++) { const top = porscheTop(Math.max(0, Math.min(35, x))); F(g, X + x, Y + top - D - 1, 1, -top + D - 1, o); }
+  for (let x = 0; x <= 35; x++) {
+    const top = porscheTop(x), roofy = Y + top - D;
+    for (let r = 0; r < D; r++) { // the upper surfaces: deck, rear glass, roof, windscreen, bonnet
+      let c = r === 0 ? P[4] : P[3];
+      if (x >= 6 && x <= 11) c = r === 0 ? "#3a4a5e" : "#1c2532";
+      else if (x >= 19 && x <= 23) c = r < 2 && x < 22 ? "#4c6680" : "#1f2b3a";
+      else if (x >= 12 && x <= 18) c = r === 1 ? P[4] : P[3];
+      else if (x >= 25 && r === 2) c = P[4];
+      F(g, X + x, roofy + r, 1, 1, c);
+    }
+    for (let y = Y + top; y < Y - 4; y++) { // the side facing us
+      const d = y - (Y + top);
+      let c = d === 0 ? P[3] : y >= Y - 6 ? P[1] : P[2];
+      if (x >= 9 && x <= 21 && d <= 1 && top <= -12) c = x === 16 ? o : d === 0 && x < 13 ? "#3a4a5e" : "#1c2532";
+      F(g, X + x, y, 1, 1, c);
+    }
+    F(g, X + x, Y - 4, 1, 1, P[0]);
+  }
+  // shoulder line, door shut-line, handle, mirror
+  for (let x = 2; x <= 33; x++) if (!(x >= 9 && x <= 21)) F(g, X + x, Y + porscheTop(x) + 1, 1, 1, P[4]);
+  F(g, X + 14, Y - 10, 1, 5, P[1]); F(g, X + 22, Y - 10, 1, 5, P[1]); F(g, X + 19, Y - 9, 2, 1, P[4]);
+  F(g, X + 22, Y - 13, 2, 2, o); F(g, X + 22, Y - 13, 1, 1, P[3]);
+  // frog-eye headlight on the wing, indicator, rear light bar
+  F(g, X + 31, Y - 12, 4, 3, o); F(g, X + 32, Y - 11, 2, 1, "#f7f2da"); F(g, X + 32, Y - 12, 2, 1, "#d9d4bb");
+  F(g, X + 35, Y - 7, 1, 2, "#e08a2e"); F(g, X, Y - 8, 1, 3, "#c02434"); F(g, X + 1, Y - 9, 3, 1, "#c02434"); F(g, X + 1, Y - 9, 1, 1, "#ec5b66");
+  // arches and Fuchs-style wheels
+  for (const wx of [7, 28]) {
+    oval(g, X + wx, Y - 5, 5, 3, o);
+    oval(g, X + wx, Y - 4, 4, 3, "#17171b");
+    oval(g, X + wx, Y - 4, 2, 2, "#a9aeb5"); F(g, X + wx, Y - 4, 1, 1, "#5d6269"); F(g, X + wx - 1, Y - 5, 1, 1, "#e3e6ea");
+  }
+  return 22;
+}
+
+/* ---------------- dream landmarks (built from her own entries) ---------------- */
 function cottage(g, bx, by, roof, wall){
   oval(g, bx + 4, by, 18, 4, "rgba(20,40,20,.32)");
   const wx = bx - 13, wy = by - 13;
-  F(g, wx - 1, wy, 28, 14, C.out);
-  F(g, wx, wy, 26, 13, wall[2]); F(g, wx, wy, 26, 1, wall[3]); F(g, wx, by - 2, 26, 1, wall[1]); F(g, wx + 20, wy, 6, 13, wall[1]);
+  F(g, wx - 1, wy, 28, 14, C.out); F(g, wx, wy, 26, 13, wall[2]); F(g, wx, wy, 26, 1, wall[3]); F(g, wx, by - 2, 26, 1, wall[1]); F(g, wx + 20, wy, 6, 13, wall[1]);
   F(g, wx + 1, wy, 2, 13, C.wood[1]); F(g, wx + 23, wy, 2, 13, C.wood[0]);
-  for (let r = 0; r < 18; r++) {
-    const y = by - 31 + r, half = Math.min(17, 7 + r), sh = r % 4 === 3;
-    F(g, bx - half - 1, y, 1, 1, C.out); F(g, bx + half, y, 1, 1, C.out);
-    F(g, bx - half, y, half, 1, sh ? roof[1] : roof[2]); F(g, bx, y, half, 1, sh ? roof[0] : roof[1]);
-  }
-  F(g, bx - 7, by - 32, 14, 1, C.out); F(g, bx - 6, by - 31, 12, 1, roof[3]);
-  F(g, bx - 18, by - 13, 36, 1, C.out); F(g, bx - 17, by - 14, 34, 1, roof[0]);
-  F(g, bx - 4, by - 26, 8, 7, C.out); F(g, bx - 3, by - 25, 6, 5, wall[3]); F(g, bx - 2, by - 24, 4, 3, C.glass[1]); F(g, bx - 2, by - 24, 1, 1, C.glass[2]);
+  for (let r = 0; r < 18; r++) { const y = by - 31 + r, half = Math.min(17, 7 + r), sh = r % 4 === 3; F(g, bx - half - 1, y, 1, 1, C.out); F(g, bx + half, y, 1, 1, C.out); F(g, bx - half, y, half, 1, sh ? roof[1] : roof[2]); F(g, bx, y, half, 1, sh ? roof[0] : roof[1]); }
+  F(g, bx - 7, by - 32, 14, 1, C.out); F(g, bx - 6, by - 31, 12, 1, roof[3]); F(g, bx - 18, by - 13, 36, 1, C.out); F(g, bx - 17, by - 14, 34, 1, roof[0]);
+  F(g, bx - 4, by - 26, 8, 7, C.out); F(g, bx - 3, by - 25, 6, 5, wall[3]); F(g, bx - 2, by - 24, 4, 3, C.glass[1]);
   F(g, bx + 7, by - 32, 5, 8, C.out); F(g, bx + 8, by - 31, 3, 7, C.stone[1]); F(g, bx + 8, by - 31, 3, 1, C.stone[3]);
-  F(g, bx - 3, by - 10, 7, 10, C.out); F(g, bx - 2, by - 9, 5, 9, roof[1]); F(g, bx - 2, by - 9, 5, 1, roof[2]); F(g, bx + 1, by - 5, 1, 1, "#f2cf5b");
-  for (const x of [bx - 11, bx + 6]) {
-    F(g, x, by - 11, 6, 6, C.out); F(g, x + 1, by - 10, 4, 4, C.glass[1]); F(g, x + 1, by - 10, 2, 1, C.glass[2]); F(g, x + 3, by - 10, 1, 4, C.out);
-    F(g, x, by - 5, 6, 1, C.wood[2]); F(g, x + 1, by - 6, 1, 1, "#ef8fa0"); F(g, x + 4, by - 6, 1, 1, "#f2cf5b");
-    if (REG(g)) lights.push({x: x + 1, y: by - 10, w: 4, h: 4});
-  }
-  if (REG(g)) { lights.push({x: bx - 2, y: by - 24, w: 4, h: 3}); chimneys.push({x: bx + 9, y: by - 33}); }
-  F(g, bx - 18, by - 5, 1, 5, C.wood[0]); F(g, bx - 19, by - 8, 3, 3, roof[1]); F(g, bx - 19, by - 8, 3, 1, roof[2]);
-  bush(g, bx + 18, by, 3, "#ef8fa0");
+  F(g, bx - 3, by - 10, 7, 10, C.out); F(g, bx - 2, by - 9, 5, 9, roof[1]); F(g, bx + 1, by - 5, 1, 1, "#f2cf5b");
+  for (const x of [bx - 11, bx + 6]) { F(g, x, by - 11, 6, 6, C.out); F(g, x + 1, by - 10, 4, 4, C.glass[1]); F(g, x + 1, by - 10, 2, 1, C.glass[2]); F(g, x, by - 5, 6, 1, C.wood[2]); F(g, x + 1, by - 6, 1, 1, "#ef8fa0"); }
+  if (g === bctx) chimneys.push({x: bx + 9, y: by - 33});
   return 34;
 }
 function villa(g, bx, by, tint){
   const acc = tint ? tintPal(tint) : C.wood;
   oval(g, bx + 4, by, 19, 4, "rgba(20,40,20,.32)");
-  // pool
-  F(g, bx - 15, by + 1, 18, 5, C.stone[2]); F(g, bx - 14, by + 2, 16, 3, C.water[2]); F(g, bx - 13, by + 2, 6, 1, C.water[3]);
-  F(g, bx - 16, by - 22, 32, 22, C.out);
-  F(g, bx - 15, by - 21, 30, 21, C.wall[3]); F(g, bx + 9, by - 21, 6, 21, C.wall[2]);
+  F(g, bx - 15, by + 1, 18, 5, C.stone[2]); F(g, bx - 14, by + 2, 16, 3, "#56b8cf"); F(g, bx - 13, by + 2, 6, 1, "#d4f1f4");
+  F(g, bx - 16, by - 22, 32, 22, C.out); F(g, bx - 15, by - 21, 30, 21, C.wall[3]); F(g, bx + 9, by - 21, 6, 21, C.wall[2]);
   F(g, bx - 17, by - 25, 34, 4, C.out); F(g, bx - 16, by - 24, 32, 2, C.stone[2]); F(g, bx - 16, by - 24, 32, 1, C.stone[3]);
-  F(g, bx - 13, by - 19, 21, 6, C.out); F(g, bx - 12, by - 18, 19, 4, C.glass[1]);
-  for (let i = 0; i < 3; i++) F(g, bx - 11 + i * 6, by - 18, 2, 1, C.glass[2]);
-  F(g, bx - 13, by - 11, 11, 11, C.out); F(g, bx - 12, by - 10, 9, 10, C.glass[1]); F(g, bx - 8, by - 10, 1, 10, C.out); F(g, bx - 11, by - 10, 2, 1, C.glass[2]);
+  F(g, bx - 13, by - 19, 21, 6, C.out); F(g, bx - 12, by - 18, 19, 4, C.glass[1]); for (let i = 0; i < 3; i++) F(g, bx - 11 + i * 6, by - 18, 2, 1, C.glass[2]);
+  F(g, bx - 13, by - 11, 11, 11, C.out); F(g, bx - 12, by - 10, 9, 10, C.glass[1]); F(g, bx - 8, by - 10, 1, 10, C.out);
   F(g, bx, by - 11, 8, 11, acc[2]); for (let i = 1; i < 11; i += 2) F(g, bx, by - 11 + i, 8, 1, acc[1]);
-  F(g, bx - 16, by - 1, 32, 1, C.stone[1]);
-  if (REG(g)) lights.push({x: bx - 12, y: by - 18, w: 19, h: 4}, {x: bx - 12, y: by - 10, w: 9, h: 10});
   palm(g, bx - 20, by + 1, 20); palm(g, bx + 20, by + 2, 17);
   return 30;
 }
 function studio(g, bx, by, tint){
   const fr = tint ? tintPal(tint) : ROOF.studio;
   oval(g, bx + 4, by, 18, 4, "rgba(20,40,20,.32)");
-  F(g, bx - 15, by - 20, 30, 20, C.out);
-  F(g, bx - 14, by - 19, 28, 19, C.stoneWall[3]); F(g, bx + 8, by - 19, 6, 19, C.stoneWall[2]);
-  for (let k = 0; k < 3; k++) { // sawtooth roof with north light
-    const x0 = bx - 15 + k * 10;
-    for (let r = 0; r < 7; r++) { F(g, x0 + r, by - 27 + r, 10 - r, 1, fr[1 + (r < 2 ? 1 : 0)]); }
-    F(g, x0, by - 27, 1, 7, C.out); F(g, x0 + 1, by - 26, 1, 5, C.glass[2]); F(g, x0 + 2, by - 25, 1, 4, C.glass[1]);
-  }
-  F(g, bx - 15, by - 21, 30, 1, C.out);
-  F(g, bx - 12, by - 16, 20, 11, C.out);
+  F(g, bx - 15, by - 20, 30, 20, C.out); F(g, bx - 14, by - 19, 28, 19, C.stoneWall[3]); F(g, bx + 8, by - 19, 6, 19, C.stoneWall[2]);
+  for (let k = 0; k < 3; k++) { const x0 = bx - 15 + k * 10; for (let r = 0; r < 7; r++) F(g, x0 + r, by - 27 + r, 10 - r, 1, fr[1 + (r < 2 ? 1 : 0)]); F(g, x0, by - 27, 1, 7, C.out); F(g, x0 + 1, by - 26, 1, 5, C.glass[2]); F(g, x0 + 2, by - 25, 1, 4, C.glass[1]); }
+  F(g, bx - 15, by - 21, 30, 1, C.out); F(g, bx - 12, by - 16, 20, 11, C.out);
   for (let c = 0; c < 4; c++) for (let r = 0; r < 2; r++) { F(g, bx - 11 + c * 5, by - 15 + r * 5, 4, 4, C.glass[1]); F(g, bx - 11 + c * 5, by - 15 + r * 5, 1, 1, C.glass[2]); }
-  F(g, bx + 9, by - 9, 4, 9, fr[1]); F(g, bx + 9, by - 9, 4, 1, fr[3]);
-  // easel + plants
-  F(g, bx - 20, by - 9, 1, 9, C.wood[1]); F(g, bx - 17, by - 9, 1, 9, C.wood[1]); F(g, bx - 21, by - 13, 6, 5, "#f3efe6"); F(g, bx - 20, by - 12, 2, 2, "#e3628f"); F(g, bx - 18, by - 11, 2, 2, "#5a8fb6");
-  F(g, bx + 16, by - 4, 4, 4, C.wood[2]); bush(g, bx + 18, by - 4, 3);
-  if (REG(g)) lights.push({x: bx - 11, y: by - 15, w: 19, h: 9});
+  F(g, bx + 9, by - 9, 4, 9, fr[1]);
+  F(g, bx - 20, by - 9, 1, 9, C.wood[1]); F(g, bx - 17, by - 9, 1, 9, C.wood[1]); F(g, bx - 21, by - 13, 6, 5, "#f3efe6"); F(g, bx - 20, by - 12, 2, 2, "#f04f85"); F(g, bx - 18, by - 11, 2, 2, "#5a8fb6");
+  bush(g, bx + 18, by - 2, 3);
   return 28;
 }
 function carDrive(g, bx, by, tint){
-  const body = tint ? tintPal(tint) : ["#681317", "#a3222a", "#cb343b", "#ec6b6d"];
-  F(g, bx - 16, by - 13, 32, 13, C.stone[1]);
-  for (let y = by - 12; y < by; y += 4) for (let x = bx - 15 + ((y >> 2) % 2) * 2; x < bx + 15; x += 5) F(g, x, y, 4, 3, C.stone[2]);
-  F(g, bx - 16, by - 1, 32, 1, C.stone[0]);
-  oval(g, bx + 1, by - 3, 12, 2, "rgba(15,15,15,.35)");
-  F(g, bx - 12, by - 10, 24, 7, C.out);
-  F(g, bx - 11, by - 9, 22, 5, body[2]); F(g, bx - 11, by - 9, 22, 1, body[3]); F(g, bx - 11, by - 5, 22, 1, body[1]);
-  F(g, bx - 6, by - 13, 11, 4, C.out); F(g, bx - 5, by - 12, 9, 3, body[2]); F(g, bx - 4, by - 12, 7, 2, C.glass[1]); F(g, bx - 4, by - 12, 2, 1, C.glass[2]);
-  F(g, bx - 9, by - 4, 4, 2, C.out); F(g, bx + 5, by - 4, 4, 2, C.out);
-  F(g, bx + 10, by - 8, 1, 2, "#fff1b8"); F(g, bx - 11, by - 8, 1, 2, body[0]);
-  lamp(g, bx + 18, by);
-  bush(g, bx - 19, by - 1, 4);
-  return 22;
+  F(g, bx - 20, by - 13, 40, 13, C.stone[1]);
+  for (let y = by - 12; y < by; y += 4) for (let x = bx - 19 + ((y >> 2) % 2) * 2; x < bx + 18; x += 5) F(g, x, y, 4, 3, C.stone[2]);
+  porsche(g, bx, by - 1, tint ? [shade(tint, -.6), shade(tint, -.35), tint, shade(tint, .25), shade(tint, .55)] : null);
+  lamp(g, bx + 22, by);
+  return 24;
 }
 function beach(g, bx, by){
-  oval(g, bx, by - 6, 17, 7, C.sand[1]); oval(g, bx - 1, by - 7, 14, 5, C.sand[2]);
-  for (let i = 0; i < 18; i++) F(g, bx - 14 + hash(bx, i, 21) * 28 | 0, by - 11 + hash(bx, i, 22) * 9 | 0, 1, 1, C.sand[0]);
   F(g, bx - 7, by - 19, 1, 14, C.wood[0]);
   for (let r = 0; r < 5; r++) { const half = 2 + r * 2, y = by - 22 + r; for (let x = -half; x <= half; x++) F(g, bx - 7 + x, y, 1, 1, ((x + 20) >> 1) % 2 ? "#d9584b" : "#f2eadb"); }
   F(g, bx + 4, by - 19, 4, 14, C.out); F(g, bx + 5, by - 18, 2, 12, "#f0c75a"); F(g, bx + 5, by - 18, 1, 12, "#d9584b");
   F(g, bx + 9, by - 17, 4, 12, C.out); F(g, bx + 10, by - 16, 2, 10, "#f2eadb"); F(g, bx + 10, by - 16, 2, 2, "#5a8fb6");
   F(g, bx - 14, by - 8, 6, 4, "#5aa7d6"); F(g, bx - 14, by - 8, 6, 1, "#8cc6ec");
-  palm(g, bx - 20, by - 1, 16);
-  return 26;
+  return 24;
 }
 function balloon(g, bx, by, tint){
   const a = tint || "#e1803a", b = "#f1e3c4";
   oval(g, bx + 2, by, 8, 2, "rgba(20,40,20,.3)");
   F(g, bx - 4, by - 7, 8, 6, C.out); F(g, bx - 3, by - 6, 6, 5, C.wood[2]); F(g, bx - 3, by - 4, 6, 1, C.wood[1]);
-  const cy = by - 27;
-  F(g, bx - 4, cy + 9, 1, 11, C.wood[0]); F(g, bx + 3, cy + 9, 1, 11, C.wood[0]);
-  for (let y = -12; y <= 11; y++) {
-    const w = Math.round(11 * Math.sqrt(Math.max(0, 1 - (y + 1) * (y + 1) / 150)) * (y > 4 ? 1 - (y - 4) / 12 : 1));
-    for (let x = -w; x <= w; x++) {
-      let c = (Math.floor((x + 12) / 4) % 2) ? a : b;
-      if (x > w * .4) c = shade(c, -.22);
-      if (x === -w || x === w) c = C.out;
-      F(g, bx + x, cy + y, 1, 1, c);
-    }
-  }
+  const cy = by - 27; F(g, bx - 4, cy + 9, 1, 11, C.wood[0]); F(g, bx + 3, cy + 9, 1, 11, C.wood[0]);
+  for (let y = -12; y <= 11; y++) { const w = Math.round(11 * Math.sqrt(Math.max(0, 1 - (y + 1) * (y + 1) / 150)) * (y > 4 ? 1 - (y - 4) / 12 : 1)); for (let x = -w; x <= w; x++) { let c = (Math.floor((x + 12) / 4) % 2) ? a : b; if (x > w * .4) c = shade(c, -.22); if (x === -w || x === w) c = C.out; F(g, bx + x, cy + y, 1, 1, c); } }
   F(g, bx - 6, cy - 8, 3, 2, "#fff6e6");
-  F(g, bx + 9, by - 1, 1, 2, C.wood[0]); F(g, bx + 4, by - 6, 5, 1, C.wood[0]);
   return 40;
 }
 function gardenBeds(g, bx, by){
   for (const ox of [-15, 1]) {
     F(g, bx + ox, by - 12, 14, 11, C.out); F(g, bx + ox + 1, by - 11, 12, 9, C.wood[2]); F(g, bx + ox + 2, by - 10, 10, 7, "#563a26");
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
-      const x = bx + ox + 3 + c * 3 - (r % 2), y = by - 9 + r * 2;
-      F(g, x, y, 2, 1, C.leaf[3]); F(g, x, y + 1, 1, 1, C.leaf[1]);
-      if (hash(x, y, 31) > .6) F(g, x + 1, y, 1, 1, ["#ef8fa0", "#f2cf5b", "#d9584b"][(x + y) % 3]);
-    }
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) { const x = bx + ox + 3 + c * 3 - (r % 2), y = by - 9 + r * 2; F(g, x, y, 2, 1, C.leaf[3]); F(g, x, y + 1, 1, 1, C.leaf[1]); if (hash(x, y, 31) > .6) F(g, x + 1, y, 1, 1, ["#ef8fa0", "#f2cf5b", "#d9584b"][(x + y) % 3]); }
   }
-  roundTree(g, bx + 21, by - 1, 5, "#f39a3a");
+  roundTree(g, bx + 21, by - 1, 5, null, "#f39a3a");
   return 26;
 }
 function picnic(g, bx, by, tint){
   const cloth = tint || "#c9473f";
   roundTree(g, bx - 15, by - 4, 7);
   for (let y = 0; y < 9; y++) for (let x = 0; x < 18; x++) F(g, bx - 6 + x, by - 10 + y, 1, 1, ((x >> 1) + (y >> 1)) % 2 ? cloth : "#f1e8d8");
-  F(g, bx + 5, by - 9, 5, 4, C.out); F(g, bx + 6, by - 8, 3, 3, C.wood[3]); F(g, bx + 6, by - 10, 3, 1, C.wood[1]);
-  const p = avatarPal();
-  F(g, bx - 3, by - 13, 5, 4, p.h); F(g, bx - 2, by - 11, 3, 2, p.s); F(g, bx - 3, by - 9, 5, 3, p.p);
+  F(g, bx + 5, by - 9, 5, 4, C.out); F(g, bx + 6, by - 8, 3, 3, C.wood[3]);
+  F(g, bx - 3, by - 13, 5, 4, "#3b2218"); F(g, bx - 2, by - 11, 3, 2, "#c08a64"); F(g, bx - 3, by - 9, 5, 3, "#ee86ad");
   F(g, bx + 3, by - 12, 4, 2, "#3a2a22"); F(g, bx + 3, by - 10, 4, 2, "#b98463"); F(g, bx + 2, by - 8, 6, 3, "#5a8f98");
   return 24;
 }
-function library(g, bx, by, tint){ return cottage(g, bx, by, tint ? tintPal(tint) : ROOF.library, C.stoneWall); }
 function fountain(g, bx, by){
   oval(g, bx, by - 5, 20, 8, C.stone[2]);
-  for (let i = 0; i < 30; i++) F(g, bx - 18 + hash(bx, i, 33) * 36 | 0, by - 11 + hash(by, i, 34) * 11 | 0, 2, 1, C.stone[1]);
-  oval(g, bx, by - 6, 14, 6, C.out); oval(g, bx, by - 6, 13, 5, C.stone[1]); oval(g, bx, by - 7, 13, 4, C.stone[3]);
-  oval(g, bx, by - 6, 10, 3, C.water[1]); F(g, bx - 6, by - 7, 4, 1, C.water[2]);
-  F(g, bx - 2, by - 17, 4, 11, C.out); F(g, bx - 1, by - 17, 2, 11, C.stone[2]);
-  oval(g, bx, by - 17, 5, 1, C.stone[1]);
-  if (REG(g)) fountains.push({x: bx, y: by - 19});
-  lamp(g, bx - 19, by - 2); lamp(g, bx + 19, by - 2);
+  oval(g, bx, by - 6, 14, 6, C.out); oval(g, bx, by - 6, 13, 5, C.stone[1]); oval(g, bx, by - 7, 13, 4, C.stone[3]); oval(g, bx, by - 6, 10, 3, C.water[1]);
+  F(g, bx - 2, by - 17, 4, 11, C.out); F(g, bx - 1, by - 17, 2, 11, C.stone[2]); oval(g, bx, by - 17, 5, 1, C.stone[1]);
+  if (g === bctx) fountains.push({x: bx, y: by - 19});
   return 24;
 }
 function drawKind(g, a, bx, by){
-  const tint = a.tint || null;
+  const tint = a.tint || null, india = a.place === "delhi" || a.place === "mumbai";
   switch (a.kind) {
-    case "home": return cottage(g, bx, by, tint ? tintPal(tint) : ROOF.home, C.wall);
-    case "library": return library(g, bx, by, tint);
-    case "villa": return villa(g, bx, by, tint);
+    case "home": return india ? indianHouse(g, bx - 15, by, 30, 3, tint || "#e8c49b", .7) : cottage(g, bx, by, tint ? tintPal(tint) : ROOF.home, C.wall);
+    case "library": return cottage(g, bx, by, tint ? tintPal(tint) : ROOF.library, C.stoneWall);
+    case "villa": return a.place === "mumbai" ? artDeco(g, bx - 14, by, 28, tint || "#e9dcc0") : villa(g, bx, by, tint);
     case "studio": return studio(g, bx, by, tint);
     case "car": return carDrive(g, bx, by, tint);
     case "beach": return beach(g, bx, by);
@@ -675,302 +790,449 @@ function drawKind(g, a, bx, by){
     default: return fountain(g, bx, by);
   }
 }
-function meadow(g, bx, by, k){ // an unused plot stays natural scenery
-  if (k % 2) { roundTree(g, bx - 9, by - 2, 6); roundTree(g, bx + 8, by, 5); bush(g, bx, by + 2, 3, "#ef8fa0"); }
-  else { pine(g, bx - 7, by, 15); bush(g, bx + 7, by, 4); F(g, bx + 2, by - 6, 1, 1, "#f4f1e8"); F(g, bx - 1, by - 3, 1, 1, "#f2cf5b"); }
-}
 
-/* --- the world background (static), rebuilt only when aspirations change --- */
-function grassBase(g){
-  const img = g.createImageData(W, H), d = img.data, pal = C.grass.map(hex), fl = hex(C.floor);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const n = vnoise(x, y, 26, 1) * .65 + vnoise(x, y, 8, 2) * .35 + (hash(x, y, 3) - .5) * .16;
-    let c = n < .36 ? pal[0] : n < .55 ? pal[1] : n < .72 ? pal[2] : pal[3];
-    if (y < 56 + (hash(x, 0, 9) * 5 | 0)) c = n < .5 ? fl : pal[0];
-    const i = (y * W + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+/* ---------------- terrain: built once per session ---------------- */
+const PAL = {
+  delhi: ["#8f8a50", "#a29a5b", "#b4a967", "#c6b878"], fields: ["#8a9a45", "#9aaa4f", "#b6b44f", "#d2c35a"],
+  mumbai: ["#4f8a3a", "#5f9d44", "#72ae50", "#8ac15f"], la: ["#7d9a4c", "#90aa56", "#a5b863", "#bec678"]
+};
+function landPal(x){
+  if (x < 330) return [PAL.delhi, PAL.fields, (x - 280) / 50];
+  if (x < 440) return [PAL.fields, PAL.mumbai, (x - 400) / 40];
+  return [PAL.mumbai, PAL.la, x > 900 ? 1 : 0];
+}
+function buildTerrain(){
+  const g = tctx, img = g.createImageData(W, H), d = img.data;
+  const pals = Object.fromEntries(Object.entries(PAL).map(([k, v]) => [k, v.map(hex)]));
+  const sea = [hex("#2a7f8c"), hex("#1f6b87"), hex("#1b4f7c"), hex("#163f6a")], seaP = [hex("#2c78a0"), hex("#245f8a"), hex("#1d4b78")];
+  for (let y = 0; y < H; y++) {
+    const cm = coastM(y), cl = coastL(y);
+    for (let x = 0; x < W; x++) {
+      const i = (y * W + x) * 4; let c;
+      if (x >= cm && x < cl) { // the ocean, Arabian teal shading into Pacific blue
+        const dist = Math.min(x - cm, cl - x), deep = dist > 70 ? 3 : dist > 34 ? 2 : dist > 12 ? 1 : 0, mixP = (x - cm) / (cl - cm);
+        const s = hash(x, y, 77) < mixP ? seaP[Math.min(2, deep)] : sea[deep];
+        c = hash(x, y, 78) > .985 ? [s[0] + 30, s[1] + 40, s[2] + 40] : s;
+      } else {
+        const n = vnoise(x, y, 26, 1) * .65 + vnoise(x, y, 8, 2) * .35 + (hash(x, y, 3) - .5) * .16;
+        const [A, B, k] = landPal(x), P = pals[(hash(x, y, 4) < Math.max(0, Math.min(1, k))) ? Object.keys(PAL).find(key => PAL[key] === B) : Object.keys(PAL).find(key => PAL[key] === A)];
+        c = n < .36 ? P[0] : n < .55 ? P[1] : n < .72 ? P[2] : P[3];
+        if (x >= cl && x < cl + 44) { const sd = x - cl; c = sd < 4 ? hex("#b99a62") : hash(x, y, 79) > .8 ? hex(C.sand[0]) : sd < 14 ? hex(C.sand[1]) : hex(C.sand[2]); }
+      }
+      d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+    }
   }
   g.putImageData(img, 0, 0);
-  for (let i = 0; i < 420; i++) {
-    const x = hash(i, 1, 4) * W | 0, y = 60 + hash(i, 2, 4) * (H - 60) | 0;
-    F(g, x, y, 1, 2, C.grass[0]); F(g, x + 2, y, 1, 2, C.grass[0]); F(g, x + 1, y + 1, 1, 1, C.grass[0]); F(g, x, y - 1, 1, 1, C.grass[3]);
+  for (let i = 0; i < 1100; i++) { // grass tufts
+    const x = hash(i, 1, 4) * W | 0, y = hash(i, 2, 4) * H | 0;
+    if ((x >= coastM(y) - 2 && x < coastL(y) + 46)) continue;
+    const P = PAL[x < 330 ? "delhi" : x < 440 ? "fields" : x < 900 ? "mumbai" : "la"];
+    F(g, x, y, 1, 2, P[0]); F(g, x + 2, y, 1, 2, P[0]); F(g, x + 1, y + 1, 1, 1, P[0]); F(g, x, y - 1, 1, 1, P[3]);
   }
-  const fcols = ["#f4f1e8", "#f2cf5b", "#8fb3ea", "#ef8fa0"];
-  for (let k = 0; k < 16; k++) {
-    const cx = hash(k, 7, 5) * (W - 60) | 0, cy = 70 + hash(k, 8, 5) * (H - 110) | 0, col = fcols[k % 4];
-    for (let j = 0; j < 10; j++) { const x = cx + (hash(k, j, 6) * 16 - 8 | 0), y = cy + (hash(k, j, 7) * 9 - 4 | 0); F(g, x, y, 1, 1, col); F(g, x, y + 1, 1, 1, C.grass[0]); }
+  buildDelhi(g); buildRoadSouth(g); buildMumbai(g); buildOcean(g); buildLA(g);
+  for (let i = 0; i < 260; i++) { const y = hash(i, 9, 66) * H | 0, x = coastM(y) + 6 + (hash(i, 10, 66) * (coastL(y) - coastM(y) - 12) | 0); sparkles.push({x, y, s: i}); }
+  for (let y = 0; y < H; y += 3) foam.push(y);
+  terrainBuilt = true;
+}
+function road(g, x, y, w, h, vertical, dash){
+  F(g, x, y, w, h, C.asphalt[1]);
+  for (let i = 0; i < w * h / 9; i++) F(g, x + hash(i, x + y, 41) * w | 0, y + hash(i, y - x, 42) * h | 0, 1, 1, hash(i, 3, 43) > .5 ? C.asphalt[2] : C.asphalt[0]);
+  if (vertical) { F(g, x - 2, y, 2, h, "#bdb2a0"); F(g, x + w, y, 2, h, "#bdb2a0"); if (dash) for (let j = y; j < y + h; j += 8) F(g, x + (w >> 1), j, 1, 4, dash); }
+  else { F(g, x, y - 2, w, 2, "#bdb2a0"); F(g, x, y + h, w, 2, "#bdb2a0"); if (dash) for (let j = x; j < x + w; j += 8) F(g, j, y + (h >> 1), 4, 1, dash); }
+}
+const slotNear = (x, y, place) => SLOTS.some(s => s.place === place && Math.abs(s.y - y) < 4 && Math.abs(s.x - x) < 26);
+function streetRow(g, x0, x1, roadY, place, build){
+  let x = x0;
+  while (x < x1) {
+    const k = hash(x, roadY, 51), w = build.w(k);
+    if (x + w > x1) break;
+    if (slotNear(x + w / 2, roadY - 2, place) || (build.skip && build.skip(x, w))) { x += w + 4; continue; }
+    build.draw(g, x, roadY - 3, w, k);
+    x += w + build.gap(k);
   }
 }
-function pathStrip(g, x, y, w, h){
-  F(g, x, y, w, h, C.dirt[1]);
-  for (let i = 0; i < w * h / 7; i++) { const px = x + hash(x + i, y, 51) * w | 0, py = y + hash(x, y + i, 52) * h | 0; F(g, px, py, 1, 1, hash(px, py, 53) > .5 ? C.dirt[2] : C.dirt[0]); }
+function buildDelhi(g){
+  const vx = [70, 196];
+  for (const y of ROADS) road(g, 0, y, 342, 10, false, y === 290 ? "#e8e2d6" : null);
+  for (const x of vx) road(g, x, 0, 9, H, true);
+  // railway towards Mumbai
+  F(g, 0, 244, coastM(244) - 40, 5, "#7c7064"); for (let x = 0; x < coastM(244) - 40; x += 3) F(g, x, 244, 1, 5, "#5a4a3a"); F(g, 0, 245, coastM(244) - 40, 1, "#b9bcc0"); F(g, 0, 247, coastM(244) - 40, 1, "#b9bcc0");
+  // Lodhi garden in the north
+  oval(g, 136, 64, 50, 24, "#5f9844"); oval(g, 136, 63, 46, 21, "#6fa64c");
+  for (let i = 0; i < 40; i++) F(g, 90 + hash(i, 1, 52) * 92 | 0, 46 + hash(i, 2, 52) * 34 | 0, 2, 1, "#7fb85a");
+  lodhiDome(g, 136, 74);
+  [[96, 70], [178, 72], [110, 94], [168, 96]].forEach(([x, y]) => roundTree(g, x, y, 6, C.neem));
+  for (const y of ROADS) streetRow(g, 4, 340, y, "delhi", {w: k => 22 + (k * 14 | 0), gap: k => 2 + (k * 4 | 0), skip: (x, w) => vx.some(v => x < v + 11 && x + w > v - 2),
+    draw: (g, x, by, w, k) => indianHouse(g, x, by, w, 2 + (k * 2.4 | 0), pick(DELHI_WALLS, hash(x, by, 9)), hash(x, by, 10))});
+  for (const y of [214, 362, 500]) {
+    F(g, 0, y, 342, 6, "#a59b86"); for (let x = 0; x < 342; x += 3) if (hash(x, y, 55) > .6) F(g, x, y + (hash(x, y, 56) * 6 | 0), 1, 1, "#8f866f");
+    streetRow(g, 2, 340, y + 1, "delhi-lane", {w: k => 18 + (k * 12 | 0), gap: k => 1 + (k * 3 | 0), skip: (x, w) => vx.some(v => x < v + 11 && x + w > v - 2),
+      draw: (g, x, by, w, k) => indianHouse(g, x, by, w, 2 + (k * 2 | 0), pick(DELHI_WALLS, hash(x, by, 11)), hash(x, by, 12))});
+  }
+  // neem trees, a chai stall and parked autos on the south side of each road
+  for (const y of ROADS) for (let x = 10; x < 335; x += 38) { if (vx.some(v => Math.abs(x - v) < 10)) continue; roundTree(g, x + (hash(x, y, 53) * 8 | 0), y + 34, 6 + (hash(x, y, 54) * 3 | 0), C.neem); }
+  autoRickshaw(g, 150, 304, true); autoRickshaw(g, 250, 155, false); autoRickshaw(g, 40, 435, true);
+  F(g, 226, 300, 12, 6, C.out); F(g, 227, 301, 10, 4, "#c0392b"); F(g, 228, 299, 3, 2, "#a3a6ab"); F(g, 233, 298, 5, 1, "#f2cf5b");
 }
+function buildRoadSouth(g){
+  // mustard and wheat fields along the highway between the two cities
+  for (let i = 0; i < 9; i++) {
+    const x = 348 + (i % 3) * 30, y = 40 + (i / 3 | 0) * 150 + (i % 2) * 20;
+    const col = i % 3 === 1 ? ["#d9b92c", "#e8cd45"] : ["#a7b04c", "#b9c05a"];
+    F(g, x, y, 26, 60, col[0]); for (let r = y; r < y + 60; r += 3) F(g, x, r, 26, 1, col[1]);
+    F(g, x - 1, y - 1, 28, 1, "#7d6a40"); F(g, x - 1, y + 60, 28, 1, "#7d6a40");
+  }
+  road(g, 342, 290, coastM(290) - 30 - 342, 10, false, "#e8e2d6");
+  for (let x = 352; x < 430; x += 26) roundTree(g, x, 286, 5, C.neem);
+}
+function buildMumbai(g){
+  const cm = y => coastM(y);
+  for (const y of [140, 420]) road(g, 432, y, cm(y) - 30 - 432, 10, false);
+  // Marine Drive: the curving sea-face road, promenade, sea wall and tetrapods
+  for (let y = 0; y < H; y++) {
+    const c = cm(y);
+    F(g, c - 30, y, 13, 1, hash(c, y, 61) > .8 ? C.asphalt[2] : C.asphalt[1]);
+    if (y % 8 < 4) F(g, c - 24, y, 1, 1, "#e8e2d6");
+    F(g, c - 17, y, 12, 1, (y >> 1) % 2 ? "#c9c1b2" : "#d6cfc1"); F(g, c - 5, y, 4, 1, "#8e8a82"); F(g, c - 5, y, 1, 1, "#6e6a63");
+    if (hash(y, 1, 62) > .72) tetrapod(g, c + 1 + (hash(y, 2, 62) * 6 | 0), y);
+  }
+  for (let y = 6; y < H; y += 14) { lamp(g, cm(y) - 15, y, true); lampsM.push({x: cm(y) - 16, y: y - 14}); }
+  for (let y = 10; y < H; y += 30) palm(g, cm(y) - 34, y, 15, true);
+  // art-deco row facing the sea, towers behind
+  for (const y of [140, 290, 420]) {
+    streetRow(g, 434, cm(y) - 40, y, "mumbai", {w: k => 20 + (k * 8 | 0), gap: k => 3, draw: (g, x, by, w, k) => k > .45 ? artDeco(g, x, by, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#dfe3e6"], k)) : tower(g, x, by, w, 8 + (k * 9 | 0), pick(["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4"], hash(x, 3, 3)))});
+  }
+  for (const y of [70, 214, 362, 500]) {
+    F(g, 432, y, cm(y) - 34 - 432, 6, "#8d8a85");
+    streetRow(g, 434, cm(y) - 40, y + 1, "mumbai-lane", {w: k => 18 + (k * 8 | 0), gap: k => 2, draw: (g, x, by, w, k) => k > .5 ? artDeco(g, x, by, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#f0d0c8"], k)) : tower(g, x, by, w, 7 + (k * 8 | 0), pick(["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4", "#e7d9c4"], hash(x, 5, 5)))});
+  }
+  // Sea Link: a cable-stayed bridge running out over the water
+  const by = 470, x0 = cm(by) - 4, x1 = x0 + 130;
+  F(g, x0, by - 2, x1 - x0, 6, C.out); F(g, x0, by - 1, x1 - x0, 4, "#c9c6bf"); F(g, x0, by + 1, x1 - x0, 1, "#a8a59e");
+  for (let x = x0 + 4; x < x1; x += 10) F(g, x, by + 4, 2, 4, "#8e8a82");
+  for (const px of [x0 + 45, x0 + 95]) {
+    F(g, px - 2, by - 36, 5, 35, C.out); F(g, px - 1, by - 35, 3, 34, "#e3e0d8"); F(g, px - 1, by - 35, 1, 34, "#f4f2ec");
+    for (let i = 1; i <= 6; i++) { line(g, px, by - 34 + i * 2, px - i * 6, by - 2, "#bfbbb2"); line(g, px, by - 34 + i * 2, px + i * 6, by - 2, "#bfbbb2"); }
+  }
+}
+function buildOcean(g){
+  for (const [ix, iy, r] of [[700, 110, 14], [868, 392, 11], [790, 470, 7]]) {
+    oval(g, ix, iy, r + 3, (r + 3) * .6 | 0, "#55a9c6"); oval(g, ix, iy, r, r * .6 | 0, C.sand[1]); oval(g, ix - 1, iy - 1, r - 3, Math.max(1, (r - 3) * .55 | 0), "#6fa64c");
+    palm(g, ix - 2, iy, 12, true); if (r > 10) palm(g, ix + 5, iy + 1, 10, true);
+  }
+}
+function buildLA(g){
+  const cl = coastL;
+  // the Strand, Pacific Coast Highway and the neighbourhood grid
+  for (let y = 0; y < H; y++) { const c = cl(y); F(g, c + 44, y, 4, 1, "#cfcac0"); }
+  road(g, 0, 0, 0, 0); // keep the helper warm
+  for (let y = 0; y < H; y++) { const c = cl(y); F(g, c + 50, y, 15, 1, hash(c, y, 63) > .8 ? C.asphalt[2] : C.asphalt[1]); if (y % 10 < 5) F(g, c + 57, y, 1, 1, "#e6c34a"); F(g, c + 49, y, 1, 1, "#bdb2a0"); F(g, c + 65, y, 1, 1, "#bdb2a0"); }
+  for (const y of ROADS) road(g, cl(y) + 66, y, W - cl(y) - 66, 10, false, "#e8e2d6");
+  road(g, 1150, 0, 9, H, true);
+  // hills to the north
+  for (let x = 990; x < W; x++) { const h = 38 + Math.round(10 * Math.sin(x / 31) + 6 * Math.sin(x / 11)); F(g, x, 0, 1, h, x % 3 ? "#8f8a52" : "#9a9358"); F(g, x, h - 2, 1, 2, "#7b7646"); }
+  for (let i = 0; i < 40; i++) F(g, 995 + hash(i, 1, 64) * 280 | 0, 6 + hash(i, 2, 64) * 30 | 0, 3, 2, "#5f6e3c");
+  // the pier, reaching west into the Pacific
+  const py = 200, px0 = cl(py) - 74, px1 = cl(py) + 30;
+  oval(g, (px0 + px1) / 2 | 0, py + 12, (px1 - px0) / 2 | 0, 2, "rgba(10,30,50,.35)");
+  for (let x = px0; x < px1; x += 2) { F(g, x, py, 2, 10, C.wood[2]); F(g, x + 1, py, 1, 10, C.wood[1]); }
+  F(g, px0, py - 1, px1 - px0, 1, C.wood[0]); F(g, px0, py + 10, px1 - px0, 1, C.wood[0]); for (let x = px0 + 3; x < px1; x += 8) F(g, x, py + 11, 1, 3, C.wood[0]);
+  F(g, px0 + 2, py - 7, 12, 7, C.out); F(g, px0 + 3, py - 6, 10, 5, "#f2efe8"); F(g, px0 + 3, py - 6, 10, 1, "#d84a4a");
+  // beach life: lifeguard towers, palms along the highway
+  [[cl(110) + 18, 110, "#8cc6e6"], [cl(270) + 20, 270, "#f2a7bf"], [cl(400) + 18, 400, "#f2d36b"]].forEach(([x, y, c]) => lifeguard(g, x, y, c));
+  for (let y = 4; y < H; y += 26) { palm(g, cl(y) + 68, y, 24); if (y % 52 === 4) palm(g, cl(y) + 46, y + 12, 26); }
+  // neighbourhoods
+  for (const y of ROADS) streetRow(g, cl(y) + 76, W - 4, y, "la", {w: k => 24 + (k * 10 | 0), gap: k => 10 + (k * 6 | 0),
+    skip: (x, w) => (x < 1161 && x + w > 1148) || (y === 420 && x + w > 1104),
+    draw: (g, x, by, w, k) => spanishHouse(g, x, by - 4, w, pick(STUCCO, k), hash(x, 2, 2))});
+  for (const y of ROADS) for (let x = 1004; x < W - 6; x += 44) roundTree(g, x + 6, y + 40, 6, hash(x, y, 65) > .55 ? ["#4a3a78", "#6a54a8", "#8b74c9", "#b39ae6"] : C.leaf);
+  dreamHome(g, DREAM_HOME.x, DREAM_HOME.y);
+  porsche(g, PORSCHE.x, PORSCHE.y);
+}
+
+/* ---------------- landmark layer: rebuilt only when dreams change ---------------- */
 function assignSlots(){
   const used = new Set(), out = [];
-  const list = S.aspirations.slice(0, SLOTS.length);
-  for (const pass of [0, 1]) for (const a of list) {
+  for (const pass of [0, 1, 2]) for (const a of S.aspirations) {
     if (out.some(o => o.a === a)) continue;
-    const want = ZONE[a.kind] || "any";
-    const i = SLOTS.findIndex((s, k) => !used.has(k) && (pass === 1 || s.z === want || (want === "any" && s.z === "any")));
+    const place = a.place || "la", want = ZONE[a.kind] || "any";
+    const i = SLOTS.findIndex((s, k) => !used.has(k) && s.place === place && (pass > 0 || s.z === want || want === "any") && (pass > 1 || s.z !== "coast" || a.kind === "beach"));
     if (i >= 0) { used.add(i); out.push({a, slot: SLOTS[i]}); }
   }
-  return {placed: out, free: SLOTS.filter((s, k) => !used.has(k))};
+  return out;
 }
-function buildWorld(){
-  const g = bctx;
-  chimneys = []; lights = []; fountains = []; sparkles = []; locs = [];
-  grassBase(g);
-  // coastline and ocean (the LA edge of the map)
-  for (let y = 0; y < H; y++) {
-    const cx = coastX(y); coastAt[y] = cx;
-    for (let x = cx - 12; x < cx; x++) F(g, x, y, 1, 1, hash(x, y, 70) > .85 ? C.sand[0] : x < cx - 9 ? C.sand[0] : hash(x, y, 71) > .5 ? C.sand[1] : C.sand[2]);
-    F(g, cx, y, W - cx, 1, C.sea[2]); F(g, cx + 14, y, W - cx - 14, 1, C.sea[1]); F(g, cx + 34, y, Math.max(0, W - cx - 34), 1, C.sea[0]);
-    F(g, cx, y, 2, 1, C.water[2]);
-  }
-  // paths: main north-south lane, promenade to the pier, spurs to each plot
-  for (let y = 48; y < H; y++) {
-    const wob = Math.round((vnoise(3, y, 10, 5) - .5) * 3);
-    pathStrip(g, PATH_X - 6 + wob, y, 12, 1);
-    F(g, PATH_X - 7 + wob, y, 1, 1, C.dirt[0]); F(g, PATH_X + 6 + wob, y, 1, 1, C.dirt[0]);
-  }
-  const {placed, free} = assignSlots();
-  for (const s of SLOTS) { const x0 = Math.min(s.x, PATH_X), x1 = Math.max(s.x, PATH_X); pathStrip(g, x0, s.y + 1, x1 - x0, 7); F(g, x0, s.y + 8, x1 - x0, 1, C.dirt[0]); }
-  // promenade: paved, to the coast
-  const pe = coastX(PROM_Y) - 4;
-  F(g, PATH_X, PROM_Y + 1, pe - PATH_X, 8, C.stone[2]);
-  for (let x = PATH_X; x < pe; x += 4) F(g, x, PROM_Y + 1 + ((x >> 2) % 2) * 4, 3, 3, C.stone[3]);
-  F(g, PATH_X, PROM_Y + 9, pe - PATH_X, 1, C.stone[0]);
-  // river into the sea
-  const mouth = coastX(RIVER_Y) + 2;
-  for (let x = 0; x < mouth; x++) {
-    const c = riverCenter(x), top = c - 9, bot = c + 9;
-    riverTop[x] = top; riverBot[x] = bot; riverMid[x] = c;
-    F(g, x, top, 1, bot - top, C.water[1]); F(g, x, top, 1, 3, C.water[0]);
-    if (hash(x, 3, 61) > .82) F(g, x, c + (hash(x, 4, 61) * 10 - 5 | 0), 1, 1, C.water[2]);
-  }
-  for (let i = 0; i < 70; i++) { const x = hash(i, 5, 62) * mouth | 0; sparkles.push({x, y: riverTop[x] + 4 + (hash(i, 6, 62) * 11 | 0), s: i}); }
-  for (let i = 0; i < 90; i++) { const y = hash(i, 9, 66) * H | 0; const x = coastAt[y] + 6 + (hash(i, 10, 66) * (W - coastAt[y] - 6) | 0); sparkles.push({x, y, s: i + 99}); }
-  for (const top of [true, false]) for (let x = -3; x < mouth - 4; x += 4) {
-    const xx = Math.max(0, x + 2), w = 4 + (hash(x, top ? 7 : 8, 63) * 3 | 0), h = 3 + (hash(x, 9, 63) * 2 | 0);
-    rock(g, x, top ? riverTop[xx] - h + 1 : riverBot[xx] - 1, w, h);
-  }
-  // bridge where the lane crosses the river
-  const bTop = Math.min(...riverTop.slice(PATH_X - 12, PATH_X + 13)) - 4, bBot = Math.max(...riverBot.slice(PATH_X - 12, PATH_X + 13)) + 3;
-  oval(g, PATH_X + 2, bBot + 2, 12, 2, "rgba(15,35,40,.3)");
-  for (let y = bTop; y < bBot; y += 2) { F(g, PATH_X - 9, y, 19, 2, C.wood[2]); F(g, PATH_X - 9, y + 1, 19, 1, C.wood[1]); if (hash(y, 10, 64) > .5) F(g, PATH_X - 7 + hash(y, 11, 64) * 14 | 0, y, 2, 1, C.wood[3]); }
-  F(g, PATH_X - 10, bTop - 1, 2, bBot - bTop + 2, C.wood[0]); F(g, PATH_X + 9, bTop - 1, 2, bBot - bTop + 2, C.wood[0]);
-  for (const y of [bTop - 3, bBot - 3]) { F(g, PATH_X - 11, y, 4, 5, C.out); F(g, PATH_X - 10, y, 2, 4, C.wood[2]); F(g, PATH_X + 8, y, 4, 5, C.out); F(g, PATH_X + 9, y, 2, 4, C.wood[2]); }
-  // pier off the promenade
-  const px0 = coastX(PROM_Y) - 4;
-  oval(g, (px0 + W) / 2 | 0, PROM_Y + 11, (W - px0) / 2 | 0, 2, "rgba(10,30,50,.35)");
-  for (let x = px0; x < W - 2; x += 2) { F(g, x, PROM_Y, 2, 9, C.wood[2]); F(g, x + 1, PROM_Y, 1, 9, C.wood[1]); }
-  F(g, px0, PROM_Y - 1, W - px0 - 2, 1, C.wood[0]); F(g, px0, PROM_Y + 9, W - px0 - 2, 1, C.wood[0]);
-  for (let x = px0 + 4; x < W - 2; x += 8) { F(g, x, PROM_Y + 10, 1, 3, C.wood[0]); }
-  // lighthouse on a rocky point
-  const lx = coastX(84) + 14, ly = 98;
-  for (let i = 0; i < 8; i++) rock(g, lx - 12 + hash(i, 1, 67) * 20 | 0, ly - 4 + hash(i, 2, 67) * 8 | 0, 5 + (hash(i, 3, 67) * 3 | 0), 4);
-  F(g, lx - 4, ly - 30, 9, 30, C.out); F(g, lx - 3, ly - 29, 7, 29, "#efe9de");
-  for (const y of [ly - 22, ly - 12]) F(g, lx - 3, y, 7, 4, "#b94a3a");
-  F(g, lx + 2, ly - 29, 2, 29, "rgba(0,0,0,.12)");
-  F(g, lx - 5, ly - 36, 11, 7, C.out); F(g, lx - 4, ly - 35, 9, 5, "#f6e3a1"); F(g, lx - 3, ly - 39, 7, 3, "#b94a3a");
-  if (REG(g)) lights.push({x: lx - 4, y: ly - 35, w: 9, h: 5});
-  // forest edge to the north
-  const forest = [];
-  for (let i = 0; i < 52; i++) forest.push([hash(i, 1, 71) * (coastX(40) + 8) - 8 | 0, 8 + hash(i, 2, 71) * 50 | 0, hash(i, 3, 71)]);
-  forest.sort((a, b) => a[1] - b[1]).forEach(([x, y, k]) => k > .45 ? pine(g, x, y, 14 + k * 8 | 0) : roundTree(g, x, y, 6 + k * 6 | 0));
-  // promenade palms and lamps
-  for (let x = PATH_X + 18; x < pe - 6; x += 30) { if (Math.abs(x - 152) < 18 || Math.abs(x - 198) < 18) continue; palm(g, x, PROM_Y, 16); }
-  for (let x = PATH_X + 30; x < pe - 4; x += 40) lamp(g, x, PROM_Y + 12);
-  // scattered scenery
-  [[8, 200], [70, 120], [72, 230], [10, 300], [126, 296], [180, 300], [124, 430], [10, 440], [180, 470], [70, 520]].forEach(([x, y], i) => i % 3 === 0 ? pine(g, x, y, 15) : roundTree(g, x, y, 5 + i % 3));
-  [[64, 186], [130, 214], [70, 360], [182, 360], [120, 506]].forEach(([x, y], i) => bush(g, x, y, 4, i % 2 ? "#ef8fa0" : null));
-  rock(g, 60, 280, 6, 4); rock(g, 134, 452, 5, 3); rock(g, 186, 268, 4, 3);
-  const lgx = 18, lgy = riverTop[30] - 9; // fallen log by the river
-  F(g, lgx, lgy, 22, 6, C.out); F(g, lgx + 1, lgy + 1, 20, 4, C.wood[2]); F(g, lgx + 1, lgy + 1, 20, 1, C.wood[3]); F(g, lgx + 1, lgy + 4, 20, 1, C.wood[1]);
-  oval(g, lgx + 20, lgy + 3, 2, 2, C.wood[3]);
-  // places: dreams get landmarks, unused plots stay meadow
-  free.forEach((s, k) => meadow(g, s.x, s.y, k));
-  placed.sort((p, q) => p.slot.y - q.slot.y).forEach(({a, slot}) => {
+function buildLandmarks(){
+  if (!terrainBuilt) buildTerrain();
+  chimneys = []; fountains = []; locs = [];
+  bctx.drawImage(terrain, 0, 0);
+  assignSlots().sort((p, q) => p.slot.y - q.slot.y).forEach(({a, slot}) => {
+    const g = bctx;
     const h = drawKind(g, a, slot.x, slot.y);
     locs.push({a, x: slot.x, y: slot.y, h});
   });
+  locs.push(...fixedLandmarks());
+}
+// Persistent places of the journey. They reveal through linked dreams of the same kind, or the lens.
+function fixedLandmarks(){
+  return [
+    {fixed: true, a: {id: "fx-home", title: "The dream home", category: "Los Angeles", desc: "A house with glass walls, a pool and the ocean a few streets away.", kind: "home", place: "la"}, x: DREAM_HOME.x, y: DREAM_HOME.y, h: 36},
+    {fixed: true, a: {id: "fx-car", title: "The Porsche", category: "Los Angeles", desc: "A silver 911-style coupé on the driveway.", kind: "car", place: "la"}, x: PORSCHE.x, y: PORSCHE.y, h: 22},
+    {fixed: true, a: {id: "fx-dome", title: "Lodhi Garden", category: "Delhi", desc: "Where it began.", kind: "fountain", place: "delhi"}, x: 136, y: 74, h: 36},
+    {fixed: true, a: {id: "fx-marine", title: "Marine Drive", category: "Mumbai", desc: "The sea face at dusk. A city you love.", kind: "fountain", place: "mumbai"}, x: coastM(260) - 12, y: 270, h: 20}
+  ];
+}
+// A fixed landmark is as clear as the clearest dream of that kind or place.
+function locClarity(l){
+  if (!l.fixed) return clarityOf(l.a);
+  const id = l.a.id, rel = S.aspirations.filter(a => id === "fx-home" ? a.kind === "home" && (a.place || "la") === "la" : id === "fx-car" ? a.kind === "car" : id === "fx-dome" ? a.place === "delhi" : a.place === "mumbai");
+  const best = rel.map(clarityOf).sort((a, b) => b.c - a.c)[0];
+  const base = id === "fx-dome" ? .6 : id === "fx-marine" ? .35 : 0; // roots are already familiar
+  return best ? {...best, c: Math.max(base, best.c)} : {c: base, entries: 0, steps: 0, done: 0, goals: 0, unlinked: true};
 }
 
-/* --- the character: adult, Indian-inspired, long dark hair, bindi, gold hoops, tank + cargos --- */
-const AV_FRONT = [
-  "...ooooo....", "..ohhhhHHo..", ".ohhhhhhHHo.", ".ohsssrsssho", ".ohsesssesho", ".ohsssSsssho", ".oyhslllshyo", ".ohhhSsShhho",
-  "ohhsppppshho", "ohspppppPsho", "oSspppppPsSo", ".osPppppPso.", ".osbbbbbbBo.", "..obbbbbbBo.", "..obkbbkbBo.", "..obbbobbBo.",
-  "..obbbobbBo.", "..obBbobBBo.", "..obbbobbbo.", "..owwwowwwo.", "..oWWWoWWWo.", "...ooo.ooo.."
-];
-const AV_BACK = AV_FRONT.slice();
-AV_BACK.splice(3, 5, ".ohhhhhhhHo.", ".ohhhhhhhHo.", ".ohhhhhhhHo.", ".ohhhhhhhHo.", ".ohhhhhhhho.");
-AV_BACK.splice(8, 4, "ohhhhhhhhhho", "ohshhhhhhsho", "oSshhhhhhsSo", ".osPhhhhPso.");
-const STEP_A = ["..owwwobbbo.", "..oWWWowwwo.", "...ooooWWWo."];
-const STEP_B = ["..obbbowwwo.", "..owwwoWWWo.", "..oWWWoooo.."];
+/* ---------------- the character, from her sheet ---------------- */
+const AV = {
+  front: ["....oooooo....", "...ohhHchhho..", "..ohHhhhhchho.", ".ohhcssssshHho", ".ohhgggogggHho", "ohhhsssSssshho", "ohcnssllsshnho", "ohhhhsSSshhcho",
+    "ohhcsssnssshHo", "ohhspppppppsbo", "ohcsppppppPsbb", "ohhsPpppppPsbB", "ohhssssSssssbb", "ohcnkkkkkkkSbo", ".ohskkkKkkksoo", ".okqqkkKkkqqko",
+    ".okqqkkKkkqqko", ".oktkkkKkkktko", ".okkkkkokkkkko", ".okqqkkokkqqko", ".okqqkkokkqqko", ".otkkkkokkkkto", ".okkkkkokkkkKo", "okkkkKkoKkkkko",
+    "oKkkkkkoKkkkKo", ".okwwwo.owwwko", "..owwwo.owwwo.", "..oooo..oooo.."],
+  back: null, side: ["......ooooo...", ".....ohhHchho.", "....ohhhhhhcho", "...osshhcHhhho", "..oggsshhhchho", ".oSsssnhhHhhho", "..olsshhhhcHho", "...osShhhHhhho",
+    "...osshhhhhcho", "...oppbhhhhhho", "...oPpbbhhchho", "...opsbBhhhho.", "...ossbbhhho..", "...okksbbho...", "...okkkkkko...", "...okqqkkko...",
+    "...okqqkkko...", "...oktkkkko...", "...okkkkKko...", "...okqqkKko...", "...okqqkKko...", "...otkkkKto...", "...okkkkKko...", "..okkkkkkKko..",
+    "..oKkkkkkKko..", "..owwwwwko....", ".owwwwwWo.....", ".ooooo.o......"]
+};
+AV.back = AV.front.slice(0, 3).concat([".ohhHhhhhhcHho", ".ohhhhcHhhhhho", "ohhHhhhhhhcHho", "ohhhhcHhhhhhho", "ohcHhhhhhHhhho", "ohhhhhcHhhhhho",
+  "ohhshhhhhhhsbo", "ohcshhhHhhhsbb", "ohhshhhhhhcsbB", "ohhsshhhhhssbb"], AV.front.slice(13));
+const STEP = {front: [["..ooooo.owwwo.", "........oooo.."], ["..owwwo.ooooo.", "..oooo........"]],
+  side: [[".oKkkko.okKko.", "owwwwo..oWwo..", "oooooo..oooo.."], ["..oKkkkkkKko..", "...owwwwwko...", "..owwwwwWo....", "..ooooo.o....."]]};
+const AV_W = 14, AV_H = 28;
 function avatarPal(){
-  const tp = TOPS[S?.profile.outfit.top] || TOPS.pink, bt = BOTS[S?.profile.outfit.bot] || BOTS.grey;
-  return {o: C.out, h: "#1c1315", H: "#4a3341", s: "#b4744f", S: "#955a3c", e: "#2a1e19", r: "#b8352b", l: "#8e3b46", y: "#e9b949", p: tp[0], P: tp[1], b: bt[0], B: bt[1], k: bt[1], w: "#f2efe8", W: "#c9c4ba"};
+  return {o: "#2a1a14", h: "#3b2218", H: "#7a4a2a", c: "#a8693a", s: "#c08a64", S: "#9a6646", g: "#121014", l: "#b8606a",
+    p: "#ee86ad", P: "#c9668c", n: "#d9dde2", k: "#6b6d70", K: "#505255", q: "#818386", t: "#46484b", w: "#f2f0ec", W: "#c9c6c0", b: "#17151a", B: "#3a3640"};
 }
-function drawAvatar(g, x, y, dir, frame){
-  const pal = avatarPal(), rows = (dir === "up" ? AV_BACK : AV_FRONT).slice();
-  if (frame === 1) rows.splice(19, 3, ...STEP_A);
-  if (frame === 2) rows.splice(19, 3, ...STEP_B);
-  const flip = dir === "left";
-  rows.forEach((row, r) => { for (let c = 0; c < row.length; c++) { const ch = flip ? row[row.length - 1 - c] : row[c]; if (ch !== ".") F(g, x + c, y + r, 1, 1, pal[ch]); } });
+function avatarRows(dir, frame){
+  let rows = (dir === "up" ? AV.back : dir === "down" ? AV.front : AV.side).slice();
+  const walking = frame === 1 || frame === 2;
+  if (walking && (dir === "down" || dir === "up")) { const s = STEP.front[frame - 1]; rows.splice(26, 2, ...s); }
+  if (walking && (dir === "left" || dir === "right")) { const s = STEP.side[frame - 1]; rows.splice(28 - s.length, s.length, ...s); }
+  if (frame === 3) rows = rows.map(r => r.replace(/H/g, "x").replace(/c/g, "H").replace(/x/g, "c")); // idle: light moves through her hair
+  return rows;
 }
-const av = {x: PATH_X, y: 280, dir: "down", path: [], wait: 30, step: 0};
-function pickWalk(){
-  const spots = locs.filter(l => clarityOf(l.a).c > 0).map(l => [l.x + (l.x < PATH_X ? 8 : -8), l.y + 5]);
-  spots.push([PATH_X, 200], [PATH_X, 300], [PATH_X, 420], [coastX(PROM_Y) - 8, PROM_Y + 5], [PATH_X + 60, PROM_Y + 5]);
-  const [tx, ty] = spots[Math.floor(Math.random() * spots.length)];
-  av.path = ty === av.y ? [[tx, ty]] : [[PATH_X, av.y], [PATH_X, ty], [tx, ty]];
+const spriteCache = new Map();
+function avatarSprite(dir, frame){
+  const key = dir + frame;
+  if (spriteCache.has(key)) return spriteCache.get(key);
+  const c = document.createElement("canvas"); c.width = AV_W; c.height = AV_H;
+  const g = c.getContext("2d"), pal = avatarPal(), rows = avatarRows(dir, frame), flip = dir === "right";
+  rows.forEach((row, r) => { for (let i = 0; i < row.length; i++) { const ch = flip ? row[row.length - 1 - i] : row[i]; if (ch !== ".") { g.fillStyle = pal[ch]; g.fillRect(i, r, 1, 1); } } });
+  spriteCache.set(key, c); return c;
+}
+function drawAvatar(g, x, y, dir, frame){ g.drawImage(avatarSprite(dir, frame), Math.round(x), Math.round(y)); }
+
+// She walks the region you're looking at: Delhi's lanes, Marine Drive, the ship's deck, the Strand in LA.
+function walkways(region){
+  const pts = [];
+  if (region === "delhi" || region === "road") for (let x = 14; x <= (region === "road" ? 420 : 330); x += 8) pts.push([x, 306]);
+  else if (region === "mumbai") for (let y = 24; y < H - 30; y += 6) pts.push([coastM(y) - 11, y]);
+  else if (region === "ocean") for (let x = 752; x <= 800; x += 4) pts.push([x, 294]);
+  else for (let y = 30; y < H - 30; y += 6) pts.push([coastL(y) + 46, y]);
+  return pts;
+}
+const av = {x: 120, y: 306, dir: "down", path: [], wait: 30, step: 0, region: "delhi", idx: 13};
+function placeAvatar(region){
+  const pts = walkways(region), i = pts.length >> 1;
+  av.region = region; av.idx = i; av.x = pts[i][0]; av.y = pts[i][1]; av.path = []; av.wait = 30;
 }
 function stepAvatar(){
-  if (reduced) return;
   if (av.wait > 0) { av.wait--; av.step = 0; return; }
-  if (!av.path.length) { av.wait = 50 + Math.random() * 90 | 0; pickWalk(); return; }
-  const [tx, ty] = av.path[0];
-  if (av.x === tx && av.y === ty) { av.path.shift(); if (!av.path.length) av.dir = "down"; return; }
-  if (av.x !== tx) { av.dir = tx > av.x ? "right" : "left"; av.x += Math.sign(tx - av.x); }
-  else { av.dir = ty > av.y ? "down" : "up"; av.y += Math.sign(ty - av.y); }
+  const pts = walkways(av.region);
+  if (!av.path.length) {
+    const to = Math.max(0, Math.min(pts.length - 1, av.idx + Math.round((Math.random() - .5) * 24)));
+    for (let i = av.idx; i !== to; i += Math.sign(to - av.idx)) av.path.push(i + Math.sign(to - av.idx));
+    av.wait = 40 + Math.random() * 90 | 0; if (!av.path.length) return; else return;
+  }
+  const [tx, ty] = pts[av.path[0]];
+  if (Math.abs(av.x - tx) < 1 && Math.abs(av.y - ty) < 1) { av.idx = av.path.shift(); if (!av.path.length) av.dir = "down"; return; }
+  const dx = tx - av.x, dy = ty - av.y, d = Math.hypot(dx, dy), sp = .8;
+  av.x += dx / d * Math.min(sp, d); av.y += dy / d * Math.min(sp, d);
+  av.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
   av.step++;
 }
 
-/* --- per-frame animation into the world canvas --- */
-function animateWorld(){
-  const g = wctx;
-  g.drawImage(bg, 0, 0);
-  for (const s of sparkles) if (hash(s.s, (t / 4 | 0), 91) > .8) F(g, s.x, s.y, 1, 1, C.water[3]);
-  for (let y = 0; y < H; y += 3) { const ph = (t * .5 + y * 1.7) % 30; if (ph < 10) F(g, coastAt[y] + (ph < 5 ? 0 : 1), y, 2, 2, "rgba(236,248,250,.75)"); }
-  for (let i = 0; i < 14; i++) { const x = ((i * 23 + t * .35) % (riverMid.length + 6)) - 3 | 0, xx = Math.max(0, Math.min(riverMid.length - 1, x)); if (Math.abs(x - PATH_X) < 13) continue; F(g, x, riverMid[xx] + (i % 3) * 3 - 3, 3, 1, C.water[2]); }
-  // swans on the river
-  for (const [lo, hi, k] of [[6, 70, 0], [118, 200, 1]]) {
-    const span = hi - lo, ph = (t * .12 + k * 37) % (span * 2), x = lo + (ph < span ? ph : span * 2 - ph) | 0, right = ph < span;
-    const y = riverMid[x] + (k ? 2 : -2);
-    F(g, x - 3, y + 1, 7, 2, "rgba(15,50,70,.25)");
-    F(g, x - 3, y - 2, 7, 3, "#f6f4ef"); F(g, x - 2, y - 3, 4, 1, "#f6f4ef"); F(g, x - 3, y, 7, 1, "#cfd3d6");
-    const nx = right ? x + 3 : x - 4;
-    F(g, nx, y - 6, 1, 4, "#f6f4ef"); F(g, nx + (right ? 0 : -1), y - 7, 2, 2, "#f6f4ef"); F(g, nx + (right ? 2 : -2), y - 6, 1, 1, "#e0763a"); F(g, nx + (right ? 1 : -1), y - 7, 1, 1, C.out);
+/* ---------------- per-frame rendering of the visible part only ---------------- */
+function inView(x, m){ return x > camX - (m || 40) && x < camX + VW + (m || 40); }
+function renderView(now){
+  const cx = Math.round(camX), cy = Math.round(camY), g = ctx;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.drawImage(bg, cx, cy, VW, VH, 0, 0, VW, VH);
+  g.setTransform(1, 0, 0, 1, -cx, -cy);
+  for (const s of sparkles) if (inView(s.x, 2) && hash(s.s, (t / 4 | 0), 91) > .82) F(g, s.x, s.y, 1, 1, "#d8f3f6");
+  if (inView(coastL(cy + VH / 2), 30)) for (const y of foam) { if (y < cy - 4 || y > cy + VH + 4) continue; const ph = (t * .5 + y * 1.7) % 30; if (ph < 10) F(g, coastL(y) - 2 - (ph < 5 ? 0 : 1), y, 2, 2, "rgba(236,248,250,.8)"); }
+  if (inView(coastM(cy + VH / 2), 30)) for (const y of foam) { if (y < cy - 4 || y > cy + VH + 4) continue; const ph = (t * .45 + y * 2.3) % 34; if (ph < 7) F(g, coastM(y) + 1, y, 3, 1, "rgba(236,248,250,.75)"); }
+  // the train between Delhi and Mumbai
+  const trainX = ((t * 1.6) % (coastM(244) + 200)) - 120;
+  if (inView(trainX, 120)) for (let k = 0; k < 6; k++) { const x = trainX - k * 15; F(g, x, 239, 14, 7, C.out); F(g, x + 1, 240, 12, 5, k === 0 ? "#b5372e" : "#2f5aa8"); F(g, x + 1, 242, 12, 1, "#e9e1cf"); for (let w = x + 2; w < x + 12; w += 3) F(g, w, 240, 2, 2, "#1d2633"); }
+  // autos in Delhi, taxis on Marine Drive, cars on the PCH
+  for (let k = 0; k < 4; k++) { const x = ((t * (0.7 + k * .15) + k * 90) % 360) - 10; if (inView(x)) autoRickshaw(g, x, 297 + (k % 2) * 4, true); }
+  for (let k = 0; k < 4; k++) { const y = ((t * (0.9 + k * .1) + k * 140) % (H + 20)) - 20; if (inView(coastM(y))) taxi(g, coastM(y) - 28 + (k % 2) * 6, y); }
+  for (let k = 0; k < 4; k++) { const y = H - (((t * (1.1 + k * .12)) + k * 130) % (H + 20)); const x = coastL(y) + 52 + (k % 2) * 7; if (inView(x)) { F(g, x - 1, y - 1, 7, 12, C.out); F(g, x, y, 5, 10, ["#f2efe8", "#2e3138", "#7d1f2a", "#5d7f9a"][k]); F(g, x + 1, y + 6, 3, 2, "#3b4f66"); } }
+  // container ship and the flight path from Mumbai to LA
+  const shx = 776, shy = 300 + (Math.sin(t / 30) > .3 ? 1 : 0);
+  if (inView(shx, 60)) { F(g, shx - 32, shy - 2, 64, 9, C.out); F(g, shx - 31, shy - 1, 62, 7, "#26354d"); F(g, shx - 31, shy + 4, 62, 2, "#9b2f2a"); for (let i = 0; i < 9; i++) F(g, shx - 26 + i * 6, shy - 7, 5, 6, ["#c45a3b", "#2f6f8f", "#d9a43a", "#5b7c4b"][i % 4]); F(g, shx + 20, shy - 12, 8, 11, "#e9e6df"); F(g, shx + 21, shy - 10, 6, 2, "#2f4256"); F(g, shx - 36 + (t % 4), shy + 3, 3, 1, "#d8f3f6"); }
+  if (camX + VW > 560 && camX < 1000) {
+    for (let i = 0; i <= 40; i++) { const k = i / 40, x = 600 + (960 - 600) * k, y = 70 - Math.sin(k * Math.PI) * 40; if ((i + (t >> 2)) % 3 === 0) F(g, x, y, 1, 1, "rgba(255,255,255,.55)"); }
+    const k = (t % 400) / 400, px = 600 + 360 * k, py = 70 - Math.sin(k * Math.PI) * 40;
+    F(g, px - 3, py, 7, 1, "#f2efe8"); F(g, px - 1, py - 2, 2, 5, "#f2efe8"); F(g, px - 3, py - 1, 1, 1, "#f04f85");
   }
-  // a sailboat on the ocean
-  const sbx = (coastX(380) + 16 + Math.sin(t / 90) * 8) | 0, sby = 380 + (Math.sin(t / 40) * 1.5 | 0);
-  F(g, sbx - 5, sby, 11, 2, "#f2efe8"); F(g, sbx - 4, sby + 2, 9, 1, C.out); F(g, sbx, sby - 10, 1, 10, C.wood[1]); for (let r = 0; r < 8; r++) F(g, sbx + 1, sby - 9 + r, 1 + (r >> 1), 1, "#f2efe8");
-  for (const c of chimneys) for (let k = 0; k < 3; k++) {
-    const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1;
+  // Ferris wheel at the end of the pier
+  const fwx = coastL(200) - 60, fwy = 182;
+  if (inView(fwx, 30)) {
+    F(g, fwx - 1, fwy, 2, 18, C.out); line(g, fwx, fwy, fwx - 7, fwy + 18, "#9aa0a8"); line(g, fwx, fwy, fwx + 7, fwy + 18, "#9aa0a8");
+    for (let i = 0; i < 48; i++) { const a = i / 48 * 6.283; F(g, fwx + Math.cos(a) * 14, fwy + Math.sin(a) * 14, 1, 1, "#e6e2da"); }
+    for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + t * .01; line(g, fwx, fwy, fwx + Math.cos(a) * 14, fwy + Math.sin(a) * 14, "#c9c5bd"); F(g, fwx + Math.cos(a) * 14 - 1, fwy + Math.sin(a) * 14, 3, 2, ["#f04f85", "#f2cf5b", "#5aa7d6", "#7fb85a"][i % 4]); }
   }
-  for (const f of fountains) { for (let i = 0; i < 4; i++) F(g, f.x - 2 + i, f.y - ((t + i * 2) % 4), 1, 1, C.water[3]); }
-  for (let i = 0; i < 3; i++) { // butterflies
-    const bx = (60 + i * 70 + Math.sin(t / 25 + i) * 22) | 0, by = (120 + i * 130 + Math.sin(t / 9 + i * 2) * 8) | 0, o = (t >> 1) % 2, col = ["#f4f1e8", "#f2cf5b", "#a9c4f0"][i];
-    F(g, bx, by, 1, 1, C.out); F(g, bx - 1 - o, by - 1, 1 + o, 2, col); F(g, bx + 1, by - 1, 1 + o, 2, col);
-  }
-  // drifting cloud shadows give the world weather
-  g.fillStyle = "rgba(10,25,30,.07)";
-  for (let i = 0; i < 3; i++) { const cx = ((i * 131 + t * .18) % (W + 120)) - 60, cy = 80 + i * 160; oval(g, cx | 0, cy, 40, 14, "rgba(10,25,30,.07)"); }
-  stepAvatar();
-  const frame = av.wait > 0 || av.step === 0 ? 0 : ((av.step >> 2) % 2) + 1;
-  oval(g, av.x, av.y, 5, 1, "rgba(10,30,15,.35)");
-  drawAvatar(g, av.x - 6, av.y - 21, av.dir, frame);
+  for (const c of chimneys) if (inView(c.x)) for (let k = 0; k < 3; k++) { const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1; }
+  for (const f of fountains) if (inView(f.x)) for (let i = 0; i < 4; i++) F(g, f.x - 2 + i, f.y - ((t + i * 2) % 4), 1, 1, "#d4f1f4");
+  // her
+  const frame = av.wait > 0 || av.step === 0 ? ((t >> 4) % 4 === 0 ? 3 : 0) : ((av.step >> 3) % 2) + 1;
+  oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)");
+  drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame);
   fx = fx.filter(p => p.life-- > 0);
   for (const p of fx) { p.y -= .4; g.globalAlpha = Math.min(1, p.life / 15); F(g, p.x, p.y, 1, 1, p.c); F(g, p.x - 1, p.y + 1, 3, 1, p.c); F(g, p.x, p.y + 2, 1, 1, p.c); g.globalAlpha = 1; }
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  // warm Indian light to the west, cooler Pacific light to the east
+  const grade = g.createLinearGradient(-cx, 0, W - cx, 0);
+  grade.addColorStop(0, "rgba(255,170,80,.10)"); grade.addColorStop(.42, "rgba(255,190,120,.05)"); grade.addColorStop(.6, "rgba(120,170,220,.04)"); grade.addColorStop(1, "rgba(160,200,255,.06)");
+  g.fillStyle = grade; g.fillRect(0, 0, VW, VH);
+  composeFog(now, cx, cy);
+  const reg = regionAt(cx + VW / 2);
+  if (reg.id !== regionShown) { regionShown = reg.id; $("greet").textContent = `${reg.name} · ${reg.sub}`; markJourney(); }
 }
 
-/* --- fog of the future + lens, composed onto the visible canvas --- */
+/* --- fog of the future + lens. The past is already familiar; the future starts dark. --- */
 const lensR = () => Math.round(22 + 12 * discovery());
-function compose(now){
-  const cx = Math.round(camX), cy = Math.round(camY);
-  ctx.clearRect(0, 0, VW, VH);
-  ctx.drawImage(wf, cx, cy, VW, VH, 0, 0, VW, VH);
+function composeFog(now, cx, cy){
   const disc = discovery();
   let veil = 1;
   if (vision) veil = 1 - Math.min(1, (now - vision.start) / 900, (vision.end - now) / 1100);
   if (veil > .01) {
     fctx.globalCompositeOperation = "copy"; fctx.globalAlpha = 1; fctx.drawImage(cv, 0, 0);
-    fctx.globalCompositeOperation = "saturation"; fctx.globalAlpha = .88 * veil; fctx.fillStyle = "#808080"; fctx.fillRect(0, 0, VW, VH);
+    fctx.globalCompositeOperation = "saturation"; fctx.globalAlpha = .85 * veil; fctx.fillStyle = "#808080"; fctx.fillRect(0, 0, VW, VH);
     fctx.globalCompositeOperation = "multiply"; fctx.globalAlpha = veil; fctx.fillStyle = toHex(hex("#46506e").map((v, i) => v + (hex("#9aa2ba")[i] - v) * disc)); fctx.fillRect(0, 0, VW, VH);
     fctx.globalCompositeOperation = "destination-out";
-    const hole = (x, y, r, k) => { for (const [f, a] of [[1, .35], [.82, .55], [.66, 1]]) { fctx.globalAlpha = a * k; oval(fctx, Math.round(x), Math.round(y), Math.max(1, Math.round(r * f)), Math.max(1, Math.round(r * f)), "#000"); } };
-    for (const l of locs) { const c = clarityOf(l.a).c; if (c > 0) hole(l.x - cx, l.y - 14 - cy, 10 + 30 * c, Math.min(1, .45 + c)); }
-    hole(av.x - cx, av.y - 10 - cy, 15, .9);
+    const roots = fctx.createLinearGradient(-cx, 0, W - cx, 0); // Delhi mostly clear, Mumbai half, the future dark
+    roots.addColorStop(0, "rgba(0,0,0,.8)"); roots.addColorStop(320 / W, "rgba(0,0,0,.74)"); roots.addColorStop(470 / W, "rgba(0,0,0,.66)"); roots.addColorStop(615 / W, "rgba(0,0,0,.5)"); roots.addColorStop(680 / W, "rgba(0,0,0,.14)"); roots.addColorStop(760 / W, "rgba(0,0,0,0)"); roots.addColorStop(1, "rgba(0,0,0,0)");
+    fctx.fillStyle = roots; fctx.fillRect(0, 0, VW, VH);
+    const hole = (x, y, r, k) => { if (x < -r || x > VW + r || y < -r || y > VH + r) return; for (const [f, a] of [[1, .35], [.82, .55], [.66, 1]]) { fctx.globalAlpha = a * k; oval(fctx, Math.round(x), Math.round(y), Math.max(1, Math.round(r * f)), Math.max(1, Math.round(r * f)), "#000"); } };
+    for (const l of locs) { const c = locClarity(l).c; if (c > 0) hole(l.x - cx, l.y - 14 - cy, 10 + 30 * c, Math.min(1, .45 + c)); }
+    hole(av.x - cx, av.y - 12 - cy, 16, .9);
     if (preview) { const k = Math.min(1, (now - preview.start) / 700, (preview.end - now) / 700); hole(preview.l.x - cx, preview.l.y - 14 - cy, 64, Math.max(0, k)); }
     else if (lens) hole(lens.x - cx, lens.y - cy, lensR() + 2, 1);
     fctx.globalAlpha = 1; fctx.globalCompositeOperation = "source-over";
     ctx.drawImage(fog, 0, 0);
   }
-  // beacons: something is waiting in the dark
-  if (veil > .3 && !preview) for (const l of locs) {
-    const c = clarityOf(l.a).c; if (c >= 1) continue;
-    const bx = l.x - cx, by = l.y - l.h - 8 - cy, pulse = (t >> 3) % 2;
-    ctx.globalAlpha = .55 + pulse * .3;
-    F(ctx, bx, by - 2, 1, 1, "#f3dc9a"); F(ctx, bx - 1, by - 1, 3, 1, "#f3dc9a"); F(ctx, bx - 2, by, 5, 1, "#f3dc9a"); F(ctx, bx - 1, by + 1, 3, 1, "#f3dc9a"); F(ctx, bx, by + 2, 1, 1, "#f3dc9a");
+  if (veil > .3 && !preview) for (const l of locs) { // beacons over places still in the dark
+    const c = locClarity(l).c; if (c >= 1) continue;
+    const bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -4 || bx > VW + 4 || by < -4 || by > VH + 4) continue;
+    ctx.globalAlpha = .55 + ((t >> 3) % 2) * .3;
+    F(ctx, bx, by - 2, 1, 1, "#ffc2d6"); F(ctx, bx - 1, by - 1, 3, 1, "#ffc2d6"); F(ctx, bx - 2, by, 5, 1, "#ffc2d6"); F(ctx, bx - 1, by + 1, 3, 1, "#ffc2d6"); F(ctx, bx, by + 2, 1, 1, "#ffc2d6");
     ctx.globalAlpha = 1;
   }
-  // the lens rim: dark outer line, warm glass edge, a glint, and the hold ring
-  if (lens && !preview && veil > .05) {
+  if (lens && !preview && veil > .05) { // rim: dark outer line, warm glass edge, glint, and a pink hold ring
     const lx = lens.x - cx, ly = lens.y - cy, R = lensR();
     for (let i = 0; i < 160; i++) {
       const a = i / 160 * Math.PI * 2, co = Math.cos(a), si = Math.sin(a);
-      F(ctx, lx + co * (R + 3), ly + si * (R + 3), 1, 1, "rgba(5,8,15,.55)");
-      F(ctx, lx + co * (R + 2), ly + si * (R + 2), 1, 1, "rgba(244,232,205,.95)");
+      F(ctx, lx + co * (R + 3), ly + si * (R + 3), 1, 1, "rgba(5,8,15,.55)"); F(ctx, lx + co * (R + 2), ly + si * (R + 2), 1, 1, "rgba(250,236,226,.95)");
       if (a > 3.6 && a < 4.5) F(ctx, lx + co * (R - 1), ly + si * (R - 1), 1, 1, "rgba(255,255,255,.4)");
     }
-    if (lensHover && holdStart) {
-      const p = Math.min(1, (now - holdStart) / 10000);
-      for (let i = 0; i < 160 * p; i++) { const a = -Math.PI / 2 + i / 160 * Math.PI * 2; F(ctx, lx + Math.cos(a) * (R + 2), ly + Math.sin(a) * (R + 2), 1, 1, "#e8c46e"); F(ctx, lx + Math.cos(a) * (R + 3), ly + Math.sin(a) * (R + 3), 1, 1, "#e8c46e"); }
-    }
+    if (lensHover && holdStart) { const p = Math.min(1, (now - holdStart) / 10000); for (let i = 0; i < 160 * p; i++) { const a = -Math.PI / 2 + i / 160 * Math.PI * 2; F(ctx, lx + Math.cos(a) * (R + 2), ly + Math.sin(a) * (R + 2), 1, 1, "#f04f85"); F(ctx, lx + Math.cos(a) * (R + 3), ly + Math.sin(a) * (R + 3), 1, 1, "#f04f85"); } }
   }
 }
 
-/* --- camera, zoom, loop --- */
-function clampCam(){ camX = Math.max(0, Math.min(W - VW, camX)); camY = Math.max(0, Math.min(H - VH, camY)); }
-function setZoom(z, ax, ay){
-  const r = cv.getBoundingClientRect();
-  z = Math.max(.8, Math.min(2.4, z));
-  const wx = camX + (ax ?? VW / 2), wy = camY + (ay ?? VH / 2), fx = (ax ?? VW / 2) / VW, fy = (ay ?? VH / 2) / VH;
-  zoom = z; VW = Math.round(baseVW / zoom); VH = Math.round(baseVH / zoom);
+/* ---------------- camera, zoom, the single animation loop ---------------- */
+function clampCam(){ if (!isFinite(camX)) camX = 0; if (!isFinite(camY)) camY = 0; camX = Math.max(0, Math.min(W - VW, camX)); camY = Math.max(0, Math.min(H - VH, camY)); viewDirty = true; }
+function applyZoom(z, ax, ay){
+  z = Math.max(.6, Math.min(2.4, z));
+  const nVW = Math.round(baseVW / z), nVH = Math.round(baseVH / z);
+  if (nVW === VW && nVH === VH && z === zoom) return;
+  const first = !VW || !VH, px = first ? 0 : ax ?? VW / 2, py = first ? 0 : ay ?? VH / 2, wx = camX + px, wy = camY + py, fx = first ? 0 : px / VW, fy = first ? 0 : py / VH;
+  zoom = z; VW = nVW; VH = nVH;
   cv.width = fog.width = VW; cv.height = fog.height = VH; ctx.imageSmoothingEnabled = false;
-  scale = r.width / VW;
+  scale = stageW / VW;
   camX = wx - fx * VW; camY = wy - fy * VH; clampCam();
 }
+const setZoom = (z, ax, ay) => { pendingZoom = {z, ax, ay}; viewDirty = true; };
 function centerOn(x, y){ camX = x - VW / 2; camY = y - VH * .5; clampCam(); }
+let stageW = 375, camInit = false;
 function sizeScene(){
   const r = $("stage").getBoundingClientRect();
   if (!r.width) return;
+  stageW = r.width;
   baseVW = r.width < 420 ? 176 : Math.round(r.width / 2.4);
   baseVH = Math.round(baseVW * r.height / r.width);
-  setZoom(zoom);
+  VW = 0; applyZoom(zoom);
   refreshWorld();
-  compose(performance.now());
+  if (!camInit) { camInit = true; let c = null; try { c = JSON.parse(localStorage.getItem("dreamLife.cam") || "null"); } catch (e) {}
+    if (c) { centerOn(c.x, c.y); placeAvatar(regionAt(c.x).id); } else { placeAvatar("delhi"); centerOn(av.x + 30, av.y - 40); }
+    lens = {x: camX + VW * .62, y: camY + VH * .42}; }
+  renderView(performance.now());
 }
 function refreshWorld(){
-  const key = JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || ""])) + JSON.stringify(S.profile.outfit);
+  const key = JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", a.place || "la"]));
   if (key === bgKey) return;
-  bgKey = key; buildWorld(); animateWorld();
-  const target = locs.find(l => clarityOf(l.a).c < 1);
-  if (target && !lens.moved) { lens = {x: target.x, y: target.y - 14}; centerOn(lens.x - 10, lens.y + 30); }
+  bgKey = key; buildLandmarks(); viewDirty = true;
 }
-let lastFrame = 0;
+let lastTick = 0, camAnim = null;
 function loop(ts){
   requestAnimationFrame(loop);
-  if (route !== "home" || ts - lastFrame < (reduced ? 500 : 50)) return;
-  lastFrame = ts; t++;
-  if (camAnim) { const k = Math.min(1, (ts - camAnim.s) / camAnim.d), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; camX = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e; camY = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e; clampCam(); if (k >= 1) camAnim = null; }
-  if (preview && ts > preview.end) endPreview();
-  if (vision && ts > vision.end) { vision = null; $("visionBanner").hidden = true; renderHomeChips(); }
-  if (vision) $("visionBanner").textContent = `Deadline met, so here's all of it · ${Math.ceil((vision.end - ts) / 1000)}s`;
-  checkHold(ts);
-  animateWorld();
-  compose(ts);
+  if (route !== "home" || document.hidden) return;
+  if (pendingZoom) { const p = pendingZoom; pendingZoom = null; applyZoom(p.z, p.ax, p.ay); }
+  if (camAnim) { const k = Math.min(1, (ts - camAnim.s) / camAnim.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; camX = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e; camY = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e; clampCam(); if (k >= 1) { camAnim = null; saveCam(); } }
+  const tick = ts - lastTick >= (reduced ? 400 : 50);
+  if (tick) {
+    lastTick = ts; t++;
+    if (!reduced) stepAvatar();
+    const reg = regionAt(camX + VW / 2).id;
+    if (reg !== av.region && !(av.x > camX && av.x < camX + VW)) placeAvatar(reg);
+    if (preview && ts > preview.end) endPreview();
+    if (vision && ts > vision.end) { vision = null; $("visionBanner").hidden = true; renderHomeChips(); }
+    if (vision) $("visionBanner").textContent = `Deadline met, so here's all of it · ${Math.ceil((vision.end - ts) / 1000)}s`;
+    checkHold(ts);
+    viewDirty = true;
+  }
+  if (viewDirty) { viewDirty = false; renderView(ts); }
 }
-let camAnim = null;
-function glideTo(x, y, d = 900){ camAnim = {s: performance.now(), d: reduced ? 1 : d, x0: camX, y0: camY, x1: Math.max(0, Math.min(W - VW, x - VW / 2)), y1: Math.max(0, Math.min(H - VH, y - VH / 2))}; }
+function glideTo(x, y, d){
+  const x1 = Math.max(0, Math.min(W - VW, x - VW / 2)), y1 = Math.max(0, Math.min(H - VH, y - VH / 2));
+  d = d ?? Math.min(1800, 500 + Math.hypot(x1 - camX, y1 - camY) * 1.6);
+  camAnim = {s: performance.now(), d: reduced ? 1 : d, x0: camX, y0: camY, x1, y1};
+}
+let camSaveT;
+function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { localStorage.setItem("dreamLife.cam", JSON.stringify({x: camX + VW / 2, y: camY + VH / 2})); } catch (e) {} }, 400); }
 
-/* --- input: one finger = lens, two fingers = pan + pinch, wheel = pan, ctrl+wheel = zoom --- */
+/* --- the journey strip: where you are between Delhi and LA, tap to travel --- */
+function markJourney(){
+  const el = $("journey"); if (!el) return;
+  const mid = (camX + VW / 2) / W;
+  el.querySelector(".you").style.left = (mid * 100).toFixed(1) + "%";
+  el.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", b.dataset.reg === regionShown ? "true" : "false"));
+}
+$("journey").addEventListener("click", e => {
+  const b = e.target.closest("[data-reg]"); if (!b) return;
+  const r = REGIONS.find(r => r.id === b.dataset.reg), x = r.id === "mumbai" ? coastM(260) - 30 : r.id === "la" ? 1100 : (r.x0 + r.x1) / 2;
+  glideTo(x, r.id === "ocean" ? 280 : 260);
+  lens = {x, y: 250, moved: true};
+});
+
+/* ---------------- input: one finger = lens, two fingers = pan + pinch, wheel = pan, ctrl+wheel = zoom ---------------- */
 const ptrs = new Map(); let mode = null, pinch0 = null;
 const toLocal = (cx, cy) => { const r = cv.getBoundingClientRect(); return {x: (cx - r.left) / scale, y: (cy - r.top) / scale}; };
 const toWorld = (cx, cy) => { const p = toLocal(cx, cy); return {x: p.x + camX, y: p.y + camY}; };
-function hideHint(){ $("hint").hidden = true; try { localStorage.setItem("dreamLife.hint", "1"); } catch (e) {} }
+function hideHint(){ if ($("hint").hidden) return; $("hint").hidden = true; try { localStorage.setItem("dreamLife.hint", "1"); } catch (e) {} }
 cv.addEventListener("pointerdown", e => {
   try { cv.setPointerCapture(e.pointerId); } catch (err) {}
   ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY});
+  camAnim = null;
   if (ptrs.size === 2) { mode = "pan"; const [a, b] = [...ptrs.values()]; pinch0 = {d: Math.hypot(a.x - b.x, a.y - b.y), z: zoom}; }
   else if (ptrs.size === 1) mode = "maybe";
   if (preview && ptrs.size === 1) endPreview();
@@ -981,17 +1243,18 @@ cv.addEventListener("pointermove", e => {
   if (ptrs.size >= 2) {
     camX -= dx / scale / ptrs.size; camY -= dy / scale / ptrs.size; clampCam();
     const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
-    if (pinch0 && pinch0.d > 20) { const m = toLocal((a.x + b.x) / 2, (a.y + b.y) / 2); const nz = pinch0.z * d / pinch0.d; if (Math.abs(nz - zoom) > .04) setZoom(nz, m.x, m.y); }
-    hideHint(); return;
+    if (pinch0 && pinch0.d > 20) { const m = toLocal((a.x + b.x) / 2, (a.y + b.y) / 2), nz = pinch0.z * d / pinch0.d; if (Math.abs(nz - zoom) > .03) setZoom(nz, m.x, m.y); }
+    hideHint(); saveCam(); return;
   }
   if (mode === "maybe" && Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 5) { mode = "lens"; cv.style.cursor = "grabbing"; }
-  if (mode === "lens") { const w = toWorld(e.clientX, e.clientY); lens = {x: w.x, y: w.y, moved: true}; holdStart = 0; hideHint(); edgeNudge(e); }
+  if (mode === "lens") { const w = toWorld(e.clientX, e.clientY); lens = {x: w.x, y: w.y, moved: true}; holdStart = 0; viewDirty = true; hideHint(); edgeNudge(e); }
 });
-function edgeNudge(e){ // dragging the lens to the edge gently scrolls the map
-  const r = cv.getBoundingClientRect(), m = 28, k = 2.2 / scale;
-  if (e.clientX - r.left < m) camX -= k * 4; else if (r.right - e.clientX < m) camX += k * 4;
-  if (e.clientY - r.top < m + 60) camY -= k * 4; else if (r.bottom - e.clientY < m + 70) camY += k * 4;
-  clampCam();
+function edgeNudge(e){
+  const r = cv.getBoundingClientRect(), m = 28, k = 8 / scale;
+  let moved = false;
+  if (e.clientX - r.left < m) { camX -= k; moved = true; } else if (r.right - e.clientX < m) { camX += k; moved = true; }
+  if (e.clientY - r.top < m + 60) { camY -= k; moved = true; } else if (r.bottom - e.clientY < m + 100) { camY += k; moved = true; }
+  if (moved) { clampCam(); saveCam(); }
 }
 function endPtr(e){
   const p = ptrs.get(e.pointerId); if (!p) return;
@@ -1003,33 +1266,33 @@ function endPtr(e){
 cv.addEventListener("pointerup", endPtr);
 cv.addEventListener("pointercancel", endPtr);
 cv.addEventListener("wheel", e => {
-  e.preventDefault();
+  e.preventDefault(); camAnim = null;
   if (e.ctrlKey || e.metaKey) { const m = toLocal(e.clientX, e.clientY); setZoom(zoom * Math.exp(-e.deltaY * .01), m.x, m.y); }
-  else { camX += e.deltaX / scale; camY += e.deltaY / scale; clampCam(); }
-  hideHint();
+  else { camX += (e.deltaX || (e.shiftKey ? e.deltaY : 0)) / scale; camY += (e.shiftKey ? 0 : e.deltaY) / scale; clampCam(); }
+  hideHint(); saveCam();
 }, {passive: false});
 cv.addEventListener("keydown", e => {
-  const step = 14;
+  const step = 16;
   if (e.key === "ArrowLeft") camX -= step; else if (e.key === "ArrowRight") camX += step;
   else if (e.key === "ArrowUp") camY -= step; else if (e.key === "ArrowDown") camY += step;
   else if (e.key === "+" || e.key === "=") setZoom(zoom * 1.2); else if (e.key === "-") setZoom(zoom / 1.2);
   else return;
-  e.preventDefault(); clampCam();
+  e.preventDefault(); clampCam(); saveCam();
 });
 $("zin").onclick = () => setZoom(zoom * 1.25);
 $("zout").onclick = () => setZoom(zoom / 1.25);
-$("recenter").onclick = () => { glideTo(av.x, av.y - 10); lens = {x: av.x, y: av.y - 30, moved: true}; };
+$("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av.y - 40, moved: true}; };
 
-function locAt(x, y){ return locs.find(l => x > l.x - 20 && x < l.x + 20 && y > l.y - l.h - 6 && y < l.y + 8); }
+function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
 function tapAt({x, y}){
-  if (Math.abs(x - av.x) < 8 && y > av.y - 23 && y < av.y + 3) { avatarSays(); return; }
+  if (Math.abs(x - av.x) < 9 && y > av.y - 29 && y < av.y + 3) { avatarSays(); return; }
   const l = locAt(x, y);
-  if (l) { lens = {x: l.x, y: l.y - 14, moved: true}; showLoc(l); return; }
-  lens = {x, y, moved: true};
+  if (l) { lens = {x: l.x, y: l.y - 14, moved: true}; showLoc(l); viewDirty = true; return; }
+  lens = {x, y, moved: true}; viewDirty = true;
   $("loccard").hidden = true; lensHover = null;
 }
 function checkHold(now){
-  if (!lens || preview || mode === "lens" && ptrs.size) { if (mode === "lens") holdStart = 0; }
+  if (mode === "lens") holdStart = 0;
   const l = lens ? locs.find(l => Math.hypot(l.x - lens.x, l.y - 14 - lens.y) < 22) : null;
   if (l !== lensHover) { lensHover = l; holdStart = l ? now : 0; if (l) showLoc(l); }
   if (l && !holdStart && mode !== "lens") holdStart = now;
@@ -1037,15 +1300,14 @@ function checkHold(now){
 }
 function startPreview(l){
   preview = {l, start: performance.now(), end: performance.now() + 9000, cam: {x: camX, y: camY, z: zoom}};
-  holdStart = 0;
-  setZoom(Math.min(2.2, zoom * 1.6), l.x - camX, l.y - 14 - camY);
-  glideTo(l.x, l.y - 14, 900);
+  holdStart = 0; setZoom(Math.min(2.2, zoom * 1.6), l.x - camX, l.y - 14 - camY);
+  setTimeout(() => glideTo(l.x, l.y - 14, 900), 0);
   showLoc(l, true);
 }
 function endPreview(){
   if (!preview) return;
   const c = preview.cam; preview = null; holdStart = 0;
-  setZoom(c.z); glideTo(c.x + VW / 2, c.y + VH / 2, 700);
+  setZoom(c.z); setTimeout(() => glideTo(c.x + VW / 2, c.y + VH / 2, 700), 0);
   if (lensHover) showLoc(lensHover);
 }
 let bubbleTimer;
@@ -1053,35 +1315,36 @@ function say(text, wx, wy){
   const b = $("bubble"), r = cv.getBoundingClientRect();
   b.textContent = text; b.hidden = false;
   b.style.left = Math.min(Math.max((wx - camX) * scale, 120), r.width - 120) + "px";
-  b.style.top = Math.min(Math.max((wy - camY) * scale, 140), r.height - 120) + "px";
+  b.style.top = Math.min(Math.max((wy - camY) * scale, 140), r.height - 150) + "px";
   clearTimeout(bubbleTimer); bubbleTimer = setTimeout(() => b.hidden = true, 3400);
 }
 function avatarSays(){
   const wk = S.entries.filter(e => weekStart(e.date) === weekStart(today())), name = S.profile.name;
-  const next = locs.map(l => ({l, c: clarityOf(l.a)})).filter(o => o.c.c < 1).sort((a, b) => b.c.c - a.c.c)[0];
+  const next = locs.filter(l => !l.fixed).map(l => ({l, c: clarityOf(l.a)})).filter(o => o.c.c < 1).sort((a, b) => b.c.c - a.c.c)[0];
   const lines = [
-    wk.length ? `${wk.length} thing${wk.length === 1 ? "" : "s"} logged this week. It shows.` : `${name ? name + ", " : ""}log something you did and this place gets clearer.`,
-    next ? `${next.l.a.title} is ${Math.round(next.c.c * 100)}% clear.` : "Every place here is fully clear.",
+    wk.length ? `${wk.length} thing${wk.length === 1 ? "" : "s"} logged this week. It shows.` : `${name ? name + ", " : ""}log something you did and the road ahead gets clearer.`,
+    next ? `${next.l.a.title} is ${Math.round(next.c.c * 100)}% clear.` : "Every place you've described is clear.",
     "Your path changed. You're still building.",
-    "Hold the lens on a place for ten seconds to step inside it."
+    av.region === "la" ? "We made it to the coast." : "Pan east. LA is that way."
   ];
-  av.wait = Math.max(av.wait, 50); av.dir = "down";
-  say(lines[Math.floor(Math.random() * lines.length)], av.x, av.y - 24);
+  av.wait = Math.max(av.wait, 50); av.dir = "down"; viewDirty = true;
+  say(lines[Math.floor(Math.random() * lines.length)], av.x, av.y - 30);
 }
 function showLoc(l, inPreview){
-  const a = l.a, c = clarityOf(a), pct = Math.round(c.c * 100), card = $("loccard");
-  const src = c.goals ? [c.entries && `${c.entries} entr${c.entries === 1 ? "y" : "ies"}`, c.steps && `${c.steps} step${c.steps === 1 ? "" : "s"}`, c.done && `${c.done} goal${c.done === 1 ? "" : "s"} done`].filter(Boolean).join(" · ") || "Linked goals, no logged work yet" : "No goals linked yet";
+  const a = l.a, c = locClarity(l), pct = Math.round(c.c * 100), card = $("loccard");
+  const src = l.fixed ? (c.unlinked ? (pct ? "Already familiar" : "Add a dream like this to start revealing it") : "Clears with your related dream")
+    : c.goals ? [c.entries && `${c.entries} entr${c.entries === 1 ? "y" : "ies"}`, c.steps && `${c.steps} step${c.steps === 1 ? "" : "s"}`, c.done && `${c.done} goal${c.done === 1 ? "" : "s"} done`].filter(Boolean).join(" · ") || "Linked goals, no logged work yet" : "No goals linked yet";
   const img = a.image ? imgUrl(a.image) : null;
   card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<div style="display:grid;gap:3px;min-width:0;flex:1">
-      <span class="meta">${esc(a.category)}${a.timeframe ? " · " + esc(a.timeframe) : ""}${S.demo ? " · Example" : ""}</span><h3>${esc(a.title)}</h3></div>
+      <span class="meta">${esc(a.category)}${a.timeframe ? " · " + esc(a.timeframe) : ""}${S.demo && !l.fixed ? " · Example" : ""}</span><h3>${esc(a.title)}</h3></div>
       <button class="pbtn x" id="locClose" aria-label="Close" style="width:34px;height:34px"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    ${inPreview && a.desc ? `<p>${esc(a.desc)}</p>` : ""}
+    ${(inPreview || l.fixed) && a.desc ? `<p>${esc(a.desc)}</p>` : ""}
     <div class="clar"><div class="clar-bar"><i style="width:${pct}%"></i></div><div class="clar-txt">${pct}% clear · ${esc(src)}</div></div>
-    <div class="actions">${inPreview ? "" : `<span class="clar-txt" style="flex:1;align-self:center">${pct >= 100 ? "Fully revealed." : "Hold the lens here for 10s to step inside."}</span>`}<button class="btn sm ghost" data-open-asp="${a.id}">Open</button></div>`;
+    <div class="actions">${inPreview ? "" : `<span class="clar-txt" style="flex:1;align-self:center">${pct >= 100 ? "Fully revealed." : "Hold the lens here for 10s to step inside."}</span>`}${l.fixed ? "" : `<button class="btn sm ghost" data-open-asp="${a.id}">Open</button>`}</div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
 }
-function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#fff3c4" : "#ffffff", life: 20 + Math.random() * 30 | 0}); }
+function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function renderHomeChips(){
   const n = clearViewsLeft(), el = $("homeChips"), parts = [];
   if (S.demo) parts.push(`<button class="chip-g" data-go="account">Example world · make it yours</button>`);
@@ -1092,10 +1355,8 @@ function renderHomeChips(){
   if (v) v.onclick = () => {
     commit(s => { s.rewards.clearViewsUsed = (s.rewards.clearViewsUsed || 0) + 1; });
     vision = {start: performance.now(), end: performance.now() + 10000};
-    $("visionBanner").hidden = false; setZoom(.85); renderHomeChips();
+    $("visionBanner").hidden = false; setZoom(.75); renderHomeChips();
   };
-  const name = S.profile.name, h = new Date().getHours();
-  $("greet").textContent = `${h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"}${name ? ", " + name : ""}`;
 }
 
 /* =====================================================================
@@ -1113,7 +1374,7 @@ function go(r){
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
 function renderPage(r){ ({goals: renderGoals, week: renderWeek, dreams: renderDreams, account: renderAccount})[r]?.(); }
-function afterChange(){ if (route === "home") { refreshWorld(); renderHomeChips(); } else renderPage(route); }
+function afterChange(){ modelVer++; viewDirty = true; if (route === "home") { refreshWorld(); renderHomeChips(); } else renderPage(route); }
 // When a place becomes fully clear for the first time, celebrate it once on the world.
 function celebrateNew(){
   const full = S.aspirations.filter(a => clarityOf(a).c >= 1).map(a => a.id), seen = new Set(S.seenBuilt || []), fresh = full.filter(id => !seen.has(id));
@@ -1468,6 +1729,7 @@ function editAspiration(id){
   openSheet(id ? "Edit dream" : "New dream", `
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
+    <label class="field"><span>Where in your world</span><select id="aPlace"><option value="la">Los Angeles</option><option value="mumbai">Mumbai</option><option value="delhi">Delhi</option></select><small>Dreams for your future live in LA; dreams rooted in India live in Delhi or Mumbai.</small></label>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${S.categories.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">New category…</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime">${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
@@ -1481,8 +1743,12 @@ function editAspiration(id){
       <button type="button" class="btn ghost sm" id="aNewGoal" style="justify-self:start">${ICON.plus}Add a goal for this</button></div>` : ""}
     <p class="muted" id="aErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `${id ? `<button class="btn danger" id="aDel">Delete</button>` : `<button class="btn ghost" id="aCancel">Cancel</button>`}<button class="btn" id="aSave">${id ? "Save" : "Add to my world"}</button>`, () => {
-      const prev = () => { const cvs = $("aPrev"); cvs.getContext("2d").clearRect(0, 0, 48, 44); drawKindPreview(cvs, {kind: kind || "fountain", tint}); };
-      const sync = () => { if (!kindTouched) kind = guessKind($("aTitle").value + " " + $("aDesc").value, $("aCat").value); $("aKind").value = kind; prev(); };
+      let place = a.place || "", placeTouched = !!id;
+      const guessPlace = txt => /mumbai|bombay|bandra|juhu|marine drive/i.test(txt) ? "mumbai" : /delhi|lodhi|gurgaon|noida|india|parents|mom|dad|home town|hometown/i.test(txt) ? "delhi" : "la";
+      const prev = () => { const cvs = $("aPrev"); cvs.getContext("2d").clearRect(0, 0, 48, 44); drawKindPreview(cvs, {kind: kind || "fountain", tint, place: place || "la"}); };
+      $("aPlace").value = place || "la";
+      $("aPlace").onchange = () => { place = $("aPlace").value; placeTouched = true; prev(); };
+      const sync = () => { const txt = $("aTitle").value + " " + $("aDesc").value; if (!kindTouched) kind = guessKind(txt, $("aCat").value); if (!placeTouched) { place = guessPlace(txt); $("aPlace").value = place; } $("aKind").value = kind; prev(); };
       sync();
       $("aTitle").oninput = sync; $("aDesc").oninput = sync;
       $("aCat").onchange = () => { $("aNewCatWrap").hidden = $("aCat").value !== "__new"; sync(); };
@@ -1516,7 +1782,7 @@ function editAspiration(id){
         }
         commit(s => {
           if (!s.categories.includes(cat)) s.categories.push(cat);
-          const data = {title, desc: $("aDesc").value.trim(), category: cat, kind: kind || "fountain", timeframe: $("aTime").value, image, tint: image ? tint : null};
+          const data = {title, desc: $("aDesc").value.trim(), category: cat, kind: kind || "fountain", place: $("aPlace").value || "la", timeframe: $("aTime").value, image, tint: image ? tint : null};
           if (id) Object.assign(s.aspirations.find(x => x.id === id), data); else s.aspirations.push({id: aid, createdAt: today(), ...data});
         });
         closeSheet(); toast(id ? "Dream updated" : "Placed in your world, still in the dark. Link a goal to start revealing it.");
@@ -1541,11 +1807,10 @@ function renderAccount(){
   el.innerHTML = `
     <div class="phead"><div><h1>Account</h1><div class="sub">Your profile, your character, your data</div></div></div>
     <section class="panel" style="grid-template-columns:auto 1fr;align-items:start;gap:16px">
-      <canvas id="avatarPrev" width="21" height="28" aria-label="Your character"></canvas>
+      <canvas id="avatarPrev" width="22" height="32" aria-label="Your character"></canvas>
       <div style="display:grid;gap:12px;min-width:0">
         <label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
-        <div class="field"><span>Top</span><div class="swatches">${Object.entries(TOPS).map(([k, c]) => `<button class="sw" style="background:${c[0]}" aria-pressed="${S.profile.outfit.top === k}" aria-label="${k} top" data-top="${k}"></button>`).join("")}</div></div>
-        <div class="field"><span>Bottoms</span><div class="swatches">${Object.entries(BOTS).map(([k, c]) => `<button class="sw" style="background:${c[0]}" aria-pressed="${S.profile.outfit.bot === k}" aria-label="${k} bottoms" data-bot="${k}"></button>`).join("")}</div></div>
+        <p class="muted" style="margin:0;font-size:13px">Your character is drawn from your character sheet: pink tank, charcoal cargos, white boots, black sunglasses and bag, silver hoops.</p>
       </div></section>
     <section><h2 class="sec" style="margin-bottom:10px">Honest numbers</h2>
       <div class="stats"><div><b>${S.entries.length}</b><span>entries</span></div><div><b>${done.length}</b><span>goals done</span></div><div><b>${met}/${done.length}</b><span>on time</span></div><div><b>${moved}</b><span>dates moved</span></div></div>
@@ -1557,12 +1822,11 @@ function renderAccount(){
         <button class="btn danger" id="wipe">Delete everything</button></div>
       <p class="muted" id="wipeConfirm" style="margin:0;font-size:13.5px" hidden>This deletes every dream, goal and entry. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></section>`;
   const c = $("avatarPrev").getContext("2d");
-  for (let y = 0; y < 28; y++) for (let x = 0; x < 21; x++) { c.fillStyle = hash(x, y, 98) > .85 ? C.grass[3] : hash(x, y, 97) > .7 ? C.grass[1] : C.grass[2]; c.fillRect(x, y, 1, 1); }
-  c.fillStyle = "rgba(10,30,15,.35)"; c.fillRect(6, 25, 10, 2);
-  drawAvatar(c, 4, 4, "down", 0);
+  for (let y = 0; y < 32; y++) for (let x = 0; x < 22; x++) { c.fillStyle = hash(x, y, 98) > .85 ? C.grass[3] : hash(x, y, 97) > .7 ? C.grass[1] : C.grass[2]; c.fillRect(x, y, 1, 1); }
+  c.fillStyle = "rgba(10,30,15,.35)"; c.fillRect(5, 29, 12, 2);
+  drawAvatar(c, 4, 2, "down", 0);
   let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
-  el.querySelectorAll("[data-top]").forEach(b => b.onclick = () => commit(s => { s.profile.outfit.top = b.dataset.top; }));
-  el.querySelectorAll("[data-bot]").forEach(b => b.onclick = () => commit(s => { s.profile.outfit.bot = b.dataset.bot; }));
+
   const cd = $("clearDemo"); if (cd) cd.onclick = () => { S = Object.assign(blankState(), {onboarded: true, profile: S.profile}); afterChange(); save(); toast("Example cleared. Start with a dream."); go("dreams"); };
   const ld = $("loadDemo"); if (ld) ld.onclick = () => { if (S.aspirations.length || S.goals.length || S.entries.length) { ld.textContent = "This replaces your data. Tap again"; if (ld.dataset.c !== "1") { ld.dataset.c = "1"; return; } } S = demoState(S.profile); afterChange(); save(); go("home"); };
   $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
@@ -1574,24 +1838,28 @@ function renderAccount(){
 function demoState(profile){
   const s = blankState(); s.onboarded = true; s.demo = true; if (profile) s.profile = profile;
   const d = n => addDays(today(), n);
-  const A = (id, title, desc, category, kind, timeframe) => s.aspirations.push({id, title, desc, category, kind, timeframe, image: null, tint: null, createdAt: d(-40)});
+  const A = (id, title, desc, category, kind, timeframe, place) => s.aspirations.push({id, title, desc, category, kind, timeframe, place: place || "la", image: null, tint: null, createdAt: d(-40)});
   A("a1", "Live by the beach in LA", "A white house a few streets from the ocean. Windows open, salt air, a walk to coffee.", "Places to live", "villa", "5–10 years");
   A("a2", "Surf before work", "Paddle out at dawn a few mornings a week.", "Experiences & adventures", "beach", "2–5 years");
   A("a3", "A light-filled design studio", "My own studio with big windows, two or three people I love working with.", "Career & creative work", "studio", "5–10 years");
   A("a4", "Drive a vintage Porsche", "A 911 from the 80s, cream interior.", "Money & material", "car", "10–15 years");
   A("a5", "A garden that feeds us", "Tomatoes, herbs, a lemon tree.", "Home & surroundings", "garden", "10–15 years");
   A("a6", "Travel to Japan", "Two slow weeks: Kyoto, the islands, a ryokan.", "Experiences & adventures", "balloon", "Within 2 years");
+  A("a7", "Sunday lunches with family in Delhi", "The whole family around one table, every visit home.", "Relationships & lifestyle", "picnic", "Within 2 years", "delhi");
+  A("a8", "A sea-facing flat in Mumbai", "A place to come back to on Marine Drive.", "Places to live", "villa", "10–15 years", "mumbai");
   const G = (id, title, aspirationId, start, deadline, ms, extra) => s.goals.push(Object.assign({id, title, desc: "", aspirationId, start, deadline, priority: "", status: "active", doneAt: null, milestones: ms.map(([t, done], i) => ({id: id + "m" + i, title: t, doneAt: done ? d(done) : null})), deadlineHistory: [], createdAt: start}, extra || {}));
   G("g1", "Launch my portfolio site", "a3", d(-35), d(-6), [["Pick 4 case studies", -20], ["Write the about page", -9], ["Build the site", 0], ["Share it with 10 people", 0]], {priority: "High", desc: "The front door to studio work."});
   G("g2", "Take 10 surf lessons", "a2", d(-20), d(40), [["Research surf schools", -3], ["Book the first lesson", 0]]);
   G("g3", "Save $5k for the LA move", "a1", d(-30), d(90), [["Open a separate savings account", -25], ["Save $1k", -8], ["Save $2.5k", 0]]);
   G("g4", "Read 4 design books", "a3", d(-60), d(-12), [], {status: "done", doneAt: d(-14)});
+  G("g5", "Fly home for Diwali", "a7", d(-10), d(25), [["Book the flights", -4]]);
   const E = (n, text, goalIds, size, type, extra) => s.entries.push(Object.assign({id: "e" + n, date: d(n), text, goalIds, size, type, learned: "", blocked: "", next: "", example: true}, extra || {}));
   E(-15, "Finished the last design book", ["g4"], 2, "did");
   E(-9, "Wrote the about page draft", ["g1"], 2, "did", {learned: "Short beats clever"});
   E(-8, "Moved $500 into the LA fund", ["g3"], 2, "did");
   E(-3, "Researched three surf schools and compared course prices", ["g2"], 1, "did", {next: "Book a morning lesson"});
   E(-2, "Sketched the studio logo", [], 1, "worked");
+  E(-4, "Booked flights home to Delhi for Diwali", ["g5"], 2, "did");
   E(-1, "Rebuilt the portfolio homepage layout", ["g1"], 2, "worked", {blocked: "Client deadline ate two evenings"});
   return s;
 }
@@ -1627,11 +1895,14 @@ if (!S.onboarded) setTimeout(() => { if (!S.onboarded) welcome(); }, 600);
   docRef.onSnapshot(snap => {
     if (snap.exists) {
       if (snap.metadata.hasPendingWrites || saving) return;
-      S = migrate(JSON.parse(JSON.stringify(snap.data())));
+      const incoming = JSON.stringify(snap.data());
+      if (incoming === lastSynced || incoming === JSON.stringify(S)) { lastSynced = incoming; return; }
+      lastSynced = incoming;
+      S = migrate(JSON.parse(incoming));
       try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
       storageNote = "Saved to your Claude account. Only you can see it.";
       if (S.onboarded && !$("sheet").hidden && $("sheetTitle")?.textContent === "Welcome to Dream Life") closeSheet();
-      bgKey = ""; afterChange();
+      if (typingInPage()) pendingRender = true; else afterChange();
     } else if (!snap.metadata.fromCache) save();
   }, () => {});
 })();
