@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<title>Dream Life</title>
+<title>Paint a Picture</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -225,7 +225,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
   <section class="screen home" id="home">
     <div id="stage"><canvas id="scene" tabindex="0" aria-label="Your dream life world. One finger or mouse drag moves the lens, two fingers or scroll move the map, arrow keys pan."></canvas></div>
     <header class="home-top">
-      <div class="mark"><span class="mark-name">Dream Life</span><span class="mark-sub" id="greet"></span></div>
+      <div class="mark"><span class="mark-name">Paint a Picture</span><span class="mark-sub" id="greet"></span></div>
       <button class="gbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <div class="home-chips" id="homeChips"></div>
@@ -248,7 +248,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
   <!-- PRODUCT SCREENS -->
   <section class="screen pages" id="pages" hidden>
     <header class="ptop">
-      <button class="brand" data-go="home" aria-label="Back to your world">Dream Life</button>
+      <button class="brand" data-go="home" aria-label="Back to your world">Paint a Picture</button>
       <button class="pbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <main class="pmain" id="pmain">
@@ -279,7 +279,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
 /* =====================================================================
    1. STORE — data model, persistence, migration
    ===================================================================== */
-const APP_NAME = "Dream Life";
+const APP_NAME = "Paint a Picture";
 const LS_KEY = "dreamLifeBuilder.v1";
 const DEFAULT_CATEGORIES = ["Places to live", "Home & surroundings", "Career & creative work", "Experiences & adventures", "Money & material", "Skills & growth", "Relationships & lifestyle"];
 const KINDS = {villa:"Modern villa", home:"Cottage home", studio:"Studio", car:"Car & driveway", beach:"Beach & surf", balloon:"Hot-air balloon", garden:"Garden", picnic:"Picnic lawn", library:"Library", fountain:"Fountain plaza"};
@@ -1846,10 +1846,10 @@ function renderAccount(){
 function backupData(){
   const images = {};
   for (const a of S.aspirations) if (a.image && a.image.local) { const d = localImg(a.image.local); if (d) images[a.image.local] = d; }
-  return JSON.stringify({app: "dream-life", version: 2, exportedAt: new Date().toISOString(), state: S, images});
+  return JSON.stringify({app: "paint-a-picture", version: 2, exportedAt: new Date().toISOString(), state: S, images});
 }
 async function downloadBackup(){
-  const btn = $("backupBtn"), filename = `dream-life-backup-${today()}.json`;
+  const btn = $("backupBtn"), filename = `paint-a-picture-backup-${today()}.json`;
   btn.disabled = true;
   const done = () => { S.lastBackup = today(); save(); toast("Backup saved. Keep the file somewhere safe."); renderAccount(); };
   try {
@@ -1865,8 +1865,8 @@ async function downloadBackup(){
 async function restoreBackup(file){
   let parsed = null;
   try { parsed = JSON.parse(await file.text()); } catch (e) {}
-  const st = parsed && parsed.app === "dream-life" && parsed.state;
-  if (!st || !Array.isArray(st.goals) || !Array.isArray(st.entries)) { toast("That file isn't a Dream Life backup."); return; }
+  const st = parsed && (parsed.app === "paint-a-picture" || parsed.app === "dream-life") && parsed.state;
+  if (!st || !Array.isArray(st.goals) || !Array.isArray(st.entries)) { toast("That file isn't a Paint a Picture backup."); return; }
   const incoming = migrate(st), box = $("restoreConfirm");
   const when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleDateString(undefined, {day: "numeric", month: "short", year: "numeric"}) : "an earlier date";
   box.innerHTML = `<div><b>Restore the backup from ${esc(when)}?</b> It has ${incoming.aspirations.length} dreams, ${incoming.goals.length} goals and ${incoming.entries.length} entries. It replaces what's here now, so download a backup of the current data first if you might want it.</div>
@@ -1912,7 +1912,7 @@ function demoState(profile){
 
 /* --- first run --- */
 function welcome(){
-  openSheet("Welcome to Dream Life", `<p style="margin:0;font-size:15px;color:var(--ink-2)">This is a world shaped like the life you want in 10–15 years. It starts in the dark. Every bit of real progress you log on your goals makes a part of it clearer.</p>
+  openSheet("Welcome to Paint a Picture", `<p style="margin:0;font-size:15px;color:var(--ink-2)">This is a world shaped like the life you want in 10–15 years. It starts in the dark. Every bit of real progress you log on your goals makes a part of it clearer.</p>
     <div class="insight"><div>Describe your dreams. Each one becomes a place on the map.</div><div>Link goals to them, then log what you actually do each week.</div><div>Meet a deadline and you earn a 10-second view of the whole picture. Miss one and you lose nothing.</div></div>`,
     `<button class="btn ghost" id="wDemo">Explore an example</button><button class="btn" id="wMine">Start mine</button>`, () => {
       $("wDemo").onclick = () => { S = demoState(S.profile); afterChange(); save(); closeSheet(); toast("Example world loaded. Clear it any time in Account."); };
@@ -1948,7 +1948,7 @@ if (!S.onboarded) setTimeout(() => { if (!S.onboarded) welcome(); }, 600);
       S = migrate(JSON.parse(incoming));
       try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
       storageNote = "Saved to your Claude account. Only you can see it.";
-      if (S.onboarded && !$("sheet").hidden && $("sheetTitle")?.textContent === "Welcome to Dream Life") closeSheet();
+      if (S.onboarded && !$("sheet").hidden && $("sheetTitle")?.textContent === "Welcome to Paint a Picture") closeSheet();
       if (typingInPage()) pendingRender = true; else afterChange();
     } else if (!snap.metadata.fromCache) save();
   }, () => {});

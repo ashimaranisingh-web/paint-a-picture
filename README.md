@@ -1,4 +1,4 @@
-# Dream Life
+# Paint a Picture
 
 A goal journal wrapped in a pixel-art world: one continuous map from Delhi and Mumbai, across the ocean, to Los Angeles. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Your world starts in the dark; real progress on goals linked to a dream makes that place clearer. Meet a deadline and you earn a 10-second view of the whole picture. Miss one and you lose nothing.
 
