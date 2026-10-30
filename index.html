@@ -221,11 +221,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
 
 /* ---------- world HUD, places strip, tips ---------- */
 #hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.journey{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;grid-template-columns:none;padding:0 4px}
-.journey::-webkit-scrollbar{display:none}
-.journey::before{display:none}
-.journey button{flex:1 0 auto;padding:6px 10px;white-space:nowrap;border-radius:99px}
-.journey button[aria-current="true"]{background:rgba(255,255,255,.16)}
+.journey{grid-template-columns:repeat(var(--n,5),minmax(0,1fr))}
+.journey button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:6px 2px}
 .tips{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(122px + env(safe-area-inset-bottom,0px));z-index:7;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px;display:grid;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .tips h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:0;line-height:1.1}
@@ -1888,7 +1885,7 @@ function sizeScene(){
     if (c && c.k === layoutKey) { if (c.z) applyZoom(c.z); centerOn(c.x, c.y); } else { const D = homeDistrict(); centerOn(D.ox + CW / 2, D.oy + CH / 2); }
     const D = districtAt(camX + VW / 2, camY + VH / 2); if (D) placeAvatar(D);
     lens = {x: camX + VW * .62, y: camY + VH * .42}; }
-  renderView(performance.now());
+  renderView(performance.now()); markPlaces();
 }
 const homeDistrict = () => DIST.get((worldDests().find(d => d.purpose === "from") || worldDests()[0]).id) || [...DIST.values()][0];
 function refreshWorld(){
@@ -1938,10 +1935,18 @@ function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { 
 /* --- the places strip: every destination in your world, tap to travel --- */
 function renderPlacesNav(){
   const ds = worldDests().filter(d => !d.placeholder).slice().sort((a, b) => a.col - b.col || a.row - b.row);
-  $("journey").innerHTML = ds.length ? ds.map(d => `<button data-dest="${d.id}">${esc(d.name)}</button>`).join("") : `<button data-go="dreams">Add places</button>`;
+  const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
+  el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}">${esc(d.name)}</button>`).join("") : `<button data-go="dreams">Add places</button>`);
   markPlaces();
 }
-function markPlaces(){ $("journey").querySelectorAll("[data-dest]").forEach(b => { b.setAttribute("aria-current", b.dataset.dest === regionShown ? "true" : "false"); if (b.dataset.dest === regionShown) b.scrollIntoView?.({block: "nearest", inline: "nearest"}); }); }
+// The pink dot sits under the place you're looking at, like the original journey strip.
+function markPlaces(){
+  const el = $("journey"), you = el.querySelector(".you");
+  el.querySelectorAll("[data-dest]").forEach(b => {
+    const on = b.dataset.dest === regionShown; b.setAttribute("aria-current", on ? "true" : "false");
+    if (on && you) you.style.left = (b.offsetLeft + b.offsetWidth / 2) + "px";
+  });
+}
 function travelTo(id){
   const D = DIST.get(id); if (!D) return;
   const l = locs.filter(l => l.D === D).sort((a, b) => locClarity(b).c - locClarity(a).c)[0], x = l ? l.x : D.ox + CW / 2, y = l ? l.y - 14 : D.oy + CH / 2;
