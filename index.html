@@ -2947,7 +2947,7 @@ function renderAccount(){
   const el = $("p-account"), done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length, metOrig = done.filter(g => g.doneAt <= originalDeadline(g)).length;
   const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
   el.innerHTML = `
-    <section class="panel"><div><div class="eyebrow">Profile</div><p class="muted" style="margin:4px 0 0;font-size:13px">Email allows us to save your data through updates and across devices.</p></div>
+    <section style="display:grid;gap:14px"><div><h2 class="sec">Profile</h2><p class="muted" style="margin:6px 0 0;font-size:13px">Email allows us to save your data through updates and across devices.</p></div>
       <div style="display:grid;gap:14px"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
         <label class="field"><span>Email (Optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
       <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "Accounts are coming soon. Until then your data stays in this browser, and your email is never sent anywhere."}</small></section>
