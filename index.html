@@ -180,7 +180,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .field{display:grid;gap:6px}
 .field>span{font-size:13px;font-weight:700;color:var(--ink-2)}
 .field small{font-size:13px;color:var(--muted)}
-input[type=text],input[type=search],input[type=email],input[type=date],input[type=number],select,textarea{width:100%;min-width:0;border:0;border-bottom:1.5px solid var(--line-2);border-radius:0;background:transparent;padding:11px 2px;font-size:16px;font-weight:500;line-height:1.35}
+input[type=text],input[type=search],input[type=email],input[type=url],input[type=date],input[type=datetime-local],input[type=number],select,textarea{width:100%;min-width:0;border:0;border-bottom:1.5px solid var(--line-2);border-radius:0;background:transparent;padding:11px 2px;font-size:16px;font-weight:500;line-height:1.35}
 textarea{resize:vertical;min-height:84px}
 input::placeholder,textarea::placeholder{color:#8b8b83}
 input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--accent-strong);box-shadow:0 1px 0 var(--accent-strong)}
@@ -219,6 +219,22 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .toast.show{transform:translate(-50%,0);opacity:1}
 .toast.top{bottom:auto;top:calc(118px + env(safe-area-inset-top,0px))}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
+.acc-head{display:flex;align-items:center;gap:6px}.acc-head .rowbtn{flex:1}
+.acc-body{display:grid;gap:6px;padding:0 0 12px}
+.asset-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.asset-row{all:unset;cursor:pointer;box-sizing:border-box;width:100%;min-height:52px;display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.asset-row:hover,.asset-row:focus-visible{border-color:var(--line-2)}.asset-row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.asset-row img{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none}
+.asset-row .grow{display:grid;gap:1px;min-width:0}.asset-row b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.asset-row .grow span{font-size:13px;color:var(--muted)}
+.asset-dot{width:10px;height:10px;border-radius:50%;flex:none;margin:0 15px}.asset-dot.done{background:var(--accent)}.asset-dot.doing{background:var(--sea)}.asset-dot.planned{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.note-ex{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sheet.tall{height:92%}.sheet.tall .sheet-b{flex:1;grid-template-rows:auto auto 1fr auto}
+.note-title{font-family:var(--serif)!important;font-size:20px!important;border-bottom-color:transparent!important}
+.note-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.note-body{min-height:40vh;border:0!important;box-shadow:none!important;resize:none;font-size:16px;line-height:1.6;padding:6px 2px!important}
+.wk-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.wk-hit{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:grid;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:13px;margin-top:8px}
+.wk-hit:hover{border-color:var(--line-2)}.wk-hit:focus-visible{outline:2px solid var(--accent)}.wk-hit b{color:var(--ink)}
 select{min-height:44px}
 .overview{position:absolute;inset:0;z-index:4;opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .25s ease}
 .overview.on{opacity:1;transform:none}
@@ -343,6 +359,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
       <div class="page" id="p-week" hidden></div>
       <div class="page" id="p-dreams" hidden></div>
       <div class="page" id="p-account" hidden></div>
+      <div class="page" id="p-assets" hidden></div>
+      <div class="page" id="p-journal" hidden></div>
     </main>
     <nav class="pnav" aria-label="Primary">
       <button data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span id="navWorld">World</span></button>
@@ -356,6 +374,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span>Your world</span></button>
     <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint Reality<small>Describe the life you're building</small></span></button>
+    <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
+    <button role="menuitem" data-go="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg><span>Journal<small>Private notes and letters</small></span></button>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
   </div>
   <div class="scrim" id="scrim" hidden></div>
@@ -406,7 +426,7 @@ function blankState(){
   return {v: 3, onboarded: false, onboarding: {step: 0, done: false}, demo: false,
     profile: {id: uid(), name: "", email: "", horizon: 10, avatar: {...DEFAULT_AVATAR}},
     categories: DEFAULT_CATEGORIES.slice(), destinations: [],
-    aspirations: [], goals: [], entries: [], reflections: {},
+    aspirations: [], goals: [], entries: [], reflections: {}, assetCats: STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name})), assets: [], notes: [],
     rewards: {clearViewsUsed: 0}, seenBuilt: []};
 }
 function migrate(o){
@@ -443,6 +463,9 @@ function normalize(o){
   addTaglines(s);
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; });
   s.entries.forEach(e => { e.goalIds ||= []; });
+  if (!Array.isArray(o.assetCats)) s.assetCats = STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name}));
+  s.assets = Array.isArray(o.assets) ? o.assets : []; s.notes = Array.isArray(o.notes) ? o.notes : [];
+  s.assets.forEach((a, i) => { a.tags ||= []; if (a.order == null) a.order = i; if (!ASSET_STATUS[a.status]) a.status = "done"; });
   return s;
 }
 // Version 2 was one fixed map (Delhi → Mumbai → LA). Turn those three places into destinations, and
@@ -2488,7 +2511,7 @@ addEventListener("keydown", e => { if (e.key === "Escape" && overviewOn) closeOv
    5. SCREENS
    ===================================================================== */
 let route = "home";
-const ROUTES = ["home", "goals", "week", "dreams", "account"];
+const ROUTES = ["home", "goals", "week", "dreams", "account", "assets", "journal"];
 $("tipsOk").onclick = () => { $("tips").hidden = true; };
 function go(r){
   if (!ROUTES.includes(r)) r = "home";
@@ -2496,12 +2519,12 @@ function go(r){
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
   $("brand").textContent = r === "account" ? "Account" : "Paint a Picture";
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
-  for (const k of ["goals", "week", "dreams", "account"]) $("p-" + k).hidden = k !== r;
+  for (const k of ["goals", "week", "dreams", "account", "assets", "journal"]) $("p-" + k).hidden = k !== r;
   document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === r ? "page" : "false"));
   if (r === "home") { requestAnimationFrame(sizeScene); renderHomeChips(); celebrateNew(); }
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
-function renderPage(r){ ({goals: renderGoals, week: renderWeek, dreams: renderDreams, account: renderAccount})[r]?.(); }
+function renderPage(r){ ({goals: renderGoals, week: renderWeek, dreams: renderDreams, account: renderAccount, assets: renderAssets, journal: renderJournal})[r]?.(); }
 function afterChange(){ modelVer++; viewDirty = true; updateTitle(); if (route === "home") { refreshWorld(); renderHomeChips(); if (overviewOn) drawOverview(); } else renderPage(route); }
 // When a place becomes fully clear for the first time, celebrate it once on the world.
 function celebrateNew(){
@@ -2708,7 +2731,7 @@ function renderWeek(){
   if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
-    <div class="phead"><div><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1><div class="sub">${fmt(ws)} – ${fmt(we)}</div></div>
+    <div class="phead"><div><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1><div class="sub">${esc(weekRange(ws))}</div></div>
       <div class="weeknav"><button class="pbtn" id="wPrev" aria-label="Previous week">${ICON.left}</button><button class="pbtn" id="wNext" aria-label="Next week" ${isNow ? "disabled style='opacity:.4'" : ""}>${ICON.right}</button></div></div>
     <button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>
     <div class="stats"><div><b>${entries.length}</b><span>logged</span></div><div><b>${goalsMoved.size}</b><span>goals moved</span></div><div><b>${steps.length}</b><span>steps done</span></div><div><b>${metW.length}</b><span>deadlines met</span></div></div>
@@ -2717,11 +2740,13 @@ function renderWeek(){
       <label class="field"><span>What did this week teach you?</span><textarea id="rText" placeholder="A sentence or two">${esc(r.text)}</textarea></label>
       <label class="field"><span>Next week I want to…</span><textarea id="rNext" style="min-height:64px" placeholder="One or two things">${esc(r.next)}</textarea></label>
       <span class="muted" id="rSaved" style="font-size:13px"></span></section>
+    ${weekHistoryHTML()}
     <section><h2 class="sec" style="margin-bottom:8px">Logged</h2>
       ${entries.length ? `<ul class="list">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>`;
   $("wPrev").onclick = () => { weekOf = addDays(weekOf, -7); renderWeek(); };
   $("wNext").onclick = () => { if (!isNow) { weekOf = addDays(weekOf, 7); renderWeek(); } };
   $("logBtn").onclick = () => logEntry();
+  wireWeekHistory();
   let rt;
   const saveR = () => { clearTimeout(rt); rt = setTimeout(() => { S.reflections[ws] = {text: $("rText").value.trim(), next: $("rNext").value.trim()}; save(); $("rSaved").textContent = "Saved"; }, 600); };
   $("rText").oninput = saveR; $("rNext").oninput = saveR;
@@ -2942,6 +2967,167 @@ function editCategories(){
   openSheet("Categories", "", `<span></span><button class="btn" id="catDone">Done</button>`, () => { draw(); $("catDone").onclick = closeSheet; });
 }
 
+/* --- MY ASSETS: a personal archive of what you've made, learned, owned and built --- */
+const ASSET_STATUS = {done: "Completed", doing: "In progress", planned: "Planned"};
+const STARTER_ASSET_CATS = ["Sketches", "Articles", "Apps", "Podcasts", "Jobs & Career", "Money & Investments", "Art & Creative Projects", "Skills & Learning", "Other"];
+let assetOpen = new Set();
+function renderAssets(){
+  const el = $("p-assets"), cats = S.assetCats, items = id => S.assets.filter(a => a.catId === id).sort((a, b) => a.order - b.order);
+  const done = S.assets.filter(a => a.status === "done").length;
+  el.innerHTML = `
+    <div class="phead"><div><h1>My Assets</h1><div class="sub">${S.assets.length ? `${S.assets.length} thing${S.assets.length === 1 ? "" : "s"} · ${done} completed` : "Everything you've made, learned and built"}</div></div>
+      <button class="btn" id="newCat">${ICON.plus}Category</button></div>
+    ${cats.length ? `<ul class="list">${cats.map((c, ci) => { const list = items(c.id), open = assetOpen.has(c.id); return `<li>
+      <div class="acc-head"><button class="rowbtn acc-toggle" data-cat="${c.id}" aria-expanded="${open}"><span class="rtitle">${esc(c.name)}</span><span class="rmeta"><span>${list.length} item${list.length === 1 ? "" : "s"}</span>${list.some(a => a.status === "doing") ? `<span class="tag sea">In progress</span>` : ""}</span></button>
+        <button class="pbtn icon-sm" data-editcat="${c.id}" aria-label="Edit ${esc(c.name)}"><svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></button></div>
+      ${open ? `<div class="acc-body">${list.length ? `<ul class="asset-list">${list.map(a => `<li><button class="asset-row" data-asset="${a.id}">${a.image ? `<img src="${esc(imgUrl(a.image))}" alt="">` : `<span class="asset-dot ${a.status}"></span>`}
+          <span class="grow"><b>${esc(a.title)}</b><span>${[ASSET_STATUS[a.status], a.date ? fmt(a.date, {month: "short", year: "numeric"}) : "", ...(a.tags || []).slice(0, 2).map(t => "#" + t)].filter(Boolean).map(esc).join(" · ")}</span></span></button></li>`).join("")}</ul>` : `<p class="muted" style="margin:0 0 4px;font-size:13px">Nothing here yet.</p>`}
+        <button class="btn quiet sm" data-additem="${c.id}">${ICON.plus}Add to ${esc(c.name)}</button></div>` : ""}</li>`; }).join("")}</ul>`
+      : `<div class="empty"><b>Start your archive</b>Sketches, articles, apps, a podcast, jobs, money you've saved… things you've done and things you want to build.<div class="actions" style="margin-top:12px"><button class="btn" id="starterCats">Add starter categories</button></div></div>`}`;
+  $("newCat").onclick = () => editAssetCat(null);
+  const st = $("starterCats"); if (st) st.onclick = () => commit(s => { s.assetCats = STARTER_ASSET_CATS.map(name => ({id: "ac-" + uid(), name})); });
+  el.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { const id = b.dataset.cat; assetOpen.has(id) ? assetOpen.delete(id) : assetOpen.add(id); renderAssets(); });
+  el.querySelectorAll("[data-editcat]").forEach(b => b.onclick = () => editAssetCat(b.dataset.editcat));
+  el.querySelectorAll("[data-additem]").forEach(b => b.onclick = () => editAsset(null, b.dataset.additem));
+  el.querySelectorAll("[data-asset]").forEach(b => b.onclick = () => editAsset(b.dataset.asset));
+}
+function moveIn(list, id, dir){ const i = list.findIndex(x => x.id === id), j = i + dir; if (i < 0 || j < 0 || j >= list.length) return false; [list[i], list[j]] = [list[j], list[i]]; return true; }
+function editAssetCat(id){
+  const c = id ? S.assetCats.find(x => x.id === id) : {name: ""}, n = id ? S.assets.filter(a => a.catId === id).length : 0, idx = id ? S.assetCats.indexOf(c) : -1;
+  openSheet(id ? "Edit category" : "New category", `<label class="field"><span>Name</span><input type="text" id="acName2" value="${esc(c.name)}" placeholder="e.g. Sketches" maxlength="40"></label>
+    ${id ? `<div class="field"><span>Order</span><div class="actions"><button type="button" class="btn ghost sm" id="acUp" ${idx === 0 ? "disabled" : ""}>Move up</button><button type="button" class="btn ghost sm" id="acDown" ${idx === S.assetCats.length - 1 ? "disabled" : ""}>Move down</button></div></div>
+      <div class="field"><span>Delete</span><button type="button" class="btn danger sm" id="acDel" style="justify-self:start">Delete category${n ? ` and its ${n} item${n === 1 ? "" : "s"}` : ""}</button></div>` : ""}
+    <p class="muted" id="acErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
+    `<button class="btn ghost" id="acCancel">Cancel</button><button class="btn" id="acSave">${id ? "Save" : "Add category"}</button>`, () => {
+      $("acCancel").onclick = closeSheet;
+      $("acSave").onclick = () => { const name = $("acName2").value.trim(); if (!name) { $("acErr").textContent = "Give the category a name."; $("acErr").hidden = false; return; }
+        commit(s => { if (id) s.assetCats.find(x => x.id === id).name = name; else { const nc = {id: "ac-" + uid(), name}; s.assetCats.push(nc); assetOpen.add(nc.id); } }); closeSheet(); };
+      if (id) {
+        $("acUp").onclick = () => { commit(s => moveIn(s.assetCats, id, -1)); closeSheet(); };
+        $("acDown").onclick = () => { commit(s => moveIn(s.assetCats, id, 1)); closeSheet(); };
+        $("acDel").onclick = () => { const b = $("acDel"); if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = n ? `Tap again: this deletes ${n} item${n === 1 ? "" : "s"} too` : "Tap again to delete"; return; }
+          commit(s => { s.assetCats = s.assetCats.filter(x => x.id !== id); s.assets = s.assets.filter(a => a.catId !== id); }); closeSheet(); toast("Category deleted"); };
+      }
+    });
+}
+function editAsset(id, catId){
+  const a = id ? S.assets.find(x => x.id === id) : {title: "", note: "", date: "", status: "done", link: "", image: null, tags: [], catId};
+  let status = a.status, image = a.image ? {...a.image} : null, pending = null;
+  const siblings = S.assets.filter(x => x.catId === a.catId).sort((p, q) => p.order - q.order), pos = id ? siblings.findIndex(x => x.id === id) : -1;
+  openSheet(id ? "Edit" : "Add to your archive", `
+    <label class="field"><span>Title</span><input type="text" id="asTitle" value="${esc(a.title)}" placeholder="e.g. The Design Den, episode 12" maxlength="80"></label>
+    <label class="field"><span>Note</span><textarea id="asNote" placeholder="What it is, why it matters, what you learned">${esc(a.note)}</textarea></label>
+    <div class="field"><span>Status</span><div class="seg" role="group" id="asStatus" style="justify-self:start">${Object.entries(ASSET_STATUS).map(([k, v]) => `<button type="button" aria-pressed="${status === k}" data-st="${k}">${v}</button>`).join("")}</div></div>
+    <div class="dates"><label class="field"><span id="asDateLabel">${status === "planned" ? "Target date (optional)" : "Date (optional)"}</span><input type="date" id="asDate" value="${esc(a.date || "")}"></label>
+      <label class="field"><span>Category</span><select id="asCat">${S.assetCats.map(c => `<option value="${c.id}" ${c.id === a.catId ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label></div>
+    <label class="field"><span>Link (optional)</span><input type="url" id="asLink" value="${esc(a.link || "")}" placeholder="https://"></label>
+    <label class="field"><span>Tags (optional)</span><input type="text" id="asTags" value="${esc((a.tags || []).join(", "))}" placeholder="e.g. podcast, design den"><small>Separate with commas.</small></label>
+    <div class="field"><span>Cover (optional)</span><div class="imgdrop"><img id="asImg" alt="" ${image ? `src="${esc(imgUrl(image))}"` : "hidden"}>
+      <div style="display:grid;gap:6px"><label class="btn ghost sm" style="cursor:pointer">Choose image<input type="file" id="asFile" accept="image/*" hidden></label><button type="button" class="btn quiet sm" id="asImgRm" ${image ? "" : "hidden"}>Remove</button></div></div></div>
+    ${id && a.link ? `<a class="btn quiet sm" href="${esc(a.link)}" target="_blank" rel="noopener noreferrer" style="justify-self:start">Open link</a>` : ""}
+    ${id ? `<div class="field"><span>Order</span><div class="actions"><button type="button" class="btn ghost sm" id="asUp" ${pos <= 0 ? "disabled" : ""}>Move up</button><button type="button" class="btn ghost sm" id="asDown" ${pos >= siblings.length - 1 ? "disabled" : ""}>Move down</button></div></div>` : ""}
+    <p class="muted" id="asErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
+    `${id ? `<button class="btn danger" id="asDel">Delete</button>` : `<button class="btn ghost" id="asCancel">Cancel</button>`}<button class="btn" id="asSave">${id ? "Save" : "Add"}</button>`, () => {
+      $("asStatus").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { status = b.dataset.st; $("asStatus").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); $("asDateLabel").textContent = status === "planned" ? "Target date (optional)" : "Date (optional)"; });
+      $("asFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { pending = await readImage(f); $("asImg").src = pending.dataUrl; $("asImg").hidden = false; $("asImgRm").hidden = false; } catch (err) { toast("That file couldn't be read as an image."); } };
+      $("asImgRm").onclick = () => { image = null; pending = null; $("asImg").hidden = true; $("asImgRm").hidden = true; };
+      const c = $("asCancel"); if (c) c.onclick = closeSheet;
+      if (id) {
+        $("asUp").onclick = () => { commit(s => { const sib = s.assets.filter(x => x.catId === a.catId).sort((p, q) => p.order - q.order), i = sib.findIndex(x => x.id === id); if (i > 0) [sib[i].order, sib[i - 1].order] = [sib[i - 1].order, sib[i].order]; }); closeSheet(); };
+        $("asDown").onclick = () => { commit(s => { const sib = s.assets.filter(x => x.catId === a.catId).sort((p, q) => p.order - q.order), i = sib.findIndex(x => x.id === id); if (i >= 0 && i < sib.length - 1) [sib[i].order, sib[i + 1].order] = [sib[i + 1].order, sib[i].order]; }); closeSheet(); };
+        $("asDel").onclick = () => { const b = $("asDel"); if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Tap again to delete"; return; } commit(s => { s.assets = s.assets.filter(x => x.id !== id); }); closeSheet(); toast("Deleted"); };
+      }
+      $("asSave").onclick = async () => {
+        const title = $("asTitle").value.trim(); if (!title) { $("asErr").textContent = "Give it a title."; $("asErr").hidden = false; $("asTitle").focus(); return; }
+        let link = $("asLink").value.trim(); if (link && !/^https?:\/\//i.test(link)) link = "https://" + link;
+        const aid = id || "as-" + uid();
+        if (pending) { if (assetsApi) { try { image = {assetId: (await assetsApi.upload(pending.blob)).id}; } catch (e) { image = null; } } else { try { localStorage.setItem("dreamLife.img." + aid, pending.dataUrl); image = {local: aid}; } catch (e) { image = null; toast("No room on this device for the image; saved without it."); } } }
+        const cat = $("asCat").value, data = {title, note: $("asNote").value.trim(), status, date: $("asDate").value || "", link, image, tags: $("asTags").value.split(",").map(t => t.trim().replace(/^#/, "")).filter(Boolean).slice(0, 8), catId: cat};
+        commit(s => {
+          if (id) { const x = s.assets.find(x => x.id === id); if (x.catId !== cat) x.order = Math.max(0, ...s.assets.filter(y => y.catId === cat).map(y => y.order + 1)); Object.assign(x, data); }
+          else s.assets.push({id: aid, order: Math.max(0, ...s.assets.filter(y => y.catId === cat).map(y => y.order + 1)), createdAt: today(), ...data});
+        });
+        assetOpen.add(cat); closeSheet(); toast(id ? "Saved" : "Added to your archive");
+      };
+    });
+}
+
+/* --- JOURNAL: private notes, reminders and letters to yourself. Not tied to any goal. --- */
+let noteFilter = "all", noteQuery = "";
+const nowLocal = () => { const d = new Date(); d.setSeconds(0, 0); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
+const fmtWhen = at => new Date(at).toLocaleString(undefined, {weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit"});
+function renderJournal(){
+  const el = $("p-journal"), q = noteQuery.trim().toLowerCase();
+  const list = S.notes.filter(n => noteFilter === "pinned" ? n.pinned : noteFilter === "fav" ? n.fav : true)
+    .filter(n => !q || (n.title + " " + n.body).toLowerCase().includes(q)).sort((a, b) => b.at.localeCompare(a.at));
+  el.innerHTML = `
+    <div class="phead"><div><h1>Journal</h1><div class="sub">Private notes, reminders and letters to yourself</div></div><button class="btn" id="newNote">${ICON.plus}New note</button></div>
+    <input type="search" id="noteQ" value="${esc(noteQuery)}" placeholder="Search notes" aria-label="Search notes by title or text">
+    <div class="seg" role="group" aria-label="Filter notes" style="justify-self:start">${[["all", `All ${S.notes.length}`], ["pinned", `Pinned ${S.notes.filter(n => n.pinned).length}`], ["fav", `Favourites ${S.notes.filter(n => n.fav).length}`]].map(([k, l]) => `<button aria-pressed="${noteFilter === k}" data-nf="${k}">${l}</button>`).join("")}</div>
+    <div id="noteList">${list.length ? `<ul class="list">${list.map(noteRow).join("")}</ul>` : `<div class="empty"><b>${q ? "No notes match" : noteFilter === "all" ? "A page of your own" : noteFilter === "pinned" ? "Nothing pinned" : "No favourites yet"}</b>${q ? "Try another word." : noteFilter === "all" ? "Write a thought, a reminder, or a letter to your future self. It doesn't need to be tied to a goal." : "Open a note and pin it or mark it as a favourite."}</div>`}</div>`;
+  $("newNote").onclick = () => editNote(null);
+  $("noteQ").oninput = e => { noteQuery = e.target.value; const pos = e.target.selectionStart; renderJournal(); const i = $("noteQ"); i.focus(); i.setSelectionRange(pos, pos); };
+  el.querySelectorAll("[data-nf]").forEach(b => b.onclick = () => { noteFilter = b.dataset.nf; renderJournal(); });
+  el.querySelectorAll("[data-note]").forEach(b => b.onclick = () => editNote(b.dataset.note));
+}
+function noteRow(n){
+  return `<li><button class="rowbtn" data-note="${n.id}"><span class="rmeta"><span>${esc(fmtWhen(n.at))}</span>${n.pinned ? `<span class="tag sea">Pinned</span>` : ""}${n.fav ? `<span class="tag green">Favourite</span>` : ""}</span>
+    <span class="rtitle">${esc(n.title || "Untitled")}</span>${n.body ? `<span class="note-ex">${esc(n.body.slice(0, 220))}</span>` : ""}</button></li>`;
+}
+function editNote(id){
+  const n = id ? S.notes.find(x => x.id === id) : {title: "", body: "", at: nowLocal(), pinned: false, fav: false};
+  let pinned = n.pinned, fav = n.fav;
+  openSheet(id ? "Note" : "New note", `
+    <input type="text" id="nTitle" class="note-title" value="${esc(n.title)}" placeholder="Title" aria-label="Title" maxlength="120">
+    <div class="note-meta"><label class="field" style="flex:1"><span>Date and time</span><input type="datetime-local" id="nAt" value="${esc(n.at)}"></label>
+      <div class="actions" style="align-self:end"><button type="button" class="pill" id="nPin" aria-pressed="${pinned}">Pin</button><button type="button" class="pill" id="nFav" aria-pressed="${fav}">Favourite</button></div></div>
+    <textarea id="nBody" class="note-body" placeholder="Write freely…" aria-label="Note">${esc(n.body)}</textarea>
+    ${id && n.updatedAt && n.updatedAt !== n.at ? `<small class="muted">Last edited ${esc(fmtWhen(n.updatedAt))}</small>` : ""}`,
+    `${id ? `<button class="btn danger" id="nDel">Delete</button>` : `<button class="btn ghost" id="nCancel">Cancel</button>`}<button class="btn" id="nSave">${id ? "Save" : "Save note"}</button>`, sh => {
+      sh.classList.add("tall");
+      $("nPin").onclick = () => { pinned = !pinned; $("nPin").setAttribute("aria-pressed", pinned); };
+      $("nFav").onclick = () => { fav = !fav; $("nFav").setAttribute("aria-pressed", fav); };
+      const c = $("nCancel"); if (c) c.onclick = closeSheet;
+      const d = $("nDel"); if (d) d.onclick = () => { if (d.dataset.confirm !== "1") { d.dataset.confirm = "1"; d.textContent = "Tap again to delete"; return; } commit(s => { s.notes = s.notes.filter(x => x.id !== id); }); closeSheet(); toast("Note deleted"); };
+      $("nSave").onclick = () => {
+        const title = $("nTitle").value.trim(), body = $("nBody").value.replace(/\s+$/, "");
+        if (!title && !body.trim()) { closeSheet(); return; }
+        const at = $("nAt").value || nowLocal();
+        commit(s => { if (id) Object.assign(s.notes.find(x => x.id === id), {title, body, at, pinned, fav, updatedAt: nowLocal()}); else s.notes.push({id: "n-" + uid(), title, body, at, pinned, fav, createdAt: nowLocal()}); });
+        closeSheet(); toast(id ? "Note saved" : "Saved to your journal");
+      };
+      if (!id) $("nBody").focus();
+    });
+}
+
+/* --- WEEKLY HISTORY: jump to any week, search everything you've logged --- */
+let weekQuery = "";
+function weekSearch(q){
+  q = q.trim().toLowerCase(); if (q.length < 2) return [];
+  const hits = [], has = t => t && t.toLowerCase().includes(q);
+  for (const e of S.entries) { const f = [e.text, e.learned, e.blocked, e.next].find(has); if (f) hits.push({ws: weekStart(e.date), date: e.date, kind: e.type === "did" ? "Accomplished" : "Worked on", text: f}); }
+  for (const [ws, r] of Object.entries(S.reflections)) { const f = [r.text, r.next].find(has); if (f) hits.push({ws, date: ws, kind: "Weekly review", text: f}); }
+  for (const g of S.goals) {
+    if (has(g.title)) { const d = g.doneAt || g.deadline; hits.push({ws: weekStart(d), date: d, kind: g.status === "done" ? "Goal finished" : g.status === "cancelled" ? "Goal let go" : "Goal due", text: g.title}); }
+    for (const m of g.milestones) if (m.doneAt && has(m.title)) hits.push({ws: weekStart(m.doneAt), date: m.doneAt, kind: "Step done", text: m.title});
+  }
+  return hits.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40);
+}
+const weekRange = ws => `${fmt(ws, {day: "numeric", month: "short"})} – ${fmt(addDays(ws, 6), {day: "numeric", month: "short", year: "numeric"})}`;
+function weekHistoryHTML(){
+  const hits = weekSearch(weekQuery), byWeek = new Map(); hits.forEach(h => { if (!byWeek.has(h.ws)) byWeek.set(h.ws, []); byWeek.get(h.ws).push(h); });
+  return `<section class="panel"><div class="eyebrow">Past weeks</div>
+    <div class="wk-tools"><label class="field" style="flex:1"><span>Go to the week of</span><input type="date" id="wJump" value="${weekOf}" max="${today()}"></label>${weekOf !== weekStart(today()) ? `<button class="btn ghost sm" id="wToday" style="align-self:end">This week</button>` : ""}</div>
+    <input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search everything you've logged" aria-label="Search past weeks">
+    <div id="wResults">${weekQuery.trim().length < 2 ? "" : hits.length ? [...byWeek].map(([ws, list]) => `<button class="wk-hit" data-week="${ws}"><span class="eyebrow">${esc(weekRange(ws))}</span>${list.slice(0, 3).map(h => `<span><b>${esc(h.kind)}</b> ${esc(h.text.length > 90 ? h.text.slice(0, 90) + "…" : h.text)}</span>`).join("")}${list.length > 3 ? `<span class="muted">+${list.length - 3} more</span>` : ""}</button>`).join("") : `<p class="muted" style="margin:0;font-size:13px">Nothing found for “${esc(weekQuery)}”.</p>`}</div></section>`;
+}
+function wireWeekHistory(){
+  $("wJump").onchange = e => { if (e.target.value) { weekOf = weekStart(e.target.value); renderWeek(); } };
+  const t = $("wToday"); if (t) t.onclick = () => { weekOf = weekStart(today()); renderWeek(); };
+  $("wQ").oninput = e => { weekQuery = e.target.value; const pos = e.target.selectionStart; renderWeek(); const i = $("wQ"); i.focus(); i.setSelectionRange(pos, pos); };
+  document.querySelectorAll("[data-week]").forEach(b => b.onclick = () => { weekOf = b.dataset.week; weekQuery = ""; renderWeek(); $("pmain").scrollTop = 0; });
+}
+
 /* --- ACCOUNT --- */
 function renderAccount(){
   const el = $("p-account"), done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length, metOrig = done.filter(g => g.doneAt <= originalDeadline(g)).length;
@@ -2983,7 +3169,7 @@ function renderAccount(){
 /* --- backup and restore: one JSON file holding everything --- */
 function backupData(){
   const images = {};
-  for (const a of S.aspirations) if (a.image && a.image.local) { const d = localImg(a.image.local); if (d) images[a.image.local] = d; }
+  for (const a of [...S.aspirations, ...S.assets]) if (a.image && a.image.local) { const d = localImg(a.image.local); if (d) images[a.image.local] = d; }
   return JSON.stringify({app: "paint-a-picture", version: 2, exportedAt: new Date().toISOString(), state: S, images});
 }
 async function downloadBackup(){
@@ -3072,6 +3258,20 @@ function demoState(profile){
   E(-15, "Chose the conference and blocked the dates", ["dg10"], 1, "did");
   E(-21, "Took a week-long trip on my own", ["dg15"], 3, "did", {learned: "I'm braver than I thought"});
   s.reflections[weekStart(d(-7))] = {text: "Small sessions added up. The dinner made the week.", next: "Book the sailing course"};
+  // a fictional archive and journal
+  const cat = name => s.assetCats.find(c => c.name === name).id;
+  const AS = (catName, title, note, status, date, tags, link) => s.assets.push({id: "das" + s.assets.length, catId: cat(catName), order: s.assets.length, title, note, status, date: date || "", tags: tags || [], link: link || "", image: null, createdAt: d(-30)});
+  AS("Sketches", "Monsoon fashion illustrations", "Twelve looks for a rainy-season capsule.", "done", d(-120), ["fashion"]);
+  AS("Sketches", "Daily sketchbook", "One page a day, mostly people on trains.", "doing", "", ["habit"]);
+  AS("Apps", "Recipe swap app", "A tiny app for trading family recipes.", "planned", d(90), ["side project"]);
+  AS("Podcasts", "Studio Hours, episode 1", "Twenty minutes on finding your first clients.", "done", d(-40), ["podcast"]);
+  AS("Podcasts", "Ideas for upcoming episodes", "Pricing, burnout, working abroad.", "planned", "", ["podcast"]);
+  AS("Jobs & Career", "First design lead role", "Led a team of three for a year.", "done", d(-400));
+  AS("Skills & Learning", "Ceramics course", "Eight Sunday mornings at the studio.", "done", d(-9), ["craft"]);
+  const N = (title, body, days, extra) => s.notes.push(Object.assign({id: "dn" + s.notes.length, title, body, at: d(days) + "T21:30", pinned: false, fav: false, createdAt: d(days) + "T21:30"}, extra || {}));
+  N("Letter to me in five years", "I hope you still make things with your hands. I hope you took the sailing course.", -20, {pinned: true, fav: true});
+  N("Reminder", "Ask for feedback before the portfolio goes live.", -6, {pinned: true});
+  N("After the first dinner", "Seven people came. Everyone stayed until midnight. Do it again.", -2, {fav: true});
   return s;
 }
 const DEMO_KEY = "dreamLifeBuilder.demo.v1", MODE_KEY = "dreamLife.mode";

@@ -15,6 +15,9 @@ python3 -m http.server 8000
 - Navigation: drag or two fingers to pan in any direction, pinch / wheel / +− to zoom, tap to move the lens, drag the lens itself to move it.
 - One character, two render modes: the pixel sprite, or a detailed 2D figure drawn with vector paths on a crisp overlay that gains detail as you zoom in.
 - Dream pictures come from a built-in library matched to the words of the dream, or an uploaded photo. Nothing is picked automatically.
+- My Assets (menu): a personal archive in custom categories (create, rename, reorder, delete), each item with a note, date, status, link, cover and tags.
+- Journal (menu): private notes with automatic date and time (editable), pins, favourites, All / Pinned / Favourites filters and search.
+- This week: jump to any week by date and search everything logged (entries, reflections, goals, steps); past weeks are never reset.
 - Accounts: guests keep everything in the browser. Email sign-in and cross-device sync are not built yet; the email field is stored locally only. Inside claude.ai the data syncs to the viewer's own Claude account.
 - One self-contained file: HTML, CSS and plain JavaScript. No build step.
 - The world is drawn procedurally on a canvas in three layers: terrain (built once), dream landmarks (rebuilt only when dreams change) and per-frame life (character, traffic, water). Only the visible part is drawn each frame; the fog and lens are composited on a viewport-sized canvas.
