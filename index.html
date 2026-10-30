@@ -45,6 +45,7 @@ button{cursor:pointer}
 .home-top>*{pointer-events:auto}
 .mark{display:grid;gap:1px;text-shadow:0 1px 10px rgba(0,0,0,.55)}
 .mark-name{font-family:var(--serif);font-size:20px;line-height:1;letter-spacing:.005em}
+.mark-app{font-family:var(--sans);font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.01em}
 .mark-sub{font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.02em}
 .gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   }
@@ -230,7 +231,8 @@ select{min-height:44px}
 /* ---------- world HUD, places strip, tips ---------- */
 #hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .journey{display:flex;justify-content:space-between;height:44px;padding:0 6px;bottom:calc(78px + env(safe-area-inset-bottom,0px))}
-.journey::before{left:16px;right:16px;top:auto;bottom:9px;background:rgba(255,255,255,.2)}
+.journey::before{display:none}
+.journey .link{flex:1 1 8px;min-width:8px;height:1px;background:rgba(255,255,255,.28);align-self:center}
 .journey button{flex:0 1 auto;min-width:44px;height:44px;padding:0 8px;font-size:13px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s;box-sizing:border-box}
 .journey .you{bottom:8px}
 .tips{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
@@ -305,7 +307,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <section class="screen home" id="home">
     <div id="stage"><canvas id="scene" tabindex="0" aria-label="Your dream life world. Drag to move around, pinch or scroll to zoom, tap to move the lens. Arrow keys pan, plus and minus zoom."></canvas><canvas id="hud" aria-hidden="true"></canvas></div>
     <header class="home-top">
-      <div class="mark"><span class="mark-name" id="worldTitle">Your World</span><span class="mark-sub" id="greet"></span></div>
+      <div class="mark"><span class="mark-name"><span id="worldTitle">Your World</span><span class="mark-app"> · Paint a Picture</span></span><span class="mark-sub" id="greet"></span></div>
       <button class="gbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <div class="home-chips" id="homeChips"></div>
@@ -1957,7 +1959,7 @@ function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { 
 function renderPlacesNav(){
   const ds = worldDests().filter(d => !d.placeholder);
   const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
-  el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}"><span>${esc(d.name)}</span></button>`).join("") : `<button data-go="dreams">Add places</button>`);
+  el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}"><span>${esc(d.name)}</span></button>`).join(`<i class="link" aria-hidden="true"></i>`) : `<button data-go="dreams">Add places</button>`);
   markPlaces();
 }
 // A pink underline slides to the place you're looking at and colours its name.
@@ -2230,15 +2232,118 @@ function suggestVisuals(text, cat){
   if (s.length > 3 && !hits.length) { const k = CAT_KIND[cat]; const d = LIB.find(l => l.kind === k && !l.avatar && l.id !== "japan"); if (d) hits.push(d); }
   return hits.sort((a, b) => (b.avatar ? 1 : 0) - (a.avatar ? 1 : 0)).slice(0, 4);
 }
+/* ---------------- pictures made for each dream ----------------
+   A dream is sorted into a theme from its words (people, home, career, money, travel…), and its
+   picture is composed in pixel art: the backdrop of the place it belongs to, with the theme's subject
+   in front. Adding a theme is one entry here: its words, its subject, and the landmark it becomes. */
+const THEMES = [
+  {id: "couple", label: "You and your partner", kind: "picnic", cat: "Relationships & lifestyle", words: "husband hubby wife partner spouse boyfriend girlfriend fiance fiancee soulmate relationship dating date romance romantic love lover"},
+  {id: "wedding", label: "Your wedding", kind: "picnic", cat: "Relationships & lifestyle", words: "wedding marry married marriage bride groom engagement engaged ring shaadi"},
+  {id: "pet", label: "A pet", kind: "garden", cat: "Home & surroundings", words: "dog dogs puppy pup cat cats kitten pet pets"},
+  {id: "family", label: "A family of your own", kind: "picnic", cat: "Relationships & lifestyle", words: "baby babies kid kids child children son daughter mother motherhood pregnant pregnancy adopt"},
+  {id: "parents", label: "Time with family", kind: "picnic", cat: "Relationships & lifestyle", words: "family parents parent mom mum mummy mama dad papa father grandparents grandma nani dadi sister brother sibling cousins"},
+  {id: "friends", label: "Friends & community", kind: "picnic", cat: "Relationships & lifestyle", words: "friend friends friendship community people circle team network networking club"},
+  {id: "fitness", label: "Training", kind: "fitness", cat: "Fitness & wellbeing", words: "kg kgs kilo kilos weight fit fitness gym run running marathon 5k 10k strong strength muscle workout train training yoga pilates abs lose lbs pounds sport"},
+  {id: "self", label: "You, at your best", kind: "fountain", cat: "Fitness & wellbeing", words: "confident confidence style outfit wardrobe fashion skin hair glow selfcare self-care therapy calm peace mindful meditation happy happiness health healthy sleep"},
+  {id: "home", label: "A home of your own", kind: "home", cat: "Home & surroundings", words: "house home cottage own place buy property land garden-house villa bungalow"},
+  {id: "apartment", label: "A place in the city", kind: "villa", cat: "Places & travel", words: "apartment flat penthouse condo loft move relocate live living"},
+  {id: "car", label: "Your car", kind: "car", cat: "Money & material", words: "car porsche 911 tesla bmw mercedes audi ferrari jeep drive driving licence license vehicle"},
+  {id: "drift", label: "Drifting", kind: "drift", cat: "Experiences & adventures", words: "drift drifting track circuit racing race motorsport"},
+  {id: "study", label: "Studying", kind: "campus", cat: "Career & education", words: "study studying university college campus masters master degree phd mba school admission harvard mit stanford oxford cambridge mde course exam graduate graduation"},
+  {id: "career", label: "Work you love", kind: "studio", cat: "Career & education", words: "job career work promotion role office manager lead design designer portfolio clients client freelance interview salary-hike"},
+  {id: "business", label: "Your own business", kind: "studio", cat: "Career & education", words: "business company startup founder launch brand shop store studio agency entrepreneur"},
+  {id: "money", label: "Savings & security", kind: "fountain", cat: "Money & material", words: "money save saving savings invest investing investment fund debt loan salary income rich wealth financial finance budget lakh lakhs crore emergency retire retirement"},
+  {id: "travel", label: "Travel", kind: "balloon", cat: "Places & travel", words: "travel trip visit explore abroad vacation holiday holidays flight fly backpack world tour journey"},
+  {id: "beach", label: "By the sea", kind: "beach", cat: "Experiences & adventures", words: "beach surf surfing swim swimming ocean sea island sail sailing dive diving boat"},
+  {id: "nature", label: "Mountains & nature", kind: "balloon", cat: "Experiences & adventures", words: "mountain mountains hike hiking trek trekking camp camping forest nature himalaya alps snow ski skiing lake"},
+  {id: "garden", label: "A garden", kind: "garden", cat: "Home & surroundings", words: "garden gardening plant plants grow farm vegetables flowers"},
+  {id: "food", label: "Food & cooking", kind: "picnic", cat: "Skills & growth", words: "cook cooking bake baking food chef restaurant cafe recipe kitchen"},
+  {id: "create", label: "Making things", kind: "studio", cat: "Skills & growth", words: "art paint painting draw drawing music sing singing guitar piano dance dancing write writing book novel pottery ceramics photography film craft"},
+  {id: "learn", label: "Learning", kind: "library", cat: "Skills & growth", words: "learn learning language french spanish japanese read reading books skill skills certificate certification"}
+].map(t => ({...t, set: new Set(t.words.split(" "))}));
+const themeById = id => THEMES.find(t => t.id === id);
+const CAT_THEME = {"Relationships & lifestyle": "parents", "Fitness & wellbeing": "fitness", "Home & surroundings": "home", "Career & education": "career", "Career & creative work": "career", "Money & material": "money", "Places & travel": "travel", "Places to live": "apartment", "Experiences & adventures": "travel", "Skills & growth": "learn"};
+// Themes ranked by how many of the dream's words they share (whole words, plurals and -ing forms included).
+function classifyDream(text, cat){
+  const words = String(text || "").toLowerCase().match(/[a-z0-9-]+/g) || [], forms = new Set();
+  for (const w of words) { forms.add(w); forms.add(w.replace(/(ies)$/, "y")); forms.add(w.replace(/(es|s)$/, "")); forms.add(w.replace(/ing$/, "")); forms.add(w.replace(/ed$/, "")); }
+  const ranked = THEMES.map((t, i) => ({t, i, n: [...forms].filter(f => t.set.has(f)).length})).filter(x => x.n).sort((a, b) => b.n - a.n || a.i - b.i).map(x => x.t);
+  if (!ranked.length && words.length && CAT_THEME[cat]) ranked.push(themeById(CAT_THEME[cat]));
+  return ranked;
+}
+// backdrops, one per kind of place (64 × 48, ground line at y 38)
+function genBackdrop(g, env){
+  const ground = (c1, c2) => { for (let y = 38; y < 48; y++) for (let x = 0; x < 64; x++) F(g, x, y, 1, 1, hash(x, y, 31) > .8 ? c2 : c1); };
+  switch (env) {
+    case "la": sky(g, 64, 48, "#f6a65a", "#f7c1c9"); oval(g, 48, 24, 6, 6, "#ffd98a"); F(g, 0, 30, 64, 8, "#3483a8"); F(g, 0, 30, 64, 1, "#8cc6e6"); ground(C.sand[1], C.sand[2]); palm(g, 6, 40, 20); palm(g, 58, 41, 16); break;
+    case "mumbai": sky(g, 64, 48, "#7d6aa8", "#f2a07a"); F(g, 0, 28, 64, 10, "#2c6a88"); for (let x = 2; x < 64; x += 9) { F(g, x, 22, 1, 8, C.out); F(g, x - 1, 21, 3, 1, "#ffd98a"); } ground("#c9c1b2", "#d6cfc1"); break;
+    case "delhi": sky(g, 64, 48, "#f3c27a", "#f8e2b8"); lodhiDome(g, 50, 36); ground(PAL.delhi[1], PAL.delhi[2]); roundTree(g, 8, 38, 5, C.neem); break;
+    case "boston": sky(g, 64, 48, "#a9cbe6", "#e6f1f8"); brickHall(g, 36, 36, 26, 2, true); ground(PAL.boston[1], PAL.boston[2]); roundTree(g, 8, 38, 5, AUTUMN[0]); break;
+    case "japan": sky(g, 64, 48, "#f6d5e2", "#fdf0f4"); peak(g, 32, 34, 30, 22); ground(PAL.japan[1], PAL.japan[2]); roundTree(g, 56, 38, 5, SAKURA); break;
+    case "city": sky(g, 64, 48, "#f3c7a2", "#f8e3d2"); for (let i = 0; i < 7; i++) tower(g, i * 9 + 1, 37, 8, 3 + ((i * 5) % 4), pick(["#c9d2d8", "#d9dde2", "#b9c6cf", "#e5e1d8"], i / 7)); ground("#a9a59c", "#b7b3aa"); break;
+    case "coast": sky(g, 64, 48, "#9fd3ec", "#e7f6fb"); F(g, 0, 30, 64, 8, "#3483a8"); ground(C.sand[1], C.sand[2]); palm(g, 58, 40, 15, true); break;
+    case "nature": sky(g, 64, 48, "#bcd8ee", "#e6f1f8"); peak(g, 18, 34, 20, 18); peak(g, 46, 36, 22, 16); ground(PAL.nature[1], PAL.nature[2]); pine(g, 4, 40, 8); pine(g, 60, 40, 9); break;
+    case "campus": sky(g, 64, 48, "#bcd8ee", "#e6f1f8"); campusHall(g, 20, 36, 26); ground(PAL.campus[1], PAL.campus[2]); break;
+    default: sky(g, 64, 48, "#bcd8ee", "#e6f1f8"); ground(C.grass[2], C.grass[3]); roundTree(g, 6, 38, 5); roundTree(g, 58, 39, 4);
+  }
+}
+// people in the world's style, the same height as her sprite (28 px), feet at (x, by)
+function genPerson(g, x, by, o){
+  o = o || {}; const skin = o.skin || "#c08a64", hair = o.hair || "#2a1d17", top = o.top || "#5a7fa8", legs = o.legs || "#3a3f4a", k = o.small ? .6 : 1;
+  const head = Math.round(7 * k), body = Math.round(10 * k), leg = Math.round(11 * k), hy = by - head - body - leg;
+  F(g, x - 3, hy, 7, head, C.out); F(g, x - 2, hy + 1, 5, head - 1, skin); F(g, x - 3, hy - 1, 7, 3, hair); if (o.long) { F(g, x - 4, hy, 2, head + 4, hair); F(g, x + 3, hy, 2, head + 4, hair); }
+  F(g, x - 1, hy + 3, 1, 1, "#1e1e22"); F(g, x + 1, hy + 3, 1, 1, "#1e1e22");
+  F(g, x - 4, hy + head, 9, body, C.out); F(g, x - 3, hy + head, 7, body - 1, top); F(g, x - 5, hy + head + 1, 1, body - 2, skin); F(g, x + 5, hy + head + 1, 1, body - 2, skin);
+  F(g, x - 3, hy + head + body, 3, leg, legs); F(g, x + 1, hy + head + body, 3, leg, legs); F(g, x - 3, by - 1, 3, 1, C.out); F(g, x + 1, by - 1, 3, 1, C.out);
+}
+const her = (g, x, by) => g.drawImage(avatarSprite("down", 0), x - 7, by - 28);
+const heart = (g, x, y, c) => { c = c || "#f04f85"; F(g, x - 2, y, 2, 1, c); F(g, x + 1, y, 2, 1, c); F(g, x - 3, y + 1, 7, 2, c); F(g, x - 2, y + 3, 5, 1, c); F(g, x - 1, y + 4, 3, 1, c); F(g, x, y + 5, 1, 1, c); };
+const GEN_SUBJECT = {
+  couple: g => { her(g, 25, 44); genPerson(g, 38, 44, {top: "#2f4a6a", legs: "#2b2b33"}); F(g, 31, 34, 3, 1, "#c08a64"); heart(g, 31, 12); },
+  wedding: g => { for (let a = 0; a < 26; a++) { const t = a / 25 * Math.PI; F(g, 32 - Math.cos(t) * 15, 38 - Math.sin(t) * 22, 2, 2, a % 3 ? "#f2a7bf" : "#f4f1e8"); } her(g, 26, 44); genPerson(g, 39, 44, {top: "#22252c", legs: "#22252c"}); heart(g, 32, 10, "#ffd98a"); },
+  family: g => { her(g, 20, 44); genPerson(g, 44, 44, {top: "#2f4a6a"}); genPerson(g, 32, 44, {small: true, top: "#f2cf5b", legs: "#5a7fa8", hair: "#3b2218"}); heart(g, 32, 14); },
+  parents: g => { genPerson(g, 16, 44, {hair: "#c9c6c0", top: "#8a5a44"}); her(g, 32, 44); genPerson(g, 48, 44, {hair: "#d9d6d0", long: true, top: "#c0392b", legs: "#7a2b2b"}); F(g, 20, 41, 24, 4, C.wood[1]); F(g, 20, 41, 24, 1, C.wood[3]); },
+  friends: g => { genPerson(g, 14, 44, {top: "#e2574a", long: true}); her(g, 32, 44); genPerson(g, 50, 44, {top: "#239b56", hair: "#5a3a22"}); },
+  pet: g => { her(g, 24, 44); F(g, 36, 37, 10, 5, "#a8693a"); F(g, 44, 34, 4, 4, "#a8693a"); F(g, 45, 33, 2, 2, "#7a4a2a"); F(g, 37, 42, 2, 2, "#7a4a2a"); F(g, 43, 42, 2, 2, "#7a4a2a"); F(g, 35, 36, 2, 1, "#a8693a"); F(g, 46, 35, 1, 1, "#1e1e22"); },
+  fitness: g => { her(g, 22, 44); F(g, 34, 35, 20, 2, "#3a404d"); F(g, 33, 31, 3, 10, "#1e1e22"); F(g, 52, 31, 3, 10, "#1e1e22"); },
+  self: g => { her(g, 32, 44); for (let i = 0; i < 7; i++) { const a = i / 7 * 6.28; F(g, 32 + Math.cos(a) * 13, 28 + Math.sin(a) * 12, 1, 1, i % 2 ? "#ffd98a" : "#ffffff"); } },
+  home: g => { cottage(g, 34, 44, ROOF.home, C.wall); bush(g, 12, 44, 4, "#ef8fa0"); },
+  apartment: g => { tower(g, 22, 44, 20, 6, "#e9e6df"); her(g, 50, 45); },
+  car: g => { porsche(g, 32, 45); },
+  drift: g => { for (let i = 0; i < 6; i++) { g.globalAlpha = .55 - i * .07; oval(g, 12 - i * 2, 40 - i, 3 + i, 2 + (i >> 1), "#f2f3f5"); } g.globalAlpha = 1; porsche(g, 34, 45); },
+  study: g => { her(g, 22, 44); F(g, 36, 38, 16, 2, "#7a3a2a"); F(g, 37, 35, 14, 3, "#2c4f7a"); F(g, 38, 32, 12, 3, "#c0392b"); F(g, 40, 26, 8, 2, "#1e1e22"); F(g, 43, 24, 2, 2, "#1e1e22"); F(g, 47, 27, 1, 4, "#f2cf5b"); },
+  career: g => { F(g, 26, 34, 28, 3, C.wood[2]); F(g, 28, 37, 2, 7, C.wood[1]); F(g, 50, 37, 2, 7, C.wood[1]); F(g, 33, 26, 14, 8, "#3a404d"); F(g, 34, 27, 12, 6, "#a3d1ea"); F(g, 31, 33, 18, 1, "#9aa0a8"); her(g, 16, 44); },
+  business: g => { F(g, 30, 22, 30, 18, C.out); F(g, 31, 23, 28, 17, "#f2efe8"); F(g, 31, 23, 28, 4, "#f04f85"); F(g, 34, 29, 8, 11, "#25415a"); F(g, 46, 29, 10, 6, "#a3d1ea"); her(g, 16, 44); },
+  money: g => { for (let s = 0; s < 4; s++) for (let i = 0; i < 3 + s; i++) { const x = 18 + s * 10, y = 42 - i * 3; oval(g, x, y, 4, 2, "#8f6a14"); oval(g, x, y - 1, 4, 2, i % 2 ? "#e6b84a" : "#f2cf5b"); } },
+  travel: g => { F(g, 38, 12, 14, 2, "#f2efe8"); F(g, 43, 9, 3, 8, "#f2efe8"); F(g, 38, 11, 2, 2, "#f04f85"); her(g, 22, 44); F(g, 30, 34, 8, 10, "#c0643a"); F(g, 32, 32, 4, 2, C.out); },
+  beach: g => { beach(g, 40, 44); F(g, 12, 32, 4, 12, "#f0c75a"); F(g, 13, 32, 2, 12, "#d9584b"); },
+  nature: g => { her(g, 32, 44); F(g, 39, 22, 1, 22, C.wood[1]); },
+  garden: g => { gardenBeds(g, 30, 44); },
+  food: g => { F(g, 20, 36, 24, 3, C.wood[2]); oval(g, 32, 33, 7, 3, "#3a404d"); oval(g, 32, 32, 6, 2, "#c0643a"); for (let i = 0; i < 3; i++) F(g, 29 + i * 3, 24 + (i % 2), 1, 5, "rgba(255,255,255,.7)"); her(g, 52, 44); },
+  create: g => { F(g, 34, 20, 18, 14, C.out); F(g, 35, 21, 16, 12, "#f6f3ea"); F(g, 37, 24, 5, 4, "#f04f85"); F(g, 43, 26, 6, 5, "#5aa7d6"); line(g, 36, 34, 34, 44, C.wood[1]); line(g, 50, 34, 52, 44, C.wood[1]); her(g, 20, 44); },
+  learn: g => { cottage(g, 40, 44, ROOF.library, C.stoneWall); her(g, 14, 45); }
+};
+const genCache = new Map();
+function genUrl(o){
+  const key = o.t + "|" + (o.b || "town") + "|" + lookKey();
+  if (genCache.has(key)) return genCache.get(key);
+  const s = document.createElement("canvas"); s.width = 64; s.height = 48; const g = s.getContext("2d");
+  genBackdrop(g, o.b); (GEN_SUBJECT[o.t] || GEN_SUBJECT.self)(g);
+  const c = document.createElement("canvas"); c.width = 192; c.height = 144; const cg = c.getContext("2d"); cg.imageSmoothingEnabled = false; cg.drawImage(s, 0, 0, 192, 144);
+  const url = c.toDataURL("image/png"); if (genCache.size > 80) genCache.clear(); genCache.set(key, url); return url;
+}
 // The picker: suggestions from her words, the whole library on request, her own photo, or nothing.
 function visualPicker(root, o){
   let browse = false, cur = o.value || null; // {lib} | {assetId} | {local} | {pending: readImage result}
   const thumb = v => v.pending ? v.pending.dataUrl : imgUrl(v);
-  const same = (a, b) => !!(a && b && ((a.lib && a.lib === b.lib) || (a.assetId && a.assetId === b.assetId) || (a.local && a.local === b.local) || (a.pending && a.pending === b.pending)));
-  const tile = (v, label) => `<button type="button" class="vis-tile" aria-pressed="${same(cur, v)}" data-v='${esc(JSON.stringify(v.lib ? {lib: v.lib} : v.pending ? {pending: 1} : v))}'><img src="${esc(thumb(v))}" alt=""><span>${esc(label)}</span></button>`;
+  const same = (a, b) => !!(a && b && ((a.lib && a.lib === b.lib) || (a.gen && b.gen && a.gen.t === b.gen.t && a.gen.b === b.gen.b) || (a.assetId && a.assetId === b.assetId) || (a.local && a.local === b.local) || (a.pending && a.pending === b.pending)));
+  const tile = (v, label) => `<button type="button" class="vis-tile" aria-pressed="${same(cur, v)}" data-v='${esc(JSON.stringify(v.lib ? {lib: v.lib} : v.gen ? {gen: v.gen} : v.pending ? {pending: 1} : v))}'><img src="${esc(thumb(v))}" alt=""><span>${esc(label)}</span></button>`;
   function draw(){
-    const sugg = suggestVisuals(o.getText(), o.getCat ? o.getCat() : ""), own = cur && !cur.lib ? cur : null;
-    root.innerHTML = `<div class="vis-row">${own ? tile(own, "Your image") : ""}${sugg.map(l => tile({lib: l.id}, l.label)).join("") || `<span class="muted" style="font-size:13px">Describe the dream and pictures will be suggested here.</span>`}</div>
+    const text = o.getText(), cat = o.getCat ? o.getCat() : "", env = o.getEnv ? o.getEnv() : "town";
+    const themes = classifyDream(text, cat).slice(0, 2), made = themes.map(t => ({gen: {t: t.id, b: env}, label: t.label}));
+    if (cur && cur.gen && !made.some(m => same(m, cur))) made.unshift({gen: cur.gen, label: themeById(cur.gen.t)?.label || "Your picture"});
+    const sugg = suggestVisuals(text, cat).filter(l => !themes.some(t => t.kind === l.kind) || l.avatar).slice(0, 4 - made.length), own = cur && !cur.lib && !cur.gen ? cur : null;
+    root.innerHTML = `<div class="vis-row">${own ? tile(own, "Your image") : ""}${made.map(m => tile(m, m.label)).join("")}${sugg.map(l => tile({lib: l.id}, l.label)).join("") || (made.length ? "" : "")}${!made.length && !sugg.length ?  `<span class="muted" style="font-size:13px">Describe the dream and pictures will be suggested here.</span>` : ""}</div>
       ${browse ? `<div class="vis-grid">${LIB.map(l => tile({lib: l.id}, l.label)).join("")}</div>` : ""}
       <div class="actions"><button type="button" class="btn ghost sm" data-browse>${browse ? "Hide library" : "Browse all pictures"}</button>
         <label class="btn ghost sm" style="cursor:pointer">Upload your own<input type="file" accept="image/*" hidden data-file></label>
@@ -2692,8 +2797,8 @@ const KIND_WORDS = [["drift", /drift|track day|circuit|motorsport/], ["car", /po
   ["villa", /\bla\b|los angeles|city|new york|nyc|london|mumbai|apartment|penthouse|loft|move to|live in|villa/], ["home", /house|home|cottage|own place/],
   ["garden", /garden|plant|farm|flower|grow/], ["picnic", /family|\bkids?\b|child|baby|marr|wedding|partner|husband|wife|love|\bdog|friends|community|parents/],
   ["library", /study|learn|book|course|school|read|language|certif|skill/]];
-function guessKind(text, cat){ const s = String(text).toLowerCase(); for (const [k, re] of KIND_WORDS) if (re.test(s)) return k; return CAT_KIND[cat] || "fountain"; }
-const imgUrl = im => !im ? "" : im.lib ? libUrl(im.lib) : im.assetId ? "/_blob/" + im.assetId : im.local ? (localImg(im.local) || "") : "";
+function guessKind(text, cat){ const th = classifyDream(text)[0]; if (th) return th.kind; const s = String(text).toLowerCase(); for (const [k, re] of KIND_WORDS) if (re.test(s)) return k; return CAT_KIND[cat] || "fountain"; }
+const imgUrl = im => !im ? "" : im.gen ? genUrl(im.gen) : im.lib ? libUrl(im.lib) : im.assetId ? "/_blob/" + im.assetId : im.local ? (localImg(im.local) || "") : "";
 function localImg(key){ try { return localStorage.getItem("dreamLife.img." + key); } catch (e) { return null; } }
 async function readImage(file){
   const url = URL.createObjectURL(file), img = new Image();
@@ -2733,14 +2838,15 @@ function editAspiration(id, preset){
       const env = () => dests.find(d => d.id === $("aDest").value)?.env || "town";
       const prev = () => { const cvs = $("aPrev"); cvs.getContext("2d").clearRect(0, 0, 48, 44); drawKindPreview(cvs, {kind: kind || "fountain", tint, env: env()}); };
       if (dests.length) $("aDest").value = a.destinationId && dests.some(d => d.id === a.destinationId) ? a.destinationId : guessDest(a.title + " " + a.desc);
-      $("aDest").onchange = () => { destTouched = true; prev(); };
-      const picker = visualPicker($("aVis"), {value: image, getText: () => $("aTitle").value + " " + $("aDesc").value, getCat: () => $("aCat").value, onChange: v => {
+      $("aDest").onchange = () => { destTouched = true; if (image && image.gen) image = {gen: {...image.gen, b: env()}}; prev(); picker.set(image); };
+      const picker = visualPicker($("aVis"), {value: image, getText: () => $("aTitle").value + " " + $("aDesc").value, getCat: () => $("aCat").value, getEnv: env, onChange: v => {
         if (v && v.pending) { pending = v.pending; image = null; tint = v.pending.tint; }
-        else { pending = null; image = v; tint = null; if (v && v.lib && !kindTouched) { kind = libById(v.lib)?.kind || kind; $("aKind").value = kind; } }
+        else { pending = null; image = v; tint = null; if (v && (v.lib || v.gen) && !kindTouched) { kind = (v.gen ? themeById(v.gen.t)?.kind : libById(v.lib)?.kind) || kind; $("aKind").value = kind; } }
         prev();
       }});
       let pt; const sync = () => { const txt = $("aTitle").value + " " + $("aDesc").value; if (!kindTouched && !(image && image.lib)) kind = guessKind(txt, $("aCat").value);
-        if (!catTouched && txt.trim() && KIND_CAT[kind] && S.categories.includes(KIND_CAT[kind])) $("aCat").value = KIND_CAT[kind]; if (!destTouched && dests.length) $("aDest").value = guessDest(txt); $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(picker.refresh, 350); };
+        const th = classifyDream(txt)[0], gc = th ? th.cat : KIND_CAT[kind];
+        if (!catTouched && txt.trim() && gc && S.categories.includes(gc)) $("aCat").value = gc; if (!destTouched && dests.length) $("aDest").value = guessDest(txt); $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(picker.refresh, 350); };
       sync();
       $("aTitle").oninput = sync; $("aDesc").oninput = sync;
       $("aCat").onchange = () => { catTouched = true; $("aNewCatWrap").hidden = $("aCat").value !== "__new"; sync(); };
