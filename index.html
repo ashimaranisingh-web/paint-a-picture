@@ -99,6 +99,9 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 
 /* ---------- product pages ---------- */
 .pages{background:var(--paper)}
+.iconbtn{all:unset;cursor:pointer;box-sizing:border-box;width:44px;height:44px;display:grid;place-items:center;margin-left:-12px;border-radius:12px;color:var(--ink);flex:none}
+.iconbtn:hover{background:var(--sunk)}.iconbtn:focus-visible{outline:2px solid var(--accent-strong);outline-offset:-2px}
+.pmain{padding-top:env(safe-area-inset-top,0px)}
 .ptop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--paper)}
 .brand{all:unset;cursor:pointer;display:flex;align-items:center;min-height:44px;font-family:var(--serif);font-size:20px;line-height:1}
 .pbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
@@ -221,8 +224,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .toast.show{transform:translate(-50%,0);opacity:1}
 .toast.top{bottom:auto;top:calc(118px + env(safe-area-inset-top,0px))}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
-.ph-left{display:flex;align-items:center;gap:10px}.ph-left .pbtn{margin-left:-4px}
+.ph-left{display:flex;align-items:center;gap:4px}
 .phead:has(.ph-left){align-items:center}
+.pp-intro{margin:-12px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
 .as-hello{margin:-8px 0 0;font-size:15px;color:var(--ink-2)}
 .acc-head{display:flex;align-items:center;gap:6px}
 .acc-head .pbtn{border-color:transparent;background:transparent;color:var(--muted)}.acc-head .pbtn:hover{background:var(--sunk)}
@@ -391,10 +395,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 
   <!-- PRODUCT SCREENS -->
   <section class="screen pages" id="pages" hidden>
-    <header class="ptop">
-      <button class="brand" data-go="home" aria-label="Back to your world" id="brand">Paint a Picture</button>
-      <button class="pbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
-    </header>
     <main class="pmain" id="pmain">
       <div class="page" id="p-goals" hidden></div>
       <div class="page" id="p-week" hidden></div>
@@ -414,7 +414,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span>Your world</span></button>
-    <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint Reality<small>Describe the life you're building</small></span></button>
+    <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint a Picture<small>Describe the life you're building</small></span></button>
     <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
     <button role="menuitem" data-go="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg><span>Journal<small>Private notes and letters</small></span></button>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
@@ -2059,7 +2059,7 @@ function moveTraveller(ts){
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
   if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0; }
 }
-function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${D.d.tagline || PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
+function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint a Picture" : `${D.d.name} · ${D.d.tagline || PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (!b) return; if (overviewOn) { closeOverview(); setTimeout(() => travelTo(b.dataset.dest), 60); } else travelTo(b.dataset.dest); });
 
 /* ---------------- input ----------------
@@ -2186,7 +2186,7 @@ function say(text, wx, wy){
 // Which way to the place that's furthest from clear, in plain words.
 function wayTo(){
   const here = DIST.get(av.dest), far = [...DIST.values()].filter(D => D !== here && !D.d.placeholder).map(D => ({D, c: Math.max(0, ...locs.filter(l => l.D === D).map(l => locClarity(l).c))})).sort((a, b) => a.c - b.c)[0];
-  if (!here || !far) return "This is your world. Add more places in Paint Reality.";
+  if (!here || !far) return "This is your world. Add more places in Paint a Picture.";
   const dx = far.D.ox - here.ox, dy = far.D.oy - here.oy, v = dy < -10 ? "up" : dy > 10 ? "down" : "", h = dx < -10 ? "left" : dx > 10 ? "right" : "";
   return `${far.D.d.name} is ${v && h ? v + " and to the " + h : v || "to the " + h}. It's still dark there.`;
 }
@@ -2223,7 +2223,6 @@ function renderHomeChips(){
   const n = clearViewsLeft(), el = $("homeChips"), parts = [];
   if (S.demo) parts.push(`<button class="chip-g" data-go="account">Example world · make it yours</button>`);
   if (n && !vision) parts.push(`<button class="chip-g gold" id="useVision"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>See everything for 10s · ${n} earned</button>`);
-  if (!S.aspirations.length) parts.push(`<button class="chip-g" data-go="dreams">Open Paint Reality to place your first landmark</button>`);
   el.innerHTML = parts.join("");
   const v = $("useVision");
   if (v) v.onclick = () => {
@@ -2556,9 +2555,9 @@ const ROUTES = ["home", "goals", "week", "dreams", "account", "assets", "journal
 $("tipsOk").onclick = () => { $("tips").hidden = true; };
 function go(r){
   if (!ROUTES.includes(r)) r = "home";
+  if (r === "goals" && route !== "goals") openGoal = null; // cards start collapsed each time you come back
   route = r; closeMenu(); closeSheet();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
-  $("brand").textContent = r === "account" ? "Account" : "Paint a Picture";
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
   for (const k of ["goals", "week", "dreams", "account", "assets", "journal"]) $("p-" + k).hidden = k !== r;
   document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === r ? "page" : "false"));
@@ -2610,6 +2609,8 @@ const ICON = {
    A goal links to any number of dreams from Paint a Picture by their ids (aspirationIds); its progress
    is the share of its milestones that are done. Finished and let-go goals keep their history. */
 let goalTab = "active", openGoal = null;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthYear = s => { const d = parseDay(s); return MONTHS[d.getMonth()] + "'" + String(d.getFullYear()).slice(2); }; // e.g. Oct'27
 const goalAsps = g => (g.aspirationIds || []).map(aspById).filter(Boolean);
 function deadlineLine(g){
   const d = dayDiff(g.deadline, today());
@@ -2633,8 +2634,8 @@ function renderGoals(){
   const byEnd = (a, b) => (b.doneAt || b.closedAt || "").localeCompare(a.doneAt || a.closedAt || "");
   const list = goalTab === "active" ? active.sort((a, b) => a.deadline.localeCompare(b.deadline)) : done.sort(byEnd);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="pbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Goals</h1></div><button class="btn" id="newGoal">${ICON.plus}Add Goal</button></div>
-    <div class="sub" style="margin-top:-12px">${active.length} Active Goal${active.length === 1 ? "" : "s"} · ${done.length} Finished Goal${done.length === 1 ? "" : "s"}</div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Goals</h1></div><button class="btn quiet" id="newGoal">${ICON.plus}Add Goal</button></div>
+    <div class="sub" style="margin-top:-12px;font-size:11px">${active.length} Active Goal${active.length === 1 ? "" : "s"} · ${done.length} Finished Goal${done.length === 1 ? "" : "s"}</div>
     <div class="seg seg-full" role="tablist" aria-label="Goals">${[["active", "Active"], ["finished", "Finished"]].map(([k, l]) => `<button role="tab" aria-selected="${goalTab === k}" aria-pressed="${goalTab === k}" data-gt="${k}">${l}</button>`).join("")}</div>
     ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>${goalTab === "active" ? "Nothing in motion yet" : "Nothing finished yet"}</b>${goalTab === "active" ? "Add a goal and connect it to the dreams it moves you towards." : "Goals you finish will be kept here."}</div>`}
     ${goalTab === "finished" && gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
@@ -2649,7 +2650,7 @@ function goalCard(g){
       ${g.desc ? `<span class="gc-desc">${esc(g.desc)}</span>` : ""}</button>
     ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${GI.star}${esc(a.title)}</span>`).join("")}</div>` : ""}
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% of milestones done" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
-      <div class="gc-dates"><span>${fmt(g.start, {day: "numeric", month: "short", year: "numeric"})}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${fmt(closed && g.doneAt ? g.doneAt : g.deadline, {day: "numeric", month: "short", year: "numeric"})}</span></div></div>
+      <div class="gc-dates"><span>${monthYear(g.start)}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${monthYear(closed && g.doneAt ? g.doneAt : g.deadline)}</span></div></div>
     ${open ? `<div class="gc-body">
       ${g.milestones.length ? `<ul class="steps ms-list">${g.milestones.map(m => `<li class="${m.doneAt ? "done" : ""}"><button class="cb" role="checkbox" aria-checked="${!!m.doneAt}" aria-label="${esc(m.title)}" data-ms="${g.id}|${m.id}"></button>
           <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
@@ -2763,7 +2764,7 @@ function renderWeek(){
   if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
-    <div class="phead"><div><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1><div class="sub">${esc(weekRange(ws))}</div></div>
+    <div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1></div><div class="sub">${esc(weekRange(ws))}</div></div>
       <div class="weeknav"><button class="pbtn" id="wPrev" aria-label="Previous week">${ICON.left}</button><button class="pbtn" id="wNext" aria-label="Next week" ${isNow ? "disabled style='opacity:.4'" : ""}>${ICON.right}</button></div></div>
     <button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>
     <div class="stats"><div><b>${entries.length}</b><span>logged</span></div><div><b>${goalsMoved.size}</b><span>goals moved</span></div><div><b>${steps.length}</b><span>steps done</span></div><div><b>${metW.length}</b><span>deadlines met</span></div></div>
@@ -2872,14 +2873,15 @@ function renderDreams(){
   if (orphan.length) byCat.push(["Other", orphan]);
   const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => destOf(a)?.id === d.id).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
-    <div class="phead"><div><h1>Paint Reality</h1><div class="sub">The life you're building by ${yr}</div></div><button class="btn" id="newAsp">${ICON.plus}New dream</button></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn" id="newAsp">${ICON.plus}New dream</button></div>
+    <p class="pp-intro">Everything you add here is a part of the bigger picture you're painting. The life you're building.</p>
+    ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
     <section class="panel"><div class="phead" style="align-items:center"><div><div class="eyebrow">Places in your world</div><div class="sub" style="margin-top:2px">${S.destinations.length} of ${MAX_DEST}</div></div><button class="btn ghost sm" id="addPlace">${ICON.plus}Add a place</button></div>
       ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}</section>
-    <p class="muted" style="margin:0;font-size:15px">Each dream becomes a landmark in one of your places. It starts in the dark and gets clearer as you log work on goals linked to it.${waiting ? ` ${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.` : ""}</p>
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" style="width:auto;padding:7px 10px;font-size:15px">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
       <button class="btn quiet sm" id="editCats">Edit categories</button></div>
     ${S.aspirations.length ? byCat.filter(([, l]) => l.length).map(([c, l]) => `<section><div class="eyebrow" style="margin-bottom:6px">${esc(c)}</div><ul class="list">${l.map(aspRow).join("")}</ul></section>`).join("")
-      : `<div class="empty"><b>Picture it first</b>Where do you live? What do you do all day? What does a Saturday look like? Start with one dream.</div>`}`;
+      : ""}`;
   $("newAsp").onclick = () => editAspiration(null);
   $("addPlace").onclick = () => addPlaceSheet();
   wireDestRows(el, renderDreams);
@@ -2929,10 +2931,10 @@ function editAspiration(id, preset){
   let kind = a.kind || "", kindTouched = !!id, image = a.image ? {...a.image} : null, tint = a.tint || null, pending = null;
   const goals = id ? S.goals.filter(g => (g.aspirationIds || []).includes(id)) : [];
   const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
-  openSheet(id ? "Edit dream" : "New dream", `
+  openSheet(id ? "Edit dream" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one dream.</p>`}
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
-    <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint Reality to give your dreams a home on the map."}</small></label>
+    <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your dreams a home on the map."}</small></label>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">New category…</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
@@ -2957,7 +2959,7 @@ function editAspiration(id, preset){
       }});
       let pt; const sync = () => { const txt = $("aTitle").value + " " + $("aDesc").value; if (!kindTouched && !(image && image.lib)) kind = guessKind(txt, $("aCat").value);
         const th = classifyDream(txt)[0], gc = th ? th.cat : KIND_CAT[kind];
-        if (!catTouched && txt.trim() && gc && S.categories.includes(gc)) $("aCat").value = gc; if (!destTouched && dests.length) $("aDest").value = guessDest(txt); $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(picker.refresh, 350); };
+        if (!catTouched && txt.trim() && gc && S.categories.includes(gc)) $("aCat").value = gc; if (!destTouched && dests.length) $("aDest").value = guessDest(txt); $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(() => { if ($("aTitle")) picker.refresh(); }, 350); };
       sync();
       $("aTitle").oninput = sync; $("aDesc").oninput = sync;
       $("aCat").onchange = () => { catTouched = true; $("aNewCatWrap").hidden = $("aCat").value !== "__new"; sync(); };
@@ -3013,7 +3015,7 @@ const assetThumb = a => a.image ? `<img class="as-thumb" src="${esc(imgUrl(a.ima
 function renderAssets(){
   const el = $("p-assets"), open = assetOpenSet(), name = firstName(), items = id => S.assets.filter(a => a.catId === id).sort((a, b) => a.order - b.order);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="pbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>My Assets</h1></div></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>My Assets</h1></div></div>
     <p class="as-hello">Hi${name ? " " + esc(name) : ""}, you're building a lot. So keep going.</p>
     ${S.assetCats.length ? `<ul class="list">${S.assetCats.map(c => { const list = items(c.id), isOpen = open.has(c.id); return `<li>
       <div class="acc-head"><button class="rowbtn acc-toggle" data-cat="${c.id}" aria-expanded="${isOpen}"><span class="rtitle">${esc(c.name)}</span><span class="acc-count">${list.length}</span><span class="acc-chev">${ICON_DOWN}</span></button>
@@ -3093,7 +3095,7 @@ function renderJournal(){
   const list = S.notes.filter(n => noteFilter === "pinned" ? n.pinned : noteFilter === "fav" ? n.fav : true)
     .filter(n => !q || (n.title + " " + n.body).toLowerCase().includes(q)).sort((a, b) => b.at.localeCompare(a.at));
   el.innerHTML = `
-    <div class="phead"><div><h1>Journal</h1><div class="sub">Private notes, reminders and letters to yourself</div></div><button class="btn" id="newNote">${ICON.plus}New note</button></div>
+    <div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Journal</h1></div><div class="sub">Private notes, reminders and letters to yourself</div></div><button class="btn" id="newNote">${ICON.plus}New note</button></div>
     <input type="search" id="noteQ" value="${esc(noteQuery)}" placeholder="Search notes" aria-label="Search notes by title or text">
     <div class="seg" role="group" aria-label="Filter notes" style="justify-self:start">${[["all", `All ${S.notes.length}`], ["pinned", `Pinned ${S.notes.filter(n => n.pinned).length}`], ["fav", `Favourites ${S.notes.filter(n => n.fav).length}`]].map(([k, l]) => `<button aria-pressed="${noteFilter === k}" data-nf="${k}">${l}</button>`).join("")}</div>
     <div id="noteList">${list.length ? `<ul class="list">${list.map(noteRow).join("")}</ul>` : `<div class="empty"><b>${q ? "No notes match" : noteFilter === "all" ? "A page of your own" : noteFilter === "pinned" ? "Nothing pinned" : "No favourites yet"}</b>${q ? "Try another word." : noteFilter === "all" ? "Write a thought, a reminder, or a letter to your future self. It doesn't need to be tied to a goal." : "Open a note and pin it or mark it as a favourite."}</div>`}</div>`;
@@ -3165,6 +3167,7 @@ function renderAccount(){
   const el = $("p-account"), done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length, metOrig = done.filter(g => g.doneAt <= originalDeadline(g)).length;
   const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
   el.innerHTML = `
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div></div>
     <section style="display:grid;gap:14px"><div><h2 class="sec">Profile</h2><p class="muted" style="margin:6px 0 0;font-size:13px">Email allows us to save your data through updates and across devices.</p></div>
       <div style="display:grid;gap:14px"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
         <label class="field"><span>Email (Optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
@@ -3500,7 +3503,7 @@ function obPlaces(M, Fo){
     wireDestRows(M, draw);
   };
   draw();
-  Fo.innerHTML = `<span class="muted" style="font-size:13px;align-self:center">You can change these later in Paint Reality.</span><button class="btn" id="obNext">Continue</button>`;
+  Fo.innerHTML = `<span class="muted" style="font-size:13px;align-self:center">You can change these later in Paint a Picture.</span><button class="btn" id="obNext">Continue</button>`;
   $("obNext").onclick = () => obGo(3);
 }
 function obDreams(M, Fo){
