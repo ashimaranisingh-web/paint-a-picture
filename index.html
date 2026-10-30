@@ -345,7 +345,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
       <div class="page" id="p-account" hidden></div>
     </main>
     <nav class="pnav" aria-label="Primary">
-      <button data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg>World</button>
+      <button data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span id="navWorld">World</span></button>
       <button data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
     </nav>
@@ -2421,7 +2421,7 @@ function visualPicker(root, o){
 const firstName = () => (S.profile.name || "").trim().split(/\s+/)[0];
 function updateTitle(){
   const n = firstName();
-  $("worldTitle").textContent = n ? `${n}'s World` : "Your World";
+  $("worldTitle").textContent = $("navWorld").textContent = n ? `${n}'s World` : "Your World";
   if (overviewOn) $("greet").textContent = n ? `Let's build your life, ${n}` : "Let's build your life";
 }
 let overviewOn = false, ovFit = null;
