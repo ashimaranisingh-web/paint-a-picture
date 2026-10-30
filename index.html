@@ -73,8 +73,10 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:6;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px 14px 12px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .loccard .row{display:flex;gap:12px;align-items:flex-start}
-.loccard h3{font-family:var(--serif);font-weight:400;font-size:17px;line-height:1.1;margin:0}
-.loccard .meta{font-size:13px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.loccard h3{font-family:var(--serif);font-weight:400;font-size:14px;line-height:1.2;margin:0}
+.lc-open{all:unset;cursor:pointer;flex:1;min-width:0;display:grid;gap:4px;padding:4px 0}.lc-open:focus-visible{outline:2px solid var(--accent);border-radius:8px}
+.lc-open .clar-bar{margin-top:4px}
+.loccard .meta{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
 .loccard .x{margin-left:auto}
@@ -229,6 +231,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-f .btn.danger{margin-right:auto}
 .sheet-f .btn.ghost{background:transparent;border-color:transparent;color:var(--accent-ink)}
 .sheet-f .btn.ghost:hover{background:var(--accent-soft)}
+.pl-head{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
+.pl-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .pp-intro{margin:-12px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
 .as-hello{margin:-8px 0 0;font-size:15px;color:var(--ink-2)}
 .acc-head{display:flex;align-items:center;gap:6px}
@@ -279,6 +283,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .note-title{font-family:var(--serif)!important;font-size:20px!important;border-bottom-color:transparent!important}
 .note-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
 .note-body{min-height:40vh;border:0!important;box-shadow:none!important;resize:none;font-size:16px;line-height:1.6;padding:6px 2px!important}
+.wk-search{display:grid;gap:2px}
 .wk-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .wk-hit{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:grid;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:13px;margin-top:8px}
 .wk-hit:hover{border-color:var(--line-2)}.wk-hit:focus-visible{outline:2px solid var(--accent)}.wk-hit b{color:var(--ink)}
@@ -373,7 +378,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <section class="screen home" id="home">
     <div id="stage"><canvas id="scene" tabindex="0" aria-label="Your dream life world. Drag to move around, pinch or scroll to zoom, tap to move the lens. Arrow keys pan, plus and minus zoom."></canvas><canvas id="hud" aria-hidden="true"></canvas></div>
     <header class="home-top">
-      <div class="mark"><span class="mark-name"><span id="worldTitle">Your World</span><span class="mark-app"> · Paint a Picture</span></span><span class="mark-sub" id="greet"></span></div>
+      <div class="mark"><span class="mark-name" id="worldTitle">Paint a Picture of your world</span><span class="mark-sub" id="greet"></span></div>
       <button class="gbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <div class="home-chips" id="homeChips"></div>
@@ -416,10 +421,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <section class="screen ob" id="onboard" hidden></section>
 
   <div class="menu" id="menu" role="menu" hidden>
-    <button role="menuitem" data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span>Your world</span></button>
     <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint a Picture<small>Describe the life you're building</small></span></button>
     <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
-    <button role="menuitem" data-go="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg><span>Journal<small>Private notes and letters</small></span></button>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
   </div>
   <div class="scrim" id="scrim" hidden></div>
@@ -2062,7 +2065,7 @@ function moveTraveller(ts){
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
   if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0; }
 }
-function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint a Picture" : `${D.d.name} · ${D.d.tagline || PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
+function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (!b) return; if (overviewOn) { closeOverview(); setTimeout(() => travelTo(b.dataset.dest), 60); } else travelTo(b.dataset.dest); });
 
 /* ---------------- input ----------------
@@ -2205,19 +2208,13 @@ function avatarSays(){
   av.wait = Math.max(av.wait, 50); av.dir = "down"; viewDirty = true;
   say(lines[Math.floor(Math.random() * lines.length)], av.x, av.y - 30);
 }
-function showLoc(l, inPreview){
-  const a = l.a, c = locClarity(l), pct = Math.round(c.c * 100), card = $("loccard");
-  const place = l.D.d, generic = GENERIC_ENVS.includes(place.env) && !place.placeholder;
-  const src = l.fixed ? (c.unlinked ? (pct ? "Already familiar" : `Add a dream in ${place.name} to start revealing it`) : `Clears with your dreams in ${place.name}`)
-    : c.goals ? [c.entries && `${c.entries} entr${c.entries === 1 ? "y" : "ies"}`, c.steps && `${c.steps} step${c.steps === 1 ? "" : "s"}`, c.done && `${c.done} goal${c.done === 1 ? "" : "s"} done`].filter(Boolean).join(" · ") || "Linked goals, no logged work yet" : "No goals linked yet";
-  const img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<div style="display:grid;gap:3px;min-width:0;flex:1">
-      <span class="meta">${esc(l.fixed ? place.name : a.category)}${a.timeframe ? " · " + esc(a.timeframe) : ""}${S.demo && !l.fixed ? " · Example" : ""}</span><h3>${esc(a.title)}</h3></div>
-      <button class="pbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    ${(inPreview || l.fixed) && a.desc ? `<p>${esc(a.desc)}</p>` : ""}
-    ${l.fixed && generic ? `<p class="muted" style="font-size:13px">Neutral ${esc(ENV_LABEL[place.env].toLowerCase())} scenery: artwork made for ${esc(place.name)} isn't available yet.</p>` : ""}
-    <div class="clar"><div class="clar-bar"><i style="width:${pct}%"></i></div><div class="clar-txt">${pct}% clear · ${esc(src)}</div></div>
-    <div class="actions">${inPreview ? "" : `<span class="clar-txt" style="flex:1;align-self:center">${pct >= 100 ? "Fully revealed." : "Hold the lens here for 10s to step inside."}</span>`}${l.fixed ? "" : `<button class="btn sm ghost" data-open-asp="${a.id}">Open</button>`}</div>`;
+function showLoc(l){
+  const card = $("loccard");
+  if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
+  const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-open-asp="${a.id}" aria-label="Open ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
+      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
+      <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
 }
@@ -2458,6 +2455,7 @@ function visualPicker(root, o){
   const same = (a, b) => !!(a && b && ((a.lib && a.lib === b.lib) || (a.gen && b.gen && a.gen.t === b.gen.t && a.gen.b === b.gen.b) || (a.assetId && a.assetId === b.assetId) || (a.local && a.local === b.local) || (a.pending && a.pending === b.pending)));
   const tile = (v, label) => `<button type="button" class="vis-tile" aria-pressed="${same(cur, v)}" data-v='${esc(JSON.stringify(v.lib ? {lib: v.lib} : v.gen ? {gen: v.gen} : v.pending ? {pending: 1} : v))}'><img src="${esc(thumb(v))}" alt=""><span>${esc(label)}</span></button>`;
   function draw(){
+    if (!root.isConnected) return; // its sheet has closed
     const text = o.getText(), cat = o.getCat ? o.getCat() : "", env = o.getEnv ? o.getEnv() : "town";
     const themes = classifyDream(text, cat).slice(0, 2), made = themes.map(t => ({gen: {t: t.id, b: env}, label: t.label}));
     if (cur && cur.gen && !made.some(m => same(m, cur))) made.unshift({gen: cur.gen, label: themeById(cur.gen.t)?.label || "Your picture"});
@@ -2467,7 +2465,7 @@ function visualPicker(root, o){
       <div class="actions"><button type="button" class="btn ghost sm" data-browse>${browse ? "Hide library" : "Browse all pictures"}</button>
         <label class="btn ghost sm" style="cursor:pointer">Upload your own<input type="file" accept="image/*" hidden data-file></label>
         ${cur ? `<button type="button" class="btn quiet sm" data-none>No picture</button>` : ""}</div>
-      <small class="muted" data-note>${cur ? (cur.lib && libById(cur.lib)?.avatar ? "Your character, drawn for this dream. It's motivation, not a measurement, and your avatar itself doesn't change." : "Chosen. You can change it any time.") : "Suggested from your words. Nothing is chosen until you tap one."}</small>`;
+      <small class="muted" data-note>${cur && cur.lib && libById(cur.lib)?.avatar ? "Your character, drawn for this dream. It's motivation, not a measurement, and your avatar itself doesn't change." : ""}</small>`;
     root.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { const v = JSON.parse(b.dataset.v); cur = v.pending ? cur : v; if (!v.pending) o.onChange(cur); draw(); });
     root.querySelector("[data-browse]").onclick = () => { browse = !browse; draw(); };
     const none = root.querySelector("[data-none]"); if (none) none.onclick = () => { cur = null; o.onChange(null); draw(); };
@@ -2487,8 +2485,8 @@ function visualPicker(root, o){
 const firstName = () => (S.profile.name || "").trim().split(/\s+/)[0];
 function updateTitle(){
   const n = firstName();
-  $("worldTitle").textContent = $("navWorld").textContent = n ? `${n}'s World` : "Your World";
-  if (overviewOn) $("greet").textContent = n ? `Let's build your life, ${n}` : "Let's build your life";
+  $("navWorld").textContent = n ? `${n}'s World` : "Your World";
+  $("greet").textContent = n ? `Hi ${n}` : "Hi there";
 }
 let overviewOn = false, ovFit = null;
 function placeReveal(D){ // 0 = dark, 1 = clear
@@ -2707,9 +2705,7 @@ function editGoal(id, preset){
     <label class="field"><span>Description</span><textarea id="gDesc" placeholder="What do you want to achieve, and why?">${esc(g.desc)}</textarea></label>
     <div class="field"><span>Paint a Picture</span>${asps.length ? `<div class="pills" id="gLinks">${asps.map(a => `<button type="button" class="pill" aria-pressed="${links.has(a.id)}" data-link="${a.id}">${esc(a.title)}</button>`).join("")}</div><small>Pick every dream this goal moves you towards. Tap again to remove.</small>`
       : `<small>Add dreams in Paint a Picture to connect them to your goals.</small>`}</div>
-    <div class="dates"><label class="field"><span>By when do you want to achieve this?</span><input type="date" id="gDeadline" value="${g.deadline}" min="${g.start}"></label>
-      <label class="field"><span>Starting</span><input type="date" id="gStart" value="${g.start}" max="${g.deadline}"></label></div>
-    <small class="muted" id="gDateNote" hidden></small>
+    <label class="field"><span>By when do you want to achieve this?</span><input type="date" id="gDeadline" value="${g.deadline}" min="${g.start}"></label>
     <div class="field"><span>Milestones</span><ul class="ms-edit" id="gMs"></ul><button type="button" class="btn quiet sm" id="gMsAdd" style="justify-self:start">${ICON.plus}Add milestone</button></div>
     <p class="muted" id="gErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save</button>`, () => {
@@ -2726,16 +2722,14 @@ function editGoal(id, preset){
       drawMs();
       $("gMsAdd").onclick = () => { read(); ms.push({id: uid(), title: "", desc: "", due: "", doneAt: null}); drawMs(); $("gMs").lastElementChild.querySelector("input").focus(); };
       document.querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); b.setAttribute("aria-pressed", links.has(k)); });
-      const st = $("gStart"), dl = $("gDeadline"), note = $("gDateNote");
-      st.oninput = () => { dl.min = st.value || ""; if (st.value && dl.value && dl.value < st.value) { dl.value = st.value; note.textContent = "The target date moved to match the new start date."; note.hidden = false; } };
-      dl.oninput = () => { st.max = dl.value || ""; note.hidden = true; };
+      const dl = $("gDeadline");
       $("gCancel").onclick = closeSheet;
       $("gSave").onclick = () => {
         read();
-        const title = $("gTitle").value.trim(), start = st.value || today(), deadline = dl.value, err = $("gErr");
+        const title = $("gTitle").value.trim(), start = g.start || today(), deadline = dl.value, err = $("gErr");
         if (!title) { err.textContent = "Give the goal a name."; err.hidden = false; $("gTitle").focus(); return; }
         if (!deadline) { err.textContent = "Pick a target date. You can change it later."; err.hidden = false; return; }
-        if (deadline < start) { err.textContent = "The target date is before the start date."; err.hidden = false; return; }
+        if (deadline < start) { err.textContent = `Pick a date on or after ${fmt(start)}.`; err.hidden = false; return; }
         const aspirationIds = [...links].filter(aspById), milestones = ms.map(m => ({...m, title: m.title.trim(), desc: (m.desc || "").trim()})).filter(m => m.title);
         const data = {title, desc: $("gDesc").value.trim(), aspirationIds, aspirationId: aspirationIds[0] || null, start, deadline, milestones};
         commit(s => {
@@ -2767,8 +2761,9 @@ function renderWeek(){
   if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
-    <div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1></div><div class="sub">${esc(weekRange(ws))}</div></div>
+    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><div><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1><div class="sub">${esc(weekRange(ws))}</div></div></div>
       <div class="weeknav"><button class="pbtn" id="wPrev" aria-label="Previous week">${ICON.left}</button><button class="pbtn" id="wNext" aria-label="Next week" ${isNow ? "disabled style='opacity:.4'" : ""}>${ICON.right}</button></div></div>
+    ${weekHistoryHTML()}
     <button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>
     <div class="stats"><div><b>${entries.length}</b><span>logged</span></div><div><b>${goalsMoved.size}</b><span>goals moved</span></div><div><b>${steps.length}</b><span>steps done</span></div><div><b>${metW.length}</b><span>deadlines met</span></div></div>
     <section class="panel"><div class="eyebrow">Weekly review</div>
@@ -2776,7 +2771,6 @@ function renderWeek(){
       <label class="field"><span>What did this week teach you?</span><textarea id="rText" placeholder="A sentence or two">${esc(r.text)}</textarea></label>
       <label class="field"><span>Next week I want to…</span><textarea id="rNext" style="min-height:64px" placeholder="One or two things">${esc(r.next)}</textarea></label>
       <span class="muted" id="rSaved" style="font-size:13px"></span></section>
-    ${weekHistoryHTML()}
     <section><h2 class="sec" style="margin-bottom:8px">Logged</h2>
       ${entries.length ? `<ul class="list">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>`;
   $("wPrev").onclick = () => { weekOf = addDays(weekOf, -7); renderWeek(); };
@@ -2869,6 +2863,7 @@ function logEntry(editId){
 }
 
 /* --- DREAM LIFE --- */
+let placesOpen = false;
 function renderDreams(){
   const el = $("p-dreams"), yr = new Date().getFullYear() + Number(S.profile.horizon);
   const byCat = S.categories.map(c => [c, S.aspirations.filter(a => a.category === c)]);
@@ -2879,14 +2874,17 @@ function renderDreams(){
     <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn" id="newAsp">${ICON.plus}New dream</button></div>
     <p class="pp-intro">Everything you add here is a part of the bigger picture you're painting. The life you're building.</p>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
-    <section class="panel"><div class="phead" style="align-items:center"><div><div class="eyebrow">Places in your world</div><div class="sub" style="margin-top:2px">${S.destinations.length} of ${MAX_DEST}</div></div><button class="btn ghost sm" id="addPlace">${ICON.plus}Add a place</button></div>
-      ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}</section>
+    <section class="panel"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span><span class="eyebrow">Places in your world</span><span class="sub" style="display:block;margin-top:2px">${S.destinations.length} of ${MAX_DEST}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
+      ${placesOpen ? `
+      ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
+      <button class="btn quiet sm" id="addPlace" style="justify-self:start">${ICON.plus}Add a place</button>` : ""}</section>
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" style="width:auto;padding:7px 10px;font-size:15px">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
       <button class="btn quiet sm" id="editCats">Edit categories</button></div>
     ${S.aspirations.length ? byCat.filter(([, l]) => l.length).map(([c, l]) => `<section><div class="eyebrow" style="margin-bottom:6px">${esc(c)}</div><ul class="list">${l.map(aspRow).join("")}</ul></section>`).join("")
       : ""}`;
   $("newAsp").onclick = () => editAspiration(null);
-  $("addPlace").onclick = () => addPlaceSheet();
+  $("placesToggle").onclick = () => { placesOpen = !placesOpen; renderDreams(); };
+  if ($("addPlace")) $("addPlace").onclick = () => addPlaceSheet();
   wireDestRows(el, renderDreams);
   $("horizon").onchange = e => commit(s => { s.profile.horizon = +e.target.value; });
   $("editCats").onclick = editCategories;
@@ -3151,14 +3149,12 @@ function weekSearch(q){
 const weekRange = ws => `${fmt(ws, {day: "numeric", month: "short"})} – ${fmt(addDays(ws, 6), {day: "numeric", month: "short", year: "numeric"})}`;
 function weekHistoryHTML(){
   const hits = weekSearch(weekQuery), byWeek = new Map(); hits.forEach(h => { if (!byWeek.has(h.ws)) byWeek.set(h.ws, []); byWeek.get(h.ws).push(h); });
-  return `<section class="panel"><div class="eyebrow">Past weeks</div>
-    <div class="wk-tools"><label class="field" style="flex:1"><span>Go to the week of</span><input type="date" id="wJump" value="${weekOf}" max="${today()}"></label>${weekOf !== weekStart(today()) ? `<button class="btn ghost sm" id="wToday" style="align-self:end">This week</button>` : ""}</div>
+  return `<div class="wk-search">
     <input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search everything you've logged" aria-label="Search past weeks">
-    <div id="wResults">${weekQuery.trim().length < 2 ? "" : hits.length ? [...byWeek].map(([ws, list]) => `<button class="wk-hit" data-week="${ws}"><span class="eyebrow">${esc(weekRange(ws))}</span>${list.slice(0, 3).map(h => `<span><b>${esc(h.kind)}</b> ${esc(h.text.length > 90 ? h.text.slice(0, 90) + "…" : h.text)}</span>`).join("")}${list.length > 3 ? `<span class="muted">+${list.length - 3} more</span>` : ""}</button>`).join("") : `<p class="muted" style="margin:0;font-size:13px">Nothing found for “${esc(weekQuery)}”.</p>`}</div></section>`;
+    <div id="wResults">${weekQuery.trim().length < 2 ? "" : hits.length ? [...byWeek].map(([ws, list]) => `<button class="wk-hit" data-week="${ws}"><span class="eyebrow">${esc(weekRange(ws))}</span>${list.slice(0, 3).map(h => `<span><b>${esc(h.kind)}</b> ${esc(h.text.length > 90 ? h.text.slice(0, 90) + "…" : h.text)}</span>`).join("")}${list.length > 3 ? `<span class="muted">+${list.length - 3} more</span>` : ""}</button>`).join("") : `<p class="muted" style="margin:0;font-size:13px">Nothing found for “${esc(weekQuery)}”.</p>`}</div></div>`;
 }
 function wireWeekHistory(){
-  $("wJump").onchange = e => { if (e.target.value) { weekOf = weekStart(e.target.value); renderWeek(); } };
-  const t = $("wToday"); if (t) t.onclick = () => { weekOf = weekStart(today()); renderWeek(); };
+
   $("wQ").oninput = e => { weekQuery = e.target.value; const pos = e.target.selectionStart; renderWeek(); const i = $("wQ"); i.focus(); i.setSelectionRange(pos, pos); };
   document.querySelectorAll("[data-week]").forEach(b => b.onclick = () => { weekOf = b.dataset.week; weekQuery = ""; renderWeek(); $("pmain").scrollTop = 0; });
 }
