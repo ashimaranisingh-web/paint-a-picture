@@ -49,6 +49,8 @@ button{cursor:pointer}
 .gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   }
 .gbtn:hover{background:rgba(30,36,48,.75)}
+.gbtn,.pbtn{position:relative}
+body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px rgba(16,19,27,.6)}
 .home-chips{position:absolute;top:66px;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:5;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
 .chip-g{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;border-radius:99px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   font-size:12px;font-weight:700;padding:6px 11px;}
@@ -88,7 +90,7 @@ button{cursor:pointer}
 .journey button{all:unset;cursor:pointer;position:relative;z-index:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.62);padding:6px 0}
 .journey button[aria-current="true"]{color:#fff}
 .journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.journey .you{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,79,133,.3);transition:left .2s;pointer-events:none}
+.journey .you{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,79,133,.3);transition:left .7s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .vision-banner{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
@@ -340,7 +342,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span>Your world</span></button>
     <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint Reality<small>Describe the life you're building</small></span></button>
-    <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small>Profile, character, data</small></span></button>
+    <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
   </div>
   <div class="scrim" id="scrim" hidden></div>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden></div>
@@ -419,6 +421,10 @@ function normalize(o){
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
   s.rewards = Object.assign({clearViewsUsed: 0}, o.rewards || {});
   s.destinations = (s.destinations || []).filter(d => d && d.id);
+  // the original five keep their order (Mumbai, Delhi, Boston, LA, Japan) and LA is called LA
+  const ORDER = ["d-mumbai", "d-delhi", "d-boston", "d-la", "d-japan"], rank = d => { const i = ORDER.indexOf(d.id); return i < 0 ? 99 : i; };
+  if (ORDER.every(id => s.destinations.some(d => d.id === id))) s.destinations = s.destinations.map((d, i) => [d, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map(x => x[0]);
+  s.destinations.forEach(d => { if (d.id === "d-la" && d.name === "Los Angeles") d.name = "LA"; });
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; });
   s.entries.forEach(e => { e.goalIds ||= []; });
   return s;
@@ -430,7 +436,7 @@ function upgradeTo3(s){
   s.onboarding.done = s.onboarded; if (s.onboarded) s.onboarding.step = 6;
   if (!s.onboarded && !s.aspirations.length) return s;
   const add = (id, purpose) => { if (!s.destinations.some(d => d.id === id)) s.destinations.push(destFromPlace(id, purpose)); };
-  add("d-delhi", "from"); add("d-mumbai", "from"); add("d-la", "live"); add("d-boston", "study"); add("d-japan", "experience");
+  add("d-mumbai", "from"); add("d-delhi", "from"); add("d-boston", "study"); add("d-la", "live"); add("d-japan", "experience");
   layoutAll(s.destinations);
   s.aspirations.forEach(a => { if (!a.destinationId) a.destinationId = "d-" + (a.place || "la"); delete a.place; });
   const seed = (id, title, desc, category, kind, timeframe, destinationId) => { if (!s.aspirations.some(a => a.id === id)) s.aspirations.push({id, title, desc, category, kind, timeframe, destinationId, image: null, tint: null, createdAt: today()}); };
@@ -442,8 +448,8 @@ function upgradeTo3(s){
 
 let saving = false, dirty = false;
 async function save(){
-  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
-  if (!docRef) return;
+  try { localStorage.setItem(demoMode ? DEMO_KEY : LS_KEY, JSON.stringify(S)); } catch (e) {}
+  if (!docRef || demoMode) return;
   if (saving) { dirty = true; return; }
   saving = true;
   try {
@@ -577,7 +583,7 @@ Hakone|Japan|35.23|139.11|japan|place|mount fuji,fuji
 Ebisu Circuit|Japan|37.62|140.33|japan|place|drift,drifting,fukushima
 Hokkaido|Japan|43.06|141.35|nature|place|sapporo
 Okinawa|Japan|26.21|127.68|coast|place
-Los Angeles|USA|34.05|-118.24|la|place|la,l.a.,hollywood
+LA|USA|34.05|-118.24|la|place|los angeles,l.a.,hollywood
 Santa Monica|USA|34.02|-118.49|la|place
 Malibu|USA|34.03|-118.78|la|place
 UCLA|USA|34.07|-118.44|la|uni|university of california los angeles
@@ -655,14 +661,14 @@ Marrakech|Morocco|31.63|-7.99|town|place|morocco
 Cairo|Egypt|30.04|31.24|city|place|egypt
 Nairobi|Kenya|-1.29|36.82|city|place|kenya,safari
 Zanzibar|Tanzania|-6.17|39.2|coast|place`.split("\n").map(l => { const [name, country, lat, lon, env, type, alias] = l.split("|"); return {name, country, lat: +lat, lon: +lon, env, type, alias: alias || ""}; });
-const ENV_LABEL = {delhi: "Delhi", mumbai: "Mumbai", la: "Los Angeles", boston: "Boston", japan: "Japan", city: "City", coast: "Coast", nature: "Mountains & lakes", campus: "University town", town: "Small town"};
+const ENV_LABEL = {delhi: "Delhi", mumbai: "Mumbai", la: "LA", boston: "Boston", japan: "Japan", city: "City", coast: "Coast", nature: "Mountains & lakes", campus: "University town", town: "Small town"};
 const GENERIC_ENVS = ["city", "coast", "nature", "campus", "town"];
 function searchPlaces(q){
   q = q.trim().toLowerCase(); if (!q) return [];
   const score = p => { const n = p.name.toLowerCase(), al = p.alias.split(","); if (n === q || al.includes(q)) return 0; if (n.startsWith(q)) return 1; if (al.some(a => a.startsWith(q))) return 2; if (n.includes(q)) return 3; if (p.country.toLowerCase().startsWith(q)) return 4; if (al.some(a => a.includes(q))) return 5; return 9; };
   return GAZ.map(p => [score(p), p]).filter(([s]) => s < 9).sort((a, b) => a[0] - b[0] || a[1].name.localeCompare(b[1].name)).slice(0, 7).map(x => x[1]);
 }
-const PLACE_IDS = {delhi: "Delhi", mumbai: "Mumbai", la: "Los Angeles", boston: "Harvard University", japan: "Ebisu Circuit"};
+const PLACE_IDS = {delhi: "Delhi", mumbai: "Mumbai", la: "LA", boston: "Harvard University", japan: "Ebisu Circuit"};
 function destFromPlace(id, purpose){ // the five places of the original map, by their stable ids
   const key = id.replace("d-", ""), p = GAZ.find(g => g.name === PLACE_IDS[key]);
   const name = key === "boston" ? "Boston" : key === "japan" ? "Japan" : p.name;
@@ -1671,7 +1677,7 @@ const AV_W = 14, AV_H = 28;
 
 // One identity, two ways to draw it: these colours feed both the pixel sprite and the detailed 2D figure.
 function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
-const lookKey = () => { const a = avatarLook(); return [a.skin, a.hair, a.top, a.bot, a.glasses ? 1 : 0].join("."); };
+const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.glasses ? 1 : 0].join("."); };
 function avatarPal(){
   const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot];
   return {o: "#2a1a14", h: hr[0], H: hr[1], c: hr[2], s: sk[0], S: sk[1], g: "#121014", l: "#b8606a", e: "#2a1a14",
@@ -1707,6 +1713,7 @@ function placeAvatar(D){
   av.dest = D.d.id; av.idx = i; av.x = pts[i][0]; av.y = pts[i][1]; av.path = []; av.wait = 30; av.pts = pts;
 }
 function stepAvatar(){
+  if (av.travel) return;
   if (av.wait > 0) { av.wait--; av.step = 0; return; }
   const pts = av.pts || []; if (!pts.length) return;
   if (!av.path.length) {
@@ -1774,7 +1781,7 @@ function renderView(now){
   g.fillStyle = grade; g.fillRect(0, 0, VW, VH);
   composeFog(now, cx, cy);
   const D = districtAt(cx + VW / 2, cy + VH / 2);
-  if (D && D.d.id !== regionShown) { regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
+  if (D && D.d.id !== regionShown && !camAnim) showRegion(D);
   drawHud(now);
 }
 
@@ -1822,8 +1829,7 @@ function composeFog(now, cx, cy){
 
 /* --- HUD: crisp place names and the detailed avatar, drawn at screen resolution over the pixel world --- */
 const smooth = (a, b, x) => { const k = Math.max(0, Math.min(1, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
-const dollLod = () => smooth(1.15, 2.4, zoom);                 // 0 = small figure, 1 = full detail
-const dollWorldH = () => 30 * (1 + .28 * dollLod());           // grows a little as you zoom in, never huge
+const dollWorldH = () => 30 * (1 + .28 * smooth(1.15, 2.4, zoom)); // grows a little as you zoom in, never huge
 function drawHud(now){
   const g = hctx; g.setTransform(hudDpr, 0, 0, hudDpr, 0, 0); g.clearRect(0, 0, hud.width / hudDpr, hud.height / hudDpr);
   const la = 1 - smooth(1.9, 2.6, zoom);
@@ -1840,10 +1846,10 @@ function drawHud(now){
     g.globalAlpha = 1;
   }
   if (avatarLook().style === "doll" && route === "home") {
-    const lod = dollLod(), hpx = dollWorldH() * scale, fx = (av.x - camX) * scale, fy = (av.y - camY) * scale;
+    const hpx = dollWorldH() * scale, fx = (av.x - camX) * scale, fy = (av.y - camY) * scale;
     if (fx > -hpx && fx < hud.width / hudDpr + hpx && fy > -20 && fy < hud.height / hudDpr + hpx) {
       const walking = !(av.wait > 0 || av.step === 0);
-      const img = dollSprite(av.dir, walking ? (av.step >> 2) % 8 : -1 - ((t >> 4) % 2), Math.round(hpx / 4) * 4, Math.round(lod * 4) / 4);
+      const img = dollSprite(av.dir, walking ? (av.step >> 2) % 8 : -1, Math.round(hpx / 4) * 4);
       g.drawImage(img.c, fx - img.ax / hudDpr, fy - img.ay / hudDpr, img.c.width / hudDpr, img.c.height / hudDpr);
     }
   }
@@ -1881,7 +1887,7 @@ function sizeScene(){
   hudDpr = Math.min(2, devicePixelRatio || 1); hud.width = Math.round(r.width * hudDpr); hud.height = Math.round(r.height * hudDpr);
   VW = 0; applyZoom(zoom);
   refreshWorld();
-  if (!camInit) { camInit = true; let c = null; try { c = JSON.parse(localStorage.getItem("dreamLife.cam") || "null"); } catch (e) {}
+  if (!camInit) { camInit = true; let c = null; try { c = JSON.parse(localStorage.getItem(camKey()) || "null"); } catch (e) {}
     if (c && c.k === layoutKey) { if (c.z) applyZoom(c.z); centerOn(c.x, c.y); } else { const D = homeDistrict(); centerOn(D.ox + CW / 2, D.oy + CH / 2); }
     const D = districtAt(camX + VW / 2, camY + VH / 2); if (D) placeAvatar(D);
     lens = {x: camX + VW * .62, y: camY + VH * .42}; }
@@ -1907,6 +1913,7 @@ function loop(ts){
   if (route !== "home" || document.hidden) return;
   if (zoomAnim) { const k = Math.min(1, (ts - zoomAnim.s) / zoomAnim.d), e = 1 - Math.pow(1 - k, 3); applyZoom(zoomAnim.z0 + (zoomAnim.z1 - zoomAnim.z0) * e, zoomAnim.ax, zoomAnim.ay); if (k >= 1) zoomAnim = null; }
   if (camAnim) { const k = Math.min(1, (ts - camAnim.s) / camAnim.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; camX = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e; camY = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e; clampCam(); if (k >= 1) { camAnim = null; saveCam(); } }
+  moveTraveller(ts);
   if (inertia) { const dt = Math.min(40, ts - inertia.last); inertia.last = ts; camX -= inertia.vx * dt; camY -= inertia.vy * dt; const f = Math.pow(.94, dt / 16); inertia.vx *= f; inertia.vy *= f; clampCam(); if (Math.hypot(inertia.vx, inertia.vy) < .004) { inertia = null; saveCam(); } }
   const tick = ts - lastTick >= (reduced ? 400 : 50);
   if (tick) {
@@ -1914,27 +1921,30 @@ function loop(ts){
     if (!reduced) stepAvatar();
     // when the camera has settled on another place and she's out of sight, she moves there
     const D = districtAt(camX + VW / 2, camY + VH / 2);
-    if (D && D.d.id !== av.dest && !ptrs.size && !inertia && !camAnim && !(av.x > camX && av.x < camX + VW && av.y > camY && av.y < camY + VH)) placeAvatar(D);
+    if (D && D.d.id !== av.dest && !av.travel && !ptrs.size && !inertia && !camAnim && !(av.x > camX && av.x < camX + VW && av.y > camY && av.y < camY + VH)) travelAvatar(D);
     if (preview && ts > preview.end) endPreview();
     if (vision && ts > vision.end) { vision = null; $("visionBanner").hidden = true; renderHomeChips(); }
     if (vision) $("visionBanner").textContent = `Deadline met, so here's all of it · ${Math.ceil((vision.end - ts) / 1000)}s`;
-    checkHold(ts);
+    if (!camAnim) checkHold(ts);
     viewDirty = true;
   }
   if (viewDirty) { viewDirty = false; renderView(ts); }
 }
+// With the system's Reduce Motion on, trips are shorter and gentler but still continuous, never a jump.
+const travelTime = dist => reduced ? Math.min(520, 260 + Math.sqrt(dist) * 6) : Math.min(1600, 450 + Math.sqrt(dist) * 22);
 function glideTo(x, y, d){
   inertia = null;
   const x1 = x - VW / 2, y1 = y - VH / 2;
-  d = d ?? Math.min(1800, 500 + Math.hypot(x1 - camX, y1 - camY) * 1.2);
-  camAnim = {s: performance.now(), d: reduced ? 1 : d, x0: camX, y0: camY, x1, y1};
+  d = d ?? travelTime(Math.hypot(x1 - camX, y1 - camY));
+  camAnim = {s: performance.now(), d, x0: camX, y0: camY, x1, y1};
 }
 let camSaveT;
-function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { localStorage.setItem("dreamLife.cam", JSON.stringify({x: camX + VW / 2, y: camY + VH / 2, z: zoom, k: layoutKey})); } catch (e) {} }, 400); }
+const camKey = () => demoMode ? "dreamLife.cam.demo" : "dreamLife.cam"; // each world remembers its own view
+function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { localStorage.setItem(camKey(), JSON.stringify({x: camX + VW / 2, y: camY + VH / 2, z: zoom, k: layoutKey})); } catch (e) {} }, 400); }
 
 /* --- the places strip: every destination in your world, tap to travel --- */
 function renderPlacesNav(){
-  const ds = worldDests().filter(d => !d.placeholder).slice().sort((a, b) => a.col - b.col || a.row - b.row);
+  const ds = worldDests().filter(d => !d.placeholder);
   const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
   el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}">${esc(d.name)}</button>`).join("") : `<button data-go="dreams">Add places</button>`);
   markPlaces();
@@ -1947,11 +1957,29 @@ function markPlaces(){
     if (on && you) you.style.left = (b.offsetLeft + b.offsetWidth / 2) + "px";
   });
 }
+// Straight to the place you tapped: the camera and your character travel together, nothing in between is visited.
 function travelTo(id){
   const D = DIST.get(id); if (!D) return;
   const l = locs.filter(l => l.D === D).sort((a, b) => locClarity(b).c - locClarity(a).c)[0], x = l ? l.x : D.ox + CW / 2, y = l ? l.y - 14 : D.oy + CH / 2;
-  glideTo(x, y); lens = {x, y, moved: true};
+  const d = travelTime(Math.hypot(x - (camX + VW / 2), y - (camY + VH / 2)));
+  glideTo(x, y, d); lens = {x, y, moved: true}; $("loccard").hidden = true; lensHover = null; holdStart = 0;
+  travelAvatar(D, d); showRegion(D);
 }
+function travelAvatar(D, d){
+  const pts = walkways(D); if (!pts.length) return;
+  const i = pts.length >> 1, [x1, y1] = pts[i];
+  if (av.dest === D.d.id && Math.hypot(x1 - av.x, y1 - av.y) < 4) { placeAvatar(D); return; }
+  av.travel = {x0: av.x, y0: av.y, x1, y1, s: performance.now(), d: d || travelTime(Math.hypot(x1 - av.x, y1 - av.y)), D, i, pts};
+  av.path = []; av.wait = 0;
+  av.dir = Math.abs(x1 - av.x) > Math.abs(y1 - av.y) ? (x1 > av.x ? "right" : "left") : (y1 > av.y ? "down" : "up");
+}
+function moveTraveller(ts){
+  const T = av.travel; if (!T) return;
+  const k = Math.min(1, (ts - T.s) / T.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
+  if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = 30; av.dir = "down"; av.step = 0; }
+}
+function showRegion(D){ regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (b) travelTo(b.dataset.dest); });
 
 /* ---------------- input ----------------
@@ -2112,179 +2140,37 @@ function renderHomeChips(){
 }
 
 /* ---------------- the detailed 2D avatar ----------------
-   An original fashion-doll style figure drawn with vector paths: long head-to-body proportions, big
-   eyes or sunglasses, long wavy hair, crop tank, wide cargo trousers, pointed boots, a shoulder bag.
-   It uses the same look as the pixel sprite (skin, hair, top, bottoms, sunglasses), so it is one
-   character drawn two ways. Units: 100 = full height, origin at the feet, y up is negative. */
-const DOLL_OUT = "#2a1a14";
-function dollColors(look, outfit){
-  const sk = SKINS[look.skin] || SKINS.tan, hr = HAIRS[look.hair] || HAIRS.brunette, tp = TOPS[look.top] || TOPS.pink, bt = BOTS[look.bot] || BOTS.grey;
-  const o = outfit || {};
-  return {skin: sk[0], skinD: sk[1], hair: hr[0], hairM: hr[1], hairL: hr[2], top: o.top || tp[0], topD: o.topD || tp[1], pant: o.pant || bt[0], pantD: o.pantD || bt[1],
-    boot: o.boot || "#f4f2ee", bootD: o.bootD || "#cfcbc3", lips: "#b5576a", glasses: look.glasses && !o.noGlasses, leggings: !!o.leggings, bag: !o.noBag};
-}
-function P(g, pts, fill, stroke, lw){ g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) { const p = pts[i]; if (p.length === 6) g.bezierCurveTo(p[0], p[1], p[2], p[3], p[4], p[5]); else if (p.length === 4) g.quadraticCurveTo(p[0], p[1], p[2], p[3]); else g.lineTo(p[0], p[1]); } g.closePath(); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw || .5; g.stroke(); } }
-function strand(g, pts, col, lw){ g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) { const p = pts[i]; if (p.length === 4) g.quadraticCurveTo(p[0], p[1], p[2], p[3]); else g.lineTo(p[0], p[1]); } g.strokeStyle = col; g.lineWidth = lw; g.lineCap = "round"; g.stroke(); }
-function ell(g, x, y, rx, ry, fill, stroke, lw){ g.beginPath(); g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw || .5; g.stroke(); } }
-function hairMass(g, c, back, lod){
-  // waves down to mid-back; the bottom edge is a run of soft scallops
-  P(g, [[-9.5, -97], [-3, -104, 3, -104, 9.5, -97], [14, -93, 16, -86, 15.5, -80], [18.5, -74, 15, -69, 18, -63], [20, -58, 16, -54, 17, -50],
-    [14.5, -46.5, 12, -49], [9.5, -46, 7, -48.5], [4.5, -45.5, 2, -48], [-.5, -45.5, -3, -48], [-5.5, -46, -8, -48.5], [-10.5, -46, -13, -49], [-15.5, -46.5, -17, -50],
-    [-16, -54, -20, -58, -18, -63], [-15, -69, -18.5, -74, -15.5, -80], [-16, -86, -14, -93, -9.5, -97]], c.hair, DOLL_OUT, .55);
-  if (lod > .15) waves(g, c, [-14, -9.5, -5, 5, 9.5, 14], -90, -50, lod);
-}
-function waves(g, c, xs, y0, y1, lod){ // soft S-shaped highlights running down the hair
-  g.globalAlpha = .35 + lod * .35;
-  xs.forEach((x, i) => { const pts = [[x * .7, y0]]; for (let y = y0, k = 0; y < y1; y += 7, k++) pts.push([x + (k % 2 ? 1.6 : -1.6) + (i % 2 ? .6 : -.6), y + 3.5, x * (1 + (y - y0) / 300), y + 7]); strand(g, pts, i % 2 ? c.hairL : c.hairM, .75); });
-  g.globalAlpha = 1;
-}
-const HEAD_K = 1.18; // fashion-doll proportions: a larger head on a long, slim figure
-function headSpace(g, fn){ g.save(); g.translate(0, -79); g.scale(HEAD_K, HEAD_K); g.translate(0, 79); fn(); g.restore(); }
-function frontHair(g, c, lod){
-  P(g, [[0, -100.2], [-7, -101, -9.6, -95, -9.8, -90], [-10.8, -84, -9.5, -79, -12, -74], [-14, -69, -11.5, -64, -12.5, -58], [-10.6, -61, -10, -66, -9, -71], [-7.6, -78, -8.2, -84, -7.6, -90], [-6.5, -95, -2, -97.8, 0, -100.2]], c.hair, DOLL_OUT, .45);
-  P(g, [[0, -100.2], [7, -101, 9.6, -95, 9.8, -90], [10.8, -84, 9.5, -79, 12, -74], [14, -69, 11.5, -64, 12.5, -58], [10.6, -61, 10, -66, 9, -71], [7.6, -78, 8.2, -84, 7.6, -90], [6.5, -95, 2, -97.8, 0, -100.2]], c.hair, DOLL_OUT, .45);
-  if (lod > .15) { strand(g, [[-1, -99], [-7, -94, -9, -86], [-10, -76, -11.5, -66]], c.hairL, .8); strand(g, [[1, -99], [7, -94, 9, -86], [10, -76, 11.5, -66]], c.hairM, .8); strand(g, [[0, -99.8], [0, -97.8]], c.hairL, .5); }
-}
-function face(g, c, lod){
-  P(g, [[0, -98.6], [6.6, -98.6, 8.4, -93, 8.2, -88.5], [8, -83, 4.6, -79.2, 0, -78.6], [-4.6, -79.2, -8, -83, -8.2, -88.5], [-8.4, -93, -6.6, -98.6, 0, -98.6]], c.skin, DOLL_OUT, .45);
-  if (lod > .2) { g.globalAlpha = .28; ell(g, -5, -85.5, 2.2, 1.3, "#e46a86"); ell(g, 5, -85.5, 2.2, 1.3, "#e46a86"); g.globalAlpha = 1; }
-  if (c.glasses) {
-    P(g, [[-8, -92], [-1.2, -92.3], [-1.4, -88.6, -4, -88.2], [-7.6, -88.4, -8, -92]], "#121014", DOLL_OUT, .4);
-    P(g, [[8, -92], [1.2, -92.3], [1.4, -88.6, 4, -88.2], [7.6, -88.4, 8, -92]], "#121014", DOLL_OUT, .4);
-    strand(g, [[-1.3, -91.2], [1.3, -91.2]], "#121014", .7);
-    if (lod > .3) { strand(g, [[-6.6, -91.3], [-5, -91.3]], "rgba(255,255,255,.55)", .35); strand(g, [[2.2, -91.3], [3.8, -91.3]], "rgba(255,255,255,.55)", .35); }
-  } else {
-    for (const s of [-1, 1]) {
-      P(g, [[s * 1.6, -90], [s * 3.6, -92.2, s * 6.4, -90.4], [s * 3.8, -88.6, s * 1.6, -90]], "#fbf8f4", DOLL_OUT, .35);
-      ell(g, s * 4, -90.3, 1.25, 1.35, "#4a2c1e"); ell(g, s * 4, -90.3, .6, .7, "#120c0a"); if (lod > .3) ell(g, s * 3.6, -90.8, .3, .3, "#fff");
-      strand(g, [[s * 1.4, -90.2], [s * 4, -92.8, s * 6.8, -90.6]], DOLL_OUT, .55);
-    }
-  }
-  strand(g, [[-6.6, -94.2], [-4, -95.4, -1.4, -94.4]], c.hair, .7); strand(g, [[6.6, -94.2], [4, -95.4, 1.4, -94.4]], c.hair, .7);
-  strand(g, [[.2, -88], [1.1, -85.6, -.2, -85.2]], c.skinD, .45);
-  P(g, [[-2.6, -82.6], [-1, -83.8, 0, -83.2], [1, -83.8, 2.6, -82.6], [1.2, -81.2, 0, -81.2], [-1.2, -81.2, -2.6, -82.6]], c.lips, DOLL_OUT, .25);
-  if (lod > .3) ell(g, -.6, -82.2, .7, .25, "rgba(255,255,255,.5)");
-}
-function legsFront(g, c, sw, lod, back){
-  const L = c.leggings;
-  for (const s of [-1, 1]) {
-    const lift = s * sw * 1.8, hx = s * (L ? 6.8 : 9.5);
-    const pts = L ? [[s * 9.8, -57], [s * 9.2, -40, s * 6.6, -30, s * 6, -18], [s * 6, -10 + lift], [s * 2.2, -10 + lift], [s * 2, -20, s * 1.4, -34, 0, -45], [0, -57]]
-      : [[s * 10.6, -57], [s * 12.6, -42, s * 13.2, -26, s * 14.6, -7 + lift], [s * 11, -4.6 + lift, s * 6, -5.4 + lift, s * 3, -4.8 + lift], [s * 2.4, -20, s * 1.4, -34, 0, -43], [0, -57]];
-    P(g, pts, c.pant, DOLL_OUT, .45);
-    if (!L) { g.globalAlpha = .5; P(g, [[s * 3, -5 + lift], [s * 2.4, -20, s * 1.4, -34, 0, -43], [s * 2, -30], [s * 4.6, -12, s * 5.6, -5.2 + lift]], c.pantD); g.globalAlpha = 1; }
-    if (!L && lod > .2) {
-      const px = s > 0 ? 9 : -15.4;
-      P(g, [[px, -38], [px + 6.4, -38], [px + 6.6, -28.5], [px + .2, -28.5]], c.pant, c.pantD, .4); strand(g, [[px, -35.6], [px + 6.4, -35.6]], c.pantD, .5);
-      P(g, [[px - .3, -22], [px + 6.4, -22], [px + 6.8, -13.5], [px + .2, -13.5]], c.pant, c.pantD, .35);
-      if (lod > .5) { strand(g, [[s * 14.2, -30], [s * 15.8, -20, s * 15.2, -12]], c.pantD, .55); strand(g, [[s * 12.8, -25], [s * 13.6, -16]], c.pantD, .45); for (let y = -11 + lift; y > -15; y -= 1.6) strand(g, [[s * 4, y], [s * 13.6, y + .6]], c.pantD, .25); }
-    }
-    // pointed heeled boots peeking out under the hem
-    const by = lift * .4;
-    P(g, [[s * (L ? 5.8 : 4.6), -6 + by], [s * (L ? 6.6 : 8.8), -6.6 + by], [s * 9.4, -2 + by, s * 9.8, .2 + by], [s * 6, .8 + by, s * 3.2, .2 + by], [s * 3.4, -3 + by]], c.boot, DOLL_OUT, .4);
-    if (lod > .3) strand(g, [[s * 7.6, -1.6 + by], [s * 9, -.2 + by]], c.bootD, .5);
-  }
-  if (!L) { P(g, [[-10.8, -58.4], [10.8, -58.4], [10.6, -55.6], [-10.6, -55.6]], c.pantD, DOLL_OUT, .35); if (lod > .4) for (const x of [-7, -2.5, 2.5, 7]) strand(g, [[x, -58.2], [x, -55.8]], c.pant, .5); }
-}
-function torsoFront(g, c, sw, lod){
-  P(g, [[-8.4, -62], [-7.6, -59, -8.2, -57], [8.2, -57], [7.6, -59, 8.4, -62]], c.skin, DOLL_OUT, .4); // midriff
-  if (lod > .3) ell(g, 0, -58.7, .35, .5, c.skinD);
-  ell(g, 0, -74.6, 11.2, 2.8, c.skin, DOLL_OUT, .4);
-  P(g, [[-2.6, -80], [2.6, -80], [2.8, -74.5], [-2.8, -74.5]], c.skin); strand(g, [[-2.4, -78.8], [2.4, -78.8]], c.skinD, .6);
-  // arms, with a small swing
-  for (const s of [-1, 1]) {
-    const a = -s * sw * 1.2;
-    strand(g, [[s * 10.8, -74], [s * 13.4 + a * .4, -66, s * 13.2 + a, -58], [s * 12.8 + a * 1.3, -49]], DOLL_OUT, 3.6);
-    strand(g, [[s * 10.8, -74], [s * 13.4 + a * .4, -66, s * 13.2 + a, -58], [s * 12.8 + a * 1.3, -49]], c.skin, 2.7);
-    ell(g, s * 12.8 + a * 1.3, -47.8, 1.5, 2, c.skin, DOLL_OUT, .35);
-    if (lod > .45) strand(g, [[s * 12.1 + a * 1.2, -51.6], [s * 13.9 + a * 1.2, -51.4]], "#d9dde2", .8);
-  }
-  // the crop tank: scoop neck, thin straps, a soft shape
-  P(g, [[-6.6, -77.2], [-6, -74.4], [-9.8, -72, -10.4, -68, -9.2, -64], [-8.8, -61.4], [8.8, -61.4], [9.2, -64], [10.4, -68, 9.8, -72, 6, -74.4], [6.6, -77.2], [5.6, -77.2], [4.6, -71.4, 0, -70.6], [-4.6, -71.4, -5.6, -77.2]], c.top, DOLL_OUT, .45);
-  g.globalAlpha = .55; P(g, [[-9.2, -64], [-8.8, -61.4], [-5, -61.4], [-7.6, -63.6, -8.4, -67]], c.topD); P(g, [[9.2, -64], [8.8, -61.4], [5, -61.4], [7.6, -63.6, 8.4, -67]], c.topD); g.globalAlpha = 1;
-  if (lod > .35) { g.globalAlpha = .35; strand(g, [[-6.4, -66.6], [-3.4, -65.2, -.6, -66.6]], c.topD, .5); strand(g, [[6.4, -66.6], [3.4, -65.2, .6, -66.6]], c.topD, .5); g.globalAlpha = 1; }
-  if (lod > .4) { strand(g, [[-3.4, -75.6], [0, -71.6, 3.4, -75.6]], "#d9dde2", .32); ell(g, 0, -71, .8, 1.05, "#eef1f4", "#9aa0a8", .2); }
-  if (c.bag) { strand(g, [[7.6, -76.6], [11, -70, 13.2, -64.6]], "#121014", .9); P(g, [[11.4, -65.4], [18.4, -65], [19.6, -60, 18, -57], [12.6, -57.4], [11, -60, 11.4, -65.4]], "#17151a", DOLL_OUT, .4); if (lod > .35) strand(g, [[13, -63.6], [16.6, -63.4]], "#4a4650", .45); }
-}
-function dollFront(g, c, sw, lod){
-  headSpace(g, () => hairMass(g, c, false, lod));
-  legsFront(g, c, sw, lod);
-  torsoFront(g, c, sw, lod);
-  headSpace(g, () => {
-    face(g, c, lod);
-    if (lod > .2) for (const s of [-1, 1]) { g.beginPath(); g.arc(s * 8.8, -83.6, 1.5, 0, Math.PI * 2); g.strokeStyle = "#cfd4da"; g.lineWidth = .45; g.stroke(); }
-    frontHair(g, c, lod);
-  });
-}
-function dollBack(g, c, sw, lod){
-  legsFront(g, c, -sw, lod, true);
-  if (!c.leggings && lod > .25) for (const s of [-1, 1]) P(g, [[s * 3, -54], [s * 8.4, -54], [s * 8.2, -48], [s * 3.2, -48]], c.pant, c.pantD, .35);
-  P(g, [[-8.4, -62], [-7.6, -59, -8.2, -57], [8.2, -57], [7.6, -59, 8.4, -62]], c.skin, DOLL_OUT, .4);
-  P(g, [[-9.4, -74], [-10, -68, -9.2, -64], [-8.8, -61.4], [8.8, -61.4], [9.2, -64], [10, -68, 9.4, -74]], c.top, DOLL_OUT, .45);
-  for (const s of [-1, 1]) { const a = s * sw * 1.2; strand(g, [[s * 10.8, -74], [s * 13.4, -66, s * 13.2 + a, -58], [s * 12.8 + a * 1.3, -49]], DOLL_OUT, 3.6); strand(g, [[s * 10.8, -74], [s * 13.4, -66, s * 13.2 + a, -58], [s * 12.8 + a * 1.3, -49]], c.skin, 2.7); }
-  if (c.bag) { strand(g, [[-7.6, -76.6], [-11, -70, -13.2, -64.6]], "#121014", .9); P(g, [[-11.4, -65.4], [-18.4, -65], [-19.6, -60, -18, -57], [-12.6, -57.4], [-11, -60, -11.4, -65.4]], "#17151a", DOLL_OUT, .4); }
-  headSpace(g, () => { hairMass(g, c, true, lod); ell(g, 0, -91, 9.6, 8.6, c.hair); if (lod > .15) waves(g, c, [-11, -6, -1.5, 3, 7.5, 12], -97, -50, lod); });
-}
-function dollSide(g, c, sw, lod){ // facing right; a left-facing figure is the same drawing mirrored
-  headSpace(g, () => {
-    P(g, [[-1.5, -99], [-9, -100, -13, -92, -12.5, -84], [-14.5, -76, -11, -68, -13.5, -60], [-14.5, -54, -11, -48, -7, -49.5], [-6, -56, -4.6, -62, -4, -70], [-3.6, -78, -2, -82, 1, -84]], c.hair, DOLL_OUT, .5);
-    if (lod > .15) waves(g, c, [-11, -8, -5], -94, -52, lod);
-  });
-  const L = c.leggings;
-  for (const [s, dark] of [[-1, true], [1, false]]) { // back leg first, then the front leg
-    const k = s * sw, hx = k * 5.5, col = dark ? c.pantD : c.pant;
-    const pts = L ? [[-3.6, -57], [4.2, -57], [4.6, -40, 3.6 + hx * .4, -26, 2.6 + hx, -9], [-1.4 + hx, -9], [-2.2, -26, -4, -40, -3.6, -57]]
-      : [[-4.4, -57], [5, -57], [6.4, -40, 6.6 + hx * .5, -24, 7.6 + hx, -5.4], [2, -4.6 + hx * 0, -4.6 + hx, -5.2], [-5.4 + hx * .5, -24, -6, -40, -4.4, -57]];
-    P(g, pts, col, DOLL_OUT, .45);
-    if (!L && !dark && lod > .2) { P(g, [[-1.6 + hx * .3, -38], [5 + hx * .3, -38], [5.4 + hx * .5, -27], [-1 + hx * .5, -27]], c.pant, c.pantD, .4); strand(g, [[-1.6 + hx * .3, -35.6], [5 + hx * .3, -35.6]], c.pantD, .5); if (lod > .5) strand(g, [[5.4 + hx * .5, -27], [6 + hx * .7, -16]], c.pantD, .5); }
-    const bx = (L ? .6 : 1.2) + hx * 1.05;
-    P(g, [[bx - 2.6, -6], [bx + 3.6, -6], [bx + 8, -2, bx + 9.6, .2], [bx + 2, .8, bx - 2.4, .4], [bx - 2.8, -3]], dark ? c.bootD : c.boot, DOLL_OUT, .4);
-  }
-  if (!L) P(g, [[-4.6, -58.4], [5.2, -58.4], [5, -55.6], [-4.4, -55.6]], c.pantD, DOLL_OUT, .35);
-  P(g, [[-3.8, -62], [3.6, -62], [3.2, -58.6, 3.8, -56.8], [-4.2, -56.8], [-3.6, -59, -3.8, -62]], c.skin, DOLL_OUT, .4);
-  P(g, [[-1.6, -80], [1.8, -80], [2.2, -74], [-2, -74]], c.skin, DOLL_OUT, .35);
-  P(g, [[-4.2, -75.2], [2.6, -75.6], [5.8, -72, 6.6, -68, 4.4, -64.6], [3.8, -61.4], [-4, -61.4], [-4.8, -66, -4.6, -71, -4.2, -75.2]], c.top, DOLL_OUT, .45);
-  if (c.bag) P(g, [[-9.6, -66], [-3.4, -66], [-3, -61, -4.4, -58.4], [-9, -58.4], [-10.4, -61, -9.6, -66]], "#17151a", DOLL_OUT, .4);
-  const a = sw * 4;
-  strand(g, [[-.4, -74], [.6 + a * .3, -66, .4 + a, -58], [.2 + a * 1.4, -49]], DOLL_OUT, 3.6); strand(g, [[-.4, -74], [.6 + a * .3, -66, .4 + a, -58], [.2 + a * 1.4, -49]], c.skin, 2.7);
-  ell(g, .2 + a * 1.4, -47.8, 1.5, 2, c.skin, DOLL_OUT, .35);
-  headSpace(g, () => {
-  // profile: forehead, small nose, full lips, chin
-  P(g, [[-6, -96], [-1, -100.6, 5, -99, 6.6, -94], [7.2, -91.5, 7.4, -90], [8.8, -87.4], [7.4, -86.6], [7.6, -85.2], [8, -84.2, 7.4, -83.6], [7.8, -82.6, 7, -81.6], [6.6, -79.6, 4, -78.8, 1.6, -79.4], [-1, -80.6, -6.4, -84, -6, -96]], c.skin, DOLL_OUT, .45);
-  P(g, [[7.8, -84.6], [6.4, -84.2], [6.2, -82.4], [7.6, -82.6, 7.8, -84.6]], c.lips);
-  if (c.glasses) { P(g, [[3, -92.2], [8.2, -92.6], [8, -88.4], [3.4, -88.2]], "#121014", DOLL_OUT, .4); strand(g, [[3, -91.2], [-2.2, -90.4]], "#121014", .8); }
-  else { P(g, [[4.4, -90.2], [6, -91.8, 7.2, -90.4], [6, -89, 4.4, -90.2]], "#fbf8f4", DOLL_OUT, .3); ell(g, 6.2, -90.4, .7, .9, "#2a1a14"); strand(g, [[4.2, -90.6], [6, -92.6, 7.6, -90.8]], DOLL_OUT, .55); }
-  strand(g, [[3.6, -94.4], [5.6, -95.4, 7.4, -94.2]], c.hair, .7);
-  if (lod > .2) { g.beginPath(); g.arc(-.6, -83.8, 1.5, 0, Math.PI * 2); g.strokeStyle = "#cfd4da"; g.lineWidth = .45; g.stroke(); }
-  P(g, [[-1.5, -99], [3, -101.4, 7, -98, 6.6, -94], [3, -96.4, -1, -95.6, -2.6, -92], [-3.4, -88, -1.6, -86, -2.6, -84], [-6, -88, -5.6, -96, -1.5, -99]], c.hair, DOLL_OUT, .45);
-  });
-}
-// Draw the figure with its feet at (0, 0) and the top of its hair at y = -h.
-function drawDoll(g, h, dir, frame, lod, look, outfit){
-  const c = dollColors(look || avatarLook(), outfit), u = h / 108;
-  const walking = frame >= 0, sw = walking ? Math.sin(frame / 8 * Math.PI * 2) : 0, bob = walking ? -Math.abs(sw) * .9 : frame === -2 ? -.4 : 0;
-  g.save(); g.scale(u, u); g.translate(0, bob); g.lineJoin = "round"; g.lineCap = "round";
-  g.globalAlpha = .28; ell(g, 0, .8, 13, 2.6, "#0a140c"); g.globalAlpha = 1;
-  if (dir === "up") dollBack(g, c, sw, lod);
-  else if (dir === "left" || dir === "right") { if (dir === "left") g.scale(-1, 1); dollSide(g, c, sw, lod); }
-  else dollFront(g, c, sw, lod);
-  g.restore();
+   Her own character sheet, cut out view by view (front, back and both profiles) and shown as drawn:
+   no redrawing, recolouring or reinterpretation. The pixel sprite is the same character in game form. */
+const DOLL_VIEWS = {down: "front", up: "back", left: "side-left", right: "side-right"};
+const dollImgs = {};
+for (const v of Object.values(DOLL_VIEWS)) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev)); }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
+const dollReady = dir => { const im = dollImgs[DOLL_VIEWS[dir] || "front"]; return im && im.complete && im.naturalWidth ? im : null; };
+// Draw her with her feet at (0, 0) and the top of her hair at y = -h. Walking adds a small step bob and sway.
+function drawDoll(g, h, dir, frame){
+  const im = dollReady(dir) || dollReady("down"); if (!im) return false;
+  const w = h * im.naturalWidth / im.naturalHeight, walking = frame >= 0, ph = walking ? frame / 8 * Math.PI * 2 : 0;
+  g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+  g.globalAlpha = .28; g.fillStyle = "#0a140c"; g.beginPath(); g.ellipse(0, 0, w * .38, h * .022, 0, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+  if (walking) { g.translate(0, -Math.abs(Math.sin(ph)) * h * .012); g.rotate(Math.sin(ph) * .018); }
+  g.drawImage(im, -w / 2, -h, w, h);
+  g.restore(); return true;
 }
 const dollCache = new Map();
-function dollSprite(dir, frame, hpx, lod){
-  const key = [dir, frame, hpx, lod, hudDpr, lookKey()].join("|");
+function dollSprite(dir, frame, hpx){
+  const key = [dir, frame, hpx, hudDpr, dollReady(dir) ? 1 : 0].join("|");
   if (dollCache.has(key)) return dollCache.get(key);
-  if (dollCache.size > 90) dollCache.clear();
-  const k = hudDpr, c = document.createElement("canvas"); c.width = Math.ceil(hpx * .62 * k); c.height = Math.ceil(hpx * 1.08 * k);
-  const g = c.getContext("2d"); g.translate(c.width / 2, c.height - hpx * .04 * k); g.scale(k, k);
-  drawDoll(g, hpx, dir, frame, lod);
-  const out = {c, ax: c.width / 2, ay: c.height - hpx * .04 * k};
+  if (dollCache.size > 60) dollCache.clear();
+  const k = hudDpr, c = document.createElement("canvas"); c.width = Math.ceil(hpx * .5 * k); c.height = Math.ceil(hpx * 1.06 * k);
+  const g = c.getContext("2d"); g.translate(c.width / 2, c.height - hpx * .03 * k); g.scale(k, k);
+  drawDoll(g, hpx, dir, frame);
+  const out = {c, ax: c.width / 2, ay: c.height - hpx * .03 * k};
   dollCache.set(key, out); return out;
 }
 
 /* ---------------- dream visuals: a curated library drawn in the world's own style ----------------
    No image service is connected, so suggestions come from this library (matched to the words of the
-   dream) plus anything the person uploads. Nothing is picked until she taps it. Two entries draw her
+   dream) plus anything the person uploads. Nothing is picked until she taps it. Two entries show her
    own character, for dreams about fitness or style; they are motivation, not a body measurement. */
 function sky(g, w, h, a, b){ const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, w, h); }
 function grassBand(g, w, h, y){ for (let yy = y; yy < h; yy++) for (let x = 0; x < w; x++) F(g, x, yy, 1, 1, hash(x, yy, 98) > .85 ? C.grass[3] : hash(x, yy, 97) > .7 ? C.grass[1] : C.grass[2]); }
@@ -2321,9 +2207,7 @@ function libUrl(id){
     if (L.avatar === "fit") { sky(g, 240, 180, "#cfe3f2", "#eef4f8"); g.fillStyle = "#7aaa4f"; g.fillRect(0, 120, 240, 60); g.fillStyle = "#b5523a"; g.beginPath(); g.ellipse(120, 150, 130, 26, 0, 0, 7); g.fill(); g.fillStyle = "#f2efe6"; g.beginPath(); g.ellipse(120, 150, 100, 17, 0, 0, 7); g.fill(); g.fillStyle = "#7aaa4f"; g.beginPath(); g.ellipse(120, 150, 96, 15, 0, 0, 7); g.fill(); }
     else { sky(g, 240, 180, "#fde8ef", "#f7c6d8"); g.fillStyle = "rgba(255,255,255,.5)"; for (let i = 0; i < 14; i++) g.fillRect(hash(i, 1, 5) * 240, hash(i, 2, 5) * 180, 3, 3); }
     g.translate(120, 166);
-    const outfit = L.avatar === "fit" ? {top: "#f04f85", topD: "#c22f60", pant: "#2b2b33", pantD: "#1c1c22", leggings: true, boot: "#f4f4f2", bootD: "#cfcfcf", noBag: true, noGlasses: true} : null;
-    drawDoll(g, 150, "down", -1, 1, avatarLook(), outfit);
-    if (L.avatar === "fit") { g.fillStyle = "#1e1e22"; g.fillRect(-26, -76, 9, 7); g.fillRect(-26, -79, 3, 13); g.fillRect(-20, -79, 3, 13); g.fillRect(17, -76, 9, 7); g.fillRect(17, -79, 3, 13); g.fillRect(23, -79, 3, 13); }
+    drawDoll(g, 158, "down", -1);
   } else {
     const s = document.createElement("canvas"); s.width = 64; s.height = 48; L.draw(s.getContext("2d"));
     c.width = 192; c.height = 144; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; g.drawImage(s, 0, 0, 192, 144);
@@ -2826,6 +2710,9 @@ function renderAccount(){
   const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
   el.innerHTML = `
     <div class="phead"><div><h1>Account</h1><div class="sub">Your profile, your character, your data</div></div></div>
+    <section class="panel"><div class="eyebrow">Demo Mode</div>
+      <div class="seg" role="group" aria-label="Which world to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">My real goals</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Mode</button></div>
+      <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing a fictional world for presenting the app: Mumbai, Delhi, LA, New York and Greece. Its data is kept separately; your real goals are untouched and come back exactly as they were." : "Demo Mode shows a fictional world with its own goals and progress, for presenting the app. It never shows or changes your real goals."}</p></section>
     <section class="panel"><div class="eyebrow">Profile</div>
       <div class="grid2"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
         <label class="field"><span>Email (optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
@@ -2841,22 +2728,26 @@ function renderAccount(){
         <label class="btn ghost" style="cursor:pointer">Restore from file<input type="file" id="restoreFile" accept="application/json,.json" hidden></label></div>
       <div class="notice" id="restoreConfirm" hidden></div></section>
     <section class="panel"><div class="eyebrow">Data</div>
-      <p style="margin:0;font-size:14px">${esc(storageNote)}${assetsApi ? "" : " Reference images stay on this device."}</p>
-      ${S.demo ? `<p style="margin:0;font-size:14px">You're looking at an <b>example world</b>. Its entries are samples, not things you did.</p>` : ""}
-      <div class="pair">${S.demo ? `<button class="btn" id="clearDemo">Clear example, start mine</button>` : `<button class="btn ghost" id="loadDemo">Load example world</button>`}
-        <button class="btn danger" id="wipe">Delete everything</button></div>
+      <p style="margin:0;font-size:14px">${demoMode ? "Demo data is fictional and kept on this device, apart from your real goals. It never syncs." : esc(storageNote) + (assetsApi ? "" : " Reference images stay on this device.")}</p>
+      <div class="pair">${demoMode ? `<button class="btn ghost" id="toReal">Back to my real goals</button>` : `<button class="btn ghost" id="toDemo">Switch to Demo Mode</button>`}
+        <button class="btn danger" id="wipe">${demoMode ? "Reset demo data" : "Delete everything"}</button></div>
       <p class="muted" id="wipeConfirm" style="margin:0;font-size:13.5px" hidden>This deletes every dream, goal and entry. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></section>`;
   avatarEditor($("acAv"));
   let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
   let et; $("acEmail").oninput = e => { clearTimeout(et); et = setTimeout(() => { const v = e.target.value.trim(); if (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { S.profile.email = v; save(); } }, 600); };
 
-  const cd = $("clearDemo"); if (cd) cd.onclick = () => { S = Object.assign(blankState(), {profile: S.profile}); afterChange(); save(); startOnboarding(1); };
-  const ld = $("loadDemo"); if (ld) ld.onclick = () => { if (S.aspirations.length || S.goals.length || S.entries.length) { ld.textContent = "This replaces your data. Tap again"; if (ld.dataset.c !== "1") { ld.dataset.c = "1"; return; } } S = demoState(S.profile); afterChange(); save(); go("home"); };
+  el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
+  const tr = $("toReal"); if (tr) tr.onclick = () => setDemoMode(false);
+  const td = $("toDemo"); if (td) td.onclick = () => setDemoMode(true);
   $("backupBtn").onclick = downloadBackup;
   $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
   $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
   $("wipeNo").onclick = () => { $("wipeConfirm").hidden = true; };
-  $("wipeYes").onclick = () => { S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0); };
+  if (demoMode) $("wipeConfirm").firstChild.textContent = "This resets the demo to its starting state. Your real goals aren't affected. ";
+  $("wipeYes").onclick = () => {
+    if (demoMode) { const av0 = S.profile.avatar; S = demoState(REAL.profile); S.profile.avatar = av0; layoutKey = ""; landKey = ""; camInit = false; afterChange(); save(); toast("Demo reset"); return; }
+    S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
+  };
 }
 
 /* --- backup and restore: one JSON file holding everything --- */
@@ -2897,39 +2788,78 @@ async function restoreBackup(file){
   };
 }
 
-/* --- example world (clearly labelled) --- */
+/* --- Demo Mode: a fictional person's world for showing the app to others ---
+   It lives in its own record (DEMO_KEY), never syncs anywhere, and never reads or writes your real
+   one. Switching back restores your real world exactly as it was. */
 function demoState(profile){
-  const s = blankState(); s.onboarded = true; s.onboarding = {step: 6, done: true}; s.demo = true; if (profile) s.profile = profile;
-  s.destinations = [destFromPlace("d-delhi", "from"), destFromPlace("d-mumbai", "from"), destFromPlace("d-la", "live"), destFromPlace("d-boston", "study"), destFromPlace("d-japan", "experience")];
+  const s = blankState(); s.onboarded = true; s.onboarding = {step: 6, done: true};
+  s.profile = Object.assign(s.profile, {name: "Maya", email: ""}, profile ? {avatar: {...profile.avatar}} : {});
+  const P = (id, gazName, purpose, name) => { const g = GAZ.find(p => p.name === gazName); return {id, name: name || g.name, country: g.country, lat: g.lat, lon: g.lon, env: g.env, purpose, custom: false, createdAt: addDays(today(), -60)}; };
+  s.destinations = [P("dm-mumbai", "Mumbai", "from"), P("dm-delhi", "Delhi", "work"), P("dm-la", "LA", "live"), P("dm-ny", "New York", "visit"), P("dm-greece", "Santorini", "experience", "Greece")];
   layoutAll(s.destinations);
   const d = n => addDays(today(), n);
-  const A = (id, title, desc, category, kind, timeframe, place) => s.aspirations.push({id, title, desc, category, kind, timeframe, destinationId: "d-" + (place || "la"), image: null, tint: null, createdAt: d(-40)});
-  A("a1", "Live by the beach in LA", "A white house a few streets from the ocean. Windows open, salt air, a walk to coffee.", "Places to live", "villa", "5–10 years");
-  A("a2", "Surf before work", "Paddle out at dawn a few mornings a week.", "Experiences & adventures", "beach", "2–5 years");
-  A("a3", "A light-filled design studio", "My own studio with big windows, two or three people I love working with.", "Career & creative work", "studio", "5–10 years");
-  A("a4", "Drive a vintage Porsche", "A 911 from the 80s, cream interior.", "Money & material", "car", "10–15 years");
-  A("a5", "A garden that feeds us", "Tomatoes, herbs, a lemon tree.", "Home & surroundings", "garden", "10–15 years");
-  A("a6", "Experience Porsche drifting in Japan", "A drift day on a Japanese circuit, then the mountain roads.", "Experiences & adventures", "drift", "2–5 years", "japan");
-  A("a9", "Study Design Engineering at Harvard", "The Master in Design Engineering in Cambridge, Massachusetts. A goal I'm working towards.", "Career & education", "campus", "Within 2 years", "boston");
-  A("a7", "Sunday lunches with family in Delhi", "The whole family around one table, every visit home.", "Relationships & lifestyle", "picnic", "Within 2 years", "delhi");
-  A("a8", "A sea-facing flat in Mumbai", "A place to come back to on Marine Drive.", "Places to live", "villa", "10–15 years", "mumbai");
-  const G = (id, title, aspirationId, start, deadline, ms, extra) => s.goals.push(Object.assign({id, title, desc: "", aspirationId, start, deadline, priority: "", status: "active", doneAt: null, milestones: ms.map(([t, done], i) => ({id: id + "m" + i, title: t, doneAt: done ? d(done) : null})), deadlineHistory: [], createdAt: start}, extra || {}));
-  G("g1", "Launch my portfolio site", "a3", d(-35), d(-6), [["Pick 4 case studies", -20], ["Write the about page", -9], ["Build the site", 0], ["Share it with 10 people", 0]], {priority: "High", desc: "The front door to studio work."});
-  G("g2", "Take 10 surf lessons", "a2", d(-20), d(40), [["Research surf schools", -3], ["Book the first lesson", 0]]);
-  G("g3", "Save $5k for the LA move", "a1", d(-30), d(90), [["Open a separate savings account", -25], ["Save $1k", -8], ["Save $2.5k", 0]]);
-  G("g4", "Read 4 design books", "a3", d(-60), d(-12), [], {status: "done", doneAt: d(-14)});
-  G("g5", "Fly home for Diwali", "a7", d(-10), d(25), [["Book the flights", -4]]);
-  G("g6", "Finish my MDE application portfolio", "a9", d(-25), d(45), [["Choose 3 projects", -12], ["Write the statement of purpose", 0], ["Ask for recommendation letters", 0]], {priority: "High"});
-  const E = (n, text, goalIds, size, type, extra) => s.entries.push(Object.assign({id: "e" + n, date: d(n), text, goalIds, size, type, learned: "", blocked: "", next: "", example: true}, extra || {}));
-  E(-15, "Finished the last design book", ["g4"], 2, "did");
-  E(-9, "Wrote the about page draft", ["g1"], 2, "did", {learned: "Short beats clever"});
-  E(-8, "Moved $500 into the LA fund", ["g3"], 2, "did");
-  E(-3, "Researched three surf schools and compared course prices", ["g2"], 1, "did", {next: "Book a morning lesson"});
-  E(-2, "Sketched the studio logo", [], 1, "worked");
-  E(-4, "Booked flights home to Delhi for Diwali", ["g5"], 2, "did");
-  E(-1, "Rebuilt the portfolio homepage layout", ["g1"], 2, "worked", {blocked: "Client deadline ate two evenings"});
-  E(-6, "Picked the three projects for the MDE portfolio", ["g6"], 2, "did");
+  const A = (id, title, desc, category, kind, timeframe, dest, lib) => s.aspirations.push({id, title, desc, category, kind, timeframe, destinationId: dest, image: lib ? {lib} : null, tint: null, createdAt: d(-50)});
+  A("da1", "Feel strong and energetic every day", "Morning runs on the sea face, strength training three times a week.", "Fitness & wellbeing", "fitness", "Within 2 years", "dm-mumbai", "fitness");
+  A("da2", "Make things with my hands again", "Ceramics on Sunday mornings, and one project I finish and show people.", "Skills & growth", "studio", "Within 2 years", "dm-mumbai");
+  A("da3", "Work somewhere that stretches me", "A role where I lead creative projects and learn from people better than me.", "Career & education", "studio", "2–5 years", "dm-delhi", "studio");
+  A("da4", "A creative circle in the city", "A monthly table of designers, writers and makers who push each other.", "Relationships & lifestyle", "picnic", "2–5 years", "dm-delhi", "family");
+  A("da5", "Run my own creative business", "A small studio with clients I love, based near the coast.", "Career & education", "villa", "5–10 years", "dm-la", "la");
+  A("da6", "Show my work at a design conference", "Walk the halls, meet the people whose work I admire, and leave with three new contacts.", "Career & education", "campus", "Within 2 years", "dm-ny", "city");
+  A("da7", "Learn to sail between the islands", "A week on a small boat, learning to read the wind.", "Experiences & adventures", "beach", "2–5 years", "dm-greece", "surf");
+  const G = (id, title, aspirationId, dest, start, deadline, ms, extra) => s.goals.push(Object.assign({id, title, desc: "", aspirationId, destinationId: dest, category: "", start, deadline, priority: "", status: "active", doneAt: null, milestones: ms.map(([t, done], i) => ({id: id + "m" + i, title: t, doneAt: done ? d(done) : null})), deadlineHistory: [], createdAt: start}, extra || {}));
+  // Mumbai
+  G("dg1", "Build a consistent fitness routine", "da1", "dm-mumbai", d(-45), d(30), [["Pick a 3-day plan", -40], ["Two weeks without missing a session", -20], ["Run 5 km without stopping", -6], ["Six weeks in a row", 0]], {priority: "High"});
+  G("dg2", "Learn a new creative skill", "da2", "dm-mumbai", d(-60), d(-8), [["Sign up for a ceramics class", -55], ["Throw my first bowl", -30], ["Glaze a set of four", -10]], {status: "done", doneAt: d(-9)});
+  G("dg3", "Complete a personal project", "da2", "dm-mumbai", d(-30), d(45), [["Choose the project", -28], ["Make the first draft", -4], ["Show it to five people", 0]]);
+  // Delhi
+  G("dg4", "Explore new professional opportunities", "da3", "dm-delhi", d(-35), d(20), [["Update my CV", -30], ["Talk to three people in roles I want", -12], ["Apply to two places", 0]], {priority: "High"});
+  G("dg5", "Build a creative community", "da4", "dm-delhi", d(-25), d(60), [["Invite eight people to a first dinner", -14], ["Host the first evening", -5], ["Make it monthly", 0]]);
+  G("dg6", "Develop a personal portfolio", "da3", "dm-delhi", d(-50), d(-3), [["Pick four projects", -40], ["Write the case studies", -18], ["Publish the site", 0]], {deadlineHistory: [{from: d(-15), to: d(-3), on: d(-16), note: "Added a fifth project"}]});
+  // LA
+  G("dg7", "Launch a company", "da5", "dm-la", d(-20), d(150), [["Name and register it", -10], ["First paying client", 0], ["Hire a first freelancer", 0]]);
+  G("dg8", "Build a creative business plan", "da5", "dm-la", d(-28), d(25), [["Price three services", -15], ["Write a one-page plan", 0]]);
+  G("dg9", "Network with entrepreneurs", "da5", "dm-la", d(-10), d(90), [["Join one founders' group", -3], ["Have five coffee chats", 0]], {status: "paused"});
+  // New York
+  G("dg10", "Attend a design conference", "da6", "dm-ny", d(-15), d(120), [["Choose the conference", -9], ["Book tickets and flights", 0], ["Prepare a short portfolio deck", 0]]);
+  G("dg11", "Build international connections", "da6", "dm-ny", d(-12), d(100), [["Message ten designers abroad", -2], ["Two video calls", 0]]);
+  G("dg12", "Explore a new creative opportunity", "da6", "dm-ny", d(-5), d(80), [["Shortlist three residencies", 0]]);
+  // Greece
+  G("dg13", "Learn sailing", "da7", "dm-greece", d(-18), d(110), [["Find a beginner course", -8], ["Book the course", 0], ["Pass the first level", 0]]);
+  G("dg14", "Explore the islands", "da7", "dm-greece", d(-8), d(200), [["Plan a ten-day route", 0], ["Save for the trip", 0]]);
+  G("dg15", "Complete a personal travel goal", "da7", "dm-greece", d(-40), d(-20), [["Travel alone for a week", -21]], {status: "done", doneAt: d(-21)});
+  const E = (n, text, goalIds, size, type, extra) => s.entries.push(Object.assign({id: "de" + n + goalIds.join(""), date: d(n), text, goalIds, size, type, learned: "", blocked: "", next: ""}, extra || {}));
+  E(-1, "Ran 5 km along the sea face without stopping", ["dg1"], 3, "did", {learned: "Slower start, stronger finish"});
+  E(-2, "Hosted the first creative dinner: seven people came", ["dg5"], 3, "did");
+  E(-3, "Joined a founders' breakfast group", ["dg9"], 1, "did");
+  E(-4, "Drafted the first version of my personal project", ["dg3"], 2, "worked", {next: "Show it to two friends"});
+  E(-5, "Shortlisted two sailing schools and compared prices", ["dg13"], 1, "worked");
+  E(-6, "Coffee with a design lead at a studio I admire", ["dg4"], 2, "did");
+  E(-8, "Messaged ten designers abroad, four replied", ["dg11"], 2, "did");
+  E(-9, "Glazed and fired a set of four bowls", ["dg2"], 3, "did");
+  E(-10, "Registered the company name", ["dg7"], 2, "did");
+  E(-12, "Wrote two portfolio case studies", ["dg6"], 2, "worked", {blocked: "A busy week at work"});
+  E(-14, "Priced three studio services", ["dg8"], 1, "worked");
+  E(-15, "Chose the conference and blocked the dates", ["dg10"], 1, "did");
+  E(-21, "Took a week-long trip on my own", ["dg15"], 3, "did", {learned: "I'm braver than I thought"});
+  s.reflections[weekStart(d(-7))] = {text: "Small sessions added up. The dinner made the week.", next: "Book the sailing course"};
   return s;
+}
+const DEMO_KEY = "dreamLifeBuilder.demo.v1", MODE_KEY = "dreamLife.mode";
+function markMode(){ document.body.classList.toggle("demo-on", demoMode); $("menuAcct").textContent = demoMode ? "Demo Mode is on" : "Profile, character, data"; }
+let REAL = null, demoMode = false;
+function loadDemo(){ try { const d = JSON.parse(localStorage.getItem(DEMO_KEY) || "null"); if (d) return migrate(d); } catch (e) {} return demoState(REAL && REAL.profile); }
+function setDemoMode(on){
+  if (on === demoMode) return;
+  if (on) { REAL = S; S = loadDemo(); S.profile.avatar = {...REAL.profile.avatar}; }
+  else { S = REAL; }
+  demoMode = on; markMode();
+  try { localStorage.setItem(MODE_KEY, on ? "demo" : "real"); } catch (e) {}
+  // the world is rebuilt from whichever record is showing; your real camera spot is kept separately
+  layoutKey = ""; landKey = ""; camInit = false; regionShown = ""; av.dest = ""; av.travel = null; spriteCache.clear(); dollCache.clear(); libCache.clear(); modelVer++;
+  if (on) save();
+  if (!S.onboarding.done) { startOnboarding(); return; }
+  toast(on ? "Demo Mode: a fictional world. Your real goals are untouched." : "Back to your real goals.");
+  go(route === "onboard" ? "home" : route);
 }
 
 
@@ -2945,7 +2875,7 @@ function placeSearch(root, onPick){
   let custom = false;
   function draw(){
     root.innerHTML = `<div class="search"><input type="search" id="psQ" placeholder="Search a city, country or university" autocomplete="off" aria-label="Search places"><ul class="search-res" id="psRes" role="listbox" hidden></ul></div>
-      <div class="pills" aria-label="Ideas">${["Los Angeles", "Boston", "Tokyo", "London", "New York", "Bali"].map(n => `<button type="button" class="pill" data-quick="${n}">${plusIcon}${n}</button>`).join("")}</div>
+      <div class="pills" aria-label="Ideas">${["LA", "Boston", "Tokyo", "London", "New York", "Bali"].map(n => `<button type="button" class="pill" data-quick="${n}">${plusIcon}${n}</button>`).join("")}</div>
       ${custom ? `<div class="panel" style="gap:10px"><div class="eyebrow">A place that isn't listed</div>
         <div class="grid2"><label class="field"><span>Name</span><input type="text" id="pcName" placeholder="e.g. Nani's village"></label><label class="field"><span>Country (optional)</span><input type="text" id="pcCountry" placeholder="e.g. India"></label></div>
         <label class="field"><span>What it's like</span><select id="pcEnv">${GENERIC_ENVS.map(k => `<option value="${k}">${ENV_LABEL[k]}</option>`).join("")}</select><small>Places without their own artwork use this scenery, labelled with your name for the place.</small></label>
@@ -3001,7 +2931,7 @@ function avatarEditor(root, onChange){
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art", "The game-style character"], ["doll", "Detailed 2D", "Illustrated, sharper up close"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas class="av-prev" data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>
-      <p class="muted" style="margin:0;font-size:12.5px">One character, drawn two ways. Switch any time; she keeps her place in your world.</p>
+      <p class="muted" style="margin:0;font-size:12.5px">One character, drawn two ways. Switch any time; she keeps her place in your world.${A().style === "doll" ? " Detailed 2D is your character sheet exactly as drawn; the colour options below change the Pixel Art version." : ""}</p>
       ${sw("skin", SKINS, "Skin tone")}${sw("hair", HAIRS, "Hair")}${sw("top", TOPS, "Top")}${sw("bot", BOTS, "Trousers")}
       <div class="field"><span>Sunglasses</span><div class="seg" role="group"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>`;
     root.querySelectorAll("[data-style]").forEach(b => b.onclick = () => set({style: b.dataset.style}));
@@ -3017,7 +2947,7 @@ function drawAvatarPreview(cvs, style){
   const g = cvs.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cvs.width, cvs.height);
   const bgc = g.createLinearGradient(0, 0, 0, cvs.height); bgc.addColorStop(0, "#fde8ef"); bgc.addColorStop(1, "#f7d6e2"); g.fillStyle = bgc; g.fillRect(0, 0, cvs.width, cvs.height);
   if (style === "pixel") { g.imageSmoothingEnabled = false; const s = Math.floor(cvs.height * .78 / AV_H); g.drawImage(avatarSprite("down", 0), (cvs.width - AV_W * s) / 2 | 0, cvs.height - AV_H * s - 8 * k | 0, AV_W * s, AV_H * s); }
-  else { g.translate(cvs.width / 2, cvs.height - 8 * k); g.scale(k, k); drawDoll(g, h * .86, "down", -1, 1); }
+  else { g.translate(cvs.width / 2, cvs.height - 6 * k); g.scale(k, k); drawDoll(g, h * .92, "down", -1); }
 }
 
 /* =====================================================================
@@ -3058,7 +2988,7 @@ function obWelcome(M, Fo){
     <div class="insight ob-list"><div>Name the places you dream of. They become your map.</div><div>Describe the life you want there. Each dream becomes a landmark, hidden in the dark.</div><div>Log real progress on your goals and your world gets clearer.</div></div>`;
   Fo.innerHTML = `<button class="btn ghost" id="obDemo">See an example</button><button class="btn" id="obBegin">Begin</button>`;
   $("obBegin").onclick = () => obGo(1);
-  $("obDemo").onclick = () => { S = demoState(S.profile); afterChange(); save(); $("onboard").hidden = true; go("home"); toast("Example world. Make your own any time in Account."); };
+  $("obDemo").onclick = () => setDemoMode(true);
   // a little world in the dark with the lens drifting across it
   const D = {d: {id: "preview", env: "la", purpose: "live"}, pack: PACKS.la, ox: -9999, oy: -9999, open: {n: 1, s: 1, e: 1, w: 1}, seed: 3};
   if (!obWelcome.terrain) { buildDistrictTerrain(D); sparkles = sparkles.filter(s => s.d !== "preview"); obWelcome.terrain = D.terrain; }
@@ -3166,7 +3096,9 @@ function obWorld(M, Fo){
    6. BOOT
    ===================================================================== */
 try { S = migrate(JSON.parse(localStorage.getItem(LS_KEY) || "null")); } catch (e) { S = blankState(); }
+try { if (localStorage.getItem(MODE_KEY) === "demo") { REAL = S; S = loadDemo(); S.profile.avatar = {...REAL.profile.avatar}; demoMode = true; } } catch (e) {}
 try { if (localStorage.getItem("dreamLife.hint")) $("hint").hidden = true; } catch (e) {}
+markMode();
 addEventListener("resize", () => { if (route === "home") sizeScene(); });
 go(location.hash.slice(1) || "home");
 requestAnimationFrame(loop);
@@ -3185,14 +3117,15 @@ if (!S.onboarding.done) startOnboarding();
     if (snap.exists) {
       if (snap.metadata.hasPendingWrites || saving) return;
       const incoming = JSON.stringify(snap.data());
-      if (incoming === lastSynced || incoming === JSON.stringify(S)) { lastSynced = incoming; return; }
+      if (incoming === lastSynced || incoming === JSON.stringify(demoMode ? REAL : S)) { lastSynced = incoming; return; }
       lastSynced = incoming;
+      if (demoMode) { REAL = migrate(JSON.parse(incoming)); try { localStorage.setItem(LS_KEY, JSON.stringify(REAL)); } catch (e) {} return; } // update your real world quietly; the demo stays on screen
       S = migrate(JSON.parse(incoming));
       try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
       storageNote = "Saved to your Claude account. Only you can see it.";
       if (S.onboarding.done && route === "onboard") go("home");
       if (typingInPage()) pendingRender = true; else afterChange();
-    } else if (!snap.metadata.fromCache) save();
+    } else if (!snap.metadata.fromCache && !demoMode) save();
   }, () => {});
 })();
 </script>
