@@ -197,7 +197,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
 .sheet-h h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-height:1.05}
 .sheet-b{overflow:auto;padding:4px max(18px,env(safe-area-inset-right,0px)) 16px max(18px,env(safe-area-inset-left,0px));display:grid;gap:16px}
-.sheet-f{display:flex;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
 .progress-dots{display:flex;gap:5px}
 .progress-dots i{width:22px;height:4px;border-radius:9px;background:var(--line)}
 .progress-dots i.on{background:var(--accent)}
@@ -226,6 +226,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .ph-left{display:flex;align-items:center;gap:4px}
 .phead:has(.ph-left){align-items:center}
+.sheet-f .btn.danger{margin-right:auto}
+.sheet-f .btn.ghost{background:transparent;border-color:transparent;color:var(--accent-ink)}
+.sheet-f .btn.ghost:hover{background:var(--accent-soft)}
 .pp-intro{margin:-12px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
 .as-hello{margin:-8px 0 0;font-size:15px;color:var(--ink-2)}
 .acc-head{display:flex;align-items:center;gap:6px}
@@ -2709,7 +2712,7 @@ function editGoal(id, preset){
     <small class="muted" id="gDateNote" hidden></small>
     <div class="field"><span>Milestones</span><ul class="ms-edit" id="gMs"></ul><button type="button" class="btn quiet sm" id="gMsAdd" style="justify-self:start">${ICON.plus}Add milestone</button></div>
     <p class="muted" id="gErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
-    `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save Goal</button>`, () => {
+    `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save</button>`, () => {
       // keep what's typed in the milestone rows before redrawing them
       const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { const m = ms[+r.dataset.row]; m.title = r.querySelector("[data-f=title]").value; m.due = r.querySelector("[data-f=due]").value; m.desc = r.querySelector("[data-f=desc]").value; });
       const drawMs = () => {
@@ -2850,7 +2853,7 @@ function logEntry(editId){
         <label class="field"><span>What I learned</span><input type="text" id="eLearn" value="${esc(f.learned)}" placeholder="e.g. Morning lessons are cheaper"></label>
         <label class="field"><span>What got in the way</span><input type="text" id="eBlock" value="${esc(f.blocked)}" placeholder="e.g. Work trip ate the weekend"></label>
         <label class="field"><span>What I'll do next</span><input type="text" id="eNextT" value="${esc(f.next)}" placeholder="e.g. Book the first lesson"></label>`;
-      Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eSave">${ex ? "Save changes" : "Save entry"}</button>`;
+      Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eSave">Save</button>`;
       $("eBack").onclick = () => { f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim(); step = 2; draw(); };
       $("eSave").onclick = () => {
         f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim();
@@ -2944,7 +2947,7 @@ function editAspiration(id, preset){
     ${id ? `<div class="field"><span>Goals for this dream</span>${goals.length ? `<ul class="steps">${goals.map(g => `<li><span>${esc(g.title)}</span>${deadlineLine(g)}</li>`).join("")}</ul>` : `<small>No goals linked yet. Linking a goal is how this place starts to clear.</small>`}
       <button type="button" class="btn ghost sm" id="aNewGoal" style="justify-self:start">${ICON.plus}Add a goal for this</button></div>` : ""}
     <p class="muted" id="aErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
-    `${id ? `<button class="btn danger" id="aDel">Delete</button>` : `<button class="btn ghost" id="aCancel">Cancel</button>`}<button class="btn" id="aSave">${id ? "Save" : "Add to my world"}</button>`, () => {
+    `${id ? `<button class="btn danger" id="aDel">Delete</button>` : `<button class="btn ghost" id="aCancel">Cancel</button>`}<button class="btn" id="aSave">Save</button>`, () => {
       let destTouched = !!id || !!preset?.destinationId, catTouched = !!id || !!preset?.category;
       const KIND_CAT = {fitness: "Fitness & wellbeing", campus: "Career & education", studio: "Career & education", home: "Home & surroundings", garden: "Home & surroundings", car: "Money & material", drift: "Experiences & adventures", beach: "Experiences & adventures", balloon: "Places & travel", villa: "Places & travel", picnic: "Relationships & lifestyle", library: "Skills & growth"};
       const guessDest = txt => { const s = txt.toLowerCase(); const hit = dests.find(d => s.includes(d.name.toLowerCase()) || GAZ.some(p => p.name === d.name && p.alias && p.alias.split(",").some(al => al.length > 2 && s.includes(al)))); return hit ? hit.id : (dests.find(d => d.purpose !== "from") || dests[0])?.id || ""; };
@@ -3037,7 +3040,7 @@ function editAssetCat(id){
     ${id ? `<div class="field"><span>Order</span><div class="actions"><button type="button" class="btn ghost sm" id="acUp" ${idx === 0 ? "disabled" : ""}>Move up</button><button type="button" class="btn ghost sm" id="acDown" ${idx === S.assetCats.length - 1 ? "disabled" : ""}>Move down</button></div></div>
       <button type="button" class="btn danger sm" id="acDel" style="justify-self:start">Delete category${n ? ` and its ${n} asset${n === 1 ? "" : "s"}` : ""}</button>` : ""}
     <p class="muted" id="acErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
-    `<button class="btn ghost" id="acCancel">Cancel</button><button class="btn" id="acSave">${id ? "Save" : "Add category"}</button>`, () => {
+    `<button class="btn ghost" id="acCancel">Cancel</button><button class="btn" id="acSave">Save</button>`, () => {
       $("acCancel").onclick = closeSheet;
       $("acSave").onclick = () => { const name = $("acName2").value.trim(); if (!name) { $("acErr").textContent = "Give the category a name."; $("acErr").hidden = false; return; }
         commit(s => { if (id) s.assetCats.find(x => x.id === id).name = name; else { const nc = {id: "ac-" + uid(), name}; s.assetCats.push(nc); assetOpenSet().add(nc.id); saveAssetOpen(); } }); closeSheet(); };
@@ -3059,12 +3062,10 @@ function editAsset(id, catId){
     <label class="field"><span>Name</span><input type="text" id="asTitle" value="${esc(a.title)}" placeholder="e.g. The Design Den" maxlength="80"></label>
     <label class="field"><span>Description (optional)</span><textarea id="asNote" placeholder="A line about it">${esc(a.note)}</textarea></label>
     <label class="field"><span>Link (optional)</span><input type="url" id="asLink" value="${esc(a.link || "")}" placeholder="https://"></label>
-    <div class="dates"><label class="field"><span>Date (optional)</span><input type="date" id="asDate" value="${esc(a.date || "")}"></label>
-      <label class="field"><span>Category</span><select id="asCat">${S.assetCats.map(c => `<option value="${c.id}" ${c.id === a.catId ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></label></div>
     ${id && a.link ? `<a class="btn quiet sm" href="${esc(a.link)}" target="_blank" rel="noopener noreferrer" style="justify-self:start">Open link</a>` : ""}
     ${id && siblings.length > 1 ? `<div class="actions"><button type="button" class="btn ghost sm" id="asUp" ${pos <= 0 ? "disabled" : ""}>Move up</button><button type="button" class="btn ghost sm" id="asDown" ${pos >= siblings.length - 1 ? "disabled" : ""}>Move down</button></div>` : ""}
     <p class="muted" id="asErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
-    `${id ? `<button class="btn danger" id="asDel">Delete</button>` : `<button class="btn ghost" id="asCancel">Cancel</button>`}<button class="btn" id="asSave">${id ? "Save" : "Add asset"}</button>`, () => {
+    `${id ? `<button class="btn danger" id="asDel">Delete</button>` : `<button class="btn ghost" id="asCancel">Cancel</button>`}<button class="btn" id="asSave">Save</button>`, () => {
       $("asFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { pending = await readImage(f); $("asImg").src = pending.dataUrl; $("asImg").hidden = false; $("asImgRm").hidden = false; $("asImgLbl").textContent = "Replace image"; } catch (err) { toast("That file couldn't be read as an image."); } };
       $("asImgRm").onclick = () => { image = null; pending = null; $("asImg").hidden = true; $("asImgRm").hidden = true; $("asImgLbl").textContent = "Choose image"; };
       const c = $("asCancel"); if (c) c.onclick = closeSheet;
@@ -3076,7 +3077,7 @@ function editAsset(id, catId){
         let link = $("asLink").value.trim(); if (link && !/^https?:\/\//i.test(link)) link = "https://" + link;
         const aid = id || "as-" + uid();
         if (pending) { if (assetsApi) { try { image = {assetId: (await assetsApi.upload(pending.blob)).id}; } catch (e) { image = null; } } else { try { localStorage.setItem("dreamLife.img." + aid, pending.dataUrl); image = {local: aid}; } catch (e) { image = null; toast("No room on this device for the image; saved without it."); } } }
-        const cat = $("asCat").value, data = {title, note: $("asNote").value.trim(), date: $("asDate").value || "", link, image, catId: cat};
+        const cat = a.catId, data = {title, note: $("asNote").value.trim(), link, image, catId: cat};
         commit(s => {
           if (id) { const x = s.assets.find(x => x.id === id); if (x.catId !== cat) x.order = Math.max(0, ...s.assets.filter(y => y.catId === cat).map(y => y.order + 1)); Object.assign(x, data); }
           else s.assets.push({id: aid, order: Math.max(0, ...s.assets.filter(y => y.catId === cat).map(y => y.order + 1)), status: "done", tags: [], createdAt: today(), ...data});
@@ -3117,7 +3118,7 @@ function editNote(id){
       <div class="actions" style="align-self:end"><button type="button" class="pill" id="nPin" aria-pressed="${pinned}">Pin</button><button type="button" class="pill" id="nFav" aria-pressed="${fav}">Favourite</button></div></div>
     <textarea id="nBody" class="note-body" placeholder="Write freely…" aria-label="Note">${esc(n.body)}</textarea>
     ${id && n.updatedAt && n.updatedAt !== n.at ? `<small class="muted">Last edited ${esc(fmtWhen(n.updatedAt))}</small>` : ""}`,
-    `${id ? `<button class="btn danger" id="nDel">Delete</button>` : `<button class="btn ghost" id="nCancel">Cancel</button>`}<button class="btn" id="nSave">${id ? "Save" : "Save note"}</button>`, sh => {
+    `${id ? `<button class="btn danger" id="nDel">Delete</button>` : `<button class="btn ghost" id="nCancel">Cancel</button>`}<button class="btn" id="nSave">Save</button>`, sh => {
       sh.classList.add("tall");
       $("nPin").onclick = () => { pinned = !pinned; $("nPin").setAttribute("aria-pressed", pinned); };
       $("nFav").onclick = () => { fav = !fav; $("nFav").setAttribute("aria-pressed", fav); };
