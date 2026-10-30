@@ -2512,14 +2512,14 @@ function drawOverview(){
   const cvs = $("ovCanvas"), r = $("overview").getBoundingClientRect(), k = Math.min(2, devicePixelRatio || 1);
   cvs.width = Math.round(r.width * k); cvs.height = Math.round(r.height * k);
   const g = cvs.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0);
-  g.fillStyle = "#0f1420"; g.fillRect(0, 0, r.width, r.height);
+  g.fillStyle = "#1b4f7c"; g.fillRect(0, 0, r.width, r.height); // the sea runs edge to edge; the world sits in the middle of it
   const top = 92, bottom = 150, side = 16, right = 72, aw = r.width - side - right, ah = r.height - top - bottom; // keep clear of the map controls
   const f = Math.min(aw / W, ah / H), ox = side + (aw - W * f) / 2, oy = top + (ah - H * f) / 2;
   ovFit = {f, ox, oy};
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
-  g.save(); g.beginPath(); g.roundRect ? g.roundRect(ox, oy, W * f, H * f, 14) : g.rect(ox, oy, W * f, H * f); g.clip();
+  g.save();
   g.drawImage(bg, 0, 0, W, H, ox, oy, W * f, H * f);
-  g.fillStyle = "rgba(15,20,32,.45)"; g.fillRect(ox, oy, W * f, H * f); // the open sea, dimmed
+  g.fillStyle = "rgba(15,20,32,.45)"; g.fillRect(0, 0, r.width, r.height); // the open sea, dimmed
   for (const D of DIST.values()) { const a = .78 * (1 - placeReveal(D)); if (a > .01) { g.fillStyle = `rgba(15,20,32,${a.toFixed(3)})`; g.fillRect(ox + D.ox * f, oy + D.oy * f, CW * f, CH * f); } }
   g.restore();
   // where you are
