@@ -88,9 +88,9 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
   display:grid;grid-template-columns:repeat(5,1fr);align-items:center;height:30px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line);padding:0 6px}
 .journey::before{content:"";position:absolute;left:18px;right:18px;top:50%;height:1px;background:rgba(255,255,255,.22)}
 .journey button{all:unset;cursor:pointer;position:relative;z-index:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.62);padding:6px 0}
-.journey button[aria-current="true"]{color:#fff}
+.journey button[aria-current="true"]{color:#ff8db3}
 .journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.journey .you{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,79,133,.3);transition:left .7s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.journey .you{position:absolute;bottom:4px;height:2px;width:0;border-radius:2px;background:var(--accent);box-shadow:0 0 6px rgba(240,79,133,.6);transition:left .6s cubic-bezier(.4,0,.2,1),width .6s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .vision-banner{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
@@ -224,6 +224,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-strong);o
 /* ---------- world HUD, places strip, tips ---------- */
 #hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .journey{grid-template-columns:repeat(var(--n,5),minmax(0,1fr))}
+.journey::before{display:none}
+.journey button{transition:color .3s}
 .journey button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:6px 2px}
 .tips{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(122px + env(safe-area-inset-bottom,0px));z-index:7;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px;display:grid;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
@@ -425,19 +427,21 @@ function normalize(o){
   const ORDER = ["d-mumbai", "d-delhi", "d-boston", "d-la", "d-japan"], rank = d => { const i = ORDER.indexOf(d.id); return i < 0 ? 99 : i; };
   if (ORDER.every(id => s.destinations.some(d => d.id === id))) s.destinations = s.destinations.map((d, i) => [d, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map(x => x[0]);
   s.destinations.forEach(d => { if (d.id === "d-la" && d.name === "Los Angeles") d.name = "LA"; });
+  addTaglines(s);
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; });
   s.entries.forEach(e => { e.goalIds ||= []; });
   return s;
 }
 // Version 2 was one fixed map (Delhi → Mumbai → LA). Turn those three places into destinations, and
 // add Boston and Japan with the dreams they stand for, so the owner's world carries over intact.
+function addTaglines(s){ const TAG = {"d-mumbai": "Love living here", "d-delhi": "One of the home-grounds"}; s.destinations.forEach(d => { if (TAG[d.id] && d.tagline == null) d.tagline = TAG[d.id]; }); }
 function upgradeTo3(s){
   s.v = 3;
   s.onboarding.done = s.onboarded; if (s.onboarded) s.onboarding.step = 6;
   if (!s.onboarded && !s.aspirations.length) return s;
   const add = (id, purpose) => { if (!s.destinations.some(d => d.id === id)) s.destinations.push(destFromPlace(id, purpose)); };
   add("d-mumbai", "from"); add("d-delhi", "from"); add("d-boston", "study"); add("d-la", "live"); add("d-japan", "experience");
-  layoutAll(s.destinations);
+  layoutAll(s.destinations); addTaglines(s);
   s.aspirations.forEach(a => { if (!a.destinationId) a.destinationId = "d-" + (a.place || "la"); delete a.place; });
   const seed = (id, title, desc, category, kind, timeframe, destinationId) => { if (!s.aspirations.some(a => a.id === id)) s.aspirations.push({id, title, desc, category, kind, timeframe, destinationId, image: null, tint: null, createdAt: today()}); };
   if (!s.categories.includes("Career & education")) s.categories.push("Career & education");
@@ -1946,15 +1950,15 @@ function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { 
 function renderPlacesNav(){
   const ds = worldDests().filter(d => !d.placeholder);
   const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
-  el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}">${esc(d.name)}</button>`).join("") : `<button data-go="dreams">Add places</button>`);
+  el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}"><span>${esc(d.name)}</span></button>`).join("") : `<button data-go="dreams">Add places</button>`);
   markPlaces();
 }
-// The pink dot sits under the place you're looking at, like the original journey strip.
+// A pink underline slides to the place you're looking at and colours its name.
 function markPlaces(){
   const el = $("journey"), you = el.querySelector(".you");
   el.querySelectorAll("[data-dest]").forEach(b => {
     const on = b.dataset.dest === regionShown; b.setAttribute("aria-current", on ? "true" : "false");
-    if (on && you) you.style.left = (b.offsetLeft + b.offsetWidth / 2) + "px";
+    if (on && you) { const w = b.firstElementChild ? b.firstElementChild.offsetWidth : b.offsetWidth; you.style.width = w + "px"; you.style.left = (b.offsetLeft + (b.offsetWidth - w) / 2) + "px"; }
   });
 }
 // Straight to the place you tapped: the camera and your character travel together, nothing in between is visited.
@@ -1979,7 +1983,7 @@ function moveTraveller(ts){
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
   if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = 30; av.dir = "down"; av.step = 0; }
 }
-function showRegion(D){ regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
+function showRegion(D){ regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${D.d.tagline || PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (b) travelTo(b.dataset.dest); });
 
 /* ---------------- input ----------------
@@ -2910,11 +2914,12 @@ function wireDestRows(root, redraw){
 function editDestination(id){
   const d = S.destinations.find(x => x.id === id); if (!d) return;
   openSheet("Edit place", `<label class="field"><span>Name</span><input type="text" id="edName" value="${esc(d.name)}"></label>
+    <label class="field"><span>A line about it (optional)</span><input type="text" id="edTag" value="${esc(d.tagline || "")}" maxlength="40" placeholder="e.g. Love living here"><small>Shown under the place's name in your world.</small></label>
     <label class="field"><span>What it is for you</span><select id="edPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you're from start already clear. Everywhere else starts in the dark.</small></label>
     <label class="field"><span>Scenery</span><select id="edEnv">${(GENERIC_ENVS.includes(d.env) ? [] : [d.env]).concat(GENERIC_ENVS).map(k => `<option value="${k}" ${d.env === k ? "selected" : ""}>${ENV_LABEL[k]}${GENERIC_ENVS.includes(k) ? "" : " (its own artwork)"}</option>`).join("")}</select></label>`,
     `<button class="btn ghost" id="edCancel">Cancel</button><button class="btn" id="edSave">Save</button>`, () => {
       $("edCancel").onclick = closeSheet;
-      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, purpose: $("edPurpose").value, env: $("edEnv").value})); closeSheet(); toast("Place updated"); };
+      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, env: $("edEnv").value})); regionShown = ""; closeSheet(); toast("Place updated"); };
     });
 }
 function addPlaceSheet(after){
