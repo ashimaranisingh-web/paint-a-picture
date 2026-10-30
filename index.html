@@ -335,7 +335,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <!-- PRODUCT SCREENS -->
   <section class="screen pages" id="pages" hidden>
     <header class="ptop">
-      <button class="brand" data-go="home" aria-label="Back to your world">Paint a Picture</button>
+      <button class="brand" data-go="home" aria-label="Back to your world" id="brand">Paint a Picture</button>
       <button class="pbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <main class="pmain" id="pmain">
@@ -2494,6 +2494,7 @@ function go(r){
   if (!ROUTES.includes(r)) r = "home";
   route = r; closeMenu(); closeSheet();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
+  $("brand").textContent = r === "account" ? "Account" : "Paint a Picture";
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
   for (const k of ["goals", "week", "dreams", "account"]) $("p-" + k).hidden = k !== r;
   document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === r ? "page" : "false"));
@@ -2946,9 +2947,8 @@ function renderAccount(){
   const el = $("p-account"), done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length, metOrig = done.filter(g => g.doneAt <= originalDeadline(g)).length;
   const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
   el.innerHTML = `
-    <div class="phead"><div><h1>Account</h1></div></div>
     <section class="panel"><div><div class="eyebrow">Profile</div><p class="muted" style="margin:4px 0 0;font-size:13px">Email allows us to save your data through updates and across devices.</p></div>
-      <div class="grid2"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
+      <div style="display:grid;gap:14px"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
         <label class="field"><span>Email (Optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
       <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "Accounts are coming soon. Until then your data stays in this browser, and your email is never sent anywhere."}</small></section>
     <section><h2 class="sec" style="margin-bottom:10px">Honest numbers</h2>
