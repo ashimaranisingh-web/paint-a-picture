@@ -323,7 +323,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <nav class="journey" id="journey" aria-label="Your places"></nav>
     <div class="loccard" id="loccard" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -1990,7 +1990,7 @@ function moveTraveller(ts){
   const T = av.travel; if (!T) return;
   const k = Math.min(1, (ts - T.s) / T.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
-  if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = 30; av.dir = "down"; av.step = 0; }
+  if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0; }
 }
 function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; $("greet").textContent = D.d.placeholder ? "Add your places in Paint Reality" : `${D.d.name} · ${D.d.tagline || PURPOSES[D.d.purpose] || ""}`; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (!b) return; if (overviewOn) { closeOverview(); setTimeout(() => travelTo(b.dataset.dest), 60); } else travelTo(b.dataset.dest); });
@@ -2028,6 +2028,20 @@ cv.addEventListener("pointermove", e => {
   }
   if (mode === "lens") { const w = toWorld(e.clientX, e.clientY); lens = {x: w.x, y: w.y, moved: true}; holdStart = 0; viewDirty = true; hideHint(); edgeNudge(e); }
 });
+// Three quick taps in the same spot call her over: she walks there and waits.
+let taps = [];
+function countTap(e){
+  const now = performance.now();
+  taps = taps.filter(p => now - p.t < 650 && Math.hypot(p.x - e.clientX, p.y - e.clientY) < 30).concat({t: now, x: e.clientX, y: e.clientY});
+  if (taps.length >= 3) { taps = []; walkHere(toWorld(e.clientX, e.clientY)); }
+}
+function walkHere({x, y}){
+  const D = districtAt(x, y); if (!D) return;
+  const dist = Math.hypot(x - av.x, y - av.y), d = Math.min(3000, 300 + dist * 9);
+  av.travel = {x0: av.x, y0: av.y, x1: x, y1: y + 12, s: performance.now(), d, D, i: 0, pts: [[x, y + 12]], stay: true};
+  av.path = []; av.wait = 0; av.dir = Math.abs(x - av.x) > Math.abs(y + 12 - av.y) ? (x > av.x ? "right" : "left") : (y + 12 > av.y ? "down" : "up");
+  $("loccard").hidden = true; lensHover = null; holdStart = 0; viewDirty = true;
+}
 function edgeNudge(e){
   const r = cv.getBoundingClientRect(), m = 28, k = 8 / scale;
   let moved = false;
@@ -2038,7 +2052,7 @@ function edgeNudge(e){
 function endPtr(e){
   const p = ptrs.get(e.pointerId); if (!p) return;
   ptrs.delete(e.pointerId);
-  if ((mode === "pan?" || mode === "lens?") && ptrs.size === 0 && e.type === "pointerup") tapAt(toWorld(e.clientX, e.clientY));
+  if ((mode === "pan?" || mode === "lens?") && ptrs.size === 0 && e.type === "pointerup") { tapAt(toWorld(e.clientX, e.clientY)); countTap(e); }
   if (mode === "pan" && ptrs.size === 0 && panV && performance.now() - panV.t < 80 && !reduced && Math.hypot(panV.vx, panV.vy) > .02) inertia = {vx: panV.vx, vy: panV.vy, last: performance.now()};
   if (ptrs.size < 2) pinch0 = null;
   if (ptrs.size === 1 && mode === "pan2") { mode = "pan"; const q = [...ptrs.values()][0]; q.sx = -1e4; panV = {vx: 0, vy: 0, t: performance.now()}; }
@@ -3270,7 +3284,7 @@ function obWorld(M, Fo){
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
       <li><span class="cb" aria-hidden="true"></span><span>Your character, ${S.profile.avatar.style === "doll" ? "detailed 2D" : "pixel art"}</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div></div></div>`;
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is ready."; } }, reduced ? 0 : 280 + i * 260));
