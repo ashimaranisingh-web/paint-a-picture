@@ -21,7 +21,7 @@
   --night:#0f1420; --glass:rgba(16,19,27,.84); --glass-line:rgba(255,255,255,.14);
   --serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --sans:"Manrope", "Helvetica Neue", system-ui, sans-serif;
-  --r-sm:8px; --r:12px; --r-lg:18px;
+  --r-xs:4px; --r-sm:8px; --r:12px; --r-lg:12px; /* corners: 4, 8 or 12px, never more (pills stay round) */
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ button{cursor:pointer}
 #app{height:100%;max-width:390px;margin:0 auto;position:relative;overflow:hidden;background:var(--paper)}
 /* On a computer the app is shown at iPhone 14 size (390 × 844), centred; on a phone it fills the screen. */
 @media (min-width:560px){#app{box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(31,36,32,.14)}}
-@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:28px;--safe-top:47px}}
+@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:12px;--safe-top:47px}}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column}
 .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
@@ -50,7 +50,7 @@ button{cursor:pointer}
 .mark-name{font-size:11px;font-weight:500;line-height:1.3;color:rgba(255,255,255,.82);letter-spacing:.04em;text-transform:uppercase}
 .mark-app{font-family:var(--sans);font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.01em}
 .mark-sub{font-family:var(--serif);font-size:24px;line-height:1.1;color:#fff;letter-spacing:.005em}
-.gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
+.gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   }
 .gbtn:hover{background:rgba(30,36,48,.75)}
 .gbtn,.pbtn{position:relative}
@@ -61,7 +61,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .chip-g.gold{background:rgba(232,196,110,.92);color:#2b2108;border-color:transparent}
 .chip-g .ico{width:14px;height:14px}
 .chip-g.eye{width:44px;height:44px;padding:0;justify-content:center}.chip-g.eye .ico{width:20px;height:20px}
-.mapctl{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:1px;border-radius:14px;overflow:hidden;
+.mapctl{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:5;display:grid;gap:1px;border-radius:12px;overflow:hidden;
   border:1px solid var(--glass-line);background:var(--glass-line);}
 .mapctl button{width:44px;height:44px;display:grid;place-items:center;border:0;background:var(--glass);color:#fff}
 .mapctl button:hover{background:rgba(30,36,48,.8)}
@@ -74,7 +74,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 @media (prefers-reduced-motion:reduce){.eye-open,.eye-shut{transition:none}}
 .home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:16px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
+.htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:12px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   font-weight:700;font-size:15px;letter-spacing:.01em;}
 .htab:hover{background:rgba(30,36,48,.8)}
 .htab.main{background:rgba(247,244,238,.95);color:var(--ink);border-color:transparent}
@@ -88,12 +88,12 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 
 .loccard .meta{font-size:11px;font-weight:500;line-height:1.3;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)} /* small caps label above a title, like the one above "Hi Maya"; ~7.6:1 on the card */
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
-.loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
+.loccard .thumb{width:58px;height:58px;border-radius:8px;object-fit:cover;flex:none;background:var(--sunk)}
 .loccard .x{margin-left:auto}
 .lc-hint{display:block;margin-top:6px;font-size:11px;color:var(--muted);font-weight:600}
 .clar{display:grid;gap:5px}
-.clar-bar{height:4px;border-radius:9px;background:var(--line);overflow:hidden}
-.clar-bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.clar-bar{height:4px;border-radius:8px;background:var(--line);overflow:hidden}
+.clar-bar i{display:block;height:100%;background:var(--accent);border-radius:8px}
 .clar-txt{font-size:13px;color:var(--muted);font-weight:600}
 .bubble{position:absolute;z-index:6;transform:translate(-50%,-100%);background:rgba(247,244,238,.97);color:var(--ink);border-radius:12px;padding:7px 11px;
   font-size:13px;font-weight:600;max-width:220px;text-align:center;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.3)}
@@ -143,10 +143,10 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .btn.tertiary:hover{background:var(--sunk)}
 .btn.quiet:hover{background:var(--accent-soft)}
 .btn.danger{background:var(--surface);color:var(--danger);border-color:#e7c6bd}
-.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px;min-height:40px}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:8px;min-height:40px}
 .btn .ico{width:16px;height:16px}
-.seg{display:inline-flex;background:var(--sunk);border-radius:11px;padding:3px;gap:2px}
-.seg button{border:0;background:transparent;border-radius:9px;padding:7px 12px;min-height:40px;font-weight:700;font-size:13px;color:var(--muted)}
+.seg{display:inline-flex;background:var(--sunk);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:8px;padding:7px 12px;min-height:40px;font-weight:700;font-size:13px;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(31,36,32,.12)}
 .list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
 .list>li{border-bottom:1px solid var(--line)}
@@ -157,8 +157,8 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;background:var(--sunk);color:var(--ink-2);letter-spacing:.01em}
 .tag.green{background:var(--accent-soft);color:#ad2856} .tag.amber{background:var(--amber-soft);color:var(--amber)} .tag.sea{background:var(--sea-soft);color:var(--sea)}
 .tag.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.bar{height:4px;border-radius:9px;background:var(--line);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.bar{height:4px;border-radius:8px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:8px}
 .empty{padding:22px 4px;color:var(--muted);font-size:15px}
 .empty b{display:block;color:var(--ink);font-family:var(--serif);font-weight:400;font-size:17px;margin-bottom:4px}
 .detail{padding:2px 2px 18px;display:grid;gap:14px}
@@ -169,7 +169,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .steps li{display:flex;gap:10px;align-items:center;font-size:15px;padding:5px 0}
 .steps li.done span{color:var(--muted);text-decoration:line-through}
-.cb{position:relative;width:22px;height:22px;flex:none;border:1.5px solid var(--line-2);border-radius:6px;background:var(--surface);display:grid;place-items:center;padding:0}
+.cb{position:relative;width:22px;height:22px;flex:none;border:1.5px solid var(--line-2);border-radius:4px;background:var(--surface);display:grid;place-items:center;padding:0}
 .cb::before{content:"";position:absolute;inset:-11px}
 .cb[aria-checked="true"]{background:var(--accent-strong);border-color:var(--accent-strong)}
 .cb[aria-checked="true"]::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
@@ -188,10 +188,10 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
 .weeknav{display:flex;align-items:center;gap:6px}
 .wk-strip{display:grid;gap:2px;margin-top:-8px}.wk-mrow{display:flex;align-items:center;margin-left:-8px}
-.wk-arrow{all:unset;cursor:pointer;display:grid;place-items:center;width:32px;height:44px;color:var(--muted);border-radius:10px}.wk-arrow:hover{background:var(--sunk)}.wk-arrow:disabled{opacity:.3;cursor:default;background:none}.wk-arrow .ico{width:16px;height:16px}
+.wk-arrow{all:unset;cursor:pointer;display:grid;place-items:center;width:32px;height:44px;color:var(--muted);border-radius:8px}.wk-arrow:hover{background:var(--sunk)}.wk-arrow:disabled{opacity:.3;cursor:default;background:none}.wk-arrow .ico{width:16px;height:16px}
 .wk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
 .wk-month{font-size:15px;font-weight:400;color:var(--ink-2);min-width:56px;text-align:center}
-.wk-day{display:grid;gap:2px;padding:6px 0;border-radius:10px}.wk-day small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.wk-day b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.wk-day{display:grid;gap:2px;padding:6px 0;border-radius:8px}.wk-day small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.wk-day b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 .wk-day.today{background:var(--sunk)}.wk-day.today b{color:var(--accent-ink)}
 .entry{display:grid;gap:8px}
 .entry .t{font-size:15px;font-weight:600}
@@ -210,16 +210,16 @@ input[type=text],input[type=search],input[type=email],input[type=url],input[type
 textarea{resize:vertical;min-height:84px}
 textarea.fit{resize:none;min-height:0;overflow:hidden}
 .add-ic{color:var(--accent-ink)}
-.pl-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:4px 6px 4px 14px;display:grid}
-.pl-row{display:flex;align-items:center;gap:8px;min-height:56px}.pl-t{flex:1;min-width:0;display:grid;gap:2px;font-size:15px;font-weight:600}.pl-t small{font-size:13px;font-weight:500;color:var(--muted)}
-.pl-pics{display:grid;border-top:1px solid var(--line);margin-right:8px}
+.pl-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:12px;display:grid}
+.pl-row{display:flex;align-items:center;gap:8px}.pl-row .ibtn{margin:-10px -10px -10px 0}.pl-t{flex:1;min-width:0;display:grid;gap:2px;font-size:15px;font-weight:600}.pl-t small{font-size:13px;font-weight:500;color:var(--muted)}
+.pl-pics{display:grid;border-top:1px solid var(--line);margin-top:12px}
 .pl-pic{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}.pl-pic:last-child{border-bottom:0}
 .pl-pic .grow{flex:1;min-width:0}.pl-pic .dc-thumb{width:40px;height:40px}.pl-pic:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 input::placeholder,textarea::placeholder{color:#8b8b83}
 input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--accent-strong);box-shadow:0 1px 0 var(--accent-strong)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .scrim{position:absolute;inset:0;background:rgba(20,22,20,.38);z-index:20}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:92%;display:flex;flex-direction:column;background:#fff;color:var(--ink);border-radius:22px 22px 0 0;
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:92%;display:flex;flex-direction:column;background:#fff;color:var(--ink);border-radius:12px 12px 0 0;
   box-shadow:0 -20px 60px rgba(0,0,0,.25);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes rise{from{transform:translateY(40px);opacity:.4}}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
@@ -228,7 +228,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-b{overflow:auto;padding:4px max(18px,env(safe-area-inset-right,0px)) 16px max(18px,env(safe-area-inset-left,0px));display:grid;gap:16px}
 .sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
 .progress-dots{display:flex;gap:5px}
-.progress-dots i{width:22px;height:4px;border-radius:9px;background:var(--line)}
+.progress-dots i{width:22px;height:4px;border-radius:8px;background:var(--line)}
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
 .cklist{display:grid}
@@ -257,9 +257,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .imgdrop{display:flex;gap:12px;align-items:center}
 .imgdrop img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--sunk)}
 .kindprev{width:72px;height:66px;border-radius:12px;image-rendering:pixelated;background:#6f9c4a;flex:none}
-.menu{position:absolute;top:calc(var(--safe-top) + 64px);right:max(16px,env(safe-area-inset-right,0px));z-index:30;min-width:220px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;
+.menu{position:absolute;top:calc(var(--safe-top) + 64px);right:max(16px,env(safe-area-inset-right,0px));z-index:30;min-width:220px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:6px;
   box-shadow:0 20px 50px rgba(0,0,0,.22);display:grid}
-.menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;font-weight:700;font-size:15px}
+.menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:8px;font-weight:700;font-size:15px}
 .menu button:hover,.menu button:focus-visible{background:var(--sunk)}
 .menu small{display:block;font-weight:600;font-size:13px;color:var(--muted)}
 .menu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
@@ -293,7 +293,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .asset-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .asset-row{all:unset;cursor:pointer;box-sizing:border-box;width:100%;min-height:56px;display:flex;align-items:center;gap:12px;padding:6px 4px;border-radius:12px}
 .asset-row:hover{background:var(--sunk)}.asset-row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.as-thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
+.as-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:var(--sunk)}
 .as-blank{display:grid;place-items:center;font-family:var(--serif);font-size:20px;color:var(--muted);border:1px solid var(--line)}
 .as-title{font-size:15px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .seg-full{display:grid;grid-template-columns:1fr 1fr}
@@ -309,7 +309,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .gc-head .acc-chev{grid-row:1/3;grid-column:2;align-self:start;padding:2px}
 .gc-desc{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .gc-links{display:flex;flex-wrap:wrap;gap:6px}
-.dc-title{display:flex;align-items:center;gap:12px;min-width:0}.dc-thumb{width:44px;height:44px;flex:none;border-radius:10px;overflow:hidden;background:var(--sunk)}.dc-thumb img,.dc-thumb canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.dc-title{display:flex;align-items:center;gap:12px;min-width:0}.dc-thumb{width:44px;height:44px;flex:none;border-radius:8px;overflow:hidden;background:var(--sunk)}.dc-thumb img,.dc-thumb canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
 .dc-text{display:grid;gap:2px;min-width:0}
 .dc-actions{display:flex;align-items:center;gap:2px;border-top:1px solid var(--line);padding-top:4px;margin-left:-10px}.dc-actions [data-addgoal]{margin-left:auto}
 .dc-goals .ms-text span{font-size:14px}
@@ -333,7 +333,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .ms-date{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;padding-top:3px}
 .ms-add{display:flex;gap:8px;align-items:end}.ms-add input{flex:1}
 .gc-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-top:1px solid var(--line);padding-top:6px}
-.gc-act{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;min-height:48px;padding:6px 2px;border-radius:10px;font-size:11px;font-weight:700;color:var(--ink-2);text-align:center;white-space:nowrap}
+.gc-act{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;min-height:48px;padding:6px 2px;border-radius:8px;font-size:11px;font-weight:700;color:var(--ink-2);text-align:center;white-space:nowrap}
 .gc-act .ico{width:18px;height:18px}.gc-act:hover{background:var(--sunk)}.gc-act:focus-visible{outline:2px solid var(--accent)}
 .gc-act.danger{color:var(--danger)}
 .ms-list li.done .ms-date{text-decoration:none}
@@ -356,9 +356,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 select{min-height:44px}
 select:not([multiple]){-webkit-appearance:none;appearance:none;border:1px solid var(--line-2);border-radius:12px;padding:10px 36px 10px 12px;cursor:pointer;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686961' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center/16px no-repeat}
 select:not([multiple]):focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
-.dd-menu{position:fixed;z-index:60;max-height:min(320px,60vh);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 40px rgba(31,36,32,.18);display:grid}
-.dd-menu button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 12px;border-radius:10px;font-weight:600;font-size:15px}
-.dd-menu button:hover,.dd-menu button:focus-visible{background:var(--sunk)}.dd-menu button[aria-selected="true"]{color:var(--accent-ink);font-weight:700}.dd-menu .dd-add{justify-content:flex-start;gap:8px;color:var(--accent-ink);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 10px 10px;margin-top:4px}.dd-menu .ico{width:16px;height:16px;stroke-width:2.4}
+.dd-menu{position:fixed;z-index:60;max-height:min(320px,60vh);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 18px 40px rgba(31,36,32,.18);display:grid}
+.dd-menu button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;font-weight:600;font-size:15px}
+.dd-menu button:hover,.dd-menu button:focus-visible{background:var(--sunk)}.dd-menu button[aria-selected="true"]{color:var(--accent-ink);font-weight:700}.dd-menu .dd-add{justify-content:flex-start;gap:8px;color:var(--accent-ink);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 8px 8px;margin-top:4px}.dd-menu .ico{width:16px;height:16px;stroke-width:2.4}
 /* a rounded select with its own chevron, like the search box */
 select.sel-box{width:auto;-webkit-appearance:none;appearance:none;border:1px solid var(--line-2);border-radius:99px;padding:9px 38px 9px 14px;font-size:15px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686961' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center/16px no-repeat}
 select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
@@ -368,7 +368,7 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .mapctl button[aria-pressed="true"]{background:rgba(240,79,133,.85)}
 .sw{width:44px;height:44px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line-2);padding:0}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent-strong)}
-#avatarPrev{width:77px;height:112px;border-radius:14px;image-rendering:pixelated;background:#6f9c4a;flex:none}
+#avatarPrev{width:77px;height:112px;border-radius:12px;image-rendering:pixelated;background:#6f9c4a;flex:none}
 .muted{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.journey .you{transition:left .5s ease,width .5s ease!important}.gcard.arrive{animation:garrive 1.1s ease-in-out .25s 2!important}}
 
@@ -410,13 +410,14 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 /* ---------- places ---------- */
 .search{position:relative}
 .search-res{list-style:none;margin:6px 0 0;padding:4px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:0 12px 30px rgba(31,36,32,.12)}
-.search-res button{all:unset;cursor:pointer;display:grid;gap:1px;width:100%;box-sizing:border-box;padding:9px 10px;border-radius:9px}
+.search-res button{all:unset;cursor:pointer;display:grid;gap:1px;width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px}
 .search-res button:hover,.search-res button:focus-visible{background:var(--sunk)}
 .search-res b{font-size:15px}.search-res span{font-size:13px;color:var(--muted);font-weight:600}
 .dest-row{display:flex;align-items:center;gap:8px;padding:10px 2px}
-.dest-grip{margin-left:-12px;margin-right:-8px;color:var(--muted);cursor:grab;touch-action:none}.dest-grip .ico{stroke-width:3.2}.dest-row.dragging{background:var(--sunk);border-radius:12px}
+.dest-grip{margin-left:-12px;margin-right:-8px;color:var(--muted);cursor:grab;touch-action:none}.dest-grip .ico{stroke-width:3.2}
+.list.dests,.list.dests>li{border:0}.dest-row.dragging{position:relative;z-index:2;background:var(--surface);border-radius:12px;box-shadow:0 8px 24px rgba(31,36,32,.16);cursor:grabbing}
 .dest-row .grow{flex:1 1 0;min-width:0;display:grid;gap:1px}
-.dest-name{all:unset;cursor:pointer}.dest-row b,.dest-name{font-size:15px;font-weight:700}.dest-name:focus-visible{outline:2px solid var(--accent);border-radius:6px}
+.dest-name{all:unset;cursor:pointer}.dest-row b,.dest-name{font-size:15px;font-weight:700}.dest-name:focus-visible{outline:2px solid var(--accent);border-radius:4px}
 .cat-row{display:flex;align-items:center;gap:8px}.cat-row input[type=text]{flex:1;border-bottom-color:transparent;padding:12px 2px}.cat-row input[type=text]:focus{border-bottom-color:var(--accent-strong)}
 .cat-n{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}.cat-row .iconbtn{margin:0 -10px 0 0;color:var(--muted)}.cat-row .iconbtn.is-off{opacity:.35}
 .dest-row select{width:auto;max-width:150px;padding:8px 32px 8px 10px;font-size:13px;background-position:right 9px center}
@@ -430,7 +431,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob{background:var(--paper);z-index:15}
 .ob-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(var(--safe-top) + 12px) max(18px,env(safe-area-inset-right,0px)) 8px max(18px,env(safe-area-inset-left,0px))}
 .ob-brand{font-family:var(--serif);font-size:20px}
-.ob-dots{display:flex;gap:5px}.ob-dots i{width:18px;height:4px;border-radius:9px;background:var(--line-2)}.ob-dots i.on{background:var(--accent)}
+.ob-dots{display:flex;gap:5px}.ob-dots i{width:18px;height:4px;border-radius:8px;background:var(--line-2)}.ob-dots i.on{background:var(--accent)}
 .ob-main{flex:1;min-height:0;overflow:auto;padding:10px max(20px,env(safe-area-inset-right,0px)) 24px max(20px,env(safe-area-inset-left,0px));display:grid;gap:16px;align-content:start}
 .ob-foot{display:flex;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
 .ob-h{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.1;margin:6px 0 0;letter-spacing:-.005em}
@@ -438,7 +439,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-sub{margin:-6px 0 0;color:var(--muted);font-size:15px}
 .ob-note{background:var(--sunk);color:var(--ink-2)}.ob-note b{color:var(--ink)}
 .ob-hero{display:grid;place-items:center;padding-top:8px}
-.ob-hero canvas{width:min(100%,360px);aspect-ratio:6/5;border-radius:22px;image-rendering:pixelated;box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.ob-hero canvas{width:min(100%,360px);aspect-ratio:6/5;border-radius:12px;image-rendering:pixelated;box-shadow:0 30px 60px rgba(0,0,0,.45)}
 .ob-dark{background:var(--night);color:#fff}
 .ob-dark .ob-top .ob-brand{color:#fff}.ob-dark .ob-dots i{background:rgba(255,255,255,.2)}.ob-dark .ob-dots i.on{background:var(--accent)}
 .ob-dark .ob-foot{background:rgba(16,19,27,.9);border-color:var(--glass-line)}
@@ -2569,49 +2570,51 @@ function avatarSays(){
   av.wait = Math.max(av.wait, 50); av.dir = "down"; viewDirty = true;
   say(lines[Math.floor(Math.random() * lines.length)], av.x, av.y - 30);
 }
-// What each real landmark is famous for. The card shows a different one each time it opens;
+// What each real landmark is famous for. The card shows a few facts, starting from a different one each time it opens;
 // landmarks not listed here (a generic park or square) keep their own line.
 const FAMOUS = {
-  "The Hollywood Sign": ["Put up in 1923 as an advert that read HOLLYWOODLAND.", "Each letter stands about 14 metres tall.", "Shorthand for the whole film industry."],
-  "Griffith Observatory": ["Free to visit since it opened in 1935.", "Its lawn has one of the best views of the Hollywood Sign.", "A star of Rebel Without a Cause and La La Land."],
-  "The pier": ["Santa Monica Pier marks the end of Route 66.", "Open since 1909, with a funfair at the end."],
-  "Santa Monica Pier": ["Marks the end of Route 66.", "Open since 1909, with a funfair at the end."],
-  "India Gate": ["A memorial to Indian soldiers who died in the First World War.", "Designed by Edwin Lutyens and opened in 1931.", "Its lawns fill with families on summer evenings."],
-  "Qutub Minar": ["At about 73 metres, the tallest brick minaret in the world.", "Begun around 1200 under Qutb ud-Din Aibak.", "Next to it stands an iron pillar that has barely rusted in 1,600 years."],
-  "Lodhi Garden": ["Home to tombs of the Sayyid and Lodi rulers, 15th and 16th century.", "Delhi's favourite place for a morning walk."],
-  "Marine Drive": ["Called the Queen's Necklace for its curve of lights at night.", "A 3.6 km promenade along the Arabian Sea."],
-  "Bandra-Worli Sea Link": ["Opened in 2009, cutting a slow drive across the city to minutes.", "India's first cable-stayed bridge built over open sea."],
-  "Tokyo Tower": ["At 333 metres, built in 1958 to stand taller than the Eiffel Tower.", "Painted orange and white for air-safety rules."],
-  "Mount Fuji": ["Japan's highest mountain, at 3,776 metres.", "A UNESCO World Heritage Site since 2013."],
-  "A path of torii gates": ["Kyoto's Fushimi Inari has thousands of torii, each one donated.", "The walk through the gates up Mount Inari takes about two hours."],
-  "The Eiffel Tower": ["Built for the 1889 World's Fair.", "It was meant to stand for only 20 years.", "Repainted by hand about every seven years."],
-  "The Statue of Liberty": ["A gift from France, dedicated in 1886.", "Her copper skin turned green within about 30 years.", "Her iron frame was designed by Gustave Eiffel."],
-  "The Empire State Building": ["Built in about 410 days and opened in 1931.", "The world's tallest building for nearly 40 years."],
-  "Big Ben": ["Big Ben is the great bell, not the tower.", "The tower was renamed Elizabeth Tower in 2012."],
-  "Tower Bridge": ["Opened in 1894; its road lifts to let ships through.", "Often mistaken for London Bridge, its plainer neighbour."],
-  "Burj Khalifa": ["The tallest building in the world, at 828 metres.", "Opened in 2010."],
-  "The Colosseum": ["Opened in 80 AD for gladiator fights and spectacles.", "One of the New Seven Wonders of the World."],
-  "The Golden Gate Bridge": ["Its colour is called International Orange.", "Opened in 1937 as the longest suspension bridge span in the world."],
-  "Sydney Opera House": ["Designed by Jørn Utzon and opened in 1973.", "Its sails are covered in over a million tiles.", "A UNESCO World Heritage Site since 2007."],
-  "Santorini's blue domes": ["Oia's blue domes and sunsets are among Greece's most photographed views.", "The island's cliffs are the rim of a volcano that erupted about 3,600 years ago."],
-  "The Taj Mahal": ["Built by Shah Jahan in memory of his wife Mumtaz Mahal.", "Its marble shifts from pink at dawn to gold at sunset.", "A UNESCO World Heritage Site since 1983."],
-  "The Pyramids of Giza": ["The Great Pyramid is the only Ancient Wonder still standing.", "Built about 4,500 years ago."],
-  "Marina Bay Sands": ["Famous for its rooftop infinity pool 57 floors up.", "Opened in 2010."],
-  "Christ the Redeemer": ["One of the New Seven Wonders of the World.", "30 metres tall, with arms 28 metres wide.", "Completed in 1931."],
-  "The Brandenburg Gate": ["Built in the 1790s.", "Once cut off by the Berlin Wall; a symbol of reunification since 1989."],
-  "The CN Tower": ["The world's tallest free-standing structure for over 30 years.", "You can walk around the outside of it on the EdgeWalk."],
-  "The Space Needle": ["Built for the 1962 World's Fair.", "Its top floor has a rotating glass floor."],
-  "La Sagrada Família": ["Under construction since 1882.", "Gaudí worked on it for over 40 years, until his death in 1926."],
-  "Boudhanath Stupa": ["One of the largest stupas in the world.", "Part of the Kathmandu Valley UNESCO World Heritage Site."],
-  "N Seoul Tower": ["Famous for the love locks covering its terraces.", "Opened to the public in 1980."],
-  "The Duomo": ["Brunelleschi's dome is still the largest brick dome ever built.", "The dome was finished in 1436."],
-  "Canal houses": ["Amsterdam's canal ring is a UNESCO World Heritage Site.", "Built narrow and tall, with hooks at the top for hoisting furniture."]
+  "The Hollywood Sign": ["Put up in 1923 as an advert that read HOLLYWOODLAND.", "Each letter stands about 14 metres tall.", "Shorthand for the whole film industry.", "The LAND came down in 1949, leaving the word everyone knows."],
+  "Griffith Observatory": ["Free to visit since it opened in 1935.", "Its lawn has one of the best views of the Hollywood Sign.", "A star of Rebel Without a Cause and La La Land.", "Its public telescopes have shown the sky to millions of visitors."],
+  "The pier": ["Santa Monica Pier marks the end of Route 66.", "Open since 1909, with a funfair at the end.", "Its historic carousel appears in the film The Sting.", "The Ferris wheel lights up the beach after dark."],
+  "Santa Monica Pier": ["Marks the end of Route 66.", "Open since 1909, with a funfair at the end.", "Its historic carousel appears in the film The Sting.", "The Ferris wheel lights up the beach after dark."],
+  "India Gate": ["A memorial to Indian soldiers who died in the First World War.", "Designed by Edwin Lutyens and opened in 1931.", "Its lawns fill with families on summer evenings.", "The names of thousands of soldiers are carved into its stone."],
+  "Qutub Minar": ["At about 73 metres, the tallest brick minaret in the world.", "Begun around 1200 under Qutb ud-Din Aibak.", "Next to it stands an iron pillar that has barely rusted in 1,600 years.", "A UNESCO World Heritage Site."],
+  "Lodhi Garden": ["Home to tombs of the Sayyid and Lodi rulers, 15th and 16th century.", "Laid out as a park in 1936.", "Delhi's favourite place for a morning walk.", "Its Bara Gumbad and Shish Gumbad domes sit right in the middle of the lawns."],
+  "Marine Drive": ["Called the Queen's Necklace for its curve of lights at night.", "A 3.6 km promenade along the Arabian Sea.", "Lined with Art Deco buildings that are part of a UNESCO World Heritage Site.", "Mumbai's favourite spot to watch the sun go down."],
+  "Bandra-Worli Sea Link": ["Opened in 2009, cutting a slow drive across the city to minutes.", "India's first cable-stayed bridge built over open sea.", "About 5.6 km long across Mahim Bay.", "Its cables light up at night over the water."],
+  "Tokyo Tower": ["At 333 metres, built in 1958 to stand taller than the Eiffel Tower.", "Painted orange and white for air-safety rules.", "Lit warm orange in winter and white in summer.", "Its observation decks look out to Mount Fuji on clear days."],
+  "Mount Fuji": ["Japan's highest mountain, at 3,776 metres.", "A UNESCO World Heritage Site since 2013.", "An active volcano that last erupted in 1707.", "Painted again and again by Hokusai."],
+  "A path of torii gates": ["Kyoto's Fushimi Inari has thousands of torii, each one donated.", "Each gate carries the name of the person or business that gave it.", "The walk through the gates up Mount Inari takes about two hours."],
+  "The Eiffel Tower": ["Built for the 1889 World's Fair.", "It was meant to stand for only 20 years.", "Repainted by hand about every seven years.", "The tallest structure in the world until 1930."],
+  "The Statue of Liberty": ["A gift from France, dedicated in 1886.", "Her copper skin turned green within about 30 years.", "Her iron frame was designed by Gustave Eiffel.", "For millions arriving by sea, the first sight of America."],
+  "The Empire State Building": ["Built in about 410 days and opened in 1931.", "The world's tallest building for nearly 40 years.", "King Kong climbed it in 1933.", "Its top lights change colour for holidays and causes."],
+  "Big Ben": ["Big Ben is the great bell, not the tower.", "The tower was renamed Elizabeth Tower in 2012.", "The bell weighs more than 13 tonnes.", "The BBC has broadcast its chimes since 1923."],
+  "Tower Bridge": ["Opened in 1894; its road lifts to let ships through.", "Often mistaken for London Bridge, its plainer neighbour.", "Its high walkways now have glass floors.", "It still opens around 800 times a year."],
+  "Burj Khalifa": ["The tallest building in the world, at 828 metres.", "Opened in 2010, with 163 floors.", "Its shape echoes the desert spider lily.", "Tom Cruise climbed its outside in Mission: Impossible – Ghost Protocol."],
+  "The Colosseum": ["Opened in 80 AD for gladiator fights and spectacles.", "One of the New Seven Wonders of the World.", "It could hold around 50,000 spectators.", "The largest amphitheatre ever built."],
+  "The Golden Gate Bridge": ["Its colour is called International Orange.", "Opened in 1937 as the longest suspension bridge span in the world.", "Its towers rise about 227 metres above the water.", "Often half-hidden in the city's famous fog."],
+  "Sydney Opera House": ["Designed by Jørn Utzon and opened in 1973.", "Its sails are covered in over a million tiles.", "A UNESCO World Heritage Site since 2007.", "Hosts well over a thousand performances a year."],
+  "Santorini's blue domes": ["Oia's blue domes and sunsets are among Greece's most photographed views.", "The island's cliffs are the rim of a volcano that erupted about 3,600 years ago.", "Its white walls and blue roofs echo the Greek flag."],
+  "The Taj Mahal": ["Built by Shah Jahan in memory of his wife Mumtaz Mahal.", "Its marble shifts from pink at dawn to gold at sunset.", "A UNESCO World Heritage Site since 1983.", "One of the New Seven Wonders of the World."],
+  "The Pyramids of Giza": ["The Great Pyramid is the only Ancient Wonder still standing.", "Built about 4,500 years ago.", "The tallest thing people had built for nearly 4,000 years.", "Watched over by the Great Sphinx."],
+  "Marina Bay Sands": ["Famous for its rooftop infinity pool 57 floors up.", "Opened in 2010, designed by Moshe Safdie.", "Its SkyPark stretches across the tops of all three towers.", "A light and water show plays over the bay every night."],
+  "Christ the Redeemer": ["One of the New Seven Wonders of the World.", "30 metres tall, with arms 28 metres wide.", "Completed in 1931.", "Stands on Corcovado, about 700 metres above the city."],
+  "The Brandenburg Gate": ["Built in the 1790s.", "Once cut off by the Berlin Wall; a symbol of reunification since 1989.", "Topped by the Quadriga, a chariot drawn by four horses.", "Napoleon carried the Quadriga off to Paris; it came home in 1814."],
+  "The CN Tower": ["The world's tallest free-standing structure for over 30 years.", "553 metres tall.", "You can walk around the outside of it on the EdgeWalk.", "Its glass floor looks straight down 342 metres."],
+  "The Space Needle": ["Built for the 1962 World's Fair.", "Its top floor has a rotating glass floor.", "It rises 184 metres over Seattle.", "Its design started as a sketch on a placemat."],
+  "La Sagrada Família": ["Under construction since 1882.", "Gaudí worked on it for over 40 years, until his death in 1926.", "Part of a UNESCO World Heritage Site.", "When finished, its central tower will make it the tallest church in the world."],
+  "Boudhanath Stupa": ["One of the largest stupas in the world.", "Part of the Kathmandu Valley UNESCO World Heritage Site.", "Its painted eyes look out in all four directions.", "Pilgrims walk around it clockwise, turning prayer wheels."],
+  "N Seoul Tower": ["Famous for the love locks covering its terraces.", "Opened to the public in 1980.", "Sits on Namsan mountain, near the middle of Seoul.", "Lights up in different colours at night."],
+  "The Duomo": ["Brunelleschi's dome is still the largest brick dome ever built.", "The dome was finished in 1436.", "463 steps lead to the top of the dome.", "Its white, green and pink marble front was completed in 1887."],
+  "Canal houses": ["Amsterdam's canal ring is a UNESCO World Heritage Site.", "Built narrow and tall, with hooks at the top for hoisting furniture.", "Some lean forward on purpose, so goods hoisted up don't hit the front.", "The canals were dug in the 17th century, Amsterdam's Golden Age."]
 };
 const famousTurn = new Map();
 function famousLine(a){
   const list = FAMOUS[a.title]; if (!list) return a.desc || "";
   const i = famousTurn.get(a.title) ?? Math.floor(Math.random() * list.length); famousTurn.set(a.title, (i + 1) % list.length);
-  return list[i];
+  let out = list[i]; // a few facts together, about three or four lines, starting somewhere new each time
+  for (let k = 1; k < list.length; k++) { const n = list[(i + k) % list.length]; if (out.length + n.length > 200) break; out += " " + n; }
+  return out;
 }
 function showLoc(l){
   const card = $("loccard");
@@ -3915,7 +3918,7 @@ function placeSearch(root, onPick){
 }
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
-  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row" data-dest="${d.id}">${opts && opts.edit ? `<button type="button" class="ibtn dest-grip" data-grip aria-label="Move ${esc(d.name)} (drag, or use the arrow keys)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg></button>` : ""}<div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
+  return list.length ? `<ul class="list dests">${list.map(d => `<li class="dest-row" data-dest="${d.id}">${opts && opts.edit ? `<button type="button" class="ibtn dest-grip" data-grip aria-label="Move ${esc(d.name)} (drag, or use the arrow keys)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg></button>` : ""}<div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     <button type="button" class="ibtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
@@ -3925,12 +3928,16 @@ function wireDestRows(root, redraw){
   root.querySelectorAll("[data-grip]").forEach(h => {
     const li = h.closest("li");
     h.onpointerdown = e => {
-      e.preventDefault(); h.setPointerCapture(e.pointerId); li.classList.add("dragging"); let moved = false;
+      e.preventDefault(); li.classList.add("dragging"); try { h.setPointerCapture(e.pointerId); } catch (err) {}
+      let y0 = e.clientY, moved = false; // y0: where the row's resting place sits under the finger
       h.onpointermove = ev => {
-        const rows = [...li.parentNode.children], over = rows.find(r => r !== li && ev.clientY > r.getBoundingClientRect().top && ev.clientY < r.getBoundingClientRect().bottom); if (!over) return;
-        const r = over.getBoundingClientRect(); li.parentNode.insertBefore(li, ev.clientY < r.top + r.height / 2 ? over : over.nextSibling); moved = true;
+        let dy = ev.clientY - y0;
+        const next = li.nextElementSibling, prev = li.previousElementSibling;
+        if (next && dy > next.offsetHeight / 2) { li.parentNode.insertBefore(next, li); y0 += next.offsetHeight; moved = true; }
+        else if (prev && dy < -prev.offsetHeight / 2) { li.parentNode.insertBefore(li, prev); y0 -= prev.offsetHeight; moved = true; }
+        li.style.transform = `translateY(${ev.clientY - y0}px)`;
       };
-      h.onpointerup = h.onpointercancel = () => { h.onpointermove = h.onpointerup = h.onpointercancel = null; li.classList.remove("dragging"); if (moved) saveOrder(); };
+      h.onpointerup = h.onpointercancel = () => { h.onpointermove = h.onpointerup = h.onpointercancel = null; li.classList.remove("dragging"); li.style.transform = ""; if (moved) saveOrder(); };
     };
     h.onkeydown = e => {
       const sib = e.key === "ArrowUp" ? li.previousElementSibling : e.key === "ArrowDown" ? li.nextElementSibling : null; if (!sib) return;
