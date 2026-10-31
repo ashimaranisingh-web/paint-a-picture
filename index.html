@@ -306,7 +306,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .ms-list li.done .ms-date{text-decoration:none}
 .ms-edit{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .ms-edit li{display:grid;gap:4px}
-.ms-row{display:flex;gap:8px;align-items:end}.ms-row input[data-f=title],.ms-row input[data-f=desc]{flex:1;min-width:0}.ms-row input[data-f=due]{width:150px;flex:none}
+.ms-row{display:flex;gap:8px;align-items:end}.ms-row input[data-f=title],.ms-row input[data-f=desc]{flex:1;min-width:0}
 .ms-row input[data-f=desc]{font-size:13px;padding-top:6px;padding-bottom:6px}
 .note-ex{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sheet.tall{height:92%}.sheet.tall .sheet-b{flex:1;grid-template-rows:auto auto 1fr auto}
@@ -2949,16 +2949,16 @@ function editGoal(id, preset){
   openSheet(id ? "Edit Goal" : "Adding a Goal", `
     <label class="field"><span>Goal name</span><input type="text" id="gTitle" value="${esc(g.title)}" placeholder="e.g. Build and launch my own product" maxlength="120"></label>
     <label class="field"><span>Description</span><textarea id="gDesc" placeholder="What do you want to achieve, and why?">${esc(g.desc)}</textarea></label>
-    <div class="field"><span>Paint a Picture</span>${asps.length ? `<div class="pills" id="gLinks">${asps.map(a => `<button type="button" class="pill" aria-pressed="${links.has(a.id)}" data-link="${a.id}">${esc(a.title)}</button>`).join("")}</div><small>Pick every dream this goal moves you towards. Tap again to remove.</small>`
+    <div class="field"><span>Paint a Picture</span>${asps.length ? `<div class="cklist" id="gLinks">${asps.map(a => `<button type="button" class="ck" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span>${esc(a.title)}</button>`).join("")}</div><small>Pick every dream this goal moves you towards.</small>`
       : `<small>Add dreams in Paint a Picture to connect them to your goals.</small>`}</div>
     <label class="field"><span>By when do you want to achieve this?</span><input type="date" id="gDeadline" value="${g.deadline}" min="${g.start}"></label>
     <div class="field"><span>Milestones</span><ul class="ms-edit" id="gMs"></ul><button type="button" class="btn quiet sm" id="gMsAdd" style="justify-self:start">${ICON.plus}Add milestone</button></div>
     <p class="muted" id="gErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save</button>`, () => {
       // keep what's typed in the milestone rows before redrawing them
-      const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { const m = ms[+r.dataset.row]; m.title = r.querySelector("[data-f=title]").value; m.due = r.querySelector("[data-f=due]").value; m.desc = r.querySelector("[data-f=desc]").value; });
+      const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { const m = ms[+r.dataset.row]; m.title = r.querySelector("[data-f=title]").value; m.desc = r.querySelector("[data-f=desc]").value; });
       const drawMs = () => {
-        $("gMs").innerHTML = ms.map((m, i) => `<li data-row="${i}"><div class="ms-row"><input type="text" data-f="title" value="${esc(m.title)}" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"><input type="date" data-f="due" value="${esc(m.due || "")}" aria-label="Target date for milestone ${i + 1} (optional)"></div>
+        $("gMs").innerHTML = ms.map((m, i) => `<li data-row="${i}"><div class="ms-row"><input type="text" data-f="title" value="${esc(m.title)}" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"></div>
           <div class="ms-row"><input type="text" data-f="desc" value="${esc(m.desc || "")}" placeholder="Description (optional)" aria-label="Description for milestone ${i + 1}">
             <button type="button" class="pbtn icon-sm" data-up="${i}" aria-label="Move up" ${i === 0 ? "disabled" : ""}><svg class="ico" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
             <button type="button" class="pbtn icon-sm" data-rm="${i}" aria-label="Remove milestone"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></li>`).join("");
@@ -2967,7 +2967,7 @@ function editGoal(id, preset){
       };
       drawMs();
       $("gMsAdd").onclick = () => { read(); ms.push({id: uid(), title: "", desc: "", due: "", doneAt: null}); drawMs(); $("gMs").lastElementChild.querySelector("input").focus(); };
-      document.querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); b.setAttribute("aria-pressed", links.has(k)); });
+      document.querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); b.setAttribute("aria-pressed", links.has(k)); b.querySelector(".cb").setAttribute("aria-checked", links.has(k)); });
       const dl = $("gDeadline");
       $("gCancel").onclick = closeSheet;
       $("gSave").onclick = () => {
