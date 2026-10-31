@@ -46,9 +46,9 @@ button{cursor:pointer}
   padding:14px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));pointer-events:none}
 .home-top>*{pointer-events:auto}
 .mark{display:grid;gap:1px;text-shadow:0 1px 10px rgba(0,0,0,.55)}
-.mark-name{font-family:var(--serif);font-size:20px;line-height:1;letter-spacing:.005em}
+.mark-name{font-size:13px;font-weight:600;line-height:1.2;color:rgba(255,255,255,.78);letter-spacing:.02em}
 .mark-app{font-family:var(--sans);font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.01em}
-.mark-sub{font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.02em}
+.mark-sub{font-family:var(--serif);font-size:20px;line-height:1.1;color:#fff;letter-spacing:.005em}
 .gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   }
 .gbtn:hover{background:rgba(30,36,48,.75)}
@@ -205,6 +205,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .progress-dots i{width:22px;height:4px;border-radius:9px;background:var(--line)}
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
+.cklist{display:grid}
+.ck{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}
+.ck:last-child{border-bottom:0}.ck:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sugg-item{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);cursor:pointer;text-align:left;width:100%}
 .sugg-item[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .sugg-item .grow{flex:1;min-width:0;display:grid;gap:2px}
@@ -285,6 +288,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .note-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
 .note-body{min-height:40vh;border:0!important;box-shadow:none!important;resize:none;font-size:16px;line-height:1.6;padding:6px 2px!important}
 .wk-search{display:grid;gap:2px}
+.wk-box{position:relative}.wk-box .ico{position:absolute;left:14px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.wk-search input[type=search]{min-height:44px;padding:10px 14px 10px 40px;border:1px solid var(--line-2);border-radius:99px;background:var(--surface)}
+.wk-search input[type=search]:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
 .wk-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .wk-hit{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:grid;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:13px;margin-top:8px}
 .wk-hit:hover{border-color:var(--line-2)}.wk-hit:focus-visible{outline:2px solid var(--accent)}.wk-hit b{color:var(--ink)}
@@ -379,7 +385,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
   <section class="screen home" id="home">
     <div id="stage"><canvas id="scene" tabindex="0" aria-label="Your dream life world. Drag to move around, pinch or scroll to zoom, tap to move the lens. Arrow keys pan, plus and minus zoom."></canvas><canvas id="hud" aria-hidden="true"></canvas></div>
     <header class="home-top">
-      <div class="mark"><span class="mark-name" id="worldTitle">Paint a Picture of your world</span><span class="mark-sub" id="greet"></span></div>
+      <div class="mark"><span class="mark-name" id="worldTitle">Paint a Picture</span><span class="mark-sub" id="greet"></span></div>
       <button class="gbtn" data-menu aria-label="Open menu" aria-haspopup="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
     </header>
     <div class="home-chips" id="homeChips"></div>
@@ -508,6 +514,7 @@ function normalize(o){
   if (ORDER.every(id => s.destinations.some(d => d.id === id))) s.destinations = s.destinations.map((d, i) => [d, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map(x => x[0]);
   s.destinations.forEach(d => { if (d.id === "d-la" && d.name === "Los Angeles") d.name = "LA"; });
   addTaglines(s);
+  s.destinations.forEach(d => { if (d.landmark === undefined || (d.landmark !== "none" && !landmarkOptions(d).includes(d.landmark))) d.landmark = defaultLandmark(d, s.aspirations || []); });
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; if (!Array.isArray(g.aspirationIds)) g.aspirationIds = g.aspirationId ? [g.aspirationId] : []; g.aspirationId = g.aspirationIds[0] || null; });
   s.entries.forEach(e => { e.goalIds ||= []; });
   if (!Array.isArray(o.assetCats)) s.assetCats = STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name}));
@@ -650,6 +657,7 @@ Mumbai|India|19.08|72.88|mumbai|place|bombay
 Bengaluru|India|12.97|77.59|city|place|bangalore
 Goa|India|15.3|74.12|coast|place
 Jaipur|India|26.91|75.79|town|place
+Agra|India|27.18|78.01|town|place|taj mahal,taj
 Kolkata|India|22.57|88.36|city|place|calcutta
 Chennai|India|13.08|80.27|city|place|madras
 Hyderabad|India|17.39|78.49|city|place
@@ -745,7 +753,7 @@ Melbourne|Australia|-37.81|144.96|city|place
 New Zealand|New Zealand|-45.03|168.66|nature|place|queenstown
 Cape Town|South Africa|-33.92|18.42|coast|place
 Marrakech|Morocco|31.63|-7.99|town|place|morocco
-Cairo|Egypt|30.04|31.24|city|place|egypt
+Cairo|Egypt|30.04|31.24|city|place|egypt,giza,pyramids
 Nairobi|Kenya|-1.29|36.82|city|place|kenya,safari
 Zanzibar|Tanzania|-6.17|39.2|coast|place`.split("\n").map(l => { const [name, country, lat, lon, env, type, alias] = l.split("|"); return {name, country, lat: +lat, lon: +lon, env, type, alias: alias || ""}; });
 const ENV_LABEL = {delhi: "Delhi", mumbai: "Mumbai", la: "LA", boston: "Boston", japan: "Japan", city: "City", coast: "Coast", nature: "Mountains & lakes", campus: "University town", town: "Small town"};
@@ -767,7 +775,8 @@ function newDestination(p, purpose){
     const same = GAZ.filter(g => g.country.toLowerCase() === p.country.trim().toLowerCase());
     if (same.length) { lat = same.reduce((s, g) => s + g.lat, 0) / same.length; lon = same.reduce((s, g) => s + g.lon, 0) / same.length; }
   }
-  return {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "visit"), custom: !!p.custom, createdAt: today()};
+  const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "visit"), custom: !!p.custom, createdAt: today()};
+  d.landmark = defaultLandmark(d, []); return d;
 }
 
 /* ---------------- placing districts on the grid ----------------
@@ -1610,6 +1619,187 @@ const PACKS = {
     walk: () => step(24, 376, 8).map(x => [x, 290])}
 };
 
+/* ---------------- city landmarks ----------------
+   Each place can carry one landmark that makes it recognisable, drawn in the world's pixel style at the
+   pack's landmark spot (lm, base centre, in pack coordinates). "art" landmarks are already part of a
+   hand-made district (the Sea Link, Harvard Yard, Mount Fuji, the pier) and add nothing new.
+   A place gets landmarks from LM_PLACES by its name or other names; places not listed get none rather
+   than someone else's monument. The choice is stored on the destination (d.landmark, or "none"). */
+Object.assign(PACKS.delhi, {lm: [300, 90]}); Object.assign(PACKS.la, {lm: [1190, 46]}); Object.assign(PACKS.japan, {lm: [300, 302]});
+Object.assign(PACKS.city, {lm: [203, 318]}); Object.assign(PACKS.coast, {lm: [200, 90]}); Object.assign(PACKS.nature, {lm: [200, 272]});
+Object.assign(PACKS.campus, {lm: [200, 300]}); Object.assign(PACKS.town, {lm: [200, 228]});
+function lbox(g, x, y, w, h, c){ F(g, x - 1, y - 1, w + 2, h + 2, C.out); F(g, x, y, w, h, c); const s = Math.max(1, w / 4 | 0); F(g, x + w - s, y, s, h, shade(c, -.2)); F(g, x, y, w, 1, shade(c, .3)); }
+function taper(g, x, y, h, wb, wt, c, k){
+  for (let i = 0; i < h; i++) {
+    const t = Math.pow(i / Math.max(1, h - 1), k || 1), hw = Math.max(.5, (wb * (1 - t) + wt * t) / 2), L = Math.round(x - hw), R = Math.round(x + hw), w = Math.max(1, R - L), s = Math.max(1, w / 4 | 0);
+    F(g, L - 1, y - 1 - i, w + 2, 1, C.out); F(g, L, y - 1 - i, w, 1, c); if (w > 3) F(g, R - s, y - 1 - i, s, 1, shade(c, -.2));
+  }
+  F(g, Math.round(x - wt / 2) - 1, y - 1 - h, Math.max(1, Math.round(wt)) + 2, 1, C.out);
+}
+function lattice(g, x, y, h, wb, k, col){
+  for (let i = 0; i < h; i++) {
+    const t = i / h, hw = 1 + (wb / 2 - 1) * Math.pow(1 - t, k), lw = t < .5 ? 2 : 1, c = col(i), row = y - 1 - i;
+    F(g, Math.round(x - hw) - 1, row, lw + 2, 1, C.out); F(g, Math.round(x - hw), row, lw, 1, c);
+    F(g, Math.round(x + hw) - lw - 1, row, lw + 2, 1, C.out); F(g, Math.round(x + hw) - lw, row, lw, 1, shade(c, -.15));
+    if (i % 6 === 5 && hw > 3 && t > .16) F(g, Math.round(x - hw), row, Math.round(hw * 2), 1, c);
+    else if (hw > 4 && t > .16 && (i + Math.round(x)) % 2 === 0) { const d = (i % 6) / 6; F(g, Math.round(x - hw + d * hw * 2), row, 1, 1, shade(c, -.3)); F(g, Math.round(x + hw - d * hw * 2) - 1, row, 1, 1, shade(c, -.3)); }
+  }
+  const ah = Math.round(h * .16), aw = Math.round(1 + (wb / 2 - 1) * Math.pow(1 - .16, k)); // the arch between the legs
+  for (let j = 0; j <= aw * 2; j++) { const u = j / (aw * 2) * 2 - 1, yy = y - Math.round(ah * Math.sqrt(1 - u * u)); F(g, x - aw + j, yy - 1, 1, 1, col(ah)); }
+}
+const GLYPH = {H: "101101111101101", O: "111101101101111", L: "100100100100111", Y: "101101010010010", W: "101101101111101", D: "110101101101110"};
+function word(g, x, y, s, c){ s.split("").forEach((ch, n) => { const m = GLYPH[ch], dy = Math.round(Math.sin(n * .9) * 1.5); for (let r = 0; r < 5; r++) for (let q = 0; q < 3; q++) if (m[r * 3 + q] === "1") { F(g, x + n * 9 + q * 2 + 1, y + dy + r * 2 + 1, 2, 2, "rgba(40,30,20,.45)"); F(g, x + n * 9 + q * 2, y + dy + r * 2, 2, 2, c); } F(g, x + n * 9 + 2, y + dy + 10, 1, 4, C.out); }); }
+function water(g, x, y, w){ F(g, x - w / 2, y - 3, w, 7, C.water[1]); F(g, x - w / 2, y - 3, w, 1, C.water[3]); for (let i = 0; i < w; i += 7) F(g, x - w / 2 + i, y + (i % 2), 3, 1, C.water[2]); }
+const LANDMARKS = {
+  indiagate: {title: "India Gate", desc: "The sandstone arch on Rajpath, lawns on every side.", h: 52, draw(g, x, y){
+    lbox(g, x - 18, y - 40, 36, 40, "#c9a37a"); F(g, x - 7, y - 30, 14, 30, "#4a3a30"); F(g, x - 5, y - 32, 10, 2, "#4a3a30"); F(g, x - 3, y - 33, 6, 1, "#4a3a30");
+    for (const s of [-1, 1]) F(g, x + s * 12 - 1, y - 36, 2, 30, "#a8835e");
+    lbox(g, x - 21, y - 47, 42, 7, "#d8b48a"); F(g, x - 21, y - 43, 42, 1, "#a8835e"); taper(g, x, y - 47, 6, 12, 8, "#c9a37a"); oval(g, x, y - 54, 3, 2, "#a8835e"); }},
+  qutub: {title: "Qutub Minar", desc: "A fluted red sandstone tower, seventy metres of carved bands.", h: 68, draw(g, x, y){
+    taper(g, x, y, 66, 18, 7, "#b5654a"); [14, 28, 41, 52].forEach((b, i) => { const w = 20 - i * 3; F(g, x - w / 2 - 1, y - b - 1, w + 2, 3, C.out); F(g, x - w / 2, y - b, w, 1, i > 2 ? "#e6d6bc" : "#d9a37f"); });
+    for (let i = 4; i < 50; i += 3) F(g, x - 2, y - i, 1, 2, "#8d4a35"); F(g, x - 2, y - 66, 4, 4, "#e6d6bc"); }},
+  hollywood: {title: "The Hollywood Sign", desc: "Nine white letters on the hills above the city.", h: 30, draw(g, x, y){
+    for (let i = -48; i <= 48; i++) { const hh = 22 - Math.round(Math.abs(i) / 4); F(g, x + i, y - hh, 1, hh, i % 3 ? "#8a7a52" : "#7c6c48"); }
+    word(g, x - 40, y - 22, "HOLLYWOOD", "#f6f4ee"); }},
+  griffith: {title: "Griffith Observatory", desc: "White walls and copper domes looking over Los Angeles.", h: 30, draw(g, x, y){
+    for (let i = -34; i <= 34; i++) { const hh = 12 - Math.round(Math.abs(i) / 4); if (hh > 0) F(g, x + i, y - hh + 2, 1, hh, "#8a7a52"); }
+    lbox(g, x - 24, y - 16, 48, 12, "#efe9dc"); for (let i = -20; i < 20; i += 5) F(g, x + i, y - 12, 2, 6, "#b9b1a0");
+    for (const s of [-1, 1]) { oval(g, x + s * 19, y - 18, 5, 4, C.out); oval(g, x + s * 19, y - 18, 4, 3, "#3e5a58"); }
+    oval(g, x, y - 22, 10, 8, C.out); oval(g, x, y - 22, 9, 7, "#3e5a58"); F(g, x - 4, y - 27, 3, 2, "#6c8e8a"); lbox(g, x - 12, y - 17, 24, 3, "#efe9dc"); }},
+  tokyotower: {title: "Tokyo Tower", desc: "The orange and white lattice tower rising over Minato.", h: 72, draw(g, x, y){
+    lattice(g, x, y, 70, 34, 2.4, i => Math.floor(i / 7) % 2 ? "#f4f1ea" : "#e2522b");
+    lbox(g, x - 7, y - 30, 14, 4, "#e2522b"); lbox(g, x - 4, y - 50, 8, 3, "#f4f1ea"); F(g, x, y - 78, 1, 8, C.out); }},
+  torii: {title: "A path of torii gates", desc: "Vermilion gates in a long row up the hillside, like Fushimi Inari.", h: 30, draw(g, x, y){
+    for (let i = 3; i >= 0; i--) { const s = 1 - i * .16, w = Math.round(30 * s), h = Math.round(26 * s), yy = y - i * 4, xx = x + i * 5;
+      F(g, xx - w / 2 - 3, yy - h - 1, w + 6, 4, C.out); F(g, xx - w / 2 - 2, yy - h, w + 4, 2, "#d9442b"); F(g, xx - w / 2, yy - h + 5, w, 2, "#d9442b");
+      for (const sx of [-1, 1]) { F(g, xx + sx * (w / 2 - 3) - 2, yy - h + 2, 4, h - 2, C.out); F(g, xx + sx * (w / 2 - 3) - 1, yy - h + 2, 2, h - 2, "#e8563a"); } } }},
+  eiffel: {title: "The Eiffel Tower", desc: "Iron lattice over the Champ de Mars.", h: 80, draw(g, x, y){
+    lattice(g, x, y, 78, 40, 3, () => "#7b5d43"); lbox(g, x - 10, y - 20, 20, 3, "#7b5d43"); lbox(g, x - 5, y - 44, 10, 2, "#7b5d43"); F(g, x, y - 86, 1, 8, C.out); }},
+  liberty: {title: "The Statue of Liberty", desc: "Torch raised over the harbour.", h: 60, draw(g, x, y){
+    lbox(g, x - 12, y - 8, 24, 8, "#b8a98c"); lbox(g, x - 8, y - 26, 16, 18, "#c8baa0"); F(g, x - 4, y - 22, 8, 10, "#a99a7e");
+    taper(g, x, y - 26, 22, 10, 6, "#6fa892"); oval(g, x, y - 51, 3, 3, C.out); oval(g, x, y - 51, 2, 2, "#7fb8a2");
+    for (let i = 0; i < 5; i++) F(g, x - 3 + i * 1.5, y - 56 + (i % 2), 1, 2, "#6fa892");
+    F(g, x + 3, y - 60, 2, 12, C.out); F(g, x + 3, y - 59, 1, 11, "#7fb8a2"); F(g, x + 2, y - 64, 4, 3, "#f2b136"); F(g, x + 3, y - 66, 2, 2, "#ffd76a");
+    F(g, x - 6, y - 44, 3, 6, "#5d9681"); }},
+  empire: {title: "The Empire State Building", desc: "Art deco steps up to a spire above Manhattan.", h: 84, draw(g, x, y){
+    lbox(g, x - 16, y - 22, 32, 22, "#b0aa9c"); lbox(g, x - 11, y - 52, 22, 30, "#b8b2a4"); lbox(g, x - 7, y - 64, 14, 12, "#c2bcae"); lbox(g, x - 3, y - 74, 6, 10, "#ccc6b8");
+    F(g, x, y - 84, 1, 10, C.out);
+    for (let r = y - 20; r < y - 2; r += 4) for (let c = x - 14; c < x + 12; c += 3) F(g, c, r, 1, 2, "#e8d79a");
+    for (let r = y - 50; r < y - 24; r += 4) for (let c = x - 9; c < x + 8; c += 3) F(g, c, r, 1, 2, "#e8d79a"); }},
+  bigben: {title: "Big Ben", desc: "The clock tower at the end of the Houses of Parliament.", h: 72, draw(g, x, y){
+    lbox(g, x - 34, y - 14, 26, 14, "#c9b27a"); for (let i = -32; i < -10; i += 4) { F(g, i + x, y - 18, 2, 4, "#c9b27a"); F(g, i + x, y - 10, 1, 7, "#8e7a4c"); }
+    lbox(g, x - 6, y - 50, 12, 50, "#c9b27a"); for (let i = 6; i < 44; i += 4) F(g, x - 4, y - i, 1, 2, "#8e7a4c");
+    lbox(g, x - 7, y - 58, 14, 9, "#d6c08a"); oval(g, x, y - 54, 4, 4, C.out); oval(g, x, y - 54, 3, 3, "#f3ead0"); F(g, x, y - 56, 1, 2, C.out); F(g, x, y - 54, 2, 1, C.out);
+    taper(g, x, y - 58, 14, 14, 1, "#3f5a4c"); }},
+  towerbridge: {title: "Tower Bridge", desc: "Two Gothic towers over the Thames, joined by blue walkways.", h: 46, draw(g, x, y){
+    water(g, x, y, 76); F(g, x - 34, y - 12, 68, 3, C.out); F(g, x - 34, y - 11, 68, 1, "#6c8fb8");
+    for (const s of [-1, 1]) { lbox(g, x + s * 18 - 6, y - 38, 12, 38, "#c9b89a"); F(g, x + s * 18 - 2, y - 30, 4, 6, "#4a5a72"); taper(g, x + s * 18, y - 38, 8, 12, 2, "#5d7fa8"); }
+    F(g, x - 12, y - 33, 24, 4, C.out); F(g, x - 12, y - 32, 24, 2, "#6c8fb8"); }},
+  burj: {title: "Burj Khalifa", desc: "The tallest tower in the world, a silver needle over Dubai.", h: 92, draw(g, x, y){
+    taper(g, x, y, 34, 22, 14, "#a9b6c2"); taper(g, x, y - 34, 28, 14, 8, "#b8c4cf"); taper(g, x, y - 62, 20, 8, 3, "#c6d1db"); F(g, x, y - 94, 1, 12, C.out);
+    for (let i = 4; i < 80; i += 3) F(g, x - 1, y - i, 1, 1, "#e8f2fa"); }},
+  colosseum: {title: "The Colosseum", desc: "The great stone amphitheatre, worn open on one side.", h: 32, draw(g, x, y){
+    oval(g, x, y - 22, 31, 9, C.out); oval(g, x, y - 22, 30, 8, "#d4b07e"); oval(g, x, y - 21, 22, 5, "#8f6d48");
+    F(g, x - 31, y - 22, 62, 22, C.out); F(g, x - 30, y - 22, 60, 21, "#d4b07e");
+    for (let r = 0; r < 3; r++) for (let c = -27; c < 27; c += 6) F(g, x + c, y - 19 + r * 7, 3, 4, "#7d5c3c");
+    oval(g, x - 18, y - 26, 12, 4, "#b8946a"); }},
+  goldengate: {title: "The Golden Gate Bridge", desc: "Red towers in the fog across the bay.", h: 54, draw(g, x, y){
+    water(g, x, y, 84); F(g, x - 42, y - 12, 84, 3, C.out); F(g, x - 42, y - 11, 84, 1, "#c3472e");
+    for (const s of [-1, 1]) { lbox(g, x + s * 24 - 3, y - 50, 6, 50, "#c3472e"); F(g, x + s * 24 - 3, y - 40, 6, 1, C.out); F(g, x + s * 24 - 3, y - 26, 6, 1, C.out); }
+    for (let i = -42; i <= 42; i++) { const u = Math.abs(i) <= 24 ? (i / 24) ** 2 : 1 - (Math.abs(i) - 24) / 18, yy = Math.round(y - 12 - 38 * u); F(g, x + i, yy, 1, 1, "#d85a3e"); if (i % 4 === 0 && Math.abs(i) < 42) F(g, x + i, yy, 1, y - 12 - yy, "rgba(195,71,46,.5)"); } }},
+  opera: {title: "Sydney Opera House", desc: "White sails on the harbour.", h: 34, draw(g, x, y){
+    lbox(g, x - 30, y - 6, 60, 6, "#d6c3a3");
+    [[-22, 22, 18], [-8, 30, 22], [8, 26, 20], [20, 18, 14]].forEach(([dx, h, w]) => { for (let i = 0; i < h; i++) { const ww = Math.round(w * (1 - i / h)); F(g, x + dx - 1, y - 6 - i, ww + 2, 1, C.out); F(g, x + dx, y - 6 - i, ww, 1, i % 4 ? "#f6f3ec" : "#dcd8cf"); } }); }},
+  santorini: {title: "Santorini's blue domes", desc: "Whitewashed walls, a blue dome and a bell tower above the sea.", h: 36, draw(g, x, y){
+    lbox(g, x - 26, y - 16, 18, 16, "#f7f5ef"); lbox(g, x - 6, y - 20, 22, 20, "#f7f5ef"); lbox(g, x + 18, y - 12, 12, 12, "#f7f5ef");
+    oval(g, x + 5, y - 22, 9, 8, C.out); oval(g, x + 5, y - 22, 8, 7, "#2f6fb6"); F(g, x + 1, y - 26, 3, 2, "#5f97d6"); F(g, x + 5, y - 33, 1, 4, C.out); F(g, x + 3, y - 31, 5, 1, C.out);
+    lbox(g, x - 22, y - 26, 8, 10, "#f7f5ef"); F(g, x - 20, y - 23, 4, 4, "#2f6fb6"); F(g, x - 3, y - 12, 4, 8, "#2f6fb6"); F(g, x + 21, y - 8, 4, 5, "#2f6fb6"); }},
+  tajmahal: {title: "The Taj Mahal", desc: "White marble, a great dome and four minarets.", h: 48, draw(g, x, y){
+    lbox(g, x - 32, y - 6, 64, 6, "#ece6da"); lbox(g, x - 15, y - 24, 30, 18, "#f6f2ea"); F(g, x - 4, y - 20, 8, 12, "#c9c0ae"); F(g, x - 3, y - 22, 6, 2, "#c9c0ae");
+    oval(g, x, y - 32, 11, 10, C.out); oval(g, x, y - 32, 10, 9, "#f6f2ea"); F(g, x + 4, y - 38, 4, 10, "#dcd4c4"); taper(g, x, y - 41, 5, 4, 1, "#e0c27a");
+    for (const s of [-1, 1]) { oval(g, x + s * 9, y - 26, 3, 3, "#f6f2ea"); taper(g, x + s * 28, y - 6, 28, 4, 3, "#f6f2ea"); oval(g, x + s * 28, y - 35, 2, 2, "#f6f2ea"); } }},
+  pyramids: {title: "The Pyramids of Giza", desc: "Stone pyramids at the edge of the desert.", h: 40, draw(g, x, y){
+    oval(g, x, y, 44, 5, "#d9bb7e");
+    [[-14, 38], [20, 26]].forEach(([dx, h]) => { for (let i = 0; i < h; i++) { const hw = h - i; F(g, x + dx - hw - 1, y - i - 1, hw * 2 + 2, 1, C.out); F(g, x + dx - hw, y - i - 1, hw, 1, "#e2c084"); F(g, x + dx, y - i - 1, hw, 1, "#b8955c"); if (i % 4 === 0) F(g, x + dx - hw, y - i - 1, hw * 2, 1, "#c9a76c"); } }); }},
+  marinabay: {title: "Marina Bay Sands", desc: "Three towers holding a ship-shaped garden in the sky.", h: 50, draw(g, x, y){
+    water(g, x, y + 2, 80);
+    for (const dx of [-20, 0, 20]) { lbox(g, x + dx - 5, y - 40, 10, 40, "#c7d0d6"); for (let i = 4; i < 38; i += 3) F(g, x + dx - 3, y - i, 6, 1, "#8fa3b2"); }
+    F(g, x - 33, y - 46, 66, 5, C.out); F(g, x - 32, y - 45, 64, 3, "#a9b4ba"); F(g, x - 30, y - 46, 60, 1, "#5f8f4a"); }},
+  christ: {title: "Christ the Redeemer", desc: "Arms open over Rio from the top of Corcovado.", h: 60, draw(g, x, y){
+    for (let i = -40; i <= 40; i++) { const hh = Math.round(34 * Math.exp(-(i * i) / 500)); F(g, x + i, y - hh, 1, hh, i % 2 ? "#3f7a3a" : "#4b8842"); }
+    lbox(g, x - 3, y - 40, 6, 6, "#c9c4b8"); taper(g, x, y - 40, 16, 6, 4, "#efece4"); F(g, x - 12, y - 52, 25, 3, C.out); F(g, x - 11, y - 51, 23, 1, "#efece4"); oval(g, x, y - 58, 2, 2, "#efece4"); }},
+  brandenburg: {title: "The Brandenburg Gate", desc: "Sandstone columns with the chariot on top.", h: 40, draw(g, x, y){
+    lbox(g, x - 26, y - 4, 52, 4, "#cdbb94"); for (let i = 0; i < 6; i++) { F(g, x - 24 + i * 9, y - 26, 5, 22, C.out); F(g, x - 23 + i * 9, y - 26, 3, 22, "#d8c7a0"); }
+    lbox(g, x - 28, y - 32, 56, 6, "#cdbb94"); lbox(g, x - 12, y - 36, 24, 4, "#cdbb94"); F(g, x - 5, y - 42, 10, 6, "#3e6a5c"); F(g, x - 1, y - 45, 2, 3, "#3e6a5c"); }},
+  cntower: {title: "The CN Tower", desc: "A concrete needle with its pod high over Lake Ontario.", h: 90, draw(g, x, y){
+    taper(g, x, y, 60, 12, 5, "#c8c4bc"); oval(g, x, y - 62, 8, 4, C.out); oval(g, x, y - 62, 7, 3, "#9aa2aa"); F(g, x - 7, y - 62, 14, 1, "#5a6672");
+    taper(g, x, y - 66, 10, 4, 3, "#c8c4bc"); F(g, x, y - 92, 1, 16, C.out); }},
+  spaceneedle: {title: "The Space Needle", desc: "A flying-saucer top on tall curved legs.", h: 74, draw(g, x, y){
+    for (let i = 0; i < 56; i++) { const hw = Math.round(3 + 9 * Math.pow(1 - i / 56, 2) + (i > 40 ? (i - 40) / 4 : 0)); F(g, x - hw - 1, y - 1 - i, 3, 1, C.out); F(g, x - hw, y - 1 - i, 1, 1, "#efece4"); F(g, x + hw - 2, y - 1 - i, 3, 1, C.out); F(g, x + hw - 1, y - 1 - i, 1, 1, "#d8d4ca"); }
+    oval(g, x, y - 58, 13, 3, C.out); oval(g, x, y - 58, 12, 2, "#efece4"); F(g, x - 9, y - 63, 18, 4, C.out); F(g, x - 8, y - 62, 16, 2, "#e8a33a"); F(g, x, y - 74, 1, 10, C.out); }},
+  sagrada: {title: "La Sagrada Família", desc: "Gaudí's basilica, a cluster of carved spires.", h: 70, draw(g, x, y){
+    lbox(g, x - 26, y - 18, 52, 18, "#c9ac80"); for (let i = -22; i < 22; i += 6) F(g, x + i, y - 14, 3, 10, "#8d7350");
+    [[-18, 46], [-9, 56], [0, 66], [9, 56], [18, 46]].forEach(([dx, h]) => { taper(g, x + dx, y - 18, h - 18, 7, 1, "#c9ac80", .8); for (let i = 22; i < h - 6; i += 5) F(g, x + dx - 1, y - i, 2, 1, "#8d7350"); F(g, x + dx, y - h - 2, 1, 2, "#e0b640"); }); }},
+  stupa: {title: "Boudhanath Stupa", desc: "A white dome, a gold tower and painted eyes over Kathmandu.", h: 46, draw(g, x, y){
+    lbox(g, x - 28, y - 6, 56, 6, "#e9e3d4"); lbox(g, x - 22, y - 10, 44, 4, "#e9e3d4"); oval(g, x, y - 12, 17, 10, C.out); oval(g, x, y - 12, 16, 9, "#f6f3ea"); F(g, x - 16, y - 12, 32, 2, "#f6f3ea");
+    lbox(g, x - 5, y - 28, 10, 6, "#e0b640"); F(g, x - 3, y - 26, 2, 1, C.out); F(g, x + 1, y - 26, 2, 1, C.out); taper(g, x, y - 28, 14, 8, 2, "#e0b640");
+    for (let i = -30; i <= 30; i += 5) F(g, x + i, y - 34 + Math.abs(i) / 2, 3, 2, ["#d9442b", "#2f6fb6", "#f2d04a", "#3e8a4a"][Math.abs(i / 5) % 4]); }},
+  nseoul: {title: "N Seoul Tower", desc: "The tower on Namsan mountain, lit up at night.", h: 66, draw(g, x, y){
+    for (let i = -36; i <= 36; i++) { const hh = Math.round(22 * Math.exp(-(i * i) / 420)); F(g, x + i, y - hh, 1, hh, i % 2 ? "#3f7a3a" : "#4b8842"); }
+    taper(g, x, y - 20, 28, 6, 4, "#e8e6e0"); lbox(g, x - 6, y - 54, 12, 6, "#c8ccd2"); F(g, x - 5, y - 52, 10, 1, "#6fa8d6"); F(g, x, y - 68, 1, 14, C.out); }},
+  duomo: {title: "The Duomo", desc: "Brunelleschi's terracotta dome and Giotto's bell tower.", h: 52, draw(g, x, y){
+    lbox(g, x - 28, y - 16, 44, 16, "#e8e0cf"); for (let i = -26; i < 14; i += 5) F(g, x + i, y - 13, 2, 8, "#5f8a6a");
+    oval(g, x - 6, y - 24, 13, 12, C.out); oval(g, x - 6, y - 24, 12, 11, "#c4643c"); F(g, x - 6, y - 35, 1, 12, "#f0e8d8"); F(g, x - 13, y - 30, 1, 8, "#f0e8d8"); F(g, x + 1, y - 30, 1, 8, "#f0e8d8");
+    lbox(g, x - 8, y - 40, 4, 4, "#f0e8d8"); lbox(g, x + 20, y - 44, 8, 44, "#efe7d6"); F(g, x + 22, y - 40, 2, 34, "#c4643c"); }},
+  canalhouses: {title: "Canal houses", desc: "Narrow gabled houses leaning over an Amsterdam canal.", h: 36, draw(g, x, y){
+    water(g, x, y + 2, 72);
+    ["#8b4a32", "#2e4a5c", "#b07a3c", "#5a3a2c", "#3e5a3a", "#9a5440"].forEach((c, i) => { const xx = x - 33 + i * 11, h = 24 + (i * 7) % 9;
+      lbox(g, xx, y - h, 10, h - 2, c); taper(g, xx + 5, y - h, 6, 10, 2, c); for (let r = y - h + 4; r < y - 6; r += 6) { F(g, xx + 2, r, 2, 3, "#f3ead0"); F(g, xx + 6, r, 2, 3, "#f3ead0"); } }); }},
+  // already part of a hand-made district's art
+  sealink: {art: "mumbai", title: "Bandra-Worli Sea Link", desc: "The cable-stayed bridge across the bay."},
+  marine: {art: "mumbai", title: "Marine Drive", desc: "The sea face and its curve of lights."},
+  harvard: {art: "boston", title: "Harvard Yard", desc: "Brick halls, a white steeple and the library steps."},
+  fuji: {art: "japan", title: "Mount Fuji", desc: "The snow-capped peak above the mountain roads."},
+  pier: {art: "la", title: "Santa Monica Pier", desc: "A wooden pier into the Pacific."},
+  lodhi: {art: "delhi", title: "Lodhi Garden", desc: "A sandstone tomb among neem trees."}
+};
+const LM_PLACES = {
+  "Delhi": ["indiagate", "qutub", "lodhi"], "IIT Delhi": ["qutub", "indiagate", "lodhi"], "Mumbai": ["sealink", "marine"], "Agra": ["tajmahal"],
+  "LA": ["hollywood", "griffith", "pier"], "Santa Monica": ["pier", "hollywood"], "Malibu": ["pier", "hollywood"], "UCLA": ["hollywood", "griffith"], "USC": ["hollywood", "griffith"],
+  "Boston": ["harvard"], "Cambridge (Massachusetts)": ["harvard"], "Harvard University": ["harvard"], "MIT": ["harvard"],
+  "Japan": ["fuji", "tokyotower", "torii"], "Tokyo": ["tokyotower", "fuji"], "Kyoto": ["torii", "fuji"], "Hakone": ["fuji", "torii"], "Ebisu Circuit": ["fuji"],
+  "New York": ["liberty", "empire"], "Columbia University": ["empire", "liberty"], "NYU": ["empire", "liberty"], "Parsons School of Design": ["empire", "liberty"],
+  "San Francisco": ["goldengate"], "Seattle": ["spaceneedle"], "Toronto": ["cntower"], "Paris": ["eiffel"], "London": ["bigben", "towerbridge"],
+  "Royal College of Art": ["bigben", "towerbridge"], "Central Saint Martins": ["bigben", "towerbridge"], "Rome": ["colosseum"], "Dubai": ["burj"], "Sydney": ["opera"],
+  "Santorini": ["santorini"], "Cairo": ["pyramids"], "Singapore": ["marinabay"], "Rio de Janeiro": ["christ"], "Berlin": ["brandenburg"], "Barcelona": ["sagrada"],
+  "Kathmandu": ["stupa"], "Seoul": ["nseoul"], "Florence": ["duomo"], "Amsterdam": ["canalhouses"]
+};
+// Words in her dreams that point at one landmark over another (Boston for Harvard, Tokyo for the tower…).
+const LM_WORDS = {qutub: ["qutub", "mehrauli"], indiagate: ["india gate", "rajpath"], tokyotower: ["tokyo"], torii: ["kyoto", "temple", "shrine"], fuji: ["drift", "porsche", "mountain", "fuji"],
+  griffith: ["stars", "observatory", "telescope"], hollywood: ["film", "movie", "actor", "hollywood"], pier: ["beach", "pier", "surf"], empire: ["office", "career", "work"], liberty: ["move", "new life"],
+  towerbridge: ["river", "thames"], bigben: ["parliament", "politics"], marine: ["sea face", "marine drive", "walk"]};
+function landmarkOptions(d){
+  const pack = PACKS[d.env] || PACKS.town, key = d.name.toLowerCase();
+  const g = GAZ.find(p => p.name === d.name) || GAZ.find(p => p.alias.split(",").includes(key));
+  const ids = LM_PLACES[d.name] || (g && LM_PLACES[g.name]) || [];
+  return ids.filter(id => LANDMARKS[id].art ? LANDMARKS[id].art === d.env : !!pack.lm);
+}
+function defaultLandmark(d, aspirations){
+  const opts = landmarkOptions(d); if (!opts.length) return "none";
+  const text = (aspirations || []).filter(a => a.destinationId === d.id).map(a => (a.title + " " + (a.desc || "")).toLowerCase()).join(" ");
+  return opts.find(id => (LM_WORDS[id] || []).some(w => text.includes(w))) || opts[0];
+}
+// The landmark to draw for a place, or null when there's nothing extra to draw.
+function districtLandmark(D){
+  const id = D.d.landmark, L = id && LANDMARKS[id];
+  return L && !L.art && landmarkOptions(D.d).includes(id) ? {id, ...L} : null;
+}
+function drawLandmarkAt(g, L, x, y){
+  oval(g, x, y + 1, 30, 5, "#a39678"); oval(g, x, y, 28, 4, "#c9bd9c");
+  for (let i = -24; i <= 24; i += 8) F(g, x + i, y, 1, 1, "#b2a586");
+  L.draw(g, x, y);
+}
+
 /* ---------------- the world canvas: layout, district terrain, landmarks ---------------- */
 let W = CW + PAD * 2, H = CH + PAD * 2;
 const DIST = new Map(); let EMPTY = [];
@@ -1691,7 +1881,7 @@ function buildDistrictTerrain(D){
     const Q = PAL[D.d.env] || PAL.town; F(g, x, y, 1, 2, Q[0]); F(g, x + 2, y, 1, 2, Q[0]); F(g, x + 1, y + 1, 1, 1, Q[0]); F(g, x, y - 1, 1, 1, Q[3]);
   }
   CUR_SLOTS = pack.slots;
-  g.save(); g.translate(tx, ty); pack.build(g, D); g.restore();
+  g.save(); g.translate(tx, ty); pack.build(g, D); const L = districtLandmark(D); if (L) drawLandmarkAt(g, L, pack.lm[0], pack.lm[1]); g.restore();
   D.terrain = c; D.mask = mask;
   for (let i = 0; i < 70; i++) { const x = hash(i, 9, D.seed) * CW | 0, y = hash(i, 10, D.seed) * CH | 0; if (!mask[y * CW + x] && dist[y * CW + x] > 6) sparkles.push({x: D.ox + x, y: D.oy + y, s: i + D.seed, d: D.d.id}); }
 }
@@ -1713,6 +1903,7 @@ function computeLocs(){
     const tx = D.ox + (D.pack.tx || 0), ty = D.oy + (D.pack.ty || 0);
     D.assigned = assignSlots(D);
     for (const {a, slot} of D.assigned) locs.push({a, D, x: tx + slot[0], y: ty + slot[1], h: slot[3] && a.kind === "home" ? 36 : KIND_H[a.kind] || 24, slot});
+    const L = districtLandmark(D); if (L) locs.push({fixed: true, D, a: {id: "lm-" + D.d.id, title: L.title, desc: L.desc, category: D.d.name, kind: "fountain"}, x: tx + D.pack.lm[0], y: ty + D.pack.lm[1], h: L.h});
     for (const f of D.pack.fixed) locs.push({fixed: true, D, a: {id: "fx-" + D.d.id + "-" + f.id, title: f.title, desc: f.desc, category: D.d.name, kind: "fountain"}, x: tx + f.x, y: ty + f.y, h: f.h});
   }
 }
@@ -1982,7 +2173,7 @@ function sizeScene(){
 }
 const homeDistrict = () => DIST.get((worldDests().find(d => d.purpose === "from") || worldDests()[0]).id) || [...DIST.values()][0];
 function refreshWorld(){
-  const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name]));
+  const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name, d.landmark || ""]));
   const ak = JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", a.destinationId || ""]));
   if (lk !== layoutKey) {
     const cxw = camX + VW / 2, cyw = camY + VH / 2, oldD = layoutKey ? districtAt(cxw, cyw, true) : null, rel = oldD ? {id: oldD.d.id, x: cxw - oldD.ox, y: cyw - oldD.oy} : null;
@@ -2746,14 +2937,13 @@ function editGoal(id, preset){
 let weekOf = weekStart(today());
 function renderWeek(){
   const el = $("p-week"), ws = weekOf, we = addDays(ws, 6), isNow = ws === weekStart(today());
-  const entries = S.entries.filter(e => e.date >= ws && e.date <= we).sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const entries = S.entries.filter(e => e.date >= ws && e.date <= we).reverse();
   const goalsMoved = new Set(entries.flatMap(e => e.goalIds));
   const steps = S.goals.flatMap(g => g.milestones.filter(m => m.doneAt && m.doneAt >= ws && m.doneAt <= we));
   const due = S.goals.filter(g => (g.status !== "cancelled") && ((g.deadline >= ws && g.deadline <= we) || g.deadlineHistory.some(h => h.from >= ws && h.from <= we)));
   const metW = due.filter(g => g.status === "done" && g.doneAt <= g.deadline && g.deadline >= ws && g.deadline <= we);
   const passed = due.filter(g => !(g.status === "done" && g.doneAt <= (g.deadlineHistory.find(h => h.from >= ws && h.from <= we)?.from || g.deadline)) && (g.deadlineHistory.some(h => h.from >= ws && h.from <= we) || (g.deadline <= (isNow ? today() : we) && g.status !== "done")));
   const offPlan = entries.filter(e => !e.goalIds.length);
-  const r = S.reflections[ws] || {text: "", next: ""};
   const insights = [];
   if (entries.length) insights.push(`You logged ${entries.length} thing${entries.length === 1 ? "" : "s"}${goalsMoved.size ? ` and moved ${goalsMoved.size} goal${goalsMoved.size === 1 ? "" : "s"} forward` : ""}.`);
   if (steps.length) insights.push(`${steps.length} step${steps.length === 1 ? "" : "s"} completed: ${steps.slice(0, 3).map(m => esc(m.title)).join(", ")}.`);
@@ -2765,12 +2955,9 @@ function renderWeek(){
       <div class="weeknav"><button class="pbtn" id="wPrev" aria-label="Previous week">${ICON.left}</button><button class="pbtn" id="wNext" aria-label="Next week" ${isNow ? "disabled style='opacity:.4'" : ""}>${ICON.right}</button></div></div>
     ${weekHistoryHTML()}
     <button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>
-    <div class="stats"><div><b>${entries.length}</b><span>logged</span></div><div><b>${goalsMoved.size}</b><span>goals moved</span></div><div><b>${steps.length}</b><span>steps done</span></div><div><b>${metW.length}</b><span>deadlines met</span></div></div>
     <section class="panel"><div class="eyebrow">Weekly review</div>
       ${insights.length ? `<div class="insight">${insights.map(i => `<div>${i}</div>`).join("")}</div>` : `<p class="muted" style="margin:0">${isNow ? "Nothing logged yet this week. Anything counts: an email sent, a page drafted, a lesson booked." : "Nothing was logged this week."}</p>`}
-      <label class="field"><span>What did this week teach you?</span><textarea id="rText" placeholder="A sentence or two">${esc(r.text)}</textarea></label>
-      <label class="field"><span>Next week I want to…</span><textarea id="rNext" style="min-height:64px" placeholder="One or two things">${esc(r.next)}</textarea></label>
-      <span class="muted" id="rSaved" style="font-size:13px"></span></section>
+</section>
     <section><h2 class="sec" style="margin-bottom:8px">Logged</h2>
       ${entries.length ? `<ul class="list">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>
     ${honestNumbersHTML()}`;
@@ -2778,9 +2965,6 @@ function renderWeek(){
   $("wNext").onclick = () => { if (!isNow) { weekOf = addDays(weekOf, 7); renderWeek(); } };
   $("logBtn").onclick = () => logEntry();
   wireWeekHistory();
-  let rt;
-  const saveR = () => { clearTimeout(rt); rt = setTimeout(() => { S.reflections[ws] = {text: $("rText").value.trim(), next: $("rNext").value.trim()}; save(); $("rSaved").textContent = "Saved"; }, 600); };
-  $("rText").oninput = saveR; $("rNext").oninput = saveR;
   el.querySelectorAll("[data-delentry]").forEach(b => b.onclick = () => {
     if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Tap again"; return; }
     commit(s => { s.entries = s.entries.filter(e => e.id !== b.dataset.delentry); });
@@ -2789,15 +2973,21 @@ function renderWeek(){
 }
 function entryRow(e){
   const gs = e.goalIds.map(goalById).filter(Boolean);
-  return `<li class="entry"><div class="rmeta"><span>${fmt(e.date, {weekday: "short", day: "numeric", month: "short"})}</span><span class="tag ${e.type === "did" ? "green" : "sea"}">${e.type === "did" ? "Accomplished" : "Worked on"}</span><span>${SIZE_LABEL[e.size || 1]}</span>${S.demo && e.example ? `<span class="tag">Example</span>` : ""}</div>
+  return `<li class="entry"><div class="rmeta"><span class="tag ${e.type === "did" ? "green" : "sea"}">${e.type === "did" ? "Accomplished" : "Worked on"}</span><span>${SIZE_LABEL[e.size || 1]}</span>${S.demo && e.example ? `<span class="tag">Example</span>` : ""}</div>
     <div class="t">${esc(e.text)}</div>
     ${gs.length ? `<div class="rmeta">${gs.map(g => `<span class="tag">→ ${esc(g.title)}</span>`).join("")}</div>` : `<div class="rmeta"><span>Not tied to a goal</span></div>`}
     ${e.learned || e.blocked || e.next ? `<div class="refl">${e.learned ? `<span><b>Learned</b> ${esc(e.learned)}</span>` : ""}${e.blocked ? `<span><b>Blocked by</b> ${esc(e.blocked)}</span>` : ""}${e.next ? `<span><b>Next</b> ${esc(e.next)}</span>` : ""}</div>` : ""}
     <div class="actions"><button class="btn quiet sm" data-editentry="${e.id}">Edit</button><button class="btn quiet sm" data-delentry="${e.id}" style="color:var(--danger)">Delete</button></div></li>`;
 }
+// Progress is logged per week: an entry's date is the Monday of its week (older entries may still carry a day).
+function weekChoices(){
+  const now = weekStart(today()), list = [now, addDays(now, -7)];
+  if (weekOf !== now && !list.includes(weekOf)) list.push(weekOf);
+  return list;
+}
 function logEntry(editId){
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
-  const f = ex ? {...ex, goalIds: ex.goalIds.slice()} : {text: "", type: "did", date: today(), goalIds: [], size: 2, learned: "", blocked: "", next: ""};
+  const f = ex ? {...ex, goalIds: ex.goalIds.slice()} : {text: "", type: "did", date: weekOf, goalIds: [], size: 2, learned: "", blocked: "", next: ""};
   let step = 1, sugg = [], rejected = new Set(), asking = false, claudeTried = false;
   const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
   function draw(){
@@ -2806,13 +2996,14 @@ function logEntry(editId){
       B.innerHTML = `${dots()}
         <label class="field"><span>What happened?</span><textarea id="eText" placeholder="e.g. Researched three surf schools and compared course prices">${esc(f.text)}</textarea></label>
         <div class="field"><span>This was something I…</span><div class="seg" role="group"><button type="button" aria-pressed="${f.type === "did"}" data-type="did">Accomplished</button><button type="button" aria-pressed="${f.type === "worked"}" data-type="worked">Worked on</button></div></div>
-        <label class="field"><span>When</span><input type="date" id="eDate" value="${f.date}" max="${today()}"></label>
+        <div class="field"><span>Which week?</span><div class="seg" role="group">${weekChoices().map(w => `<button type="button" aria-pressed="${weekStart(f.date) === w}" data-wk="${w}">${w === weekStart(today()) ? "This week" : w === addDays(weekStart(today()), -7) ? "Last week" : esc(weekRange(w))}</button>`).join("")}</div></div>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
+      B.querySelectorAll("[data-wk]").forEach(b => b.onclick = () => { f.date = b.dataset.wk; B.querySelectorAll("[data-wk]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
       B.querySelectorAll("[data-type]").forEach(b => b.onclick = () => { f.type = b.dataset.type; B.querySelectorAll("[data-type]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
       $("eCancel").onclick = closeSheet;
       $("eNext").onclick = () => {
-        f.text = $("eText").value.trim(); f.date = $("eDate").value || today();
+        f.text = $("eText").value.trim();
         if (!f.text) { $("eErr").textContent = "Write a few words about what you did."; $("eErr").hidden = false; return; }
         sugg = localMatches(f.text).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
       };
@@ -2825,7 +3016,7 @@ function logEntry(editId){
           ${asking ? `<p class="muted" style="margin:0">Asking Claude…</p>` : sugg.length ? `<div class="sugg">${sugg.map(s => { const g = goalById(s.goalId); return `<button type="button" class="sugg-item" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span><span class="grow"><b>${esc(g.title)}</b><small>${esc(s.reason)} · ${s.source}</small></span><span class="btn quiet sm" data-reject="${g.id}" role="button">Not this</span></button>`; }).join("")}</div>
             <small>Tap to link. Nothing is linked until you choose it.</small>` : `<p class="muted" style="margin:0">${goals.length ? "No clear match from your goals." : "You don't have any active goals yet. You can still log this."}</p>`}
           ${sampleFn && goals.length && !claudeTried && !asking ? `<button type="button" class="btn ghost sm" id="askClaude" style="justify-self:start">Ask Claude for matches</button><small>Uses your Claude account. The keyword matcher above works without it.</small>` : ""}</div>
-        ${others.length ? `<div class="field"><span>${sugg.length ? "Or choose any goal" : "Choose goals yourself"}</span><div class="pills">${others.map(g => `<button type="button" class="pill" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}">${esc(g.title)}</button>`).join("")}</div></div>` : ""}
+        ${others.length ? `<div class="field"><span>${sugg.length ? "Or choose any goal" : "Choose goals yourself"}</span><div class="cklist">${others.map(g => `<button type="button" class="ck" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("")}</div></div>` : ""}
         <div class="field"><span>How much did it move things?</span><div class="seg" role="group">${[1, 2, 3].map(n => `<button type="button" aria-pressed="${f.size === n}" data-size="${n}">${SIZE_LABEL[n]}</button>`).join("")}</div></div>`;
       Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eNext">${f.goalIds.length ? "Next" : "Next, without a goal"}</button>`;
       B.querySelectorAll("[data-pick]").forEach(b => b.onclick = e => {
@@ -3151,7 +3342,7 @@ const weekRange = ws => `${fmt(ws, {day: "numeric", month: "short"})} – ${fmt(
 function weekHistoryHTML(){
   const hits = weekSearch(weekQuery), byWeek = new Map(); hits.forEach(h => { if (!byWeek.has(h.ws)) byWeek.set(h.ws, []); byWeek.get(h.ws).push(h); });
   return `<div class="wk-search">
-    <input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search everything you've logged" aria-label="Search past weeks">
+    <div class="wk-box"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search everything you've logged" aria-label="Search past weeks"></div>
     <div id="wResults">${weekQuery.trim().length < 2 ? "" : hits.length ? [...byWeek].map(([ws, list]) => `<button class="wk-hit" data-week="${ws}"><span class="eyebrow">${esc(weekRange(ws))}</span>${list.slice(0, 3).map(h => `<span><b>${esc(h.kind)}</b> ${esc(h.text.length > 90 ? h.text.slice(0, 90) + "…" : h.text)}</span>`).join("")}${list.length > 3 ? `<span class="muted">+${list.length - 3} more</span>` : ""}</button>`).join("") : `<p class="muted" style="margin:0;font-size:13px">Nothing found for “${esc(weekQuery)}”.</p>`}</div></div>`;
 }
 function wireWeekHistory(){
@@ -3161,10 +3352,10 @@ function wireWeekHistory(){
 }
 
 function honestNumbersHTML(){
-  const done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length, metOrig = done.filter(g => g.doneAt <= originalDeadline(g)).length;
+  const done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length;
   const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
   return `<section><h2 class="sec" style="margin-bottom:6px">Honest numbers</h2>
-      <p class="muted" style="font-size:13px;margin:0 0 10px">Progress and punctuality are tracked separately. ${done.length ? `${metOrig} of ${done.length} finished by their original date; ${met} by the date you last set.` : "Finish a goal to see both."} Clear views earned: ${clearViewsEarned()}, used: ${S.rewards.clearViewsUsed || 0}.</p>
+      <p class="muted" style="font-size:13px;margin:0 0 10px">Progress and punctuality are tracked separately: finishing a goal and finishing it on time are counted apart.</p>
       <div class="stats"><div><b>${S.entries.length}</b><span>entries</span></div><div><b>${done.length}</b><span>goals done</span></div><div><b>${met}/${done.length}</b><span>on time</span></div><div><b>${moved}</b><span>dates moved</span></div></div></section>`;
 }
 
@@ -3309,6 +3500,7 @@ function demoState(profile){
   N("Letter to me in five years", "I hope you still make things with your hands. I hope you took the sailing course.", -20, {pinned: true, fav: true});
   N("Reminder", "Ask for feedback before the portfolio goes live.", -6, {pinned: true});
   N("After the first dinner", "Seven people came. Everyone stayed until midnight. Do it again.", -2, {fav: true});
+  s.destinations.forEach(dd => { dd.landmark = defaultLandmark(dd, s.aspirations); });
   return s;
 }
 const DEMO_KEY = "dreamLifeBuilder.demo.v1", MODE_KEY = "dreamLife.mode";
@@ -3360,7 +3552,7 @@ function placeSearch(root, onPick){
 }
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
-  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow"><b>${esc(d.name)}</b><span>${esc([d.country, (GENERIC_ENVS.includes(d.env) ? ENV_LABEL[d.env] + " scenery" : ENV_LABEL[d.env] + " artwork")].filter(Boolean).join(" · "))}</span></div>
+  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow"><b>${esc(d.name)}</b><span>${esc([d.country, (GENERIC_ENVS.includes(d.env) ? ENV_LABEL[d.env] + " scenery" : ENV_LABEL[d.env] + " artwork"), LANDMARKS[d.landmark] && LANDMARKS[d.landmark].title].filter(Boolean).join(" · "))}</span></div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     ${opts && opts.edit ? `<button type="button" class="pbtn icon-sm" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>` : ""}<button type="button" class="pbtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
@@ -3379,10 +3571,16 @@ function editDestination(id){
   openSheet("Edit place", `<label class="field"><span>Name</span><input type="text" id="edName" value="${esc(d.name)}"></label>
     <label class="field"><span>A line about it (optional)</span><input type="text" id="edTag" value="${esc(d.tagline || "")}" maxlength="40" placeholder="e.g. Love living here"><small>Shown under the place's name in your world.</small></label>
     <label class="field"><span>What it is for you</span><select id="edPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you're from start already clear. Everywhere else starts in the dark.</small></label>
+    <div id="edLm"></div>
     <label class="field"><span>Scenery</span><select id="edEnv">${(GENERIC_ENVS.includes(d.env) ? [] : [d.env]).concat(GENERIC_ENVS).map(k => `<option value="${k}" ${d.env === k ? "selected" : ""}>${ENV_LABEL[k]}${GENERIC_ENVS.includes(k) ? "" : " (its own artwork)"}</option>`).join("")}</select></label>`,
     `<button class="btn ghost" id="edCancel">Cancel</button><button class="btn" id="edSave">Save</button>`, () => {
+      // landmarks depend on the scenery (hand-made art has its own), so the list follows the scenery picker
+      const lmField = () => { const t = {...d, name: $("edName").value.trim() || d.name, env: $("edEnv").value}, opts = landmarkOptions(t), cur = $("edLmSel") ? $("edLmSel").value : d.landmark, sel = opts.includes(cur) || cur === "none" ? cur : defaultLandmark(t, S.aspirations);
+        $("edLm").innerHTML = opts.length ? `<label class="field"><span>Landmark</span><select id="edLmSel">${opts.map(k => `<option value="${k}" ${sel === k ? "selected" : ""}>${esc(LANDMARKS[k].title)}${LANDMARKS[k].art ? " (in the scenery)" : ""}</option>`).join("")}<option value="none" ${sel === "none" ? "selected" : ""}>No landmark</option></select><small>What makes this place recognisable on your map.</small></label>`
+          : `<div class="field"><span>Landmark</span><small>There's no landmark artwork for this place yet, so it keeps the scenery without one.</small></div>`; };
+      lmField(); $("edEnv").onchange = lmField; $("edName").onchange = lmField;
       $("edCancel").onclick = closeSheet;
-      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, env: $("edEnv").value})); regionShown = ""; closeSheet(); toast("Place updated"); };
+      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, env: $("edEnv").value, landmark: $("edLmSel") ? $("edLmSel").value : "none"})); regionShown = ""; closeSheet(); toast("Place updated"); };
     });
 }
 function addPlaceSheet(after){
