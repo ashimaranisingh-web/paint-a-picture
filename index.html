@@ -2523,7 +2523,7 @@ function showLoc(l){
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
   card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
-      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div>`;
+      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>`;
   card.hidden = false;
   $("locGo").onclick = () => { card.hidden = true; if (preview) endPreview(); openDreamCard(a.id); };
   card.querySelector("[data-enter]").onclick = () => openDreamCard(a.id);
