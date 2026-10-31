@@ -1,6 +1,6 @@
 # Paint a Picture
 
-A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where they want to live, study, work or explore. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Your world starts in the dark; real progress on goals linked to a dream makes that place clearer. Meet a deadline and you earn a 10-second view of the whole picture. Miss one and you lose nothing.
+A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where they want to live, study, work or explore. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Your world starts in the dark; real progress on goals linked to a dream makes that place clearer. Meet a deadline and you earn a one-minute view of the whole picture. Miss one and you lose nothing.
 
 ## Run it
 Open `index.html` in a browser, or serve the folder:

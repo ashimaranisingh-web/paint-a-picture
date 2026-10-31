@@ -65,6 +65,8 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .mapctl button{width:44px;height:44px;display:grid;place-items:center;border:0;background:var(--glass);color:#fff}
 .mapctl button:hover{background:rgba(30,36,48,.8)}
 .mapctl .ico{width:17px;height:17px}
+.mapctl button.gold{background:rgba(232,196,110,.92);color:#2b2108}.mapctl button.gold:hover{background:#e8c46e}.mapctl button.gold .ico{width:20px;height:20px}
+.mapctl button[hidden]{display:none}
 .home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:16px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
@@ -401,8 +403,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     </header>
     <div class="home-chips" id="homeChips"></div>
     <div class="mapctl" role="group" aria-label="Map controls">
-      <button id="zin" aria-label="Zoom in"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-      <button id="zout" aria-label="Zoom out"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button id="useVision" class="gold" hidden><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg></button>
       <button id="birdseye" aria-label="Bird's-eye view of your whole world" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></button>
       <button id="recenter" aria-label="Show me"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
     </div>
@@ -412,7 +413,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <nav class="journey" id="journey" aria-label="Your places"></nav>
     <div class="loccard" id="loccard" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -2364,8 +2365,6 @@ cv.addEventListener("keydown", e => {
   else return;
   e.preventDefault(); clampCam(); saveCam();
 });
-$("zin").onclick = () => { if (overviewOn) { closeOverview(); return; } setZoom(zoom * 1.3, null, null, true); };
-$("zout").onclick = () => { if (zoom <= ZMIN + .01) openOverview(); else setZoom(zoom / 1.3, null, null, true); };
 $("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av.y - 40, moved: true}; };
 
 function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
@@ -2438,12 +2437,12 @@ function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push
 function renderHomeChips(){
   const n = clearViewsLeft(), el = $("homeChips"), parts = [];
   if (S.demo) parts.push(`<button class="chip-g" data-go="account">Example world · make it yours</button>`);
-  if (n && !vision) parts.push(`<button class="chip-g gold eye" id="useVision" aria-label="See everything for 10 seconds (${n} earned)" title="See everything for 10s · ${n} earned"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg></button>`);
   el.innerHTML = parts.join("");
-  const v = $("useVision");
-  if (v) v.onclick = () => {
+  const v = $("useVision"); // the clear view lives in the map controls, shown while she has one to spend
+  v.hidden = !(n && !vision); v.setAttribute("aria-label", `See everything for a minute (${n} earned)`); v.title = `See everything for a minute · ${n} earned`;
+  v.onclick = () => {
     commit(s => { s.rewards.clearViewsUsed = (s.rewards.clearViewsUsed || 0) + 1; });
-    vision = {start: performance.now(), end: performance.now() + 10000};
+    vision = {start: performance.now(), end: performance.now() + 60000};
     $("visionBanner").hidden = false; setZoom(.75); renderHomeChips();
   };
 }
@@ -2887,7 +2886,7 @@ function wireGoalCards(el){
   on("[data-finish]", b => {
     const g = goalById(b.dataset.finish), onTime = today() <= g.deadline;
     commit(s => { const x = s.goals.find(x => x.id === g.id); x.status = "done"; x.doneAt = today(); });
-    openGoal = null; toast(onTime ? "Finished on time. You earned a 10-second view of your whole world." : "Finished. It took longer, and it still counts.");
+    openGoal = null; toast(onTime ? "Finished on time. You earned a one-minute view of your whole world." : "Finished. It took longer, and it still counts.");
   });
   on("[data-cancel]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.cancel); g.status = "cancelled"; g.closedAt = today(); }); openGoal = null; toast("Let go. It's kept under Finished, in Let go."); });
   on("[data-reopen]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.reopen); g.status = "active"; g.doneAt = null; g.closedAt = null; }); openGoal = null; goalTab = "active"; renderGoals(); });
@@ -3905,7 +3904,7 @@ function obWorld(M, Fo){
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
       <li><span class="cb" aria-hidden="true"></span><span>Your character, ${S.profile.avatar.style === "doll" ? "detailed 2D" : "pixel art"}</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));
