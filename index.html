@@ -3406,8 +3406,8 @@ function renderDreams(){
     <p class="pp-intro">Everything you add here is a part of the bigger picture you're painting. The life you're building.</p>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
-      <button class="btn quiet sm" id="editCats">Edit categories</button></div>
-    <section class="panel" style="padding:12px"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span><span class="eyebrow">Places in your world</span><span class="sub" style="display:block;margin-top:2px">${S.destinations.length} of ${MAX_DEST}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
+      <button class="btn quiet sm" id="editCats" style="margin-left:auto;margin-right:-12px">Edit categories</button></div>
+    <section class="panel" style="padding:12px"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span class="eyebrow">Places in your world (${S.destinations.length})</span><span class="acc-chev">${ICON_DOWN}</span></button>
       ${placesOpen ? `
       ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
       <button class="btn quiet sm" id="addPlace" style="justify-self:start">${ICON.plus}Add a place</button>` : ""}</section>
@@ -3943,21 +3943,28 @@ function wireDestRows(root, redraw){
   const saveOrder = () => { const ids = [...root.querySelectorAll("[data-dest]")].map(li => li.dataset.dest); commit(st => { st.destinations.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); }); };
   root.querySelectorAll("[data-grip]").forEach(h => {
     const li = h.closest("li");
+    // the dragged row never leaves the DOM (moving it would drop the pointer); its neighbours step around it instead
     h.onpointerdown = e => {
+      if (e.button) return;
       e.preventDefault(); li.classList.add("dragging"); try { h.setPointerCapture(e.pointerId); } catch (err) {}
       let y0 = e.clientY, moved = false; // y0: where the row's resting place sits under the finger
-      h.onpointermove = ev => {
-        let dy = ev.clientY - y0;
-        const next = li.nextElementSibling, prev = li.previousElementSibling;
+      const move = ev => {
+        if (ev.pointerId !== e.pointerId) return;
+        const next = li.nextElementSibling, prev = li.previousElementSibling, dy = ev.clientY - y0;
         if (next && dy > next.offsetHeight / 2) { li.parentNode.insertBefore(next, li); y0 += next.offsetHeight; moved = true; }
-        else if (prev && dy < -prev.offsetHeight / 2) { li.parentNode.insertBefore(li, prev); y0 -= prev.offsetHeight; moved = true; }
+        else if (prev && dy < -prev.offsetHeight / 2) { li.parentNode.insertBefore(prev, li.nextSibling); y0 -= prev.offsetHeight; moved = true; }
         li.style.transform = `translateY(${ev.clientY - y0}px)`;
       };
-      h.onpointerup = h.onpointercancel = () => { h.onpointermove = h.onpointerup = h.onpointercancel = null; li.classList.remove("dragging"); li.style.transform = ""; if (moved) saveOrder(); };
+      const end = ev => {
+        if (ev.pointerId !== e.pointerId) return;
+        removeEventListener("pointermove", move); removeEventListener("pointerup", end); removeEventListener("pointercancel", end);
+        li.classList.remove("dragging"); li.style.transform = ""; if (moved) saveOrder();
+      };
+      addEventListener("pointermove", move); addEventListener("pointerup", end); addEventListener("pointercancel", end);
     };
     h.onkeydown = e => {
-      const sib = e.key === "ArrowUp" ? li.previousElementSibling : e.key === "ArrowDown" ? li.nextElementSibling : null; if (!sib) return;
-      e.preventDefault(); li.parentNode.insertBefore(li, e.key === "ArrowUp" ? sib : sib.nextSibling); h.focus(); saveOrder();
+      const up = e.key === "ArrowUp", sib = up ? li.previousElementSibling : e.key === "ArrowDown" ? li.nextElementSibling : null; if (!sib) return;
+      e.preventDefault(); li.parentNode.insertBefore(sib, up ? li.nextSibling : li); h.focus(); saveOrder();
     };
   });
   root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => {
