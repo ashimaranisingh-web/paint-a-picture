@@ -2569,10 +2569,54 @@ function avatarSays(){
   av.wait = Math.max(av.wait, 50); av.dir = "down"; viewDirty = true;
   say(lines[Math.floor(Math.random() * lines.length)], av.x, av.y - 30);
 }
+// What each real landmark is famous for. The card shows a different one each time it opens;
+// landmarks not listed here (a generic park or square) keep their own line.
+const FAMOUS = {
+  "The Hollywood Sign": ["Put up in 1923 as an advert that read HOLLYWOODLAND.", "Each letter stands about 14 metres tall.", "Shorthand for the whole film industry."],
+  "Griffith Observatory": ["Free to visit since it opened in 1935.", "Its lawn has one of the best views of the Hollywood Sign.", "A star of Rebel Without a Cause and La La Land."],
+  "The pier": ["Santa Monica Pier marks the end of Route 66.", "Open since 1909, with a funfair at the end."],
+  "Santa Monica Pier": ["Marks the end of Route 66.", "Open since 1909, with a funfair at the end."],
+  "India Gate": ["A memorial to Indian soldiers who died in the First World War.", "Designed by Edwin Lutyens and opened in 1931.", "Its lawns fill with families on summer evenings."],
+  "Qutub Minar": ["At about 73 metres, the tallest brick minaret in the world.", "Begun around 1200 under Qutb ud-Din Aibak.", "Next to it stands an iron pillar that has barely rusted in 1,600 years."],
+  "Lodhi Garden": ["Home to tombs of the Sayyid and Lodi rulers, 15th and 16th century.", "Delhi's favourite place for a morning walk."],
+  "Marine Drive": ["Called the Queen's Necklace for its curve of lights at night.", "A 3.6 km promenade along the Arabian Sea."],
+  "Bandra-Worli Sea Link": ["Opened in 2009, cutting a slow drive across the city to minutes.", "India's first cable-stayed bridge built over open sea."],
+  "Tokyo Tower": ["At 333 metres, built in 1958 to stand taller than the Eiffel Tower.", "Painted orange and white for air-safety rules."],
+  "Mount Fuji": ["Japan's highest mountain, at 3,776 metres.", "A UNESCO World Heritage Site since 2013."],
+  "A path of torii gates": ["Kyoto's Fushimi Inari has thousands of torii, each one donated.", "The walk through the gates up Mount Inari takes about two hours."],
+  "The Eiffel Tower": ["Built for the 1889 World's Fair.", "It was meant to stand for only 20 years.", "Repainted by hand about every seven years."],
+  "The Statue of Liberty": ["A gift from France, dedicated in 1886.", "Her copper skin turned green within about 30 years.", "Her iron frame was designed by Gustave Eiffel."],
+  "The Empire State Building": ["Built in about 410 days and opened in 1931.", "The world's tallest building for nearly 40 years."],
+  "Big Ben": ["Big Ben is the great bell, not the tower.", "The tower was renamed Elizabeth Tower in 2012."],
+  "Tower Bridge": ["Opened in 1894; its road lifts to let ships through.", "Often mistaken for London Bridge, its plainer neighbour."],
+  "Burj Khalifa": ["The tallest building in the world, at 828 metres.", "Opened in 2010."],
+  "The Colosseum": ["Opened in 80 AD for gladiator fights and spectacles.", "One of the New Seven Wonders of the World."],
+  "The Golden Gate Bridge": ["Its colour is called International Orange.", "Opened in 1937 as the longest suspension bridge span in the world."],
+  "Sydney Opera House": ["Designed by Jørn Utzon and opened in 1973.", "Its sails are covered in over a million tiles.", "A UNESCO World Heritage Site since 2007."],
+  "Santorini's blue domes": ["Oia's blue domes and sunsets are among Greece's most photographed views.", "The island's cliffs are the rim of a volcano that erupted about 3,600 years ago."],
+  "The Taj Mahal": ["Built by Shah Jahan in memory of his wife Mumtaz Mahal.", "Its marble shifts from pink at dawn to gold at sunset.", "A UNESCO World Heritage Site since 1983."],
+  "The Pyramids of Giza": ["The Great Pyramid is the only Ancient Wonder still standing.", "Built about 4,500 years ago."],
+  "Marina Bay Sands": ["Famous for its rooftop infinity pool 57 floors up.", "Opened in 2010."],
+  "Christ the Redeemer": ["One of the New Seven Wonders of the World.", "30 metres tall, with arms 28 metres wide.", "Completed in 1931."],
+  "The Brandenburg Gate": ["Built in the 1790s.", "Once cut off by the Berlin Wall; a symbol of reunification since 1989."],
+  "The CN Tower": ["The world's tallest free-standing structure for over 30 years.", "You can walk around the outside of it on the EdgeWalk."],
+  "The Space Needle": ["Built for the 1962 World's Fair.", "Its top floor has a rotating glass floor."],
+  "La Sagrada Família": ["Under construction since 1882.", "Gaudí worked on it for over 40 years, until his death in 1926."],
+  "Boudhanath Stupa": ["One of the largest stupas in the world.", "Part of the Kathmandu Valley UNESCO World Heritage Site."],
+  "N Seoul Tower": ["Famous for the love locks covering its terraces.", "Opened to the public in 1980."],
+  "The Duomo": ["Brunelleschi's dome is still the largest brick dome ever built.", "The dome was finished in 1436."],
+  "Canal houses": ["Amsterdam's canal ring is a UNESCO World Heritage Site.", "Built narrow and tall, with hooks at the top for hoisting furniture."]
+};
+const famousTurn = new Map();
+function famousLine(a){
+  const list = FAMOUS[a.title]; if (!list) return a.desc || "";
+  const i = famousTurn.get(a.title) ?? Math.floor(Math.random() * list.length); famousTurn.set(a.title, (i + 1) % list.length);
+  return list[i];
+}
 function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { // a city's own landmark: a plain info card, nothing to open
-    card.innerHTML = `<div class="row"><div class="lc-info"><h3>${esc(l.a.title)}</h3>${l.a.desc ? `<p class="lc-desc">${esc(l.a.desc)}</p>` : ""}</div>
+    card.innerHTML = `<div class="row"><div class="lc-info"><h3>${esc(l.a.title)}</h3>${(t => t ? `<p class="lc-desc">${esc(t)}</p>` : "")(famousLine(l.a))}</div>
       <button class="iconbtn x" id="locX" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
     card.hidden = false;
     $("locX").onclick = () => { card.hidden = true; if (preview) endPreview(); };
@@ -3344,7 +3388,7 @@ function renderDreams(){
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
       <button class="btn quiet sm" id="editCats">Edit categories</button></div>
-    <section class="panel"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span><span class="eyebrow">Places in your world</span><span class="sub" style="display:block;margin-top:2px">${S.destinations.length} of ${MAX_DEST}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
+    <section class="panel" style="padding:12px"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span><span class="eyebrow">Places in your world</span><span class="sub" style="display:block;margin-top:2px">${S.destinations.length} of ${MAX_DEST}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
       ${placesOpen ? `
       ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
       <button class="btn quiet sm" id="addPlace" style="justify-self:start">${ICON.plus}Add a place</button>` : ""}</section>
