@@ -1,0 +1,48 @@
+# Paint a Picture for iPhone: a native shell around the web app (../index.html and ../avatar),
+# served from inside the app bundle so it works offline. Regenerate the Xcode project with `xcodegen`.
+name: PaintAPicture
+options:
+  bundleIdPrefix: com.ashimasingh
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  PaintAPicture:
+    type: application
+    platform: iOS
+    sources:
+      - path: PaintAPicture
+      - path: Fonts
+        type: folder
+        buildPhase: resources
+      - path: ../index.html
+        buildPhase: resources
+      - path: ../avatar
+        type: folder
+        buildPhase: resources
+    info:
+      path: PaintAPicture/Info.plist
+      properties:
+        CFBundleDisplayName: Paint a Picture
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIRequiresFullScreen: true
+        UIViewControllerBasedStatusBarAppearance: true
+        ITSAppUsesNonExemptEncryption: false
+        NSPhotoLibraryUsageDescription: Choose a photo for a dream or an asset. It stays on your phone.
+        NSCameraUsageDescription: Take a photo for a dream or an asset. It stays on your phone.
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ashimasingh.paintapicture
+        PRODUCT_NAME: PaintAPicture
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        DEVELOPMENT_TEAM: M8USK73B4P
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        ENABLE_PREVIEWS: NO
