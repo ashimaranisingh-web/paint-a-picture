@@ -206,6 +206,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
 .cklist{display:grid}
+.cb.round{border-radius:50%}
+.crop{position:relative;width:min(100%,240px);aspect-ratio:4/5;overflow:hidden;border-radius:var(--r-lg);background:var(--sunk);touch-action:none;cursor:grab;justify-self:start}
+.crop img{position:absolute;max-width:none;user-select:none;-webkit-user-select:none;pointer-events:none}
+.crop-guide{position:absolute;left:22%;right:22%;top:14%;bottom:30%;border:1.5px dashed rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}
+.crop-wrap{display:grid;gap:10px}.crop-zoom input{padding:0;border:0;accent-color:var(--accent-strong)}
+.photo-drop{display:grid;gap:4px;justify-items:start;padding:18px 16px;border:1.5px dashed var(--line-2);border-radius:var(--r-lg);background:var(--surface);cursor:pointer}
+.photo-drop b{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--accent-ink)}.photo-drop small{font-size:13px;color:var(--muted)}
+.ob-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:600}
+.spin{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:var(--accent-strong);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 .ck{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}
 .ck:last-child{border-bottom:0}.ck:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sugg-item{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);cursor:pointer;text-align:left;width:100%}
@@ -504,7 +515,7 @@ function normalize(o){
   s.profile.avatar = Object.assign({...DEFAULT_AVATAR}, out.top ? {top: out.top, bot: out.bot} : {}, s.profile.avatar || {});
   const av = s.profile.avatar;
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
-  if (av.style !== "doll") av.style = "pixel";
+  if (av.style !== "doll") av.style = "pixel"; if (!LOOKS[av.look]) av.look = null;
   delete s.profile.outfit;
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
   s.rewards = Object.assign({clearViewsUsed: 0}, o.rewards || {});
@@ -1955,7 +1966,7 @@ const AV_W = 14, AV_H = 28;
 
 // One identity, two ways to draw it: these colours feed both the pixel sprite and the detailed 2D figure.
 function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
-const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0].join("."); };
+const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || ""].join("."); };
 function avatarPal(){
   const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot];
   return {o: "#2a1a14", h: hr[0], H: hr[1], c: hr[2], s: sk[0], S: sk[1], g: "#121014", l: "#b8606a", e: "#2a1a14",
@@ -1968,7 +1979,21 @@ function avatarRows(dir, frame){
   if (walking && (dir === "left" || dir === "right")) { const s = STEP.side[frame - 1]; rows.splice(28 - s.length, s.length, ...s); }
   if (!avatarLook().glasses) { if (dir === "down") rows[4] = ".ohhsesssesHho"; else if (dir !== "up") rows[4] = "..osesshhhchho"; }
   if (frame === 3) rows = rows.map(r => r.replace(/H/g, "x").replace(/c/g, "H").replace(/x/g, "c")); // idle: light moves through the hair
-  return rows;
+  return cutHair(rows, avatarLook().look);
+}
+// Her chosen look sets the hair length: long (feminine, the sheet as drawn), chin-length (androgynous) or short (masculine).
+// Hair below the cut becomes her top where it covered her back, and nothing where it hung free; then it's re-outlined.
+const isBody = ch => !!ch && ch !== "." && ch !== "o";
+function cutHair(rows, look){
+  const cut = {masculine: 8, androgynous: 11}[look]; if (!cut) return rows;
+  return rows.map((r, i) => {
+    if (i < cut || i > 13) return r;
+    const a = r.split(""), s0 = r.search(/[sS]/), s1 = Math.max(r.lastIndexOf("s"), r.lastIndexOf("S"));
+    for (let j = 0; j < a.length; j++) if ("hHc".includes(a[j])) a[j] = s0 >= 0 && j > s0 && j < s1 ? "p" : ".";
+    for (let j = 0; j < a.length; j++) if (a[j] === "o" && !isBody(a[j - 1]) && !isBody(a[j + 1])) a[j] = ".";
+    for (let j = 0; j < a.length; j++) if (isBody(a[j])) { if (a[j - 1] === ".") a[j - 1] = "o"; if (a[j + 1] === ".") a[j + 1] = "o"; }
+    return a.join("");
+  });
 }
 const spriteCache = new Map();
 function avatarSprite(dir, frame){
@@ -3390,7 +3415,7 @@ function renderAccount(){
   if (demoMode) $("wipeConfirm").firstChild.textContent = "This resets the demo to its starting state. Your real goals aren't affected. ";
   $("wipeYes").onclick = () => {
     if (demoMode) { const av0 = S.profile.avatar; S = demoState(REAL.profile); S.profile.avatar = av0; layoutKey = ""; landKey = ""; camInit = false; afterChange(); save(); toast("Demo reset"); return; }
-    S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
+    deletePhoto(); S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
   };
 }
 
@@ -3591,22 +3616,110 @@ function addPlaceSheet(after){
     placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "visit" ? "study" : purpose); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
-function avatarEditor(root, onChange){
+function avatarEditor(root, onChange, opts){
+  opts = opts || {};
   const A = () => S.profile.avatar;
   const set = patch => { Object.assign(S.profile.avatar, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; draw(); onChange && onChange(); };
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
-    root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art", "The game-style character"], ["doll", "Detailed 2D", "Illustrated, sharper up close"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas class="av-prev" data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>
+    root.innerHTML = `<div class="field"><span>How your character looks</span><div class="seg" role="group">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div><small>${A().style === "doll" ? "Detailed 2D uses the illustrated character from the sheet; this choice changes the pixel character's hair for now." : "This only sets how your character looks. It isn't a question about you."}</small></div>
+      <div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art", "The game-style character"], ["doll", "Detailed 2D", "Illustrated, sharper up close"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas class="av-prev" data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>
+      ${A().style === "doll" && opts.photo !== false ? `<div class="field"><span>Your photo</span><div data-photo style="display:grid;gap:10px"></div><small>${GEN_NOTE}</small></div>` : ""}
       ${sw("skin", SKINS, "Skin tone")}
       <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div>${A().style === "doll" && !A().glasses ? `<small>Detailed 2D keeps her sunglasses on: there are no eyes drawn underneath on your sheet.</small>` : ""}</div>
       ${sw("top", TOPS, "Top")}${sw("bot", BOTS, "Cargos")}${sw("boots", BOOTS, "Boots")}`;
     root.querySelectorAll("[data-style]").forEach(b => b.onclick = () => set({style: b.dataset.style}));
     root.querySelectorAll("[data-k]").forEach(b => b.onclick = () => set({[b.dataset.k]: b.dataset.v}));
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
+    root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => set({look: A().look === b.dataset.look ? null : b.dataset.look}));
+    if (root.querySelector("[data-photo]")) photoPanel(root.querySelector("[data-photo]"));
     root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs, cvs.dataset.prev));
   }
   draw();
 }
+/* --- her photo and the illustrated character ---
+   The photo stays on this device, in IndexedDB under this profile's id (so Demo Mode never sees it), and is
+   never sent anywhere or put in backups. Turning it into an illustrated character needs an image-generation
+   model; there isn't one yet, so AVATAR_GENERATOR is null and she keeps the built-in character meanwhile.
+   To connect one later, set AVATAR_GENERATOR to an async function:
+     ({photo: Blob, crop: {x, y, z}, look}) => ({front, back, left, right: Blob, idle: [Blob], walk: [Blob]})
+   and ask for her consent first if it sends the photo off the device. Results are stored under avatarArt:<id>,
+   apart from the photo, so either can be deleted on its own. */
+let AVATAR_GENERATOR = null;
+const LOOKS = {feminine: "Feminine", masculine: "Masculine", androgynous: "Androgynous"};
+const PDB = (() => {
+  let p;
+  const open = () => p || (p = new Promise((res, rej) => { const r = indexedDB.open("paintAPicturePrivate", 1); r.onupgradeneeded = () => r.result.createObjectStore("files"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const run = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("files", mode), q = fn(t.objectStore("files")); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
+  return {get: k => run("readonly", s => s.get(k)), put: (k, v) => run("readwrite", s => s.put(v, k)), del: k => run("readwrite", s => s.delete(k))};
+})();
+const photoKey = () => "avatarPhoto:" + S.profile.id, artKey = () => "avatarArt:" + S.profile.id;
+async function getPhoto(){ try { return await PDB.get(photoKey()) || null; } catch (e) { return null; } }
+async function deletePhoto(){ try { await PDB.del(photoKey()); await PDB.del(artKey()); } catch (e) {} }
+// A resized copy (longest side 1600px) is what's kept: enough for a character, small enough for a phone.
+async function readPhoto(file){
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Choose a JPG, PNG or WebP photo.");
+  if (file.size > 25e6) throw new Error("That photo is too large. Try one under 25 MB.");
+  const url = URL.createObjectURL(file), img = new Image();
+  try {
+    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error("That file couldn't be opened as a photo.")); img.src = url; });
+    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return await new Promise(res => c.toBlob(res, "image/jpeg", .88));
+  } finally { URL.revokeObjectURL(url); }
+}
+async function savePhoto(blob, crop){ S.profile.id ||= uid(); save(); await PDB.put(photoKey(), {blob, crop: crop || {x: .5, y: .45, z: 1}, at: today()}); }
+// Drag to reposition, slide to zoom. The crop is stored as the frame's centre (0–1 of the photo) and a zoom.
+function photoCropper(root, rec, onCrop){
+  const url = URL.createObjectURL(rec.blob), crop = {...rec.crop};
+  root.innerHTML = `<div class="crop"><img alt="Your photo" draggable="false"><i class="crop-guide" aria-hidden="true"></i></div>
+    <label class="field crop-zoom"><span>Zoom</span><input type="range" min="1" max="3" step="0.01" value="${crop.z}" aria-label="Zoom the photo"></label>`;
+  const box = root.querySelector(".crop"), img = box.querySelector("img"), zoomEl = root.querySelector("input[type=range]");
+  const place = () => {
+    const bw = box.clientWidth, bh = box.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight; if (!iw || !bw) return;
+    const s = Math.max(bw / iw, bh / ih) * crop.z, w = iw * s, h = ih * s;
+    crop.x = Math.min(1 - bw / 2 / w, Math.max(bw / 2 / w, crop.x)); crop.y = Math.min(1 - bh / 2 / h, Math.max(bh / 2 / h, crop.y));
+    Object.assign(img.style, {width: w + "px", height: h + "px", left: bw / 2 - crop.x * w + "px", top: bh / 2 - crop.y * h + "px"});
+    return {w, h};
+  };
+  img.onload = place; img.src = url;
+  let drag = null;
+  box.onpointerdown = e => { drag = {x: e.clientX, y: e.clientY, cx: crop.x, cy: crop.y, ...place()}; box.setPointerCapture(e.pointerId); };
+  box.onpointermove = e => { if (!drag) return; crop.x = drag.cx - (e.clientX - drag.x) / drag.w; crop.y = drag.cy - (e.clientY - drag.y) / drag.h; place(); };
+  box.onpointerup = box.onpointercancel = () => { if (drag) { drag = null; onCrop({...crop}); } };
+  zoomEl.oninput = () => { crop.z = +zoomEl.value; place(); };
+  zoomEl.onchange = () => onCrop({...crop});
+  return () => URL.revokeObjectURL(url);
+}
+// Upload, preview, crop, replace and delete. Used in onboarding and in Account.
+function photoPanel(root, onDone){
+  let stop = null;
+  const draw = async () => {
+    stop && stop(); stop = null;
+    const rec = await getPhoto();
+    root.innerHTML = `${rec ? `<div class="crop-wrap"></div>` : `<label class="photo-drop"><input type="file" accept="image/jpeg,image/png,image/webp" hidden><b>${ICON.plus}Upload a photo</b><small>JPG, PNG or WebP. A clear photo of your face works best.</small></label>`}
+      ${rec ? `<div class="actions"><label class="btn quiet sm" style="cursor:pointer">Replace photo<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn quiet sm" data-delphoto style="color:var(--danger)">Delete photo</button></div>` : ""}
+      <small class="muted" style="font-size:11px">Your photo stays on this device. It isn't uploaded, isn't in backups, and you can delete it any time.</small>
+      <p class="muted" data-perr role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
+    if (rec) stop = photoCropper(root.querySelector(".crop-wrap"), rec, crop => PDB.put(photoKey(), {...rec, crop}));
+    root.querySelector("input[type=file]").onchange = async e => {
+      const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+      try { await savePhoto(await readPhoto(f)); await PDB.del(artKey()); draw(); onDone && onDone(true); }
+      catch (err) { const p = root.querySelector("[data-perr]"); p.textContent = err.message || "That photo couldn't be saved."; p.hidden = false; }
+    };
+    const del = root.querySelector("[data-delphoto]");
+    if (del) del.onclick = async () => { if (del.dataset.confirm !== "1") { del.dataset.confirm = "1"; del.textContent = "Tap again to delete"; return; } await deletePhoto(); toast("Photo deleted"); draw(); onDone && onDone(false); };
+  };
+  draw();
+}
+// What "Create my avatar" can honestly do right now.
+async function createIllustrated(){
+  const rec = await getPhoto(); if (!rec) return {ok: false, reason: "photo"};
+  if (!AVATAR_GENERATOR) return {ok: false, reason: "unavailable"};
+  const art = await AVATAR_GENERATOR({photo: rec.blob, crop: rec.crop, look: avatarLook().look || null});
+  await PDB.put(artKey(), {...art, at: today()}); return {ok: true};
+}
+const GEN_NOTE = "Turning a photo into an illustrated character needs an image-generation model, and Paint a Picture doesn't have one yet. Nothing has been generated or faked. Your photo is kept privately on this device for when it's switched on; until then you'll use the built-in Detailed 2D character, which you can still personalise.";
 function drawAvatarPreview(cvs, style){
   const k = Math.min(2, devicePixelRatio || 1);
   if (!cvs.dataset.sized) { cvs.dataset.w = cvs.width; cvs.dataset.h = cvs.height; cvs.style.width = cvs.width + "px"; cvs.style.height = cvs.height + "px"; cvs.width *= k; cvs.height *= k; cvs.dataset.sized = 1; }
@@ -3646,7 +3759,7 @@ function drawOb(){
       ${optional ? `<button class="btn quiet sm" id="obSkip">Skip for now</button>` : `<span style="width:40px"></span>`}</header>
     <main class="ob-main" id="obMain"></main><footer class="ob-foot" id="obFoot"></footer>`;
   if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
-  if ($("obSkip")) $("obSkip").onclick = () => obGo(obStep + 1);
+  if ($("obSkip")) $("obSkip").onclick = () => { obAvSub = "look"; obGo(obStep + 1); };
   ({welcome: obWelcome, profile: obProfile, places: obPlaces, dreams: obDreams, avatar: obAvatar, goal: obGoal, world: obWorld})[k]($("obMain"), $("obFoot"));
 }
 function obWelcome(M, Fo){
@@ -3727,11 +3840,51 @@ function obDreams(M, Fo){
   Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
   $("obNext").onclick = () => obGo(4);
 }
+// Bringing her into the world: look → style → photo (Detailed 2D) → create → approve. All of it can be skipped.
+let obAvSub = "look";
 function obAvatar(M, Fo){
-  M.innerHTML = `<h1 class="ob-h dark">Choose your character.</h1><p class="ob-sub">She walks through your world. No photos needed.</p><div id="obAv" style="display:grid;gap:16px"></div>`;
-  avatarEditor($("obAv"));
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
-  $("obNext").onclick = () => obGo(5);
+  const A = S.profile.avatar, setA = patch => { Object.assign(A, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; };
+  const sub = k => { obAvSub = k; drawOb(); $("obMain")?.scrollTo?.(0, 0); };
+  const foot = (back, next, label, disabled) => { Fo.innerHTML = `${back ? `<button class="btn ghost" id="obAvBack">Back</button>` : "<span></span>"}<button class="btn" id="obAvNext" ${disabled ? "disabled" : ""}>${label}</button>`; if (back) $("obAvBack").onclick = back; $("obAvNext").onclick = next; };
+  if (obAvSub === "look") {
+    M.innerHTML = `<h1 class="ob-h dark">Let's bring you into your Dream Life.</h1><p class="ob-sub">Your world should have you in it. Upload a photo and we'll help you create your own character.</p>
+      <div class="field"><span>How would you like your avatar to look?</span><div class="cklist" role="group">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" class="ck" aria-pressed="${A.look === k}" data-look="${k}"><span class="cb round" aria-hidden="true" ${A.look === k ? 'aria-checked="true"' : ""}></span>${v}</button>`).join("")}<button type="button" class="ck" data-look=""><span class="cb round" aria-hidden="true"></span>Skip for now</button></div>
+      <small>This is about your character's appearance, not your gender. You can change it any time in Account.</small></div>`;
+    M.querySelectorAll("[data-look]").forEach(b => b.onclick = () => { setA({look: b.dataset.look || null}); sub("style"); });
+    foot(null, () => sub("style"), "Continue");
+  } else if (obAvSub === "style") {
+    M.innerHTML = `<h1 class="ob-h dark">Choose your style.</h1><p class="ob-sub">Both are the same you. You can switch later.</p>
+      <div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel World", "Matches the world's game style"], ["doll", "Detailed 2D", "Illustrated, made from your photo"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A.style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>`;
+    M.querySelectorAll("[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev));
+    M.querySelectorAll("[data-style]").forEach(b => b.onclick = () => { setA({style: b.dataset.style}); M.querySelectorAll("[data-style]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    foot(() => sub("look"), () => sub(A.style === "doll" ? "photo" : "approve"), "Continue");
+  } else if (obAvSub === "photo") {
+    M.innerHTML = `<h1 class="ob-h dark">Add a photo of you.</h1><p class="ob-sub">Move and zoom it so your face fills the frame.</p><div id="obPhoto" style="display:grid;gap:12px"></div>
+      <button type="button" class="btn quiet sm" id="obNoPhoto" style="justify-self:start">Continue without a photo</button>`;
+    const refresh = async () => { const has = !!(await getPhoto()); const b = $("obAvNext"); if (b) b.disabled = !has; };
+    photoPanel($("obPhoto"), refresh);
+    $("obNoPhoto").onclick = () => sub("approve");
+    foot(() => sub("style"), () => sub("create"), "Create my avatar", true); refresh();
+  } else if (obAvSub === "create") {
+    M.innerHTML = `<h1 class="ob-h dark">Creating your character…</h1><div class="ob-loading" aria-live="polite"><span class="spin" aria-hidden="true"></span><span>Looking at your photo</span></div>`;
+    Fo.innerHTML = "";
+    createIllustrated().then(r => {
+      if (r.ok) { sub("approve"); return; }
+      M.innerHTML = `<h1 class="ob-h dark">We can't make your illustrated character yet.</h1><p class="ob-sub">${GEN_NOTE}</p>`;
+      foot(() => sub("photo"), () => sub("approve"), "Use a temporary character");
+    }).catch(() => { M.innerHTML = `<h1 class="ob-h dark">That didn't work.</h1><p class="ob-sub">Something went wrong creating your character. Your photo is still saved on this device.</p>`; foot(() => sub("photo"), () => sub("approve"), "Continue"); });
+  } else {
+    M.innerHTML = `<h1 class="ob-h dark">Here's you.</h1><p class="ob-sub">Make it feel like you. Everything here can be changed later in Account.</p>
+      <div class="ob-hero"><canvas id="obMe" width="160" height="200" aria-label="Your character"></canvas></div>
+      <div class="actions">${A.style === "doll" ? `<button type="button" class="btn quiet sm" id="obNewPhoto">Upload a different photo</button>` : ""}<button type="button" class="btn quiet sm" id="obChangeLook">Change appearance</button>${AVATAR_GENERATOR && A.style === "doll" ? `<button type="button" class="btn quiet sm" id="obRegen">Regenerate</button>` : ""}</div>
+      <div id="obAv" style="display:grid;gap:16px"></div>`;
+    const me = () => drawAvatarPreview($("obMe"), A.style);
+    avatarEditor($("obAv"), me, {photo: false}); me();
+    if ($("obNewPhoto")) $("obNewPhoto").onclick = () => sub("photo");
+    $("obChangeLook").onclick = () => sub("look");
+    if ($("obRegen")) $("obRegen").onclick = () => sub("create");
+    foot(() => sub(A.style === "doll" ? "photo" : "style"), () => { obAvSub = "look"; obGo(5); }, "This is me");
+  }
 }
 function obGoal(M, Fo){
   const draw = () => {
@@ -3755,7 +3908,7 @@ function obWorld(M, Fo){
     <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch, scroll or use + and − to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
-  items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is ready."; } }, reduced ? 0 : 280 + i * 260));
+  items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));
   $("obEnter").onclick = finishOnboarding;
 }
 
