@@ -446,8 +446,13 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-dark .ob-foot{background:rgba(16,19,27,.9);border-color:var(--glass-line)}
 .ob-dark .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
 .ob-dark .ob-list{color:rgba(255,255,255,.85)}
+.ob-actions{display:flex;gap:8px;align-items:center}
 .ob-build{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.ob-build li{display:flex;gap:10px;align-items:center;font-weight:600}
+.ob-build li{display:flex;gap:12px;align-items:center;font-weight:600}
+.ob-build-card{padding:4px 16px}.ob-build-card .ob-build{gap:0}.ob-build-card li{padding:12px 0;border-bottom:1px solid var(--line)}.ob-build-card li:last-child{border-bottom:0}
+.ob-build .grow{flex:1;min-width:0;display:grid;gap:2px}.ob-build b{font-size:15px}.ob-build small{font-size:13px;font-weight:500;color:var(--muted)}
+.ob-ic{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:8px;background:var(--sunk);color:var(--ink-2);overflow:hidden}.ob-ic .ico{width:20px;height:20px}
+.ob-ic.star{background:var(--accent-soft);color:var(--accent)}.ob-ic.star .ico{fill:currentColor;stroke:none}.ob-ic.av canvas{width:40px!important;height:40px!important;border-radius:8px}
 .ob-build .cb{transition:background .2s,border-color .2s}
 
 </style>
@@ -472,7 +477,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <nav class="journey" id="journey" aria-label="Your places"></nav>
     <div class="loccard" id="loccard" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction.</div><div>Use 2 fingers to zoom in and out.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to bring your character there.</div></div><button class="btn quiet sm" id="tipsOk" style="justify-self:end">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -3154,9 +3159,10 @@ function goalCard(g){
         ${closed ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Reopen</button>` : `${g.status === "paused" ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Resume</button>` : `<button class="gc-act" data-finish="${g.id}">${GI.done}Mark Finished</button>`}<button class="gc-act" data-cancel="${g.id}">${GI.letgo}Let It Go</button>`}
         <button class="gc-act danger" data-delgoal="${g.id}">${GI.del}Delete</button></div></div>` : ""}</li>`;
 }
-function wireGoalCards(el){
+function wireGoalCards(el, redraw){
+  redraw = redraw || renderGoals;
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
-  on("[data-goal]", b => { openGoal = openGoal === b.dataset.goal ? null : b.dataset.goal; renderGoals(); });
+  on("[data-goal]", b => { openGoal = openGoal === b.dataset.goal ? null : b.dataset.goal; redraw(); });
   on("[data-ms]", b => { const [gid, mid] = b.dataset.ms.split("|"); commit(s => { const m = s.goals.find(g => g.id === gid).milestones.find(m => m.id === mid); m.doneAt = m.doneAt ? null : today(); }); });
   on("[data-msedit]", b => { const [gid, mid] = b.dataset.msedit.split("|"); editMilestone(gid, mid); });
   el.querySelectorAll("[data-addms]").forEach(f => f.onsubmit = e => { e.preventDefault(); const v = f.querySelector("input").value.trim(); if (!v) return; commit(s => s.goals.find(g => g.id === f.dataset.addms).milestones.push({id: uid(), title: v, desc: "", due: "", doneAt: null})); });
@@ -3954,7 +3960,11 @@ function wireDestRows(root, redraw){
       e.preventDefault(); li.parentNode.insertBefore(li, e.key === "ArrowUp" ? sib : sib.nextSibling); h.focus(); saveOrder();
     };
   });
-  root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => { st.destinations.find(d => d.id === s.dataset.purpose).purpose = s.value; }));
+  root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => {
+    const d = st.destinations.find(d => d.id === s.dataset.purpose), lived = v => v === "from" || v === "loved";
+    d.purpose = s.value;
+    if (lived(s.value) && d.stage === "future") d.stage = "past"; else if (!lived(s.value) && d.stage === "past") d.stage = "future";
+  }));
   root.querySelectorAll("[data-rmdest]").forEach(b => b.onclick = () => {
     const id = b.dataset.rmdest, n = S.aspirations.filter(a => a.destinationId === id).length;
     if (n && b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.classList.add("confirm"); b.textContent = `Remove? ${n} dream${n === 1 ? "" : "s"} move`; return; }
@@ -3991,14 +4001,15 @@ function addPlaceSheet(after){
     placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "experience" ? "study" : purpose, (purpose === "from" || purpose === "loved") && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
-function avatarEditor(root, onChange){
+function avatarEditor(root, onChange, opts){
+  opts = opts || {};
   const A = () => S.profile.avatar;
   const set = patch => { Object.assign(S.profile.avatar, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; draw(); onChange && onChange(); };
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     const doll = A().style === "doll";
     root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>
-      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
+      <div class="field"><span>${opts.lookLabel || "Character"}</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       ${sw("skin", SKINS, "Skin tone")}
       ${doll ? "" : `<div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
       <div class="field"><span>Cap</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().cap}" data-cap="1">On</button><button type="button" aria-pressed="${!A().cap}" data-cap="0">Off</button></div></div>
@@ -4053,18 +4064,23 @@ function drawOb(){
   el.classList.toggle("ob-dark", k === "welcome");
   el.innerHTML = `<header class="ob-top">${obStep ? `<button class="pbtn" id="obBack" aria-label="Back">${ICON.left}</button>` : `<span class="ob-brand">Paint a Picture</span>`}
       <div class="ob-dots" role="img" aria-label="Step ${obStep + 1} of ${OB.length}">${OB.map((_, i) => `<i class="${i <= obStep ? "on" : ""}"></i>`).join("")}</div>
-      ${S.onboarding.done ? `<button class="pbtn" id="obClose" aria-label="Back to your world"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>` : optional ? `<button class="btn quiet sm" id="obSkip">Skip for now</button>` : `<span style="width:40px"></span>`}</header>
+      <span style="width:44px"></span></header>
     <main class="ob-main" id="obMain"></main><footer class="ob-foot" id="obFoot"></footer>`;
   if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
-  if ($("obSkip")) $("obSkip").onclick = () => obGo(obStep + 1);
-  if ($("obClose")) $("obClose").onclick = () => go("home");
+
   ({welcome: obWelcome, profile: obProfile, places: obPlaces, dreams: obDreams, avatar: obAvatar, goal: obGoal, world: obWorld})[k]($("obMain"), $("obFoot"));
+}
+// The footer of a step: Next on the right, with a quiet Skip beside it on the steps you can leave for later.
+function obFoot(Fo, next, skip){
+  Fo.innerHTML = `<span></span><div class="ob-actions">${skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn" id="obNext">Next</button></div>`;
+  $("obNext").onclick = next;
+  if (skip) $("obSkip").onclick = () => obGo(obStep + 1);
 }
 function obWelcome(M, Fo){
   M.innerHTML = `<div class="ob-hero"><canvas id="obPrev" width="240" height="200" aria-label="A world in the dark, with a lens revealing part of it"></canvas></div>
-    <h1 class="ob-h">Your life is something you build.</h1><p class="ob-p">Let's imagine what yours could look like.</p>
-    <div class="insight ob-list"><div>Name the places you dream of. They become your map.</div><div>Describe the life you want there. Each dream becomes a landmark, hidden in the dark.</div><div>Log real progress on your goals and your world gets clearer.</div></div>`;
-  Fo.innerHTML = `<span></span><div style="display:flex;gap:8px;align-items:center"><button class="btn quiet" id="obSkipAll">Skip</button><button class="btn" id="obBegin">Let's Do This!</button></div>`;
+    <h1 class="ob-h">Build the life you want and get to it.</h1><p class="ob-p">Setting goals and milestones helps me. I hope it helps you too!</p>
+    <div class="insight ob-list"><div>Add the places you dream of and build them into existence.</div><div>Describe the life you want there. Each dream becomes a landmark, hidden in the dark.</div><div>Complete your milestones and goals and watch how it brings you closer to the life you want.</div></div>`;
+  Fo.innerHTML = `<span></span><div class="ob-actions"><button class="btn quiet" id="obSkipAll">Skip</button><button class="btn" id="obBegin">Let's Do This!</button></div>`;
   $("obBegin").onclick = () => obGo(1);
   $("obSkipAll").onclick = () => finishOnboarding();
   // a little world in the dark with the lens drifting across it
@@ -4086,36 +4102,28 @@ function obWelcome(M, Fo){
   obAnim = requestAnimationFrame(frame);
 }
 function obProfile(M, Fo){
-  const synced = !!docRef;
   M.innerHTML = `<h1 class="ob-h dark">What shall I call you, honey? Honey?</h1>
     <input type="text" id="obName" value="${esc(S.profile.name)}" placeholder="First name" aria-label="First name" autocomplete="given-name" maxlength="30">
     <input type="text" id="obMiddle" value="${esc(S.profile.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
     <label class="field"><span>And well...</span><input type="text" id="obLast" value="${esc(S.profile.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></label>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">${synced ? "Continue" : "Continue as a guest"}</button>`;
-  $("obNext").onclick = () => {
+  obFoot(Fo, () => {
     const name = $("obName").value.trim();
     if (!name) { $("obErr").textContent = "Add your first name to continue. A nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
     S.profile.name = name.slice(0, 30); S.profile.middleName = $("obMiddle").value.trim().slice(0, 30); S.profile.lastName = $("obLast").value.trim().slice(0, 40); obGo(2);
-  };
+  });
 }
 function obPlaces(M, Fo){
-  let purpose = "live", touched = false, stage = "future";
   const draw = () => {
-    M.innerHTML = `<h1 class="ob-h dark">Where would you love to live, study, work or explore?</h1>
-      <p class="ob-sub">Add as many as you like. Include where you're from: those places start already clear.</p>
-<div class="field"><span>In your story</span><div class="pills" id="obStage">${Object.entries(STAGES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === stage}" data-st="${k}">${v}</button>`).join("")}</div></div>
-      <div class="field"><span>Add it as a place to…</span><div class="pills" id="obPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === purpose}" data-pp="${k}">${v}</button>`).join("")}</div></div>
+    M.innerHTML = `<h1 class="ob-h dark">Let's start with geography</h1>
+      <p class="ob-sub">Add the places you want to get to eventually for a job, life, travel or work.</p>
       <div id="obSearch" style="display:grid;gap:12px"></div>
       <section><div class="eyebrow" style="margin:6px 0">Your places · ${S.destinations.length}</div>${destRows(S.destinations) || `<div class="empty" style="padding:8px 2px">No places yet. Search above, or tap an idea.</div>`}</section>`;
-    $("obPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; touched = true; $("obPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    $("obStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("obStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" && !touched ? "study" : purpose, (purpose === "from" || purpose === "loved") && stage === "future" ? "past" : stage)) draw(); });
+    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" ? "study" : "live", "future")) draw(); });
     wireDestRows(M, draw);
   };
   draw();
-  Fo.innerHTML = `<span class="muted" style="font-size:13px;align-self:center">You can change these later in Paint a Picture.</span><button class="btn" id="obNext">Continue</button>`;
-  $("obNext").onclick = () => obGo(3);
+  obFoot(Fo, () => obGo(3), true);
 }
 function obDreams(M, Fo){
   const draw = () => {
@@ -4135,35 +4143,35 @@ function obDreams(M, Fo){
     M.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
   };
   draw(); obDreams.redraw = draw;
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
-  $("obNext").onclick = () => obGo(4);
+  obFoot(Fo, () => obGo(4), true);
 }
 function obAvatar(M, Fo){
-  M.innerHTML = `<h1 class="ob-h dark">Let's bring you into your Dream Life.</h1><p class="ob-sub">Your world should have you in it. Make your character; you can change it any time in Account.</p><div id="obAv" style="display:grid;gap:16px"></div>`;
-  avatarEditor($("obAv"));
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
-  $("obNext").onclick = () => obGo(5);
+  M.innerHTML = `<h1 class="ob-h dark">Let's bring you into the picture</h1><p class="ob-sub">There's no picture without you and your hardwork honey. Dress yourself up in your best clothes. Feel the confidence, you deserve it. Get, Set & GOOOO!</p><div id="obAv" style="display:grid;gap:16px"></div>`;
+  avatarEditor($("obAv"), null, {lookLabel: "You identify as?"});
+  obFoot(Fo, () => obGo(5), true);
 }
 function obGoal(M, Fo){
   const draw = () => {
     const gs = S.goals.filter(g => g.status === "active");
     M.innerHTML = `<h1 class="ob-h dark">Set your first goal.</h1>
-      <p class="ob-sub">A goal is a step towards a dream, with a deadline. Work you log on it is what lifts the dark from that part of your world.</p>
-      <button type="button" class="btn ${gs.length ? "ghost" : ""}" id="obNewGoal" style="justify-self:start">${ICON.plus}${gs.length ? "Add another goal" : "Create a goal"}</button>
-      ${gs.length ? `<ul class="list">${gs.map(g => `<li class="entry"><div class="t">${esc(g.title)}</div><div class="rmeta">${deadlineLine(g)}${g.aspirationId && aspById(g.aspirationId) ? `<span>→ ${esc(aspById(g.aspirationId).title)}</span>` : ""}</div></li>`).join("")}</ul>` : ""}`;
+      <p class="ob-sub">I know you have a ton of them you ambitious lil ****. But let's start with 1 and build as you go.</p>
+      <button type="button" class="btn quiet" id="obNewGoal" style="justify-self:start">${ICON.plus}Add</button>
+      ${gs.length ? `<ul class="gcards">${gs.map(goalCard).join("")}</ul>` : ""}`;
     $("obNewGoal").onclick = () => editGoal(null);
+    wireGoalCards(M, draw);
   };
   draw(); obGoal.redraw = draw;
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
-  $("obNext").onclick = () => obGo(6);
+  obFoot(Fo, () => obGo(6), true);
 }
+const OB_PIN = '<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/></svg>';
 function obWorld(M, Fo){
   const ds = S.destinations;
   M.innerHTML = `<h1 class="ob-h dark">Painting your world…</h1>
-    <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
-      <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
-      <li><span class="cb" aria-hidden="true"></span><span>Your character</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
+    <section class="panel ob-build-card"><ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="ob-ic">${OB_PIN}</span><span class="grow"><b>${esc(d.name)}</b><small>${d.placeholder ? "Add your places later" : esc(PURPOSES[d.purpose])}</small></span><span class="cb" aria-hidden="true"></span></li>`).join("")}
+      <li><span class="ob-ic star">${GI.star}</span><span class="grow"><b>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"}</b><small>Placed as landmarks, still in the dark</small></span><span class="cb" aria-hidden="true"></span></li>
+      <li><span class="ob-ic av"><canvas id="obMe" width="40" height="40" aria-hidden="true"></canvas></span><span class="grow"><b>You</b><small>${avatarLook().style === "doll" ? "2D" : "Pixel art"} character</small></span><span class="cb" aria-hidden="true"></span></li></ul></section>
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction.</div><div>Use 2 fingers to zoom in and out.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to bring your character there.</div></div></div>`;
+  drawAvatarPreview($("obMe"));
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));
