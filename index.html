@@ -2224,7 +2224,8 @@ function drawHud(now){
 }
 
 /* ---------------- camera, zoom, the single animation loop ---------------- */
-const ZMIN = .5, ZMAX = 3;
+/* zoom out far enough to see a whole place with some sea around it */
+let ZMIN = .5; const ZMAX = 3;
 function clampCam(){
   if (!isFinite(camX)) camX = 0; if (!isFinite(camY)) camY = 0;
   const mx = Math.min(80, VW * .35), my = Math.min(80, VH * .35);
@@ -2240,6 +2241,7 @@ function applyZoom(z, ax, ay){
   zoom = z; VW = nVW; VH = nVH;
   cv.width = fog.width = VW; cv.height = fog.height = VH; ctx.imageSmoothingEnabled = false;
   scale = stageW / VW;
+  cv.style.imageRendering = scale < 1 ? "auto" : "";
   camX = wx - fx * VW; camY = wy - fy * VH; clampCam();
 }
 let zoomAnim = null;
@@ -2252,6 +2254,7 @@ function sizeScene(){
   stageW = r.width;
   baseVW = r.width < 420 ? 176 : Math.round(r.width / 2.4);
   baseVH = Math.round(baseVW * r.height / r.width);
+  ZMIN = Math.min(.5, baseVW / (CW + 160));
   hudDpr = Math.min(2, devicePixelRatio || 1); hud.width = Math.round(r.width * hudDpr); hud.height = Math.round(r.height * hudDpr);
   VW = 0; applyZoom(zoom);
   refreshWorld();
