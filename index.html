@@ -357,7 +357,7 @@ select:not([multiple]){-webkit-appearance:none;appearance:none;border:1px solid 
 select:not([multiple]):focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
 .dd-menu{position:fixed;z-index:60;max-height:min(320px,60vh);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 40px rgba(31,36,32,.18);display:grid}
 .dd-menu button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 12px;border-radius:10px;font-weight:600;font-size:15px}
-.dd-menu button:hover,.dd-menu button:focus-visible{background:var(--sunk)}.dd-menu button[aria-selected="true"]{color:var(--accent-ink);font-weight:700}.dd-menu .ico{width:16px;height:16px;stroke-width:2.4}
+.dd-menu button:hover,.dd-menu button:focus-visible{background:var(--sunk)}.dd-menu button[aria-selected="true"]{color:var(--accent-ink);font-weight:700}.dd-menu .dd-add{justify-content:flex-start;gap:8px;color:var(--accent-ink);font-weight:700;border-top:1px solid var(--line);border-radius:0 0 10px 10px;margin-top:4px}.dd-menu .ico{width:16px;height:16px;stroke-width:2.4}
 /* a rounded select with its own chevron, like the search box */
 select.sel-box{width:auto;-webkit-appearance:none;appearance:none;border:1px solid var(--line-2);border-radius:99px;padding:9px 38px 9px 14px;font-size:15px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686961' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center/16px no-repeat}
 select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
@@ -395,6 +395,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 
 /* ---------- dream visuals ---------- */
 .vis-row,.vis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.vis-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-8px 0 -6px}.vis-head>span{font-size:13px;font-weight:700;color:var(--ink-2)}.vis-head .btn{margin-right:-8px}
+.vis-strip{display:grid;grid-auto-flow:column;grid-auto-columns:104px;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:4px;-webkit-overflow-scrolling:touch}.vis-strip>*{scroll-snap-align:start}
 .vis-grid{padding-top:8px;border-top:1px solid var(--line)}
 .vis-tile{display:grid;gap:4px;padding:4px;border:1.5px solid var(--line-2);border-radius:12px;background:var(--surface);text-align:left;font-size:11px;font-weight:700;color:var(--ink-2)}
 .vis-tile img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;image-rendering:pixelated;background:var(--sunk)}
@@ -411,6 +413,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .search-res button:hover,.search-res button:focus-visible{background:var(--sunk)}
 .search-res b{font-size:15px}.search-res span{font-size:13px;color:var(--muted);font-weight:600}
 .dest-row{display:flex;align-items:center;gap:8px;padding:10px 2px}
+.dest-grip{margin-left:-12px;margin-right:-8px;color:var(--muted);cursor:grab;touch-action:none}.dest-grip .ico{stroke-width:3.2}.dest-row.dragging{background:var(--sunk);border-radius:12px}
 .dest-row .grow{flex:1 1 0;min-width:0;display:grid;gap:1px}
 .dest-name{all:unset;cursor:pointer}.dest-row b,.dest-name{font-size:15px;font-weight:700}.dest-name:focus-visible{outline:2px solid var(--accent);border-radius:6px}
 .cat-row{display:flex;align-items:center;gap:8px}.cat-row input[type=text]{flex:1;border-bottom-color:transparent;padding:12px 2px}.cat-row input[type=text]:focus{border-bottom-color:var(--accent-strong)}
@@ -520,7 +523,7 @@ const CAT_KIND = {"Places to live":"villa", "Places & travel":"balloon", "Home &
 const TIMEFRAMES = ["Within 2 years", "2–5 years", "5–10 years", "10–15 years"];
 // Where a place sits in her story: lived there before, lives there now, or somewhere she's working towards.
 const STAGES = {past: "Lived here before", current: "Live here now", future: "Want to get to"};
-const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", visit: "Visit", experience: "Travel"};
+const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", experience: "Travel"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
 const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"]};
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
@@ -572,6 +575,7 @@ function normalize(o){
   const av = s.profile.avatar;
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
   av.cap = !!av.cap; if (!TOPS[av.capColor]) av.capColor = "black";
+  (s.destinations || []).forEach(d => { if (d.purpose === "visit") d.purpose = "experience"; }); // "Visit" folded into Travel
   if (av.style !== "doll") av.style = "pixel"; if (!LOOKS[av.look]) av.look = av.look === "masculine" ? "boy" : "girl";
   delete s.profile.outfit;
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
@@ -884,7 +888,7 @@ function newDestination(p, purpose){
     const same = GAZ.filter(g => g.country.toLowerCase() === p.country.trim().toLowerCase());
     if (same.length) { lat = same.reduce((s, g) => s + g.lat, 0) / same.length; lon = same.reduce((s, g) => s + g.lon, 0) / same.length; }
   }
-  const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "visit"), custom: !!p.custom, createdAt: today()};
+  const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "experience"), custom: !!p.custom, createdAt: today()};
   d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" ? "past" : "future"; return d;
 }
 
@@ -2826,21 +2830,14 @@ function visualPicker(root, o){
     const themes = classifyDream(text, cat).slice(0, 2), made = themes.map(t => ({gen: {t: t.id, b: env}, label: t.label}));
     if (cur && cur.gen && !made.some(m => same(m, cur))) made.unshift({gen: cur.gen, label: themeById(cur.gen.t)?.label || "Your picture"});
     const sugg = suggestVisuals(text, cat).filter(l => !themes.some(t => t.kind === l.kind) || l.avatar).slice(0, 4 - made.length), own = cur && !cur.lib && !cur.gen ? cur : null;
-    root.innerHTML = `<div class="vis-row">${own ? tile(own, "Your image") : ""}${made.map(m => tile(m, m.label)).join("")}${sugg.map(l => tile({lib: l.id}, l.label)).join("") || (made.length ? "" : "")}${!made.length && !sugg.length ?  `<span class="muted" style="font-size:13px">Describe the dream and pictures will be suggested here.</span>` : ""}</div>
-      ${browse ? `<div class="vis-grid">${LIB.map(l => tile({lib: l.id}, l.label)).join("")}</div>` : ""}
-      <div class="actions"><button type="button" class="btn ghost sm" data-browse>${browse ? "Hide library" : "Browse all pictures"}</button>
-        <label class="btn ghost sm" style="cursor:pointer">Upload your own<input type="file" accept="image/*" hidden data-file></label>
-        ${cur ? `<button type="button" class="btn quiet sm" data-none>No picture</button>` : ""}</div>
+    const rest = LIB.filter(l => !sugg.some(x => x.id === l.id)); // suggestions first, then the rest of the library
+    root.innerHTML = `<div class="vis-head"><span>Picture it</span><button type="button" class="btn quiet sm" data-browse aria-expanded="${browse}">${browse ? "Show less" : "Show full library"}</button></div>
+      <div class="${browse ? "vis-grid" : "vis-strip"}">${own ? tile(own, "Your image") : ""}${made.map(m => tile(m, m.label)).join("")}${sugg.concat(rest).map(l => tile({lib: l.id}, l.label)).join("")}</div>
+      ${cur ? `<button type="button" class="btn quiet sm" data-none style="justify-self:start">No picture</button>` : ""}
       <small class="muted" data-note>${cur && cur.lib && libById(cur.lib)?.avatar ? "Your character, drawn for this dream. It's motivation, not a measurement, and your avatar itself doesn't change." : ""}</small>`;
     root.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { const v = JSON.parse(b.dataset.v); cur = v.pending ? cur : v; if (!v.pending) o.onChange(cur); draw(); });
     root.querySelector("[data-browse]").onclick = () => { browse = !browse; draw(); };
     const none = root.querySelector("[data-none]"); if (none) none.onclick = () => { cur = null; o.onChange(null); draw(); };
-    root.querySelector("[data-file]").onchange = async e => {
-      const file = e.target.files[0]; if (!file) return;
-      root.querySelector("[data-note]").textContent = "Reading image…";
-      try { const r = await readImage(file); cur = {pending: r}; o.onChange(cur); draw(); }
-      catch (err) { root.querySelector("[data-note]").textContent = "That file couldn't be read as an image. Try a JPG or PNG."; }
-    };
   }
   draw();
   return {refresh: draw, set: v => { cur = v; draw(); }};
@@ -2972,7 +2969,7 @@ function openDD(sel){
   closeDD();
   const r = sel.getBoundingClientRect(), m = document.createElement("div");
   m.className = "dd-menu"; m.setAttribute("role", "listbox"); m.sel = sel;
-  m.innerHTML = [...sel.options].map((o, i) => `<button type="button" role="option" data-i="${i}" aria-selected="${o.selected}" ${o.disabled ? "disabled" : ""}><span>${esc(o.text)}</span>${o.selected ? '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</button>`).join("");
+  m.innerHTML = [...sel.options].map((o, i) => o.value === "__new" ? `<button type="button" role="option" class="dd-add" data-i="${i}" aria-selected="false">${ICON.plus}<span>${esc(o.text)}</span></button>` : `<button type="button" role="option" data-i="${i}" aria-selected="${o.selected}" ${o.disabled ? "disabled" : ""}><span>${esc(o.text)}</span>${o.selected ? '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</button>`).join("");
   document.body.appendChild(m); ddMenu = m;
   const w = Math.max(r.width, 180), h = m.offsetHeight, below = innerHeight - r.bottom - 8;
   m.style.minWidth = w + "px"; m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
@@ -3334,15 +3331,15 @@ function renderDreams(){
   if (orphan.length) byCat.push(["Other", orphan]);
   const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => destOf(a)?.id === d.id).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn quiet" id="newAsp">${ICON.plus}New dream</button></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn quiet" id="newAsp" aria-label="New dream">${ICON.plus}New</button></div>
     <p class="pp-intro">Everything you add here is a part of the bigger picture you're painting. The life you're building.</p>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} dream${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
+    <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
+      <button class="btn quiet sm" id="editCats">Edit categories</button></div>
     <section class="panel"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span><span class="eyebrow">Places in your world</span><span class="sub" style="display:block;margin-top:2px">${S.destinations.length} of ${MAX_DEST}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
       ${placesOpen ? `
       ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
       <button class="btn quiet sm" id="addPlace" style="justify-self:start">${ICON.plus}Add a place</button>` : ""}</section>
-    <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
-      <button class="btn quiet sm" id="editCats">Edit categories</button></div>
     ${S.aspirations.length ? byCat.filter(([, l]) => l.length).map(([c, l]) => `<section><div class="eyebrow" style="margin-bottom:8px">${esc(c)}</div><ul class="gcards">${l.map(dreamCard).join("")}</ul></section>`).join("")
       : ""}`;
   $("newAsp").onclick = () => editAspiration(null);
@@ -3441,10 +3438,10 @@ function editAspiration(id, preset){
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
     <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your dreams a home on the map."}</small></label>
-    <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">New category…</option></select></label>
+    <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">Add category</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
-    <div class="field"><span>Picture it (optional)</span><div id="aVis" style="display:grid;gap:8px"></div></div>
+    <div class="field" id="aVis"></div>
     <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
       <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     ${id ? `<div class="field"><span>Goals for this dream</span>${goals.length ? `<ul class="steps">${goals.map(g => `<li><span>${esc(g.title)}</span>${deadlineLine(g)}</li>`).join("")}</ul>` : `<small>No goals linked yet. Linking a goal is how this place starts to clear.</small>`}
@@ -3752,7 +3749,7 @@ function demoState(profile){
   const s = blankState(); s.onboarded = true; s.onboarding = {step: 6, done: true};
   s.profile = Object.assign(s.profile, {name: "Maya", email: ""}, profile ? {avatar: {...profile.avatar}} : {});
   const P = (id, gazName, purpose, name) => { const g = GAZ.find(p => p.name === gazName); return {id, name: name || g.name, country: g.country, lat: g.lat, lon: g.lon, env: g.env, purpose, stage: purpose === "from" ? "past" : id === "dm-delhi" ? "current" : "future", custom: false, createdAt: addDays(today(), -60)}; };
-  s.destinations = [P("dm-mumbai", "Mumbai", "from"), P("dm-delhi", "Delhi", "work"), P("dm-la", "LA", "live"), P("dm-ny", "New York", "visit"), P("dm-greece", "Santorini", "experience", "Greece")];
+  s.destinations = [P("dm-mumbai", "Mumbai", "from"), P("dm-delhi", "Delhi", "work"), P("dm-la", "LA", "live"), P("dm-ny", "New York", "experience"), P("dm-greece", "Santorini", "experience", "Greece")];
   layoutAll(s.destinations);
   const d = n => addDays(today(), n);
   const A = (id, title, desc, category, kind, timeframe, dest, lib) => s.aspirations.push({id, title, desc, category, kind, timeframe, destinationId: dest, image: lib ? {lib} : null, tint: null, createdAt: d(-50)});
@@ -3865,11 +3862,28 @@ function placeSearch(root, onPick){
 }
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
-  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
+  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row" data-dest="${d.id}">${opts && opts.edit ? `<button type="button" class="ibtn dest-grip" data-grip aria-label="Move ${esc(d.name)} (drag, or use the arrow keys)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg></button>` : ""}<div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     <button type="button" class="ibtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
 function wireDestRows(root, redraw){
+  // reorder: drag a row by its grip, or focus the grip and press up/down; the order is the order of the place tabs on Home
+  const saveOrder = () => { const ids = [...root.querySelectorAll("[data-dest]")].map(li => li.dataset.dest); commit(st => { st.destinations.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); }); };
+  root.querySelectorAll("[data-grip]").forEach(h => {
+    const li = h.closest("li");
+    h.onpointerdown = e => {
+      e.preventDefault(); h.setPointerCapture(e.pointerId); li.classList.add("dragging"); let moved = false;
+      h.onpointermove = ev => {
+        const rows = [...li.parentNode.children], over = rows.find(r => r !== li && ev.clientY > r.getBoundingClientRect().top && ev.clientY < r.getBoundingClientRect().bottom); if (!over) return;
+        const r = over.getBoundingClientRect(); li.parentNode.insertBefore(li, ev.clientY < r.top + r.height / 2 ? over : over.nextSibling); moved = true;
+      };
+      h.onpointerup = h.onpointercancel = () => { h.onpointermove = h.onpointerup = h.onpointercancel = null; li.classList.remove("dragging"); if (moved) saveOrder(); };
+    };
+    h.onkeydown = e => {
+      const sib = e.key === "ArrowUp" ? li.previousElementSibling : e.key === "ArrowDown" ? li.nextElementSibling : null; if (!sib) return;
+      e.preventDefault(); li.parentNode.insertBefore(li, e.key === "ArrowUp" ? sib : sib.nextSibling); h.focus(); saveOrder();
+    };
+  });
   root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => { st.destinations.find(d => d.id === s.dataset.purpose).purpose = s.value; }));
   root.querySelectorAll("[data-rmdest]").forEach(b => b.onclick = () => {
     const id = b.dataset.rmdest, n = S.aspirations.filter(a => a.destinationId === id).length;
@@ -3900,11 +3914,11 @@ function editDestination(id){
 function addPlaceSheet(after){
   openSheet("Add a place", `<p class="muted" style="margin:0">Somewhere you'd love to live, study, work or explore. It becomes a part of your map.</p><div id="apSearch" style="display:grid;gap:12px"></div>
 <div class="field"><span>In your story</span><div class="pills" id="apStage">${Object.entries(STAGES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "future"}" data-st="${k}">${v}</button>`).join("")}</div></div>
-    <div class="field"><span>It's a place to…</span><div class="pills" id="apPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "visit"}" data-pp="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
-    let purpose = "visit", stage = "future";
+    <div class="field"><span>It's a place to…</span><div class="pills" id="apPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "experience"}" data-pp="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
+    let purpose = "experience", stage = "future";
     $("apStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("apStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
     $("apPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; $("apPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "visit" ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
+    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "experience" ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
 function avatarEditor(root, onChange){
@@ -3913,8 +3927,8 @@ function avatarEditor(root, onChange){
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     const doll = A().style === "doll";
-    root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art", "The game-style character"], ["doll", "Detailed 2D", "Illustrated, sharper up close"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>
-      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div>${doll ? `<small>Detailed 2D is your illustrated character as drawn on the sheet; girl or boy, the cap and sunglasses off change the pixel character.</small>` : ""}</div>
+    root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "Detailed 2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>
+      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div>${doll ? `<small>Detailed 2D is your illustrated character as drawn on the sheet; female or male, the cap and sunglasses off change the pixel character.</small>` : ""}</div>
       ${sw("skin", SKINS, "Skin tone")}
       <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
       <div class="field"><span>Cap</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().cap}" data-cap="1">On</button><button type="button" aria-pressed="${!A().cap}" data-cap="0">Off</button></div></div>
@@ -3929,7 +3943,7 @@ function avatarEditor(root, onChange){
   }
   draw();
 }
-const LOOKS = {girl: "Girl", boy: "Boy"};
+const LOOKS = {girl: "Female", boy: "Male"};
 // A short-lived version kept an uploaded photo in this browser's IndexedDB; that step is gone, so any photo left from it is deleted.
 try { indexedDB.deleteDatabase("paintAPicturePrivate"); } catch (e) {}
 function drawAvatarPreview(cvs, style){
