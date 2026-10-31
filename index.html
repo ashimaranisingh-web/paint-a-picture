@@ -84,7 +84,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard h3{font-family:var(--serif);font-weight:400;font-size:14px;line-height:1.2;margin:0}
 .lc-open{all:unset;cursor:pointer;flex:1;min-width:0;display:grid;gap:4px;padding:4px 0}.lc-open:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .lc-open .clar-bar{margin-top:4px}
-.lc-open{grid-template-columns:minmax(0,1fr) auto;column-gap:8px}.lc-open>*:not(.lc-go){grid-column:1}.lc-go{grid-column:2;grid-row:1/4;align-self:center;color:var(--muted)}.lc-go .ico{width:16px;height:16px}
+.loccard .meta{display:flex;align-items:center;gap:4px}.lc-go{display:inline-grid;color:var(--accent-ink)}.lc-go .ico{width:14px;height:14px;stroke-width:2.4}
 .loccard .meta{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
@@ -186,13 +186,13 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .insight div{display:flex;gap:9px}
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
 .weeknav{display:flex;align-items:center;gap:6px}
-.wk-strip{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;align-items:end;gap:4px;margin-top:-8px}
+.wk-strip{display:grid;gap:2px;margin-top:-8px}.wk-mrow{display:flex;align-items:center;margin-left:-8px}
 .wk-arrow{all:unset;cursor:pointer;display:grid;place-items:center;width:32px;height:44px;color:var(--muted);border-radius:10px}.wk-arrow:hover{background:var(--sunk)}.wk-arrow:disabled{opacity:.3;cursor:default;background:none}.wk-arrow .ico{width:16px;height:16px}
 .wk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
-.wk-month{grid-column:1/-1;text-align:left;font-size:13px;font-weight:700;color:var(--ink-2);padding:0 4px 6px}
+.wk-month{font-size:15px;font-weight:400;color:var(--ink-2);min-width:56px;text-align:center}
 .wk-day{display:grid;gap:2px;padding:6px 0;border-radius:10px}.wk-day small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.wk-day b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 .wk-day.today{background:var(--sunk)}.wk-day.today b{color:var(--accent-ink)}
-.entry{padding:14px 2px;display:grid;gap:7px}
+.entry{display:grid;gap:8px}
 .entry .t{font-size:15px;font-weight:600}
 .entry .refl{font-size:13px;color:var(--ink-2);display:grid;gap:2px}
 .entry .refl span b{color:var(--muted);font-weight:700}
@@ -332,6 +332,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .wk-hit{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:grid;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:13px;margin-top:8px}
 .wk-hit:hover{border-color:var(--line-2)}.wk-hit:focus-visible{outline:2px solid var(--accent)}.wk-hit b{color:var(--ink)}
 select{min-height:44px}
+select:not([multiple]){-webkit-appearance:none;appearance:none;border:1px solid var(--line-2);border-radius:12px;padding:10px 36px 10px 12px;cursor:pointer;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686961' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center/16px no-repeat}
+select:not([multiple]):focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
+.dd-menu{position:fixed;z-index:60;max-height:min(320px,60vh);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 18px 40px rgba(31,36,32,.18);display:grid}
+.dd-menu button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 12px;border-radius:10px;font-weight:600;font-size:15px}
+.dd-menu button:hover,.dd-menu button:focus-visible{background:var(--sunk)}.dd-menu button[aria-selected="true"]{color:var(--accent-ink);font-weight:700}.dd-menu .ico{width:16px;height:16px;stroke-width:2.4}
 /* a rounded select with its own chevron, like the search box */
 select.sel-box{width:auto;-webkit-appearance:none;appearance:none;border:1px solid var(--line-2);border-radius:99px;padding:9px 38px 9px 14px;font-size:15px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23686961' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 12px center/16px no-repeat}
 select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(--accent-strong)}
@@ -389,7 +394,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .dest-name{all:unset;cursor:pointer}.dest-row b,.dest-name{font-size:15px;font-weight:700}.dest-name:focus-visible{outline:2px solid var(--accent);border-radius:6px}
 .cat-row{display:flex;align-items:center;gap:8px}.cat-row input[type=text]{flex:1;border-bottom-color:transparent;padding:12px 2px}.cat-row input[type=text]:focus{border-bottom-color:var(--accent-strong)}
 .cat-n{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}.cat-row .iconbtn{margin:0 -10px 0 0;color:var(--muted)}.cat-row .iconbtn.is-off{opacity:.35}
-.dest-row select{width:auto;max-width:150px;padding:7px 9px;font-size:13px}
+.dest-row select{width:auto;max-width:150px;padding:8px 32px 8px 10px;font-size:13px;background-position:right 9px center}
 .ibtn{all:unset;cursor:pointer;box-sizing:border-box;width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:12px;color:var(--ink-2)}.ibtn .ico{width:18px;height:18px}.ibtn:hover{background:var(--sunk)}.ibtn:focus-visible{outline:2px solid var(--accent)}.ibtn.on{color:var(--accent-ink)}
 .ms-row .ibtn+.ibtn{margin-left:-6px}
 .ms-linked{display:block;margin-top:4px;font-size:11px;font-weight:600;color:var(--accent-ink)}.ms-pick{margin-top:4px;padding:0 4px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
@@ -494,7 +499,7 @@ const CAT_KIND = {"Places to live":"villa", "Places & travel":"balloon", "Home &
 const TIMEFRAMES = ["Within 2 years", "2–5 years", "5–10 years", "10–15 years"];
 // Where a place sits in her story: lived there before, lives there now, or somewhere she's working towards.
 const STAGES = {past: "Lived here before", current: "Live here now", future: "Want to get to"};
-const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", visit: "Visit", experience: "Experience"};
+const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", visit: "Visit", experience: "Travel"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
 const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"]};
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
@@ -2507,8 +2512,8 @@ function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
-      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><span class="lc-go" aria-hidden="true">${ICON.right}</span></button>
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}<span class="lc-go" aria-hidden="true">${ICON.right}</span></span><h3>${esc(a.title)}</h3>
+      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
       <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
@@ -2836,7 +2841,35 @@ document.addEventListener("click", e => {
   const oa = e.target.closest("[data-open-asp]"); if (oa) { go("dreams"); editAspiration(oa.dataset.openAsp); return; }
   if (!e.target.closest("#menu")) closeMenu();
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("sheet").hidden) closeSheet(); else closeMenu(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (ddMenu) { const s = ddMenu.sel; closeDD(); s.focus(); } else if (!$("sheet").hidden) closeSheet(); else closeMenu(); } });
+
+/* dropdowns: every <select> opens a list in the app's own style instead of the phone's picker.
+   The real <select> keeps the value and fires "change", so the code that reads it doesn't change. */
+let ddMenu = null, ddTouch = null;
+function closeDD(){ if (ddMenu) { ddMenu.remove(); ddMenu = null; } }
+function openDD(sel){
+  closeDD();
+  const r = sel.getBoundingClientRect(), m = document.createElement("div");
+  m.className = "dd-menu"; m.setAttribute("role", "listbox"); m.sel = sel;
+  m.innerHTML = [...sel.options].map((o, i) => `<button type="button" role="option" data-i="${i}" aria-selected="${o.selected}" ${o.disabled ? "disabled" : ""}><span>${esc(o.text)}</span>${o.selected ? '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</button>`).join("");
+  document.body.appendChild(m); ddMenu = m;
+  const w = Math.max(r.width, 180), h = m.offsetHeight, below = innerHeight - r.bottom - 8;
+  m.style.minWidth = w + "px"; m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+  m.style.top = (below >= h || below >= r.top ? r.bottom + 6 : Math.max(8, r.top - h - 6)) + "px";
+  m.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i; closeDD(); sel.focus();
+    if (sel.selectedIndex !== i) { sel.selectedIndex = i; sel.dispatchEvent(new Event("input", {bubbles: true})); sel.dispatchEvent(new Event("change", {bubbles: true})); }
+  });
+  m.onkeydown = e => { if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return; e.preventDefault(); const bs = [...m.querySelectorAll("button:not([disabled])")], k = bs.indexOf(document.activeElement); bs[(k + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length].focus(); };
+  (m.querySelector('[aria-selected="true"]') || m.querySelector("button")).focus({preventScroll: true});
+}
+const ddTarget = e => { const s = e.target.closest && e.target.closest("select"); return s && !s.multiple && !s.disabled ? s : null; };
+document.addEventListener("touchstart", e => { const s = ddTarget(e); ddTouch = s ? {s, x: e.touches[0].clientX, y: e.touches[0].clientY} : null; }, {capture: true, passive: true});
+document.addEventListener("touchend", e => { const s = ddTarget(e); if (!s || !ddTouch || ddTouch.s !== s) return; const t = e.changedTouches[0]; if (Math.abs(t.clientX - ddTouch.x) + Math.abs(t.clientY - ddTouch.y) > 10) return; e.preventDefault(); openDD(s); }, true);
+document.addEventListener("mousedown", e => { const s = ddTarget(e); if (s) { e.preventDefault(); openDD(s); } else if (ddMenu && !ddMenu.contains(e.target)) closeDD(); }, true);
+document.addEventListener("touchstart", e => { if (ddMenu && !ddMenu.contains(e.target) && !ddTarget(e)) closeDD(); }, {capture: true, passive: true});
+document.addEventListener("keydown", e => { const s = ddTarget(e); if (s && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); openDD(s); } }, true);
+addEventListener("resize", closeDD); document.addEventListener("scroll", e => { if (ddMenu && !ddMenu.contains(e.target)) closeDD(); }, true);
 let sheetReturn = null;
 function openSheet(title, body, foot, mount){
   sheetReturn = document.activeElement;
@@ -3046,15 +3079,15 @@ function renderWeek(){
   if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
-    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>${weekTitle(ws)}</h1></div>${isNow ? "" : `<button class="btn quiet sm" id="wToday">This week</button>`}</div>
+    <div class="phead" style="align-items:center"><h1>${weekTitle(ws)}</h1><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
     ${weekStripHTML(ws)}
     ${weekHistoryHTML()}
-    ${canLog(ws) ? `<button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>` : ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
+    ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section class="panel"><div class="eyebrow">Weekly review</div>
       ${insights.length ? `<div class="insight">${insights.map(i => `<div>${i}</div>`).join("")}</div>` : `<p class="muted" style="margin:0">${isNow ? "Nothing logged yet this week. Anything counts: an email sent, a page drafted, a lesson booked." : "Nothing was logged this week."}</p>`}
 </section>
-    <section><h2 class="sec" style="margin-bottom:8px">Logged</h2>
-      ${entries.length ? `<ul class="list">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>
+    <section style="display:grid;gap:12px"><h2 class="sec">Logged</h2>
+      ${entries.length ? `<ul class="gcards">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>
     ${honestNumbersHTML()}`;
   $("wPrev").onclick = () => { if (weekOf > firstWeek()) { weekOf = addDays(weekOf, -7); renderWeek(); } };
   $("wNext").onclick = () => { if (weekOf < lastWeek()) { weekOf = addDays(weekOf, 7); renderWeek(); } };
@@ -3062,18 +3095,18 @@ function renderWeek(){
   if ($("logBtn")) $("logBtn").onclick = () => logEntry();
   wireWeekHistory();
   el.querySelectorAll("[data-delentry]").forEach(b => b.onclick = () => {
-    if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Tap again"; return; }
+    if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.innerHTML = GI.del + "Tap again"; return; }
     commit(s => { s.entries = s.entries.filter(e => e.id !== b.dataset.delentry); });
   });
   el.querySelectorAll("[data-editentry]").forEach(b => b.onclick = () => logEntry(b.dataset.editentry));
 }
 function entryRow(e){
   const gs = e.goalIds.map(goalById).filter(Boolean);
-  return `<li class="entry"><div class="rmeta"><span class="tag ${e.type === "did" ? "green" : "sea"}">${e.type === "did" ? "Accomplished" : "Worked on"}</span><span>${SIZE_LABEL[e.size || 1]}</span>${S.demo && e.example ? `<span class="tag">Example</span>` : ""}</div>
+  return `<li class="gcard entry"><div class="rmeta"><span class="tag ${e.type === "did" ? "green" : "sea"}">${e.type === "did" ? "Accomplished" : "Worked on"}</span><span>${SIZE_LABEL[e.size || 1]}</span>${S.demo && e.example ? `<span class="tag">Example</span>` : ""}</div>
     <div class="t">${esc(e.text)}</div>
     ${gs.length ? `<div class="rmeta">${gs.map(g => `<span class="tag">→ ${esc(g.title)}</span>`).join("")}</div>` : `<div class="rmeta"><span>Not tied to a goal</span></div>`}
     ${e.learned || e.blocked || e.next ? `<div class="refl">${e.learned ? `<span><b>Learned</b> ${esc(e.learned)}</span>` : ""}${e.blocked ? `<span><b>Blocked by</b> ${esc(e.blocked)}</span>` : ""}${e.next ? `<span><b>Next</b> ${esc(e.next)}</span>` : ""}</div>` : ""}
-    <div class="actions"><button class="btn quiet sm" data-editentry="${e.id}">Edit</button><button class="btn quiet sm" data-delentry="${e.id}" style="color:var(--danger)">Delete</button></div></li>`;
+    <div class="gc-actions" style="grid-template-columns:1fr 1fr"><button class="gc-act" data-editentry="${e.id}">${GI.edit}Edit</button><button class="gc-act danger" data-delentry="${e.id}">${GI.del}Delete</button></div></li>`;
 }
 // Progress is logged per week: an entry's date is the Monday of its week (older entries may still carry a day).
 // You can browse from the week you started logging to two weeks ahead; progress is logged for this week or last week only.
@@ -3082,10 +3115,10 @@ const lastWeek = () => addDays(weekStart(today()), 14);
 const canLog = ws => ws === weekStart(today()) || ws === addDays(weekStart(today()), -7);
 function weekTitle(ws){ const now = weekStart(today()); return ws === now ? "This week" : ws === addDays(now, -7) ? "Last week" : ws === addDays(now, 7) ? "Next week" : ws === addDays(now, 14) ? "In two weeks" : "Week of " + fmt(ws); }
 function weekStripHTML(ws){
-  const t = today(), days = [...Array(7)].map((_, i) => addDays(ws, i)), month = fmt(ws, {month: "long", year: "numeric"});
-  return `<div class="wk-strip" aria-label="${esc(weekRange(ws))}"><button class="wk-arrow" id="wPrev" aria-label="Previous week" ${ws <= firstWeek() ? "disabled" : ""}>${ICON.left}</button>
-    <div class="wk-days"><span class="wk-month">${esc(month)}</span>${days.map(d => `<span class="wk-day${d === t ? " today" : ""}"><small>${fmt(d, {weekday: "short"})}</small><b>${parseDay(d).getDate()}</b></span>`).join("")}</div>
-    <button class="wk-arrow" id="wNext" aria-label="Next week" ${ws >= lastWeek() ? "disabled" : ""}>${ICON.right}</button></div>`;
+  const t = today(), days = [...Array(7)].map((_, i) => addDays(ws, i));
+  return `<div class="wk-strip" aria-label="${esc(weekRange(ws))}"><div class="wk-mrow"><button class="wk-arrow" id="wPrev" aria-label="Previous week" ${ws <= firstWeek() ? "disabled" : ""}>${ICON.left}</button>
+    <span class="wk-month">${esc(monthYear(ws))}</span><button class="wk-arrow" id="wNext" aria-label="Next week" ${ws >= lastWeek() ? "disabled" : ""}>${ICON.right}</button></div>
+    <div class="wk-days">${days.map(d => `<span class="wk-day${d === t ? " today" : ""}"><small>${fmt(d, {weekday: "short"})}</small><b>${parseDay(d).getDate()}</b></span>`).join("")}</div></div>`;
 }
 function weekChoices(ex){
   const now = weekStart(today()), list = [now, addDays(now, -7)];
@@ -3095,30 +3128,36 @@ function weekChoices(ex){
 function logEntry(editId){
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
   const f = ex ? {...ex, goalIds: ex.goalIds.slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: ""};
+  let items = [f.text]; // each thing becomes its own entry; they share the type, week, goals and notes
+  const readItems = () => { const rows = $("eItems")?.querySelectorAll("input"); if (rows) items = [...rows].map(i => i.value); };
   let step = 1, sugg = [], rejected = new Set(), asking = false, claudeTried = false;
   const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
   function draw(){
     const B = $("sheetB"), Fo = $("sheetF");
     if (step === 1) {
       B.innerHTML = `${dots()}
-        <label class="field"><span>What happened?</span><textarea id="eText" placeholder="e.g. Researched three surf schools and compared course prices">${esc(f.text)}</textarea></label>
+        <div class="field"><span>${ex ? "What happened?" : "What did you do this week?"}</span><ul class="ms-edit" id="eItems">${items.map((t, i) => `<li><div class="ms-row"><input type="text" value="${esc(t)}" placeholder="${i ? "Another thing" : "e.g. Researched three surf schools"}" aria-label="Thing ${i + 1}">${items.length > 1 ? `<button type="button" class="ibtn" data-rmitem="${i}" aria-label="Remove this one">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
+          ${ex ? "" : `<button type="button" class="btn quiet sm" id="eAddItem" style="justify-self:start">${ICON.plus}Add another</button>`}</div>
         <div class="field"><span>This was something I…</span><div class="seg" role="group"><button type="button" aria-pressed="${f.type === "did"}" data-type="did">Accomplished</button><button type="button" aria-pressed="${f.type === "worked"}" data-type="worked">Worked on</button></div></div>
         <div class="field"><span>Which week?</span><div class="seg" role="group">${weekChoices(ex).map(w => `<button type="button" aria-pressed="${weekStart(f.date) === w}" data-wk="${w}">${w === weekStart(today()) ? "This week" : w === addDays(weekStart(today()), -7) ? "Last week" : esc(weekRange(w))}</button>`).join("")}</div></div>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
       B.querySelectorAll("[data-wk]").forEach(b => b.onclick = () => { f.date = b.dataset.wk; B.querySelectorAll("[data-wk]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
       B.querySelectorAll("[data-type]").forEach(b => b.onclick = () => { f.type = b.dataset.type; B.querySelectorAll("[data-type]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+      B.querySelectorAll("[data-rmitem]").forEach(b => b.onclick = () => { readItems(); items.splice(+b.dataset.rmitem, 1); draw(); });
+      if ($("eAddItem")) $("eAddItem").onclick = () => { readItems(); items.push(""); draw(); $("eItems").lastElementChild.querySelector("input").focus(); };
       $("eCancel").onclick = closeSheet;
       $("eNext").onclick = () => {
-        f.text = $("eText").value.trim();
-        if (!f.text) { $("eErr").textContent = "Write a few words about what you did."; $("eErr").hidden = false; return; }
+        readItems(); items = items.map(t => t.trim()).filter(Boolean); if (!items.length) items = [""];
+        f.text = items.join(" · ");
+        if (!items[0]) { $("eErr").textContent = "Write a few words about what you did."; $("eErr").hidden = false; return; }
         sugg = localMatches(f.text).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
       };
     } else if (step === 2) {
       const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
       const suggIds = new Set(sugg.map(s => s.goalId)), others = goals.filter(g => !suggIds.has(g.id));
       B.innerHTML = `${dots()}
-        <p class="quote" style="margin:0;font-weight:700">“${esc(f.text)}”</p>
+        ${items.map(t => `<p class="quote" style="margin:0;font-weight:700">“${esc(t)}”</p>`).join("")}
         <div class="field"><span>Suggested goals</span>
           ${asking ? `<p class="muted" style="margin:0">Asking Claude…</p>` : sugg.length ? `<div class="sugg">${sugg.map(s => { const g = goalById(s.goalId); return `<button type="button" class="sugg-item" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span><span class="grow"><b>${esc(g.title)}</b><small>${esc(s.reason)} · ${s.source}</small></span><span class="btn quiet sm" data-reject="${g.id}" role="button">Not this</span></button>`; }).join("")}</div>
             <small>Tap to link. Nothing is linked until you choose it.</small>` : `<p class="muted" style="margin:0">${goals.length ? "No clear match from your goals." : "You don't have any active goals yet. You can still log this."}</p>`}
@@ -3151,7 +3190,7 @@ function logEntry(editId){
       $("eSave").onclick = () => {
         f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim();
         const before = new Map(S.aspirations.map(a => [a.id, clarityOf(a).c]));
-        commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f); else s.entries.push({id: uid(), ...f}); });
+        commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f, {text: items[0]}); else items.forEach(t => s.entries.push({id: uid(), ...f, goalIds: f.goalIds.slice(), text: t})); });
         const grew = S.aspirations.filter(a => clarityOf(a).c > (before.get(a.id) || 0));
         closeSheet();
         toast("Logged. Finishing the goal is what lights up its place.");
@@ -3494,7 +3533,7 @@ const weekRange = ws => `${fmt(ws, {day: "numeric", month: "short"})} – ${fmt(
 function weekHistoryHTML(){
   const hits = weekSearch(weekQuery), byWeek = new Map(); hits.forEach(h => { if (!byWeek.has(h.ws)) byWeek.set(h.ws, []); byWeek.get(h.ws).push(h); });
   return `<div class="wk-search">
-    <div class="wk-box"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search everything you've logged" aria-label="Search past weeks"></div>
+    <div class="wk-box"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="wQ" value="${esc(weekQuery)}" placeholder="Search your logs by keyword" aria-label="Search past weeks"></div>
     <div id="wResults">${weekQuery.trim().length < 2 ? "" : hits.length ? [...byWeek].map(([ws, list]) => `<button class="wk-hit" data-week="${ws}"><span class="eyebrow">${esc(weekRange(ws))}</span>${list.slice(0, 3).map(h => `<span><b>${esc(h.kind)}</b> ${esc(h.text.length > 90 ? h.text.slice(0, 90) + "…" : h.text)}</span>`).join("")}${list.length > 3 ? `<span class="muted">+${list.length - 3} more</span>` : ""}</button>`).join("") : `<p class="muted" style="margin:0;font-size:13px">Nothing found for “${esc(weekQuery)}”.</p>`}</div></div>`;
 }
 function wireWeekHistory(){
@@ -3704,7 +3743,7 @@ const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:
 function destRows(list, opts){
   return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
-    <button type="button" class="pbtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
+    <button type="button" class="ibtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
 function wireDestRows(root, redraw){
   root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => { st.destinations.find(d => d.id === s.dataset.purpose).purpose = s.value; }));
