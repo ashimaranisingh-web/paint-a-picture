@@ -3439,9 +3439,8 @@ function renderAccount(){
   el.innerHTML = `
     <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div></div>
     <section style="display:grid;gap:14px">
-      <div style="display:grid;gap:14px"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
-        <label class="field"><span>Email (Optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
-      <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "Email allows us to save your data through updates and across devices."}</small></section>
+      <label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
+      <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "You're using Paint a Picture as a guest. Your world is saved in this browser only. Download a backup below to keep a copy."}</small></section>
     <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Girl or boy, then make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
     <section class="panel"><div class="eyebrow">Data</div>
       <div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">My Goals</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
@@ -3454,7 +3453,6 @@ function renderAccount(){
       <p class="muted" id="wipeConfirm" style="margin:0;font-size:13px;text-align:center" hidden>This deletes every dream, goal and entry on this device. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></div>`;
   avatarEditor($("acAv"));
   let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
-  let et; $("acEmail").oninput = e => { clearTimeout(et); et = setTimeout(() => { const v = e.target.value.trim(); if (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { S.profile.email = v; save(); } }, 600); };
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
   $("backupBtn").onclick = downloadBackup;
@@ -3758,16 +3756,13 @@ function obProfile(M, Fo){
   const synced = !!docRef;
   M.innerHTML = `<h1 class="ob-h dark">First, you.</h1>
     <label class="field"><span>Your name</span><input type="text" id="obName" value="${esc(S.profile.name)}" placeholder="What should we call you?" autocomplete="given-name" maxlength="30"></label>
-    <label class="field"><span>Email (optional)</span><input type="email" id="obEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com" autocomplete="email"></label>
-    <div class="notice ob-note"><div><b>${synced ? "You're signed in through Claude." : "You're using Paint a Picture as a guest."}</b> ${synced ? "Your world syncs to your own Claude account, so it's there on your other devices." : "Everything you add stays in this browser, on this device. Nothing is uploaded and nobody else can see it."}</div>
-      <div>Accounts with email sign-in, syncing across devices and account recovery aren't switched on yet. If you add an email it's kept on this device only, ready to link when they are. It's never sent anywhere.</div>${synced ? "" : `<div>Until then, Account → Download backup keeps a copy of everything.</div>`}</div>
+    <div class="notice ob-note"><div><b>${synced ? "You're signed in through Claude." : "You're using Paint a Picture as a guest."}</b> ${synced ? "Your world syncs to your own Claude account, so it's there on your other devices." : "Your world is saved in this browser only. Download a backup from Account to keep a copy."}</div></div>
     <p class="muted" style="margin:0;font-size:13px">You'll choose your character in a moment.</p><p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obNext">${synced ? "Continue" : "Continue as a guest"}</button>`;
   $("obNext").onclick = () => {
-    const name = $("obName").value.trim(), email = $("obEmail").value.trim();
+    const name = $("obName").value.trim();
     if (!name) { $("obErr").textContent = "Add your name to continue. A first name or nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $("obErr").textContent = "That email doesn't look right. Leave it empty if you'd rather not add one."; $("obErr").hidden = false; return; }
-    S.profile.name = name.slice(0, 30); S.profile.email = email; obGo(2);
+    S.profile.name = name.slice(0, 30); obGo(2);
   };
 }
 function obPlaces(M, Fo){

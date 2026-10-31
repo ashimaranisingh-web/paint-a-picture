@@ -17,7 +17,7 @@ python3 -m http.server 8000
 - My Assets (menu): a personal archive in custom categories (create, rename, reorder, delete), each item with a note, date, status, link, cover and tags.
 - Journal (menu): private notes with automatic date and time (editable), pins, favourites, All / Pinned / Favourites filters and search.
 - This week: jump to any week by date and search everything logged (entries, reflections, goals, steps); past weeks are never reset.
-- Accounts: guests keep everything in the browser. Email sign-in and cross-device sync are not built yet; the email field is stored locally only. Inside claude.ai the data syncs to the viewer's own Claude account.
+- Accounts: guests keep everything in the browser. There is no sign-in yet and no email is asked for; the plan is Sign in with Apple plus iCloud in the App Store app. Inside claude.ai the data syncs to the viewer's own Claude account.
 - One self-contained file: HTML, CSS and plain JavaScript. No build step.
 - The world is drawn procedurally on a canvas in three layers: terrain (built once), dream landmarks (rebuilt only when dreams change) and per-frame life (character, traffic, water). Only the visible part is drawn each frame; the fog and lens are composited on a viewport-sized canvas.
 - The player character is a pixel-art translation of the owner's character sheet, with front, back and side views and walk/idle frames.
