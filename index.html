@@ -84,7 +84,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard h3{font-family:var(--serif);font-weight:400;font-size:14px;line-height:1.2;margin:0}
 .lc-open{all:unset;cursor:pointer;flex:1;min-width:0;display:grid;gap:4px;padding:4px 0}.lc-open:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .lc-open .clar-bar{margin-top:4px}
-.loccard .meta{display:flex;align-items:center;gap:4px}.lc-go{display:inline-grid;color:var(--accent-ink)}.lc-go .ico{width:14px;height:14px;stroke-width:2.4}
+
 .loccard .meta{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
@@ -262,8 +262,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-f .btn.ghost:hover{background:var(--accent-soft)}
 .pl-head{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
 .pl-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.pp-intro{margin:-8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
-.as-hello{margin:-8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.pp-intro{margin:-8px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
+.as-hello{margin:-8px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
 .acc-head{display:flex;align-items:center;gap:6px}
 .acc-head .pbtn{border-color:transparent;background:transparent;color:var(--muted)}.acc-head .pbtn:hover{background:var(--sunk)}
 .acc-toggle{flex:1;display:flex!important;align-items:center;gap:10px}
@@ -297,7 +297,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .gc-links{display:flex;flex-wrap:wrap;gap:6px}
 .dc-title{display:flex;align-items:center;gap:12px;min-width:0}.dc-thumb{width:44px;height:44px;flex:none;border-radius:10px;overflow:hidden;background:var(--sunk)}.dc-thumb img,.dc-thumb canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
 .dc-text{display:grid;gap:2px;min-width:0}
-.dc-actions{display:flex;justify-content:flex-end;gap:2px;border-top:1px solid var(--line);padding-top:4px;margin-right:-10px}
+.dc-actions{display:flex;align-items:center;gap:2px;border-top:1px solid var(--line);padding-top:4px;margin-left:-10px}.dc-actions [data-addgoal]{margin-left:auto}
+.dc-goals .ms-text span{font-size:14px}
 .dc-del{color:var(--danger)}.dc-del.armed{width:auto;padding:0 10px;gap:6px;display:flex;align-items:center;font-size:13px;font-weight:700;background:var(--sunk)}
 .gc-past{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .gc-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:99px;padding:3px 8px}
@@ -2512,11 +2513,11 @@ function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}<span class="lc-go" aria-hidden="true">${ICON.right}</span></span><h3>${esc(a.title)}</h3>
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
-      <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
+      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div>`;
   card.hidden = false;
-  $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
+  $("locGo").onclick = () => { card.hidden = true; if (preview) endPreview(); openDreamCard(a.id); };
   card.querySelector("[data-enter]").onclick = () => openDreamCard(a.id);
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
@@ -3242,10 +3243,9 @@ function dreamCard(a){
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% unlocked" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
     ${open ? `<div class="gc-body">
-      ${gs.length ? `<ul class="steps ms-list">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
+      ${gs.length ? `<ul class="steps ms-list dc-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No goals yet. Each goal you finish brings this dream to life in your world.</p>`}
-      <button class="btn quiet sm" data-addgoal="${a.id}" style="justify-self:start">${ICON.plus}Add a goal</button>
-      <div class="dc-actions"><button class="ibtn" data-editdream="${a.id}" aria-label="Edit dream">${GI.edit}</button><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete dream">${GI.del}</button></div></div>` : ""}</li>`;
+      <div class="dc-actions"><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete dream">${GI.del}</button><button class="ibtn" data-editdream="${a.id}" aria-label="Edit dream">${GI.edit}</button><button class="btn quiet sm" data-addgoal="${a.id}">${ICON.plus}Add a goal</button></div></div>` : ""}</li>`;
 }
 function wireDreamCards(el){
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
