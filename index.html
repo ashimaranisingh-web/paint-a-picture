@@ -374,6 +374,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .dest-row .grow{flex:1 1 140px;min-width:0;display:grid;gap:1px}
 .dest-row b{font-size:15px}.dest-row span{font-size:13px;color:var(--muted);font-weight:600}
 .dest-row select{width:auto;max-width:150px;padding:7px 9px;font-size:13px}
+.ibtn{all:unset;cursor:pointer;box-sizing:border-box;width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:12px;color:var(--ink-2)}.ibtn .ico{width:18px;height:18px}.ibtn:hover{background:var(--sunk)}.ibtn:focus-visible{outline:2px solid var(--accent)}.ibtn.on{color:var(--accent-ink)}
+.ms-row .ibtn+.ibtn{margin-left:-6px}
+.ms-linked{display:block;margin-top:4px;font-size:11px;font-weight:600;color:var(--accent-ink)}.ms-pick{margin-top:4px;padding:0 4px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
 .icon-sm{width:44px;height:44px;flex:none}.icon-sm .ico{width:16px;height:16px}
 .icon-sm.confirm{width:auto;padding:0 10px;font-size:13px;font-weight:700;color:var(--danger)}
 
@@ -581,7 +584,18 @@ async function save(){
 let storageNote = "Saved in this browser.", lastSynced = "", pendingRender = false;
 const typingInPage = () => { const a = document.activeElement; return !!(a && a.closest && a.closest("#pmain") && /INPUT|TEXTAREA|SELECT/.test(a.tagName)); };
 document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender && !typingInPage()) { pendingRender = false; afterChange(); } }, 0));
-function commit(fn){ fn(S); afterChange(); save(); }
+function commit(fn){ fn(S); syncLinkedMilestones(S); afterChange(); save(); }
+// A milestone linked to another goal is ticked when that goal is finished, and unticked if it's reopened (only if it was
+// ticked that way). Links to deleted goals are dropped.
+function syncLinkedMilestones(s){
+  for (const g of s.goals) for (const m of g.milestones) {
+    if (!m.linkGoal) continue;
+    const t = s.goals.find(x => x.id === m.linkGoal);
+    if (!t) { delete m.linkGoal; continue; }
+    if (t.status === "done" && !m.doneAt) { m.doneAt = t.doneAt || today(); m.auto = true; }
+    else if (t.status !== "done" && m.auto) { m.doneAt = null; delete m.auto; }
+  }
+}
 
 /* =====================================================================
    2. MODEL — derived progress (never stored twice)
@@ -2894,7 +2908,7 @@ function goalCard(g){
       <div class="gc-dates"><span>${monthYear(g.start)}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${monthYear(closed && g.doneAt ? g.doneAt : g.deadline)}</span></div></div>
     ${open ? `<div class="gc-body">
       ${g.milestones.length ? `<ul class="steps ms-list">${g.milestones.map(m => `<li class="${m.doneAt ? "done" : ""}"><button class="cb" role="checkbox" aria-checked="${!!m.doneAt}" aria-label="${esc(m.title)}" data-ms="${g.id}|${m.id}"></button>
-          <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
+          <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Linked to “${esc(goalById(m.linkGoal).title)}”</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No milestones yet. Small steps make a goal easier to start.</p>`}
       <form class="ms-add" data-addms="${g.id}"><input type="text" placeholder="Add a milestone" aria-label="New milestone"><button class="btn ghost sm" type="submit">Add</button></form>
       <div class="gc-actions">
@@ -2956,14 +2970,19 @@ function editGoal(id, preset){
     <p class="muted" id="gErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save</button>`, () => {
       // keep what's typed in the milestone rows before redrawing them
+      // a milestone can depend on another goal: link it, and it ticks itself when that goal is finished
+      let pickFor = -1; const others = S.goals.filter(x => x.id !== id && x.status !== "cancelled");
       const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { const m = ms[+r.dataset.row]; m.title = r.querySelector("[data-f=title]").value; m.desc = r.querySelector("[data-f=desc]").value; });
       const drawMs = () => {
         $("gMs").innerHTML = ms.map((m, i) => `<li data-row="${i}"><div class="ms-row"><input type="text" data-f="title" value="${esc(m.title)}" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"></div>
           <div class="ms-row"><input type="text" data-f="desc" value="${esc(m.desc || "")}" placeholder="Description (optional)" aria-label="Description for milestone ${i + 1}">
-            <button type="button" class="pbtn icon-sm" data-up="${i}" aria-label="Move up" ${i === 0 ? "disabled" : ""}><svg class="ico" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>
-            <button type="button" class="pbtn icon-sm" data-rm="${i}" aria-label="Remove milestone"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></li>`).join("");
-        $("gMs").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { read(); ms.splice(+b.dataset.rm, 1); drawMs(); });
-        $("gMs").querySelectorAll("[data-up]").forEach(b => b.onclick = () => { read(); const i = +b.dataset.up; [ms[i - 1], ms[i]] = [ms[i], ms[i - 1]]; drawMs(); });
+            <button type="button" class="ibtn${m.linkGoal ? " on" : ""}" data-lk="${i}" aria-label="Link to another goal" aria-expanded="${pickFor === i}"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>
+            <button type="button" class="ibtn" data-rm="${i}" aria-label="Delete milestone"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button></div>
+          ${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Ticks itself when “${esc(goalById(m.linkGoal).title)}” is finished</small>` : ""}
+          ${pickFor === i ? `<div class="cklist ms-pick" role="group" aria-label="Goal this milestone depends on">${others.map(g => `<button type="button" class="ck" data-pick-goal="${g.id}"><span class="cb round" aria-hidden="true" ${m.linkGoal === g.id ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("") || `<p class="muted" style="margin:0;font-size:13px">There are no other goals to link to yet.</p>`}${m.linkGoal ? `<button type="button" class="ck" data-pick-goal=""><span class="cb round" aria-hidden="true"></span>No link</button>` : ""}</div>` : ""}</li>`).join("");
+        $("gMs").querySelectorAll("[data-lk]").forEach(b => b.onclick = () => { read(); const i = +b.dataset.lk; pickFor = pickFor === i ? -1 : i; drawMs(); });
+        $("gMs").querySelectorAll("[data-pick-goal]").forEach(b => b.onclick = () => { read(); const m = ms[pickFor]; m.linkGoal = b.dataset.pickGoal || null; if (!m.linkGoal) delete m.linkGoal; pickFor = -1; drawMs(); });
+        $("gMs").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { read(); ms.splice(+b.dataset.rm, 1); pickFor = -1; drawMs(); });
       };
       drawMs();
       $("gMsAdd").onclick = () => { read(); ms.push({id: uid(), title: "", desc: "", due: "", doneAt: null}); drawMs(); $("gMs").lastElementChild.querySelector("input").focus(); };
