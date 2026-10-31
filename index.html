@@ -200,13 +200,14 @@ input::placeholder,textarea::placeholder{color:#8b8b83}
 input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--accent-strong);box-shadow:0 1px 0 var(--accent-strong)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .scrim{position:absolute;inset:0;background:rgba(20,22,20,.38);z-index:20}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:92%;display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:92%;display:flex;flex-direction:column;background:#fff;color:var(--ink);border-radius:22px 22px 0 0;
   box-shadow:0 -20px 60px rgba(0,0,0,.25);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes rise{from{transform:translateY(40px);opacity:.4}}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
+#sheetX{border:0;background:transparent;margin-right:-10px}#sheetX:hover{background:var(--sunk)}
 .sheet-h h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-height:1.05}
 .sheet-b{overflow:auto;padding:4px max(18px,env(safe-area-inset-right,0px)) 16px max(18px,env(safe-area-inset-left,0px));display:grid;gap:16px}
-.sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
 .progress-dots{display:flex;gap:5px}
 .progress-dots i{width:22px;height:4px;border-radius:9px;background:var(--line)}
 .progress-dots i.on{background:var(--accent)}
@@ -2423,16 +2424,14 @@ function showLoc(l){
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
-  const n = clearViewsLeft(), next = fmt(addDays(weekStart(today()), 7), {weekday: "long", day: "numeric", month: "short"});
+  const n = clearViewsLeft(), fromGoals = Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0)) > 0, next = fmt(addDays(weekStart(today()), 7), {weekday: "long", day: "numeric", month: "short"});
   if (!n) {
-    openSheet("Your clear view", `<p style="margin:0">The eye lifts the dark from your whole world for one minute, so you can see the full picture you're painting.</p>
-      <p class="muted" style="margin:0">It opens when you finish a goal by its deadline, and you get one free view every week. Your next free view comes on ${esc(next)}.</p>`,
+    openSheet("The whole picture", `<p style="margin:0">Everything in your world reveals itself as you move through your goals. Finish a goal by its deadline and this opens for a minute, so you can see the whole picture you're painting. You also get one free look every week; your next one comes on ${esc(next)}.</p>`,
       `<button class="btn" id="cvOk">Got it</button>`, () => { $("cvOk").onclick = closeSheet; });
     return;
   }
-  openSheet("See your whole world?", `<p style="margin:0">For one minute the dark lifts everywhere, so you can move around and see the full picture you're painting.</p>
-    <p class="muted" style="margin:0">${n === 1 ? "You have 1 clear view." : `You have ${n} clear views.`} You earn one for every goal you finish on time, plus one free each week.</p>`,
-    `<button class="btn ghost" id="cvNo">Cancel</button><button class="btn" id="cvGo">See everything</button>`, () => {
+  openSheet("Do you want to see the whole picture you painted?", `<p style="margin:0">Everything in your world reveals itself as you move through your goals. ${fromGoals ? "You just achieved a goal, so this gets you a minute to see the whole picture and get motivated." : "This week's free look gets you a minute to see the whole picture and get motivated."}</p>`,
+    `<button class="btn ghost" id="cvNo">Cancel</button><button class="btn" id="cvGo">Proceed</button>`, () => {
       $("cvNo").onclick = closeSheet;
       $("cvGo").onclick = () => { closeSheet(); spendClearView(); vision = {start: performance.now(), end: performance.now() + 60000}; $("visionBanner").hidden = false; setZoom(.75); renderHomeChips(); };
     });
