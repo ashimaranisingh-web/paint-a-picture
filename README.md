@@ -22,7 +22,7 @@ python3 -m http.server 8000
 - The world is drawn procedurally on a canvas in three layers: terrain (built once), dream landmarks (rebuilt only when dreams change) and per-frame life (character, traffic, water). Only the visible part is drawn each frame; the fog and lens are composited on a viewport-sized canvas.
 - The player character is a pixel-art translation of the owner's character sheet, with front, back and side views and walk/idle frames.
 - City landmarks: each place can show one recognisable landmark (28 drawn so far, from India Gate to the Golden Gate Bridge), matched to the dreams placed there and changeable in Edit place. Places without artwork get none rather than another city's monument.
-- Character: one pixel-art character, girl or boy, with skin tone, top, cargos, boots and sunglasses to choose. Set in onboarding, changeable in Account.
+- Character: one pixel-art character, girl or boy, with skin tone, top, cargos, boots, sunglasses and a cap to choose. Set in onboarding, changeable in Account.
 - Data is saved in the browser (`localStorage`). When opened as a claude.ai artifact it also syncs to the owner's private store and can use Claude for goal matching; outside claude.ai it falls back to local keyword matching.
 
 Live artifact: https://claude.ai/artifact/B4MDarDt35HqJsXJCguokv

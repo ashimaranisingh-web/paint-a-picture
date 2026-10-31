@@ -485,7 +485,7 @@ const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
-const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", top: "pink", bot: "grey", boots: "white", glasses: true};
+const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", top: "pink", bot: "grey", boots: "white", glasses: true, cap: false, capColor: "black"};
 
 let S = null;               // the whole state (one document)
 let docRef = null, sampleFn = null, assetsApi = null, downloadsApi = null;
@@ -530,6 +530,7 @@ function normalize(o){
   s.profile.avatar = Object.assign({...DEFAULT_AVATAR}, out.top ? {top: out.top, bot: out.bot} : {}, s.profile.avatar || {});
   const av = s.profile.avatar;
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
+  av.cap = !!av.cap; if (!TOPS[av.capColor]) av.capColor = "black";
   av.style = "pixel"; if (!LOOKS[av.look]) av.look = av.look === "masculine" ? "boy" : "girl";
   delete s.profile.outfit;
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
@@ -2020,11 +2021,11 @@ const AV_W = 14, AV_H = 28;
 
 // Her character: these colours feed the pixel sprite.
 function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
-const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || ""].join("."); };
+const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || "", a.cap ? a.capColor : ""].join("."); };
 function avatarPal(){
-  const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot];
+  const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot], cp = TOPS[a.capColor] || TOPS.black;
   return {o: "#2a1a14", h: hr[0], H: hr[1], c: hr[2], s: sk[0], S: sk[1], g: "#121014", l: "#b8606a", e: "#2a1a14",
-    p: tp[0], P: tp[1], n: "#d9dde2", k: bt[0], K: bt[1], q: shade(bt[0], .12), t: shade(bt[1], -.2), w: (BOOTS[a.boots] || BOOTS.white)[0], W: (BOOTS[a.boots] || BOOTS.white)[1], b: "#17151a", B: "#3a3640"};
+    p: tp[0], P: tp[1], m: cp[0], M: cp[1], v: shade(cp[1], -.2), n: "#d9dde2", k: bt[0], K: bt[1], q: shade(bt[0], .12), t: shade(bt[1], -.2), w: (BOOTS[a.boots] || BOOTS.white)[0], W: (BOOTS[a.boots] || BOOTS.white)[1], b: "#17151a", B: "#3a3640"};
 }
 function avatarRows(dir, frame){
   let rows = (dir === "up" ? AV.back : dir === "down" ? AV.front : AV.side).slice();
@@ -2032,6 +2033,10 @@ function avatarRows(dir, frame){
   if (walking && (dir === "down" || dir === "up")) { const s = STEP.front[frame - 1]; rows.splice(26, 2, ...s); }
   if (walking && (dir === "left" || dir === "right")) { const s = STEP.side[frame - 1]; rows.splice(28 - s.length, s.length, ...s); }
   if (!avatarLook().glasses) { if (dir === "down") rows[4] = ".ohhsesssesHho"; else if (dir !== "up") rows[4] = "..osesshhhchho"; }
+  if (avatarLook().cap) { // a baseball cap: crown over the hair, brim over the forehead (forward in profile, none from behind)
+    const cap = dir === "down" ? ["...oooooooo...", "..ommmmmmmmo..", ".ommmmMmmmmMo.", ".ovvvvvvvvvvvo"] : dir === "up" ? ["...oooooooo...", "..ommmmmmmmo..", ".ommmmmmmmmMo.", ".ommmmmmmmmmMo"] : [".....oooooo...", "....ommmmmmo..", "...ommmmmmmMo.", "ovvvvvvhhcHhho"];
+    rows.splice(0, 4, ...cap);
+  }
   if (frame === 3) rows = rows.map(r => r.replace(/H/g, "x").replace(/c/g, "H").replace(/x/g, "c")); // idle: light moves through the hair
   return avatarLook().look === "boy" ? asBoy(cutHair(rows, 8), dir) : rows;
 }
@@ -3675,9 +3680,12 @@ function avatarEditor(root, onChange){
       <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       ${sw("skin", SKINS, "Skin tone")}
       <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
+      <div class="field"><span>Cap</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().cap}" data-cap="1">On</button><button type="button" aria-pressed="${!A().cap}" data-cap="0">Off</button></div></div>
+      ${A().cap ? sw("capColor", TOPS, "Cap colour") : ""}
       ${sw("top", TOPS, "Top")}${sw("bot", BOTS, "Cargos")}${sw("boots", BOOTS, "Boots")}`;
     root.querySelectorAll("[data-k]").forEach(b => b.onclick = () => set({[b.dataset.k]: b.dataset.v}));
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
+    root.querySelectorAll("[data-cap]").forEach(b => b.onclick = () => set({cap: b.dataset.cap === "1"}));
     root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => set({look: b.dataset.look}));
     root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs));
   }
