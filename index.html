@@ -3045,8 +3045,8 @@ function editGoal(id, preset){
       // the pictures this goal paints: a card that opens to pick from your dreams
       let picsOpen = false;
       const drawPics = () => {
-        const named = [...links].map(aspById).filter(Boolean).map(a => esc(a.title)).join(", ");
-        $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${named || (asps.length ? "Not linked yet" : "Add dreams in Paint a Picture first")}</small></span>
+        const linked = [...links].filter(aspById).length;
+        $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${asps.length ? `${linked} of ${asps.length}` : "Add dreams in Paint a Picture first"}</small></span>
           ${asps.length ? `<button type="button" class="ibtn${links.size ? " on" : ""}" id="gPicBtn" aria-expanded="${picsOpen}" aria-label="Choose pictures"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>` : ""}</div>
           ${picsOpen ? `<div class="pl-pics" role="group" aria-label="Pictures this goal moves you towards">${asps.map(a => { const img = a.image ? imgUrl(a.image) : null; return `<button type="button" class="pl-pic" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="grow">${esc(a.title)}</span><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span></button>`; }).join("")}</div>` : ""}`;
         $("gPics").querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
