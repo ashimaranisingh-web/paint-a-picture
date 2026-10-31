@@ -311,6 +311,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .gc-past{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .gc-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:99px;padding:3px 8px}
 .gc-link .ico{width:11px;height:11px;fill:currentColor;stroke:none}
+/* every dream wears the pink star; a small lock sits beside it until its goals are done */
+.dmark{display:inline-flex;align-items:center;gap:2px;color:var(--accent);vertical-align:-2px;margin-right:6px}.dmark .ico{width:16px;height:16px;fill:currentColor;stroke:none}
+.dlock{display:inline-grid;max-width:12px;overflow:hidden}.dmark .dlock .ico{width:10px;height:10px;fill:none;stroke:var(--muted);stroke-width:2.4}
+.gc-link .dmark{margin-right:0;color:inherit;vertical-align:0}.gc-link .dmark .ico{width:11px;height:11px}.gc-link .dmark .dlock .ico{width:9px;height:9px;stroke:currentColor;opacity:.7}
+.dlock.going{animation:unlockGo 1.2s ease .2s forwards}
+@keyframes unlockGo{35%{transform:translateY(-2px) rotate(-14deg)}100%{transform:translateY(-3px) scale(.3);opacity:0;max-width:0}}
+@media (prefers-reduced-motion:reduce){.dlock.going{animation:unlockGo .6s ease forwards!important}}
 .gc-prog{display:grid;gap:5px}
 .gc-dates{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);font-weight:600}
 .gc-body{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:8px}
@@ -650,6 +657,18 @@ function clarityOf(a){
 }
 // A dream unlocks only through finished goals. A goal linked to k dreams counts 1/k towards each, so it's never
 // counted twice; let-go and deleted goals don't count. Reopening a goal takes its share back.
+// Unlocked = every non-let-go goal linked to the dream is finished, or the dream was confirmed achieved (past cities).
+// Derived from the goals each time, so it survives refreshes, follows reopened goals, and never fires twice.
+const isUnlocked = a => clarityOf(a).c >= .999;
+const lockShown = new Map(), unlockedAt = new Map();
+const ICON_LOCK = '<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+function dreamMark(a){
+  const open = isUnlocked(a), now = performance.now();
+  if (open && lockShown.get(a.id)) unlockedAt.set(a.id, now); // seen locked earlier this visit: let the lock fall away once
+  lockShown.set(a.id, !open);
+  const going = open && now - (unlockedAt.get(a.id) ?? -1e9) < 1600;
+  return `<span class="dmark" role="img" aria-label="${open ? "Dream, unlocked" : "Dream, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
+}
 function clarityRaw(a){
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
   let total = 0, got = 0, entries = 0, steps = 0, done = 0;
@@ -2222,7 +2241,7 @@ function composeFog(now, cx, cy){
   }
   if (!preview) for (const l of locs) { // a soft beacon over fixed places still in the dark; a bold star over every dream
     const c = locLit(l, now), bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -12 || bx > VW + 12 || by < -14 || by > VH + 12) continue;
-    if (!l.fixed) { drawDreamStar(ctx, bx, by - (reduced ? 0 : (t >> 4) % 2), c >= 1, scale < 1.6 ? 2 : 1); continue; }
+    if (!l.fixed) { drawDreamStar(ctx, bx, by - (reduced ? 0 : (t >> 4) % 2), c >= 1, Math.max(1, Math.round(1.8 / scale))); continue; }
     if (veil <= .3 || c >= 1) continue;
     ctx.globalAlpha = .55 + ((t >> 3) % 2) * .3;
     F(ctx, bx, by - 2, 1, 1, "#ffc2d6"); F(ctx, bx - 1, by - 1, 3, 1, "#ffc2d6"); F(ctx, bx - 2, by, 5, 1, "#ffc2d6"); F(ctx, bx - 1, by + 1, 3, 1, "#ffc2d6"); F(ctx, bx, by + 2, 1, 1, "#ffc2d6");
@@ -2258,8 +2277,14 @@ function drawHud(now){
 }
 
 /* ---------------- camera, zoom, the single animation loop ---------------- */
-/* zoom out far enough to see a whole place with some sea around it */
-let ZMIN = .5; const ZMAX = 3;
+/* zoom out until every place fits on screen, but keep the canvas under ~14M pixels
+   (iPhones refuse to draw canvases over 16.7M, and very large ones get slow) */
+const ZMAX = 3;
+function zMin(){
+  const Ds = [...DIST.values()]; if (!Ds.length) return .5;
+  const w = Math.max(...Ds.map(d => d.ox + CW)) - Math.min(...Ds.map(d => d.ox)), h = Math.max(...Ds.map(d => d.oy + CH)) - Math.min(...Ds.map(d => d.oy));
+  return Math.min(.5, Math.max(Math.min(baseVW / (w + 120), baseVH / (h + 120)), Math.sqrt(baseVW * baseVH / 14e6)));
+}
 function clampCam(){
   if (!isFinite(camX)) camX = 0; if (!isFinite(camY)) camY = 0;
   const mx = Math.min(80, VW * .35), my = Math.min(80, VH * .35);
@@ -2268,7 +2293,7 @@ function clampCam(){
   viewDirty = true;
 }
 function applyZoom(z, ax, ay){
-  z = Math.max(ZMIN, Math.min(ZMAX, z));
+  z = Math.max(zMin(), Math.min(ZMAX, z));
   const nVW = Math.round(baseVW / z), nVH = Math.round(baseVH / z);
   if (nVW === VW && nVH === VH && z === zoom) return;
   const first = !VW || !VH, px = first ? 0 : ax ?? VW / 2, py = first ? 0 : ay ?? VH / 2, wx = camX + px, wy = camY + py, fx = first ? 0 : px / VW, fy = first ? 0 : py / VH;
@@ -2279,7 +2304,7 @@ function applyZoom(z, ax, ay){
   camX = wx - fx * VW; camY = wy - fy * VH; clampCam();
 }
 let zoomAnim = null;
-const setZoom = (z, ax, ay, animate) => { z = Math.max(ZMIN, Math.min(ZMAX, z)); if (animate && !reduced) zoomAnim = {s: performance.now(), d: 220, z0: zoom, z1: z, ax, ay}; else { zoomAnim = null; applyZoom(z, ax, ay); } viewDirty = true; saveCam(); };
+const setZoom = (z, ax, ay, animate) => { z = Math.max(zMin(), Math.min(ZMAX, z)); if (animate && !reduced) zoomAnim = {s: performance.now(), d: 220, z0: zoom, z1: z, ax, ay}; else { zoomAnim = null; applyZoom(z, ax, ay); } viewDirty = true; saveCam(); };
 function centerOn(x, y){ camX = x - VW / 2; camY = y - VH / 2; clampCam(); }
 let stageW = 375, camInit = false;
 function sizeScene(){
@@ -2288,7 +2313,6 @@ function sizeScene(){
   stageW = r.width;
   baseVW = r.width < 420 ? 176 : Math.round(r.width / 2.4);
   baseVH = Math.round(baseVW * r.height / r.width);
-  ZMIN = Math.min(.5, baseVW / (CW + 160));
   hudDpr = Math.min(2, devicePixelRatio || 1); hud.width = Math.round(r.width * hudDpr); hud.height = Math.round(r.height * hudDpr);
   VW = 0; applyZoom(zoom);
   refreshWorld();
@@ -2523,7 +2547,7 @@ function showLoc(l){
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
   card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
-      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>`;
+      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture">${ICON.right}</button></div>`;
   card.hidden = false;
   $("locGo").onclick = () => { card.hidden = true; if (preview) endPreview(); openDreamCard(a.id); };
   card.querySelector("[data-enter]").onclick = () => openDreamCard(a.id);
@@ -2967,7 +2991,7 @@ function goalCard(g){
     <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="gc-title">${esc(g.title)}</span><span class="acc-chev">${ICON_DOWN}</span>
       ${g.desc ? `<span class="gc-desc">${esc(g.desc)}</span>` : ""}</button>
     ${g.pastCity ? `<div class="gc-past">Achieved in ${esc(S.destinations.find(d => d.id === g.pastCity)?.name || "a past city")}</div>` : ""}
-    ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${GI.star}${esc(a.title)}</span>`).join("")}</div>` : ""}
+    ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${dreamMark(a)}${esc(a.title)}</span>`).join("")}</div>` : ""}
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% of milestones done" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${monthYear(g.start)}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${monthYear(closed && g.doneAt ? g.doneAt : g.deadline)}</span></div></div>
     ${open ? `<div class="gc-body">
@@ -3048,7 +3072,7 @@ function editGoal(id, preset){
         const linked = [...links].filter(aspById).length;
         $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${asps.length ? `${linked} of ${asps.length}` : "Add dreams in Paint a Picture first"}</small></span>
           ${asps.length ? `<button type="button" class="ibtn${links.size ? " on" : ""}" id="gPicBtn" aria-expanded="${picsOpen}" aria-label="Choose pictures"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>` : ""}</div>
-          ${picsOpen ? `<div class="pl-pics" role="group" aria-label="Pictures this goal moves you towards">${asps.map(a => { const img = a.image ? imgUrl(a.image) : null; return `<button type="button" class="pl-pic" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="grow">${esc(a.title)}</span><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span></button>`; }).join("")}</div>` : ""}`;
+          ${picsOpen ? `<div class="pl-pics" role="group" aria-label="Pictures this goal moves you towards">${asps.map(a => { const img = a.image ? imgUrl(a.image) : null; return `<button type="button" class="pl-pic" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="grow">${dreamMark(a)}${esc(a.title)}</span><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span></button>`; }).join("")}</div>` : ""}`;
         $("gPics").querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
         if ($("gPicBtn")) $("gPicBtn").onclick = () => { picsOpen = !picsOpen; drawPics(); };
         $("gPics").querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); drawPics(); $("gPics").querySelector(`[data-link="${k}"]`)?.focus(); });
@@ -3251,7 +3275,7 @@ function dreamCard(a){
   const c = clarityOf(a), pct = Math.round(c.c * 100), img = a.image ? imgUrl(a.image) : null, d = destOf(a), open = openDream === a.id;
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled");
   return `<li class="gcard">
-    <button class="gc-head" data-dream="${a.id}" aria-expanded="${open}"><span class="dc-title"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="dc-text"><span class="gc-title">${esc(a.title)}</span>${a.desc ? `<span class="gc-desc">${esc(a.desc)}</span>` : ""}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
+    <button class="gc-head" data-dream="${a.id}" aria-expanded="${open}"><span class="dc-title"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="dc-text"><span class="gc-title">${dreamMark(a)}${esc(a.title)}</span>${a.desc ? `<span class="gc-desc">${esc(a.desc)}</span>` : ""}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% unlocked" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
     ${open ? `<div class="gc-body">
