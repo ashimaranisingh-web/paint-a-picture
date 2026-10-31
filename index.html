@@ -271,6 +271,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .ph-left{display:flex;align-items:center;gap:4px}
 .phead:has(.ph-left){align-items:center}
 .sheet-f .btn.danger{margin-right:auto}
+.ob-dark .btn.quiet{color:#ff8db3}.ob-dark .btn.quiet:hover{background:rgba(255,255,255,.08)}
 .sheet-f .btn.ghost{background:transparent;border-color:transparent;color:var(--accent-ink)}
 .sheet-f .btn.ghost:hover{background:var(--accent-soft)}
 .pl-head{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
@@ -2671,8 +2672,8 @@ const dollParts = {};
 for (const v of ["", "male-"].flatMap(p => Object.values(DOLL_VIEWS).map(x => p + x))) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; }
 const loaded = im => !!(im && im.complete && im.naturalWidth);
 const dollReady = dir => { const v = dollSet() + (DOLL_VIEWS[dir] || "front"), im = dollImgs[v]; return loaded(im) ? dollSource(v, im) : null; };
-// Her sheet is drawn with a pink top, grey cargos, white boots and this skin; his with a cream polo and beige trousers
-// (only those two are masked on his). Other choices are painted over those parts only.
+// Her sheet is drawn with a pink top, grey cargos, white boots and this skin; his with a cream polo, beige trousers,
+// white shoes and this skin. Other choices are painted over those parts only.
 const DOLL_REFS = {"": {skin: "tan", top: "pink", bot: "grey", boots: "white"}, "male-": {skin: "tan", top: "white", bot: "grey", boots: "white"}};
 const recolorCache = new Map();
 function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
@@ -3744,7 +3745,7 @@ function renderAccount(){
     <section style="display:grid;gap:14px">
       <label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
       <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "You're using Paint a Picture as a guest. Your world is saved in this browser only. Download a backup below to keep a copy."}</small></section>
-    <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Girl or boy, then make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
+    <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Female or male, then make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
     <section class="panel"><div class="eyebrow">Data</div>
       <div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">My Goals</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>
@@ -3996,13 +3997,13 @@ function avatarEditor(root, onChange){
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     const doll = A().style === "doll";
-    root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "Detailed 2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>
-      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div>${doll ? `<small>${A().look === "boy" ? "On the Detailed 2D man, the shirt and trouser colours change; skin, sunglasses, cap and boots change the pixel character." : "On the Detailed 2D woman, skin, top, cargos and boots change; the cap and sunglasses off change the pixel character."}</small>` : ""}</div>
+    root.innerHTML = `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>
+      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       ${sw("skin", SKINS, "Skin tone")}
-      <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
+      ${doll ? "" : `<div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
       <div class="field"><span>Cap</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().cap}" data-cap="1">On</button><button type="button" aria-pressed="${!A().cap}" data-cap="0">Off</button></div></div>
-      ${A().cap ? sw("capColor", TOPS, "Cap colour") : ""}
-      ${doll && A().look === "boy" ? sw("top", TOPS, "Shirt") + sw("bot", BOTS, "Trousers") : sw("top", TOPS, "Top") + sw("bot", BOTS, "Cargos")}${sw("boots", BOOTS, "Boots")}`;
+      ${A().cap ? sw("capColor", TOPS, "Cap colour") : ""}`}
+      ${doll && A().look === "boy" ? sw("top", TOPS, "Shirt") + sw("bot", BOTS, "Trousers") + sw("boots", BOOTS, "Shoes") : sw("top", TOPS, "Top") + sw("bot", BOTS, "Cargos") + sw("boots", BOOTS, "Boots")}`;
     root.querySelectorAll("[data-k]").forEach(b => b.onclick = () => set({[b.dataset.k]: b.dataset.v}));
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
     root.querySelectorAll("[data-cap]").forEach(b => b.onclick = () => set({cap: b.dataset.cap === "1"}));
@@ -4063,9 +4064,9 @@ function obWelcome(M, Fo){
   M.innerHTML = `<div class="ob-hero"><canvas id="obPrev" width="240" height="200" aria-label="A world in the dark, with a lens revealing part of it"></canvas></div>
     <h1 class="ob-h">Your life is something you build.</h1><p class="ob-p">Let's imagine what yours could look like.</p>
     <div class="insight ob-list"><div>Name the places you dream of. They become your map.</div><div>Describe the life you want there. Each dream becomes a landmark, hidden in the dark.</div><div>Log real progress on your goals and your world gets clearer.</div></div>`;
-  Fo.innerHTML = `<button class="btn ghost" id="obDemo">See an example</button><button class="btn" id="obBegin">Begin</button>`;
+  Fo.innerHTML = `<span></span><div style="display:flex;gap:8px;align-items:center"><button class="btn quiet" id="obSkipAll">Skip</button><button class="btn" id="obBegin">Let's Do This!</button></div>`;
   $("obBegin").onclick = () => obGo(1);
-  $("obDemo").onclick = () => setDemoMode(true);
+  $("obSkipAll").onclick = () => finishOnboarding();
   // a little world in the dark with the lens drifting across it
   const D = {d: {id: "preview", env: "la", purpose: "live"}, pack: PACKS.la, ox: -9999, oy: -9999, open: {n: 1, s: 1, e: 1, w: 1}, seed: 3};
   if (!obWelcome.terrain) { buildDistrictTerrain(D); sparkles = sparkles.filter(s => s.d !== "preview"); obWelcome.terrain = D.terrain; }
@@ -4086,15 +4087,16 @@ function obWelcome(M, Fo){
 }
 function obProfile(M, Fo){
   const synced = !!docRef;
-  M.innerHTML = `<h1 class="ob-h dark">First, you.</h1>
-    <label class="field"><span>Your name</span><input type="text" id="obName" value="${esc(S.profile.name)}" placeholder="What should we call you?" autocomplete="given-name" maxlength="30"></label>
-    <div class="notice ob-note"><div><b>${synced ? "You're signed in through Claude." : "You're using Paint a Picture as a guest."}</b> ${synced ? "Your world syncs to your own Claude account, so it's there on your other devices." : "Your world is saved in this browser only. Download a backup from Account to keep a copy."}</div></div>
-    <p class="muted" style="margin:0;font-size:13px">You'll choose your character in a moment.</p><p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
+  M.innerHTML = `<h1 class="ob-h dark">What shall I call you, honey? Honey?</h1>
+    <input type="text" id="obName" value="${esc(S.profile.name)}" placeholder="First name" aria-label="First name" autocomplete="given-name" maxlength="30">
+    <input type="text" id="obMiddle" value="${esc(S.profile.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
+    <label class="field"><span>And well...</span><input type="text" id="obLast" value="${esc(S.profile.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></label>
+    <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obNext">${synced ? "Continue" : "Continue as a guest"}</button>`;
   $("obNext").onclick = () => {
     const name = $("obName").value.trim();
-    if (!name) { $("obErr").textContent = "Add your name to continue. A first name or nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
-    S.profile.name = name.slice(0, 30); obGo(2);
+    if (!name) { $("obErr").textContent = "Add your first name to continue. A nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
+    S.profile.name = name.slice(0, 30); S.profile.middleName = $("obMiddle").value.trim().slice(0, 30); S.profile.lastName = $("obLast").value.trim().slice(0, 40); obGo(2);
   };
 }
 function obPlaces(M, Fo){
