@@ -65,8 +65,12 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .mapctl button{width:44px;height:44px;display:grid;place-items:center;border:0;background:var(--glass);color:#fff}
 .mapctl button:hover{background:rgba(30,36,48,.8)}
 .mapctl .ico{width:17px;height:17px}
-.mapctl button.gold{background:rgba(232,196,110,.92);color:#2b2108}.mapctl button.gold:hover{background:#e8c46e}.mapctl button.gold .ico{width:20px;height:20px}
-.mapctl button[hidden]{display:none}
+.mapctl button.eye .ico{width:20px;height:20px}
+.mapctl button.eye.ready,.mapctl button.eye.open{background:rgba(232,196,110,.92);color:#2b2108}.mapctl button.eye.ready:hover{background:#e8c46e}
+.mapctl button.eye.off{color:rgba(255,255,255,.4)}
+.eye-open,.eye-shut{transform-origin:12px 12px;transition:transform .45s ease,opacity .3s ease}
+.eye .eye-open{transform:scaleY(.08);opacity:0}.eye.open .eye-open{transform:none;opacity:1}.eye.open .eye-shut{opacity:0;transform:scaleY(.4)}
+@media (prefers-reduced-motion:reduce){.eye-open,.eye-shut{transition:none}}
 .home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:16px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
@@ -208,17 +212,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
 .cklist{display:grid}
+.av-one{display:grid;justify-items:center}.av-one canvas{width:120px;height:150px;border-radius:var(--r-lg)}
 .cb.round{border-radius:50%}
-.crop{position:relative;width:min(100%,240px);aspect-ratio:4/5;overflow:hidden;border-radius:var(--r-lg);background:var(--sunk);touch-action:none;cursor:grab;justify-self:start}
-.crop img{position:absolute;max-width:none;user-select:none;-webkit-user-select:none;pointer-events:none}
-.crop-guide{position:absolute;left:22%;right:22%;top:14%;bottom:30%;border:1.5px dashed rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}
-.crop-wrap{display:grid;gap:10px}.crop-zoom input{padding:0;border:0;accent-color:var(--accent-strong)}
-.photo-drop{display:grid;gap:4px;justify-items:start;padding:18px 16px;border:1.5px dashed var(--line-2);border-radius:var(--r-lg);background:var(--surface);cursor:pointer}
-.photo-drop b{display:flex;align-items:center;gap:6px;font-size:15px;color:var(--accent-ink)}.photo-drop small{font-size:13px;color:var(--muted)}
-.ob-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:600}
-.spin{width:20px;height:20px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:var(--accent-strong);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 .ck{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}
 .ck:last-child{border-bottom:0}.ck:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .sugg-item{display:flex;gap:11px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);cursor:pointer;text-align:left;width:100%}
@@ -349,11 +344,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .vis-tile span{padding:0 2px 2px;line-height:1.2}
 
 /* ---------- avatar editor ---------- */
-.av-styles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.av-card{display:grid;justify-items:center;gap:4px;padding:10px 8px 12px;border:1.5px solid var(--line-2);border-radius:var(--r-lg);background:var(--surface);text-align:center}
-.av-card canvas{width:120px;height:150px;border-radius:12px}
-.av-card b{font-size:15px}.av-card small{font-size:13px;color:var(--muted);font-weight:600}
-.av-card[aria-pressed="true"]{border-color:var(--accent-strong);background:var(--accent-soft)}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent-strong)}
 
 /* ---------- places ---------- */
@@ -403,7 +393,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     </header>
     <div class="home-chips" id="homeChips"></div>
     <div class="mapctl" role="group" aria-label="Map controls">
-      <button id="useVision" class="gold" hidden><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg></button>
+      <button id="useVision" class="eye"><svg class="ico" viewBox="0 0 24 24"><g class="eye-open"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="eye-shut"><path d="M2 11s4 6 10 6 10-6 10-6"/><path d="M5 14.5l-1.6 2M9.3 16.6l-.6 2.4M14.7 16.6l.6 2.4M19 14.5l1.6 2"/></g></svg></button>
       <button id="birdseye" aria-label="Bird's-eye view of your whole world" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></button>
       <button id="recenter" aria-label="Show me"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
     </div>
@@ -471,7 +461,7 @@ const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
-const DEFAULT_AVATAR = {style: "pixel", skin: "tan", hair: "brunette", top: "pink", bot: "grey", boots: "white", glasses: true};
+const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", top: "pink", bot: "grey", boots: "white", glasses: true};
 
 let S = null;               // the whole state (one document)
 let docRef = null, sampleFn = null, assetsApi = null, downloadsApi = null;
@@ -516,7 +506,7 @@ function normalize(o){
   s.profile.avatar = Object.assign({...DEFAULT_AVATAR}, out.top ? {top: out.top, bot: out.bot} : {}, s.profile.avatar || {});
   const av = s.profile.avatar;
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
-  if (av.style !== "doll") av.style = "pixel"; if (!LOOKS[av.look]) av.look = null;
+  av.style = "pixel"; if (!LOOKS[av.look]) av.look = av.look === "masculine" ? "boy" : "girl";
   delete s.profile.outfit;
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
   s.rewards = Object.assign({clearViewsUsed: 0}, o.rewards || {});
@@ -607,8 +597,11 @@ function discovery(){
   for (const g of S.goals) { s += g.milestones.filter(m => m.doneAt).length * 2; if (g.status === "done") s += 5; }
   return (discVal = Math.min(1, s / 60));
 }
+// A clear view comes from each goal finished on time, plus one free view every week (it doesn't carry over).
 const clearViewsEarned = () => S.goals.filter(metDeadline).length;
-const clearViewsLeft = () => Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0));
+const weeklyViewFree = () => S.rewards.weekUsed !== weekStart(today());
+const clearViewsLeft = () => Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0)) + (weeklyViewFree() ? 1 : 0);
+function spendClearView(){ commit(s => { if (s.rewards.weekUsed !== weekStart(today())) s.rewards.weekUsed = weekStart(today()); else s.rewards.clearViewsUsed = (s.rewards.clearViewsUsed || 0) + 1; }); }
 
 /* =====================================================================
    3. MATCHING — local keyword matcher (always) + optional Claude
@@ -658,7 +651,7 @@ async function claudeMatches(text){
    uses a neutral environment pack (city, coast, nature, campus, town) and is labelled with its name,
    so no place is dressed up as somewhere it isn't.
    Layers: district terrain (built lazily, once) → world canvas with dream landmarks → per-frame life,
-   character, fog + lens → HUD canvas (place names, the detailed avatar).
+   character, fog + lens → HUD canvas (place names).
    ===================================================================== */
 const CW = 400, CH = 560, PAD = 120, AH = 520, MAX_DEST = 12;
 
@@ -1965,7 +1958,7 @@ const STEP = {front: [["..ooooo.owwwo.", "........oooo.."], ["..owwwo.ooooo.", "
   side: [[".oKkkko.okKko.", "owwwwo..oWwo..", "oooooo..oooo.."], ["..oKkkkkkKko..", "...owwwwwko...", "..owwwwwWo....", "..ooooo.o....."]]};
 const AV_W = 14, AV_H = 28;
 
-// One identity, two ways to draw it: these colours feed both the pixel sprite and the detailed 2D figure.
+// Her character: these colours feed the pixel sprite.
 function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
 const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || ""].join("."); };
 function avatarPal(){
@@ -1980,13 +1973,12 @@ function avatarRows(dir, frame){
   if (walking && (dir === "left" || dir === "right")) { const s = STEP.side[frame - 1]; rows.splice(28 - s.length, s.length, ...s); }
   if (!avatarLook().glasses) { if (dir === "down") rows[4] = ".ohhsesssesHho"; else if (dir !== "up") rows[4] = "..osesshhhchho"; }
   if (frame === 3) rows = rows.map(r => r.replace(/H/g, "x").replace(/c/g, "H").replace(/x/g, "c")); // idle: light moves through the hair
-  return cutHair(rows, avatarLook().look);
+  return avatarLook().look === "boy" ? asBoy(cutHair(rows, 8), dir) : rows;
 }
-// Her chosen look sets the hair length: long (feminine, the sheet as drawn), chin-length (androgynous) or short (masculine).
-// Hair below the cut becomes her top where it covered her back, and nothing where it hung free; then it's re-outlined.
+// The girl is the sheet as drawn. The boy has short hair (cut at row 8): hair below the cut becomes the top where it
+// covered the back and nothing where it hung free, then it's re-outlined; his top reaches his waist, without lips or earrings.
 const isBody = ch => !!ch && ch !== "." && ch !== "o";
-function cutHair(rows, look){
-  const cut = {masculine: 8, androgynous: 11}[look]; if (!cut) return rows;
+function cutHair(rows, cut){
   return rows.map((r, i) => {
     if (i < cut || i > 13) return r;
     const a = r.split(""), s0 = r.search(/[sS]/), s1 = Math.max(r.lastIndexOf("s"), r.lastIndexOf("S"));
@@ -1995,6 +1987,13 @@ function cutHair(rows, look){
     for (let j = 0; j < a.length; j++) if (isBody(a[j])) { if (a[j - 1] === ".") a[j - 1] = "o"; if (a[j + 1] === ".") a[j + 1] = "o"; }
     return a.join("");
   });
+}
+function asBoy(rows, dir){
+  rows = rows.map((r, i) => i >= 5 && i <= 8 ? r.replace(/n/g, "s").replace(/l/g, "S") : r);
+  const r = rows[12].split("");
+  if (dir === "down" || dir === "up") { const s0 = rows[12].search(/[sS]/), s1 = Math.max(rows[12].lastIndexOf("s"), rows[12].lastIndexOf("S")); for (let j = s0 + 1; j < s1; j++) if (/[sSh]/.test(r[j])) r[j] = "p"; }
+  else if (r[4] === "s") r[4] = "p";
+  rows[12] = r.join(""); return rows;
 }
 const spriteCache = new Map();
 function avatarSprite(dir, frame){
@@ -2072,10 +2071,9 @@ function renderView(now){
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   for (const c of chimneys) if (inV(c.x, c.y, 30)) for (let k = 0; k < 3; k++) { const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1; }
   for (const f of fountains) if (inV(f.x, f.y, 10)) for (let i = 0; i < 4; i++) F(g, f.x - 2 + i, f.y - ((t + i * 2) % 4), 1, 1, "#d4f1f4");
-  // her: the pixel sprite lives in the world canvas; the detailed figure is drawn crisp on the HUD
   oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)");
   const frame = avFrame();
-  if (avatarLook().style !== "doll") drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame);
+  drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame);
   fx = fx.filter(p => p.life-- > 0);
   for (const p of fx) { p.y -= .4; g.globalAlpha = Math.min(1, p.life / 15); F(g, p.x, p.y, 1, 1, p.c); F(g, p.x - 1, p.y + 1, 3, 1, p.c); F(g, p.x, p.y + 2, 1, 1, p.c); g.globalAlpha = 1; }
   g.setTransform(1, 0, 0, 1, 0, 0);
@@ -2131,9 +2129,8 @@ function composeFog(now, cx, cy){
   }
 }
 
-/* --- HUD: crisp place names and the detailed avatar, drawn at screen resolution over the pixel world --- */
+/* --- HUD: crisp place names, drawn at screen resolution over the pixel world --- */
 const smooth = (a, b, x) => { const k = Math.max(0, Math.min(1, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
-const dollWorldH = () => 30 * (1 + .28 * smooth(1.15, 2.4, zoom)); // grows a little as you zoom in, never huge
 function drawHud(now){
   const g = hctx; g.setTransform(hudDpr, 0, 0, hudDpr, 0, 0); g.clearRect(0, 0, hud.width / hudDpr, hud.height / hudDpr);
   const la = 1 - smooth(1.9, 2.6, zoom);
@@ -2148,14 +2145,6 @@ function drawHud(now){
       g.globalAlpha = la; g.fillStyle = "#fff"; g.fillText(txt, x, y + .5);
     }
     g.globalAlpha = 1;
-  }
-  if (avatarLook().style === "doll" && route === "home") {
-    const hpx = dollWorldH() * scale, fx = (av.x - camX) * scale, fy = (av.y - camY) * scale;
-    if (fx > -hpx && fx < hud.width / hudDpr + hpx && fy > -20 && fy < hud.height / hudDpr + hpx) {
-      const walking = !(av.wait > 0 || av.step === 0);
-      const img = dollSprite(av.dir, walking ? (av.step >> 2) % 8 : -1, Math.round(hpx / 4) * 4);
-      g.drawImage(img.c, fx - img.ax / hudDpr, fy - img.ay / hudDpr, img.c.width / hudDpr, img.c.height / hudDpr);
-    }
   }
 }
 
@@ -2228,7 +2217,7 @@ function loop(ts){
     if (D && D.d.id !== av.dest && !av.travel && !ptrs.size && !inertia && !camAnim && !(av.x > camX && av.x < camX + VW && av.y > camY && av.y < camY + VH)) travelAvatar(D);
     if (preview && ts > preview.end) endPreview();
     if (vision && ts > vision.end) { vision = null; $("visionBanner").hidden = true; renderHomeChips(); }
-    if (vision) $("visionBanner").textContent = `Deadline met, so here's all of it · ${Math.ceil((vision.end - ts) / 1000)}s`;
+    if (vision) { const left = Math.max(0, Math.ceil((vision.end - ts) / 1000)); $("visionBanner").textContent = `Your whole world · ${left / 60 | 0}:${String(left % 60).padStart(2, "0")}`; }
     if (!camAnim) checkHold(ts);
     viewDirty = true;
   }
@@ -2369,8 +2358,7 @@ $("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av
 
 function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
 function tapAt({x, y}){
-  const ak = avatarLook().style === "doll" ? dollWorldH() / 28 : 1;
-  if (Math.abs(x - av.x) < 9 * ak && y > av.y - 29 * ak && y < av.y + 3) { avatarSays(); return; }
+  if (Math.abs(x - av.x) < 9 && y > av.y - 29 && y < av.y + 3) { avatarSays(); return; }
   $("tips").hidden = true;
   const l = locAt(x, y);
   if (l) { lens = {x: l.x, y: l.y - 14, moved: true}; showLoc(l); viewDirty = true; return; }
@@ -2434,82 +2422,30 @@ function showLoc(l){
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
+function clearViewSheet(){
+  const n = clearViewsLeft(), next = fmt(addDays(weekStart(today()), 7), {weekday: "long", day: "numeric", month: "short"});
+  if (!n) {
+    openSheet("Your clear view", `<p style="margin:0">The eye lifts the dark from your whole world for one minute, so you can see the full picture you're painting.</p>
+      <p class="muted" style="margin:0">It opens when you finish a goal by its deadline, and you get one free view every week. Your next free view comes on ${esc(next)}.</p>`,
+      `<button class="btn" id="cvOk">Got it</button>`, () => { $("cvOk").onclick = closeSheet; });
+    return;
+  }
+  openSheet("See your whole world?", `<p style="margin:0">For one minute the dark lifts everywhere, so you can move around and see the full picture you're painting.</p>
+    <p class="muted" style="margin:0">${n === 1 ? "You have 1 clear view." : `You have ${n} clear views.`} You earn one for every goal you finish on time, plus one free each week.</p>`,
+    `<button class="btn ghost" id="cvNo">Cancel</button><button class="btn" id="cvGo">See everything</button>`, () => {
+      $("cvNo").onclick = closeSheet;
+      $("cvGo").onclick = () => { closeSheet(); spendClearView(); vision = {start: performance.now(), end: performance.now() + 60000}; $("visionBanner").hidden = false; setZoom(.75); renderHomeChips(); };
+    });
+}
 function renderHomeChips(){
   const n = clearViewsLeft(), el = $("homeChips"), parts = [];
   if (S.demo) parts.push(`<button class="chip-g" data-go="account">Example world · make it yours</button>`);
   el.innerHTML = parts.join("");
-  const v = $("useVision"); // the clear view lives in the map controls, shown while she has one to spend
-  v.hidden = !(n && !vision); v.setAttribute("aria-label", `See everything for a minute (${n} earned)`); v.title = `See everything for a minute · ${n} earned`;
-  v.onclick = () => {
-    commit(s => { s.rewards.clearViewsUsed = (s.rewards.clearViewsUsed || 0) + 1; });
-    vision = {start: performance.now(), end: performance.now() + 60000};
-    $("visionBanner").hidden = false; setZoom(.75); renderHomeChips();
-  };
-}
-
-/* ---------------- the detailed 2D avatar ----------------
-   Her own character sheet, cut out view by view (front, back and both profiles) and shown as drawn:
-   no redrawing, recolouring or reinterpretation. The pixel sprite is the same character in game form. */
-const DOLL_VIEWS = {down: "front", up: "back", left: "side-left", right: "side-right"};
-const dollImgs = {};
-for (const v of Object.values(DOLL_VIEWS)) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev)); }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
-const dollParts = {};
-for (const v of Object.values(DOLL_VIEWS)) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; }
-const loaded = im => !!(im && im.complete && im.naturalWidth);
-const dollReady = dir => { const v = DOLL_VIEWS[dir] || "front", im = dollImgs[v]; return loaded(im) ? dollSource(v, im) : null; };
-// The sheet is drawn with a pink top, grey cargos, white boots and this skin; other choices are painted over those parts only.
-const DOLL_REF = {skin: "tan", top: "pink", bot: "grey", boots: "white"};
-const recolorCache = new Map();
-function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
-function hsl2rgb(h, s, l){ if (!s) return [l * 255, l * 255, l * 255]; const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q, f = t => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; }; return [f(h + 1 / 3) * 255, f(h) * 255, f(h - 1 / 3) * 255]; }
-function dollSource(v, im){
-  const a = avatarLook(), want = {1: a.skin !== DOLL_REF.skin && SKINS[a.skin], 2: a.top !== DOLL_REF.top && TOPS[a.top], 3: a.bot !== DOLL_REF.bot && BOTS[a.bot], 4: (a.boots || "white") !== DOLL_REF.boots && BOOTS[a.boots]};
-  if (!want[1] && !want[2] && !want[3] && !want[4]) return im;
-  const pm = dollParts[v]; if (!loaded(pm)) return im;
-  const key = v + "|" + lookKey(); if (recolorCache.has(key)) return recolorCache.get(key);
-  const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
-  const g = c.getContext("2d"); g.drawImage(pm, 0, 0, w, h); const lab = g.getImageData(0, 0, w, h).data;
-  g.clearRect(0, 0, w, h); g.drawImage(im, 0, 0); const img = g.getImageData(0, 0, w, h), d = img.data;
-  // dark seams and outlines inside the cargos and boots join them, so a light colour doesn't leave black specks
-  for (const part of [3, 4]) if (want[part]) for (let pass = 0; pass < 2; pass++) {
-    const add = [];
-    for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = (y * w + x) * 4; if (lab[i] || d[i + 3] < 40) continue; const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]); if (mx - mn > 60 || y < h * .38) continue;
-      if (lab[i - 4] === part || lab[i + 4] === part || lab[i - w * 4] === part || lab[i + w * 4] === part) add.push(i); }
-    for (const i of add) lab[i] = part;
-  }
-  // each part's typical lightness and saturation, so shading is kept relative to it
-  const stats = {}; for (let i = 0; i < d.length; i += 4) { const p = lab[i]; if (!want[p] || d[i + 3] < 40) continue; const [, s2, l2] = rgb2hsl(d[i], d[i + 1], d[i + 2]); (stats[p] ||= {s: [], l: []}); stats[p].s.push(s2); stats[p].l.push(l2); }
-  const med = arr => { arr.sort((x, y) => x - y); return arr[arr.length >> 1] || .5; };
-  const ref = {}; for (const p in stats) ref[p] = {s: med(stats[p].s), l: med(stats[p].l), t: rgb2hsl(...hex(want[p][0]))};
-  for (let i = 0; i < d.length; i += 4) {
-    const p = lab[i], R = ref[p]; if (!R || d[i + 3] < 8) continue;
-    const [, s2, l2] = rgb2hsl(d[i], d[i + 1], d[i + 2]), [th, ts, tl] = R.t;
-    const L = Math.max(.03, Math.min(.97, tl + (l2 - R.l) * (tl > .85 ? .45 : tl < .2 ? .6 : 1))), Sat = Math.min(1, ts * (R.s > .02 ? s2 / R.s : 1));
-    const [r, gg, b] = hsl2rgb(th, Sat, L); d[i] = r; d[i + 1] = gg; d[i + 2] = b;
-  }
-  g.putImageData(img, 0, 0);
-  if (recolorCache.size > 24) recolorCache.clear(); recolorCache.set(key, c); return c;
-}
-// Draw her with her feet at (0, 0) and the top of her hair at y = -h. Walking adds a small step bob and sway.
-function drawDoll(g, h, dir, frame){
-  const im = dollReady(dir) || dollReady("down"); if (!im) return false;
-  const w = h * (im.naturalWidth || im.width) / (im.naturalHeight || im.height), walking = frame >= 0, ph = walking ? frame / 8 * Math.PI * 2 : 0;
-  g.save(); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
-  g.globalAlpha = .28; g.fillStyle = "#0a140c"; g.beginPath(); g.ellipse(0, 0, w * .38, h * .022, 0, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
-  if (walking) { g.translate(0, -Math.abs(Math.sin(ph)) * h * .012); g.rotate(Math.sin(ph) * .018); }
-  g.drawImage(im, -w / 2, -h, w, h);
-  g.restore(); return true;
-}
-const dollCache = new Map();
-function dollSprite(dir, frame, hpx){
-  const key = [dir, frame, hpx, hudDpr, dollReady(dir) ? 1 : 0].join("|");
-  if (dollCache.has(key)) return dollCache.get(key);
-  if (dollCache.size > 60) dollCache.clear();
-  const k = hudDpr, c = document.createElement("canvas"); c.width = Math.ceil(hpx * .5 * k); c.height = Math.ceil(hpx * 1.06 * k);
-  const g = c.getContext("2d"); g.translate(c.width / 2, c.height - hpx * .03 * k); g.scale(k, k);
-  drawDoll(g, hpx, dir, frame);
-  const out = {c, ax: c.width / 2, ay: c.height - hpx * .03 * k};
-  dollCache.set(key, out); return out;
+  // The eye in the map controls: shut and gold when there's a view to spend, shut and dimmed when not, open while one runs.
+  const v = $("useVision"), st = vision ? "open" : n ? "ready" : "off";
+  v.className = "eye " + st; v.setAttribute("aria-pressed", !!vision);
+  v.setAttribute("aria-label", vision ? "Clear view running" : n ? `See your whole world for a minute (${n} available)` : "Clear view: locked");
+  v.onclick = () => { if (!vision) clearViewSheet(); };
 }
 
 /* ---------------- dream visuals: a curated library drawn in the world's own style ----------------
@@ -2550,8 +2486,7 @@ function libUrl(id){
     c.width = 240; c.height = 180; const g = c.getContext("2d");
     if (L.avatar === "fit") { sky(g, 240, 180, "#cfe3f2", "#eef4f8"); g.fillStyle = "#7aaa4f"; g.fillRect(0, 120, 240, 60); g.fillStyle = "#b5523a"; g.beginPath(); g.ellipse(120, 150, 130, 26, 0, 0, 7); g.fill(); g.fillStyle = "#f2efe6"; g.beginPath(); g.ellipse(120, 150, 100, 17, 0, 0, 7); g.fill(); g.fillStyle = "#7aaa4f"; g.beginPath(); g.ellipse(120, 150, 96, 15, 0, 0, 7); g.fill(); }
     else { sky(g, 240, 180, "#fde8ef", "#f7c6d8"); g.fillStyle = "rgba(255,255,255,.5)"; for (let i = 0; i < 14; i++) g.fillRect(hash(i, 1, 5) * 240, hash(i, 2, 5) * 180, 3, 3); }
-    g.translate(120, 166);
-    drawDoll(g, 158, "down", -1);
+    g.imageSmoothingEnabled = false; g.drawImage(avatarSprite("down", 0), 120 - AV_W * 5 / 2, 166 - AV_H * 5, AV_W * 5, AV_H * 5);
   } else {
     const s = document.createElement("canvas"); s.width = 64; s.height = 48; L.draw(s.getContext("2d"));
     c.width = 192; c.height = 144; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; g.drawImage(s, 0, 0, 192, 144);
@@ -3392,7 +3327,7 @@ function renderAccount(){
       <div style="display:grid;gap:14px"><label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
         <label class="field"><span>Email (Optional)</span><input type="email" id="acEmail" value="${esc(S.profile.email || "")}" placeholder="you@example.com"></label></div>
       <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "Email allows us to save your data through updates and across devices."}</small></section>
-    <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Pick your style and personalise it!</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
+    <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Girl or boy, then make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
     <section class="panel"><div class="eyebrow">Data</div>
       <div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">My Goals</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>
@@ -3414,7 +3349,7 @@ function renderAccount(){
   if (demoMode) $("wipeConfirm").firstChild.textContent = "This resets the demo to its starting state. Your real goals aren't affected. ";
   $("wipeYes").onclick = () => {
     if (demoMode) { const av0 = S.profile.avatar; S = demoState(REAL.profile); S.profile.avatar = av0; layoutKey = ""; landKey = ""; camInit = false; afterChange(); save(); toast("Demo reset"); return; }
-    deletePhoto(); S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
+    S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
   };
 }
 
@@ -3538,7 +3473,7 @@ function setDemoMode(on){
   demoMode = on; markMode();
   try { localStorage.setItem(MODE_KEY, on ? "demo" : "real"); } catch (e) {}
   // the world is rebuilt from whichever record is showing; your real camera spot is kept separately
-  layoutKey = ""; landKey = ""; camInit = false; regionShown = ""; av.dest = ""; av.travel = null; assetOpen = null; spriteCache.clear(); dollCache.clear(); libCache.clear(); modelVer++;
+  layoutKey = ""; landKey = ""; camInit = false; regionShown = ""; av.dest = ""; av.travel = null; assetOpen = null; spriteCache.clear(); libCache.clear(); modelVer++;
   if (on) save();
   if (!S.onboarding.done) { startOnboarding(); return; }
   toast(on ? "Demo Mode: a fictional world. Your real goals are untouched." : "Back to your real goals.");
@@ -3615,118 +3550,33 @@ function addPlaceSheet(after){
     placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "visit" ? "study" : purpose); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
-function avatarEditor(root, onChange, opts){
-  opts = opts || {};
+function avatarEditor(root, onChange){
   const A = () => S.profile.avatar;
-  const set = patch => { Object.assign(S.profile.avatar, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; draw(); onChange && onChange(); };
+  const set = patch => { Object.assign(S.profile.avatar, patch); spriteCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; draw(); onChange && onChange(); };
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
-    root.innerHTML = `<div class="field"><span>How your character looks</span><div class="seg" role="group">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div><small>${A().style === "doll" ? "Detailed 2D uses the illustrated character from the sheet; this choice changes the pixel character's hair for now." : "This only sets how your character looks. It isn't a question about you."}</small></div>
-      <div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art", "The game-style character"], ["doll", "Detailed 2D", "Illustrated, sharper up close"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas class="av-prev" data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>
-      ${A().style === "doll" && opts.photo !== false ? `<div class="field"><span>Your photo</span><div data-photo style="display:grid;gap:10px"></div><small>${GEN_NOTE}</small></div>` : ""}
+    root.innerHTML = `<div class="av-one"><canvas data-prev width="120" height="150" aria-hidden="true"></canvas></div>
+      <div class="field"><span>Character</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       ${sw("skin", SKINS, "Skin tone")}
-      <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div>${A().style === "doll" && !A().glasses ? `<small>Detailed 2D keeps her sunglasses on: there are no eyes drawn underneath on your sheet.</small>` : ""}</div>
+      <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
       ${sw("top", TOPS, "Top")}${sw("bot", BOTS, "Cargos")}${sw("boots", BOOTS, "Boots")}`;
-    root.querySelectorAll("[data-style]").forEach(b => b.onclick = () => set({style: b.dataset.style}));
     root.querySelectorAll("[data-k]").forEach(b => b.onclick = () => set({[b.dataset.k]: b.dataset.v}));
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
-    root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => set({look: A().look === b.dataset.look ? null : b.dataset.look}));
-    if (root.querySelector("[data-photo]")) photoPanel(root.querySelector("[data-photo]"));
-    root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs, cvs.dataset.prev));
+    root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => set({look: b.dataset.look}));
+    root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs));
   }
   draw();
 }
-/* --- her photo and the illustrated character ---
-   The photo stays on this device, in IndexedDB under this profile's id (so Demo Mode never sees it), and is
-   never sent anywhere or put in backups. Turning it into an illustrated character needs an image-generation
-   model; there isn't one yet, so AVATAR_GENERATOR is null and she keeps the built-in character meanwhile.
-   To connect one later, set AVATAR_GENERATOR to an async function:
-     ({photo: Blob, crop: {x, y, z}, look}) => ({front, back, left, right: Blob, idle: [Blob], walk: [Blob]})
-   and ask for her consent first if it sends the photo off the device. Results are stored under avatarArt:<id>,
-   apart from the photo, so either can be deleted on its own. */
-let AVATAR_GENERATOR = null;
-const LOOKS = {feminine: "Feminine", masculine: "Masculine", androgynous: "Androgynous"};
-const PDB = (() => {
-  let p;
-  const open = () => p || (p = new Promise((res, rej) => { const r = indexedDB.open("paintAPicturePrivate", 1); r.onupgradeneeded = () => r.result.createObjectStore("files"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
-  const run = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("files", mode), q = fn(t.objectStore("files")); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
-  return {get: k => run("readonly", s => s.get(k)), put: (k, v) => run("readwrite", s => s.put(v, k)), del: k => run("readwrite", s => s.delete(k))};
-})();
-const photoKey = () => "avatarPhoto:" + S.profile.id, artKey = () => "avatarArt:" + S.profile.id;
-async function getPhoto(){ try { return await PDB.get(photoKey()) || null; } catch (e) { return null; } }
-async function deletePhoto(){ try { await PDB.del(photoKey()); await PDB.del(artKey()); } catch (e) {} }
-// A resized copy (longest side 1600px) is what's kept: enough for a character, small enough for a phone.
-async function readPhoto(file){
-  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Choose a JPG, PNG or WebP photo.");
-  if (file.size > 25e6) throw new Error("That photo is too large. Try one under 25 MB.");
-  const url = URL.createObjectURL(file), img = new Image();
-  try {
-    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error("That file couldn't be opened as a photo.")); img.src = url; });
-    const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
-    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-    return await new Promise(res => c.toBlob(res, "image/jpeg", .88));
-  } finally { URL.revokeObjectURL(url); }
-}
-async function savePhoto(blob, crop){ S.profile.id ||= uid(); save(); await PDB.put(photoKey(), {blob, crop: crop || {x: .5, y: .45, z: 1}, at: today()}); }
-// Drag to reposition, slide to zoom. The crop is stored as the frame's centre (0–1 of the photo) and a zoom.
-function photoCropper(root, rec, onCrop){
-  const url = URL.createObjectURL(rec.blob), crop = {...rec.crop};
-  root.innerHTML = `<div class="crop"><img alt="Your photo" draggable="false"><i class="crop-guide" aria-hidden="true"></i></div>
-    <label class="field crop-zoom"><span>Zoom</span><input type="range" min="1" max="3" step="0.01" value="${crop.z}" aria-label="Zoom the photo"></label>`;
-  const box = root.querySelector(".crop"), img = box.querySelector("img"), zoomEl = root.querySelector("input[type=range]");
-  const place = () => {
-    const bw = box.clientWidth, bh = box.clientHeight, iw = img.naturalWidth, ih = img.naturalHeight; if (!iw || !bw) return;
-    const s = Math.max(bw / iw, bh / ih) * crop.z, w = iw * s, h = ih * s;
-    crop.x = Math.min(1 - bw / 2 / w, Math.max(bw / 2 / w, crop.x)); crop.y = Math.min(1 - bh / 2 / h, Math.max(bh / 2 / h, crop.y));
-    Object.assign(img.style, {width: w + "px", height: h + "px", left: bw / 2 - crop.x * w + "px", top: bh / 2 - crop.y * h + "px"});
-    return {w, h};
-  };
-  img.onload = place; img.src = url;
-  let drag = null;
-  box.onpointerdown = e => { drag = {x: e.clientX, y: e.clientY, cx: crop.x, cy: crop.y, ...place()}; box.setPointerCapture(e.pointerId); };
-  box.onpointermove = e => { if (!drag) return; crop.x = drag.cx - (e.clientX - drag.x) / drag.w; crop.y = drag.cy - (e.clientY - drag.y) / drag.h; place(); };
-  box.onpointerup = box.onpointercancel = () => { if (drag) { drag = null; onCrop({...crop}); } };
-  zoomEl.oninput = () => { crop.z = +zoomEl.value; place(); };
-  zoomEl.onchange = () => onCrop({...crop});
-  return () => URL.revokeObjectURL(url);
-}
-// Upload, preview, crop, replace and delete. Used in onboarding and in Account.
-function photoPanel(root, onDone){
-  let stop = null;
-  const draw = async () => {
-    stop && stop(); stop = null;
-    const rec = await getPhoto();
-    root.innerHTML = `${rec ? `<div class="crop-wrap"></div>` : `<label class="photo-drop"><input type="file" accept="image/jpeg,image/png,image/webp" hidden><b>${ICON.plus}Upload a photo</b><small>JPG, PNG or WebP. A clear photo of your face works best.</small></label>`}
-      ${rec ? `<div class="actions"><label class="btn quiet sm" style="cursor:pointer">Replace photo<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label><button type="button" class="btn quiet sm" data-delphoto style="color:var(--danger)">Delete photo</button></div>` : ""}
-      <small class="muted" style="font-size:11px">Your photo stays on this device. It isn't uploaded, isn't in backups, and you can delete it any time.</small>
-      <p class="muted" data-perr role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
-    if (rec) stop = photoCropper(root.querySelector(".crop-wrap"), rec, crop => PDB.put(photoKey(), {...rec, crop}));
-    root.querySelector("input[type=file]").onchange = async e => {
-      const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-      try { await savePhoto(await readPhoto(f)); await PDB.del(artKey()); draw(); onDone && onDone(true); }
-      catch (err) { const p = root.querySelector("[data-perr]"); p.textContent = err.message || "That photo couldn't be saved."; p.hidden = false; }
-    };
-    const del = root.querySelector("[data-delphoto]");
-    if (del) del.onclick = async () => { if (del.dataset.confirm !== "1") { del.dataset.confirm = "1"; del.textContent = "Tap again to delete"; return; } await deletePhoto(); toast("Photo deleted"); draw(); onDone && onDone(false); };
-  };
-  draw();
-}
-// What "Create my avatar" can honestly do right now.
-async function createIllustrated(){
-  const rec = await getPhoto(); if (!rec) return {ok: false, reason: "photo"};
-  if (!AVATAR_GENERATOR) return {ok: false, reason: "unavailable"};
-  const art = await AVATAR_GENERATOR({photo: rec.blob, crop: rec.crop, look: avatarLook().look || null});
-  await PDB.put(artKey(), {...art, at: today()}); return {ok: true};
-}
-const GEN_NOTE = "Turning a photo into an illustrated character needs an image-generation model, and Paint a Picture doesn't have one yet. Nothing has been generated or faked. Your photo is kept privately on this device for when it's switched on; until then you'll use the built-in Detailed 2D character, which you can still personalise.";
-function drawAvatarPreview(cvs, style){
+const LOOKS = {girl: "Girl", boy: "Boy"};
+// A short-lived version kept an uploaded photo in this browser's IndexedDB; that step is gone, so any photo left from it is deleted.
+try { indexedDB.deleteDatabase("paintAPicturePrivate"); } catch (e) {}
+function drawAvatarPreview(cvs){
   const k = Math.min(2, devicePixelRatio || 1);
   if (!cvs.dataset.sized) { cvs.dataset.w = cvs.width; cvs.dataset.h = cvs.height; cvs.style.width = cvs.width + "px"; cvs.style.height = cvs.height + "px"; cvs.width *= k; cvs.height *= k; cvs.dataset.sized = 1; }
   const w = +cvs.dataset.w, h = +cvs.dataset.h; // its size on screen, however many times it's redrawn
   const g = cvs.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cvs.width, cvs.height);
   const bgc = g.createLinearGradient(0, 0, 0, cvs.height); bgc.addColorStop(0, "#fde8ef"); bgc.addColorStop(1, "#f7d6e2"); g.fillStyle = bgc; g.fillRect(0, 0, cvs.width, cvs.height);
-  if (style === "pixel") { g.imageSmoothingEnabled = false; const s = Math.floor(cvs.height * .78 / AV_H); g.drawImage(avatarSprite("down", 0), (cvs.width - AV_W * s) / 2 | 0, cvs.height - AV_H * s - 8 * k | 0, AV_W * s, AV_H * s); }
-  else { g.translate(cvs.width / 2, cvs.height - 6 * k); g.scale(k, k); drawDoll(g, h * .92, "down", -1); }
+  g.imageSmoothingEnabled = false; const s = Math.floor(cvs.height * .78 / AV_H); g.drawImage(avatarSprite("down", 0), (cvs.width - AV_W * s) / 2 | 0, cvs.height - AV_H * s - 8 * k | 0, AV_W * s, AV_H * s);
 }
 
 /* =====================================================================
@@ -3758,7 +3608,7 @@ function drawOb(){
       ${optional ? `<button class="btn quiet sm" id="obSkip">Skip for now</button>` : `<span style="width:40px"></span>`}</header>
     <main class="ob-main" id="obMain"></main><footer class="ob-foot" id="obFoot"></footer>`;
   if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
-  if ($("obSkip")) $("obSkip").onclick = () => { obAvSub = "look"; obGo(obStep + 1); };
+  if ($("obSkip")) $("obSkip").onclick = () => obGo(obStep + 1);
   ({welcome: obWelcome, profile: obProfile, places: obPlaces, dreams: obDreams, avatar: obAvatar, goal: obGoal, world: obWorld})[k]($("obMain"), $("obFoot"));
 }
 function obWelcome(M, Fo){
@@ -3839,51 +3689,11 @@ function obDreams(M, Fo){
   Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
   $("obNext").onclick = () => obGo(4);
 }
-// Bringing her into the world: look → style → photo (Detailed 2D) → create → approve. All of it can be skipped.
-let obAvSub = "look";
 function obAvatar(M, Fo){
-  const A = S.profile.avatar, setA = patch => { Object.assign(A, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; };
-  const sub = k => { obAvSub = k; drawOb(); $("obMain")?.scrollTo?.(0, 0); };
-  const foot = (back, next, label, disabled) => { Fo.innerHTML = `${back ? `<button class="btn ghost" id="obAvBack">Back</button>` : "<span></span>"}<button class="btn" id="obAvNext" ${disabled ? "disabled" : ""}>${label}</button>`; if (back) $("obAvBack").onclick = back; $("obAvNext").onclick = next; };
-  if (obAvSub === "look") {
-    M.innerHTML = `<h1 class="ob-h dark">Let's bring you into your Dream Life.</h1><p class="ob-sub">Your world should have you in it. Upload a photo and we'll help you create your own character.</p>
-      <div class="field"><span>How would you like your avatar to look?</span><div class="cklist" role="group">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" class="ck" aria-pressed="${A.look === k}" data-look="${k}"><span class="cb round" aria-hidden="true" ${A.look === k ? 'aria-checked="true"' : ""}></span>${v}</button>`).join("")}<button type="button" class="ck" data-look=""><span class="cb round" aria-hidden="true"></span>Skip for now</button></div>
-      <small>This is about your character's appearance, not your gender. You can change it any time in Account.</small></div>`;
-    M.querySelectorAll("[data-look]").forEach(b => b.onclick = () => { setA({look: b.dataset.look || null}); sub("style"); });
-    foot(null, () => sub("style"), "Continue");
-  } else if (obAvSub === "style") {
-    M.innerHTML = `<h1 class="ob-h dark">Choose your style.</h1><p class="ob-sub">Both are the same you. You can switch later.</p>
-      <div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel World", "Matches the world's game style"], ["doll", "Detailed 2D", "Illustrated, made from your photo"]].map(([k, l, d]) => `<button type="button" class="av-card" aria-pressed="${A.style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b><small>${d}</small></button>`).join("")}</div>`;
-    M.querySelectorAll("[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev));
-    M.querySelectorAll("[data-style]").forEach(b => b.onclick = () => { setA({style: b.dataset.style}); M.querySelectorAll("[data-style]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    foot(() => sub("look"), () => sub(A.style === "doll" ? "photo" : "approve"), "Continue");
-  } else if (obAvSub === "photo") {
-    M.innerHTML = `<h1 class="ob-h dark">Add a photo of you.</h1><p class="ob-sub">Move and zoom it so your face fills the frame.</p><div id="obPhoto" style="display:grid;gap:12px"></div>
-      <button type="button" class="btn quiet sm" id="obNoPhoto" style="justify-self:start">Continue without a photo</button>`;
-    const refresh = async () => { const has = !!(await getPhoto()); const b = $("obAvNext"); if (b) b.disabled = !has; };
-    photoPanel($("obPhoto"), refresh);
-    $("obNoPhoto").onclick = () => sub("approve");
-    foot(() => sub("style"), () => sub("create"), "Create my avatar", true); refresh();
-  } else if (obAvSub === "create") {
-    M.innerHTML = `<h1 class="ob-h dark">Creating your character…</h1><div class="ob-loading" aria-live="polite"><span class="spin" aria-hidden="true"></span><span>Looking at your photo</span></div>`;
-    Fo.innerHTML = "";
-    createIllustrated().then(r => {
-      if (r.ok) { sub("approve"); return; }
-      M.innerHTML = `<h1 class="ob-h dark">We can't make your illustrated character yet.</h1><p class="ob-sub">${GEN_NOTE}</p>`;
-      foot(() => sub("photo"), () => sub("approve"), "Use a temporary character");
-    }).catch(() => { M.innerHTML = `<h1 class="ob-h dark">That didn't work.</h1><p class="ob-sub">Something went wrong creating your character. Your photo is still saved on this device.</p>`; foot(() => sub("photo"), () => sub("approve"), "Continue"); });
-  } else {
-    M.innerHTML = `<h1 class="ob-h dark">Here's you.</h1><p class="ob-sub">Make it feel like you. Everything here can be changed later in Account.</p>
-      <div class="ob-hero"><canvas id="obMe" width="160" height="200" aria-label="Your character"></canvas></div>
-      <div class="actions">${A.style === "doll" ? `<button type="button" class="btn quiet sm" id="obNewPhoto">Upload a different photo</button>` : ""}<button type="button" class="btn quiet sm" id="obChangeLook">Change appearance</button>${AVATAR_GENERATOR && A.style === "doll" ? `<button type="button" class="btn quiet sm" id="obRegen">Regenerate</button>` : ""}</div>
-      <div id="obAv" style="display:grid;gap:16px"></div>`;
-    const me = () => drawAvatarPreview($("obMe"), A.style);
-    avatarEditor($("obAv"), me, {photo: false}); me();
-    if ($("obNewPhoto")) $("obNewPhoto").onclick = () => sub("photo");
-    $("obChangeLook").onclick = () => sub("look");
-    if ($("obRegen")) $("obRegen").onclick = () => sub("create");
-    foot(() => sub(A.style === "doll" ? "photo" : "style"), () => { obAvSub = "look"; obGo(5); }, "This is me");
-  }
+  M.innerHTML = `<h1 class="ob-h dark">Let's bring you into your Dream Life.</h1><p class="ob-sub">Your world should have you in it. Make your character; you can change it any time in Account.</p><div id="obAv" style="display:grid;gap:16px"></div>`;
+  avatarEditor($("obAv"));
+  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
+  $("obNext").onclick = () => obGo(5);
 }
 function obGoal(M, Fo){
   const draw = () => {
@@ -3903,7 +3713,7 @@ function obWorld(M, Fo){
   M.innerHTML = `<h1 class="ob-h dark">Painting your world…</h1>
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
-      <li><span class="cb" aria-hidden="true"></span><span>Your character, ${S.profile.avatar.style === "doll" ? "detailed 2D" : "pixel art"}</span></li></ul>
+      <li><span class="cb" aria-hidden="true"></span><span>Your character</span></li></ul>
     <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
