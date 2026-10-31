@@ -127,6 +127,8 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .phead h1{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1;margin:0;letter-spacing:-.005em}
 .phead .sub{font-size:13px;color:var(--muted);font-weight:600;margin-top:4px}
+/* page headers stay put while the page scrolls under them */
+.page>.phead{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin:-16px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:16px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px))}
 .eyebrow{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-height:1.1}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border:1px solid transparent;border-radius:var(--r);padding:10px 15px;font-weight:700;font-size:15px;background:var(--accent-strong);color:#fff;white-space:nowrap}
@@ -260,8 +262,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-f .btn.ghost:hover{background:var(--accent-soft)}
 .pl-head{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
 .pl-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.pp-intro{margin:-16px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
-.as-hello{margin:-16px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.pp-intro{margin:-8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.as-hello{margin:-8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
 .acc-head{display:flex;align-items:center;gap:6px}
 .acc-head .pbtn{border-color:transparent;background:transparent;color:var(--muted)}.acc-head .pbtn:hover{background:var(--sunk)}
 .acc-toggle{flex:1;display:flex!important;align-items:center;gap:10px}
@@ -382,9 +384,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .search-res button{all:unset;cursor:pointer;display:grid;gap:1px;width:100%;box-sizing:border-box;padding:9px 10px;border-radius:9px}
 .search-res button:hover,.search-res button:focus-visible{background:var(--sunk)}
 .search-res b{font-size:15px}.search-res span{font-size:13px;color:var(--muted);font-weight:600}
-.dest-row{display:flex;align-items:center;gap:8px;padding:10px 2px;flex-wrap:wrap}
-.dest-row .grow{flex:1 1 140px;min-width:0;display:grid;gap:1px}
-.dest-row b{font-size:15px}.dest-row span{font-size:13px;color:var(--muted);font-weight:600}
+.dest-row{display:flex;align-items:center;gap:8px;padding:10px 2px}
+.dest-row .grow{flex:1 1 0;min-width:0;display:grid;gap:1px}
+.dest-name{all:unset;cursor:pointer}.dest-row b,.dest-name{font-size:15px;font-weight:700}.dest-name:focus-visible{outline:2px solid var(--accent);border-radius:6px}
+.cat-row{display:flex;align-items:center;gap:8px}.cat-row input[type=text]{flex:1;border-bottom-color:transparent;padding:12px 2px}.cat-row input[type=text]:focus{border-bottom-color:var(--accent-strong)}
+.cat-n{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}.cat-row .iconbtn{margin:0 -10px 0 0;color:var(--muted)}.cat-row .iconbtn.is-off{opacity:.35}
 .dest-row select{width:auto;max-width:150px;padding:7px 9px;font-size:13px}
 .ibtn{all:unset;cursor:pointer;box-sizing:border-box;width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:12px;color:var(--ink-2)}.ibtn .ico{width:18px;height:18px}.ibtn:hover{background:var(--sunk)}.ibtn:focus-visible{outline:2px solid var(--accent)}.ibtn.on{color:var(--accent-ink)}
 .ms-row .ibtn+.ibtn{margin-left:-6px}
@@ -3331,8 +3335,8 @@ function editAspiration(id, preset){
 }
 function editCategories(){
   const draw = () => {
-    $("sheetB").innerHTML = `<ul class="steps">${S.categories.map((c, i) => `<li><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name" style="padding:8px 10px;font-size:15px">${(n => `<button type="button" class="btn quiet sm${n ? " is-off" : ""}" data-rmcat="${i}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>Remove</button>${n ? `<small class="cat-why">Used by ${n} dream${n === 1 ? "" : "s"}. Move ${n === 1 ? "it" : "them"} to another category to remove this one.</small>` : ""}`)(S.aspirations.filter(a => a.category === c).length)}</li>`).join("")}</ul>
-      <div style="display:flex;gap:8px"><input type="text" id="catNew" placeholder="New category"><button type="button" class="btn ghost" id="catAdd">Add</button></div>`;
+    $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name">${n ? `<span class="cat-n">${n} dream${n === 1 ? "" : "s"}</span>` : ""}<button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
+      <div class="cat-row"><input type="text" id="catNew" placeholder="New category" aria-label="New category"><button type="button" class="btn quiet sm" id="catAdd">${ICON.plus}Add</button></div>`;
     $("sheetB").querySelectorAll("[data-cat]").forEach(inp => inp.onchange = () => { const i = +inp.dataset.cat, old = S.categories[i], v = inp.value.trim(); if (!v || v === old) return; commit(s => { s.categories[i] = v; s.aspirations.forEach(a => { if (a.category === old) a.category = v; }); }); });
     $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} dream${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
     $("catAdd").onclick = () => { const v = $("catNew").value.trim(); if (v && !S.categories.includes(v)) { commit(s => s.categories.push(v)); draw(); } };
@@ -3698,9 +3702,9 @@ function placeSearch(root, onPick){
 }
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
-  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow"><b>${esc(d.name)}</b><span>${esc([STAGES[d.stage], d.country, (GENERIC_ENVS.includes(d.env) ? ENV_LABEL[d.env] + " scenery" : ENV_LABEL[d.env] + " artwork"), LANDMARKS[d.landmark] && LANDMARKS[d.landmark].title].filter(Boolean).join(" · "))}</span></div>
+  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
-    ${opts && opts.edit ? `<button type="button" class="pbtn icon-sm" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>` : ""}<button type="button" class="pbtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
+    <button type="button" class="pbtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
 function wireDestRows(root, redraw){
   root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => { st.destinations.find(d => d.id === s.dataset.purpose).purpose = s.value; }));
