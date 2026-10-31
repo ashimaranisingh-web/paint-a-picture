@@ -671,7 +671,8 @@ function clarityOf(a){
 const isUnlocked = a => clarityOf(a).c >= .999;
 const lockShown = new Map(), unlockedAt = new Map();
 const ICON_LOCK = '<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
-function dreamMark(a){
+function dreamMark(a, starOnly){
+  if (starOnly) return `<span class="dmark" aria-hidden="true">${GI.star}</span>`;
   const open = isUnlocked(a), now = performance.now();
   if (open && lockShown.get(a.id)) unlockedAt.set(a.id, now); // seen locked earlier this visit: let the lock fall away once
   lockShown.set(a.id, !open);
@@ -2571,7 +2572,7 @@ function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a)}${esc(a.title)}</h3>
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a, true)}${esc(a.title)}</h3>
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
       <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture">${ICON.right}</button></div>`;
   card.hidden = false;
