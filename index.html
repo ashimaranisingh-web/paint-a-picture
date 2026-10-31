@@ -106,7 +106,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .journey button{all:unset;cursor:pointer;position:relative;z-index:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.62);padding:6px 0}
 .journey button[aria-current="true"]{color:#ff8db3}
 .journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.journey .you{position:absolute;bottom:4px;height:2px;width:0;border-radius:2px;background:var(--accent);box-shadow:0 0 6px rgba(240,79,133,.6);transition:left .6s cubic-bezier(.4,0,.2,1),width .6s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.journey .you{position:absolute;bottom:4px;height:5px;width:0;pointer-events:none;background:radial-gradient(circle at center,var(--accent) 0 2.5px,transparent 3px);filter:drop-shadow(0 0 4px rgba(240,79,133,.7));transition:left .6s cubic-bezier(.4,0,.2,1),width .6s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .vision-banner{position:absolute;left:50%;top:calc(var(--safe-top) + 70px);transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
@@ -378,7 +378,7 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .journey::before{display:none}
 .journey .link{flex:1 1 8px;min-width:8px;height:1px;background:rgba(255,255,255,.28);align-self:center}
 .journey button{flex:0 1 auto;min-width:44px;height:44px;padding:0 8px;font-size:13px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s;box-sizing:border-box}
-.journey .you{bottom:8px}
+.journey .you{bottom:5px}
 .tips{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px;display:grid;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .tips h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.1}
@@ -525,7 +525,7 @@ const CAT_KIND = {"Places to live":"villa", "Places & travel":"balloon", "Home &
 const TIMEFRAMES = ["Within 2 years", "2–5 years", "5–10 years", "10–15 years"];
 // Where a place sits in her story: lived there before, lives there now, or somewhere she's working towards.
 const STAGES = {past: "Lived here before", current: "Live here now", future: "Want to get to"};
-const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", experience: "Travel"};
+const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", experience: "Travel", loved: "Done & Loved"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
 const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"]};
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
@@ -892,7 +892,7 @@ function newDestination(p, purpose){
     if (same.length) { lat = same.reduce((s, g) => s + g.lat, 0) / same.length; lon = same.reduce((s, g) => s + g.lon, 0) / same.length; }
   }
   const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "experience"), custom: !!p.custom, createdAt: today()};
-  d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" ? "past" : "future"; return d;
+  d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" || d.purpose === "loved" ? "past" : "future"; return d;
 }
 
 /* ---------------- placing districts on the grid ----------------
@@ -3023,8 +3023,11 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") { if (ddMenu
    The real <select> keeps the value and fires "change", so the code that reads it doesn't change. */
 let ddMenu = null, ddTouch = null;
 function closeDD(){ if (ddMenu) { ddMenu.remove(); ddMenu = null; } }
-function openDD(sel){
-  closeDD();
+let ddPickedAt = 0, ddByKey = false; // when an option was last picked; whether this list was opened from the keyboard
+function openDD(sel, byKey){
+  if (ddMenu && ddMenu.sel === sel) { closeDD(); return; }   // tapping an open dropdown closes it
+  if (performance.now() - ddPickedAt < 450) return;          // the tap that picked an option mustn't open another dropdown
+  closeDD(); ddByKey = !!byKey;
   const r = sel.getBoundingClientRect(), m = document.createElement("div");
   m.className = "dd-menu"; m.setAttribute("role", "listbox"); m.sel = sel;
   m.innerHTML = [...sel.options].map((o, i) => o.value === "__new" ? `<button type="button" role="option" class="dd-add" data-i="${i}" aria-selected="false">${ICON.plus}<span>${esc(o.text)}</span></button>` : `<button type="button" role="option" data-i="${i}" aria-selected="${o.selected}" ${o.disabled ? "disabled" : ""}><span>${esc(o.text)}</span>${o.selected ? '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</button>`).join("");
@@ -3033,7 +3036,7 @@ function openDD(sel){
   m.style.minWidth = w + "px"; m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
   m.style.top = (below >= h || below >= r.top ? r.bottom + 6 : Math.max(8, r.top - h - 6)) + "px";
   m.querySelectorAll("button").forEach(b => b.onclick = () => {
-    const i = +b.dataset.i; closeDD(); sel.focus();
+    const i = +b.dataset.i; closeDD(); ddPickedAt = performance.now(); if (ddByKey) sel.focus();
     if (sel.selectedIndex !== i) { sel.selectedIndex = i; sel.dispatchEvent(new Event("input", {bubbles: true})); sel.dispatchEvent(new Event("change", {bubbles: true})); }
   });
   m.onkeydown = e => { if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return; e.preventDefault(); const bs = [...m.querySelectorAll("button:not([disabled])")], k = bs.indexOf(document.activeElement); bs[(k + (e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length].focus(); };
@@ -3044,7 +3047,7 @@ document.addEventListener("touchstart", e => { const s = ddTarget(e); ddTouch = 
 document.addEventListener("touchend", e => { const s = ddTarget(e); if (!s || !ddTouch || ddTouch.s !== s) return; const t = e.changedTouches[0]; if (Math.abs(t.clientX - ddTouch.x) + Math.abs(t.clientY - ddTouch.y) > 10) return; e.preventDefault(); openDD(s); }, true);
 document.addEventListener("mousedown", e => { const s = ddTarget(e); if (s) { e.preventDefault(); openDD(s); } else if (ddMenu && !ddMenu.contains(e.target)) closeDD(); }, true);
 document.addEventListener("touchstart", e => { if (ddMenu && !ddMenu.contains(e.target) && !ddTarget(e)) closeDD(); }, {capture: true, passive: true});
-document.addEventListener("keydown", e => { const s = ddTarget(e); if (s && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); openDD(s); } }, true);
+document.addEventListener("keydown", e => { const s = ddTarget(e); if (s && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); openDD(s, true); } }, true);
 addEventListener("resize", closeDD); document.addEventListener("scroll", e => { if (ddMenu && !ddMenu.contains(e.target)) closeDD(); }, true);
 let sheetReturn = null;
 function openSheet(title, body, foot, mount){
@@ -3493,11 +3496,11 @@ function editAspiration(id, preset){
   const goals = id ? S.goals.filter(g => (g.aspirationIds || []).includes(id)) : [];
   const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
   openSheet(id ? "Edit dream" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one dream.</p>`}
-    <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
-      <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
     <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your dreams a home on the map."}</small></label>
+    <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
+      <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">Add category</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
@@ -3981,7 +3984,7 @@ function addPlaceSheet(after){
     let purpose = "experience", stage = "future";
     $("apStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("apStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
     $("apPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; $("apPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "experience" ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
+    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "experience" ? "study" : purpose, (purpose === "from" || purpose === "loved") && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
 function avatarEditor(root, onChange){
@@ -4101,7 +4104,7 @@ function obPlaces(M, Fo){
       <section><div class="eyebrow" style="margin:6px 0">Your places · ${S.destinations.length}</div>${destRows(S.destinations) || `<div class="empty" style="padding:8px 2px">No places yet. Search above, or tap an idea.</div>`}</section>`;
     $("obPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; touched = true; $("obPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
     $("obStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("obStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" && !touched ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage)) draw(); });
+    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" && !touched ? "study" : purpose, (purpose === "from" || purpose === "loved") && stage === "future" ? "past" : stage)) draw(); });
     wireDestRows(M, draw);
   };
   draw();
@@ -4110,8 +4113,8 @@ function obPlaces(M, Fo){
 }
 function obDreams(M, Fo){
   const draw = () => {
-    const ideas = S.destinations.map(d => ({title: {from: `Spend more time in ${d.name}`, live: `Live in ${d.name}`, study: `Study at ${d.name}`, work: `Work in ${d.name}`, visit: `Visit ${d.name}`, experience: `Experience ${d.name}`}[d.purpose], dest: d.id,
-      cat: {from: "Relationships & lifestyle", live: "Places & travel", study: "Career & education", work: "Career & education", visit: "Places & travel", experience: "Experiences & adventures"}[d.purpose]}))
+    const ideas = S.destinations.map(d => ({title: {from: `Spend more time in ${d.name}`, live: `Live in ${d.name}`, study: `Study at ${d.name}`, work: `Work in ${d.name}`, loved: `Go back to ${d.name}`, visit: `Visit ${d.name}`, experience: `Experience ${d.name}`}[d.purpose], dest: d.id,
+      cat: {loved: "Places & travel", from: "Relationships & lifestyle", live: "Places & travel", study: "Career & education", work: "Career & education", visit: "Places & travel", experience: "Experiences & adventures"}[d.purpose]}))
       .filter(i => !S.aspirations.some(a => a.title === i.title));
     M.innerHTML = `<h1 class="ob-h dark">What does your ideal life look like?</h1>
       <p class="ob-sub">Each dream becomes a landmark in your world. Think about home, work and study, health, adventures, money, the people around you.</p>

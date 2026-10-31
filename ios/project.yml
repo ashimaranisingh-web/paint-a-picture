@@ -31,6 +31,12 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIRequiresFullScreen: true
         UIViewControllerBasedStatusBarAppearance: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
         ITSAppUsesNonExemptEncryption: false
         NSPhotoLibraryUsageDescription: Choose a photo for a dream or an asset. It stays on your phone.
         NSCameraUsageDescription: Take a photo for a dream or an asset. It stays on your phone.
