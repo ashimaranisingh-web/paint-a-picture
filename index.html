@@ -207,6 +207,13 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .field small{font-size:13px;color:var(--muted)}
 input[type=text],input[type=search],input[type=email],input[type=url],input[type=date],input[type=datetime-local],input[type=number],select,textarea{width:100%;min-width:0;border:0;border-bottom:1.5px solid var(--line-2);border-radius:0;background:transparent;padding:11px 2px;font-size:16px;font-weight:500;line-height:1.35}
 textarea{resize:vertical;min-height:84px}
+textarea.fit{resize:none;min-height:0;overflow:hidden}
+.add-ic{color:var(--accent-ink)}
+.pl-card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:4px 6px 4px 14px;display:grid}
+.pl-row{display:flex;align-items:center;gap:8px;min-height:56px}.pl-t{flex:1;min-width:0;display:grid;gap:2px;font-size:15px;font-weight:600}.pl-t small{font-size:13px;font-weight:500;color:var(--muted)}
+.pl-pics{display:grid;border-top:1px solid var(--line);margin-right:8px}
+.pl-pic{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}.pl-pic:last-child{border-bottom:0}
+.pl-pic .grow{flex:1;min-width:0}.pl-pic .dc-thumb{width:40px;height:40px}.pl-pic:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 input::placeholder,textarea::placeholder{color:#8b8b83}
 input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--accent-strong);box-shadow:0 1px 0 var(--accent-strong)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -2881,8 +2888,11 @@ function openSheet(title, body, foot, mount){
   sh.hidden = false; $("scrim").hidden = false;
   $("sheetX").onclick = closeSheet;
   mount && mount(sh);
+  sh.querySelectorAll("textarea.fit").forEach(fitArea);
   const f = sh.querySelector("input,textarea,select"); if (f && matchMedia("(pointer:fine)").matches) f.focus();
 }
+const fitArea = ta => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + 2 + "px"; };
+document.addEventListener("input", e => { if (e.target.matches && e.target.matches("textarea.fit")) fitArea(e.target); });
 function closeSheet(){ if ($("sheet").hidden) return; $("sheet").hidden = true; $("scrim").hidden = true; $("sheet").innerHTML = ""; sheetReturn?.focus?.(); if (route === "onboard" && OB[obStep] !== "places") drawOb(); }
 $("scrim").onclick = closeSheet;
 let toastTimer;
@@ -2964,7 +2974,7 @@ function goalCard(g){
       ${g.milestones.length ? `<ul class="steps ms-list">${g.milestones.map(m => `<li class="${m.doneAt ? "done" : ""}"><button class="cb" role="checkbox" aria-checked="${!!m.doneAt}" aria-label="${esc(m.title)}" data-ms="${g.id}|${m.id}"></button>
           <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Linked to “${esc(goalById(m.linkGoal).title)}”</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No milestones yet. Small steps make a goal easier to start.</p>`}
-      <form class="ms-add" data-addms="${g.id}"><input type="text" placeholder="Add a milestone" aria-label="New milestone"><button class="btn ghost sm" type="submit">Add</button></form>
+      <form class="ms-add" data-addms="${g.id}"><input type="text" placeholder="Add a milestone" aria-label="New milestone"><button class="ibtn add-ic" type="submit" aria-label="Add milestone">${ICON.plus}</button></form>
       <div class="gc-actions">
         <button class="gc-act" data-editgoal="${g.id}">${GI.edit}Edit</button>
         ${closed ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Reopen</button>` : `${g.status === "paused" ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Resume</button>` : `<button class="gc-act" data-finish="${g.id}">${GI.done}Mark Finished</button>`}<button class="gc-act" data-cancel="${g.id}">${GI.letgo}Let It Go</button>`}
@@ -3017,32 +3027,33 @@ function editGoal(id, preset){
   let ms = g.milestones.map(m => ({...m})), links = new Set(g.aspirationIds || []);
   const asps = S.aspirations;
   openSheet(id ? "Edit Goal" : "Adding a Goal", `
-    <label class="field"><span>Goal name</span><input type="text" id="gTitle" value="${esc(g.title)}" placeholder="e.g. Build and launch my own product" maxlength="120"></label>
-    <label class="field"><span>Description</span><textarea id="gDesc" placeholder="What do you want to achieve, and why?">${esc(g.desc)}</textarea></label>
-    <div class="field"><span>Paint a Picture</span>${asps.length ? `<div class="cklist" id="gLinks">${asps.map(a => `<button type="button" class="ck" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span>${esc(a.title)}</button>`).join("")}</div><small>Pick every dream this goal moves you towards.</small>`
-      : `<small>Add dreams in Paint a Picture to connect them to your goals.</small>`}</div>
+    <label class="field"><span>Name</span><input type="text" id="gTitle" value="${esc(g.title)}" placeholder="e.g. Build and launch my own product" maxlength="120"></label>
+    <label class="field"><span>Description</span><textarea id="gDesc" class="fit" rows="1" placeholder="What do you want to achieve, and why?">${esc(g.desc)}</textarea></label>
+    <div class="pl-card" id="gPics"></div>
     <label class="field"><span>By when do you want to achieve this?</span><input type="date" id="gDeadline" value="${g.deadline}" min="${g.start}"></label>
     <div class="field"><span>Milestones</span><ul class="ms-edit" id="gMs"></ul><button type="button" class="btn quiet sm" id="gMsAdd" style="justify-self:start">${ICON.plus}Add milestone</button></div>
     <p class="muted" id="gErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `<button class="btn ghost" id="gCancel">Cancel</button><button class="btn" id="gSave">Save</button>`, () => {
-      // keep what's typed in the milestone rows before redrawing them
-      // a milestone can depend on another goal: link it, and it ticks itself when that goal is finished
-      let pickFor = -1; const others = S.goals.filter(x => x.id !== id && x.status !== "cancelled");
-      const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { const m = ms[+r.dataset.row]; m.title = r.querySelector("[data-f=title]").value; m.desc = r.querySelector("[data-f=desc]").value; });
+      // milestones are just named steps; only the goal itself links to pictures
+      const read = () => $("gMs").querySelectorAll("[data-row]").forEach(r => { ms[+r.dataset.row].title = r.querySelector("input").value; });
       const drawMs = () => {
-        $("gMs").innerHTML = ms.map((m, i) => `<li data-row="${i}"><div class="ms-row"><input type="text" data-f="title" value="${esc(m.title)}" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"></div>
-          <div class="ms-row"><input type="text" data-f="desc" value="${esc(m.desc || "")}" placeholder="Description (optional)" aria-label="Description for milestone ${i + 1}">
-            <button type="button" class="ibtn${m.linkGoal ? " on" : ""}" data-lk="${i}" aria-label="Link to another goal" aria-expanded="${pickFor === i}"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>
-            <button type="button" class="ibtn" data-rm="${i}" aria-label="Delete milestone"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button></div>
-          ${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Ticks itself when “${esc(goalById(m.linkGoal).title)}” is finished</small>` : ""}
-          ${pickFor === i ? `<div class="cklist ms-pick" role="group" aria-label="Goal this milestone depends on">${others.map(g => `<button type="button" class="ck" data-pick-goal="${g.id}"><span class="cb round" aria-hidden="true" ${m.linkGoal === g.id ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("") || `<p class="muted" style="margin:0;font-size:13px">There are no other goals to link to yet.</p>`}${m.linkGoal ? `<button type="button" class="ck" data-pick-goal=""><span class="cb round" aria-hidden="true"></span>No link</button>` : ""}</div>` : ""}</li>`).join("");
-        $("gMs").querySelectorAll("[data-lk]").forEach(b => b.onclick = () => { read(); const i = +b.dataset.lk; pickFor = pickFor === i ? -1 : i; drawMs(); });
-        $("gMs").querySelectorAll("[data-pick-goal]").forEach(b => b.onclick = () => { read(); const m = ms[pickFor]; m.linkGoal = b.dataset.pickGoal || null; if (!m.linkGoal) delete m.linkGoal; pickFor = -1; drawMs(); });
-        $("gMs").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { read(); ms.splice(+b.dataset.rm, 1); pickFor = -1; drawMs(); });
+        $("gMs").innerHTML = ms.map((m, i) => `<li data-row="${i}"><div class="ms-row"><input type="text" value="${esc(m.title)}" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"><button type="button" class="ibtn" data-rm="${i}" aria-label="Delete milestone">${GI.del}</button></div></li>`).join("");
+        $("gMs").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { read(); ms.splice(+b.dataset.rm, 1); drawMs(); });
       };
       drawMs();
       $("gMsAdd").onclick = () => { read(); ms.push({id: uid(), title: "", desc: "", due: "", doneAt: null}); drawMs(); $("gMs").lastElementChild.querySelector("input").focus(); };
-      document.querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); b.setAttribute("aria-pressed", links.has(k)); b.querySelector(".cb").setAttribute("aria-checked", links.has(k)); });
+      // the pictures this goal paints: a card that opens to pick from your dreams
+      let picsOpen = false;
+      const drawPics = () => {
+        const named = [...links].map(aspById).filter(Boolean).map(a => esc(a.title)).join(", ");
+        $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${named || (asps.length ? "Not linked yet" : "Add dreams in Paint a Picture first")}</small></span>
+          ${asps.length ? `<button type="button" class="ibtn${links.size ? " on" : ""}" id="gPicBtn" aria-expanded="${picsOpen}" aria-label="Choose pictures"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>` : ""}</div>
+          ${picsOpen ? `<div class="pl-pics" role="group" aria-label="Pictures this goal moves you towards">${asps.map(a => { const img = a.image ? imgUrl(a.image) : null; return `<button type="button" class="pl-pic" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="grow">${esc(a.title)}</span><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span></button>`; }).join("")}</div>` : ""}`;
+        $("gPics").querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
+        if ($("gPicBtn")) $("gPicBtn").onclick = () => { picsOpen = !picsOpen; drawPics(); };
+        $("gPics").querySelectorAll("[data-link]").forEach(b => b.onclick = () => { const k = b.dataset.link; links.has(k) ? links.delete(k) : links.add(k); drawPics(); $("gPics").querySelector(`[data-link="${k}"]`)?.focus(); });
+      };
+      drawPics();
       const dl = $("gDeadline");
       $("gCancel").onclick = closeSheet;
       $("gSave").onclick = () => {
@@ -3051,7 +3062,7 @@ function editGoal(id, preset){
         if (!title) { err.textContent = "Give the goal a name."; err.hidden = false; $("gTitle").focus(); return; }
         if (!deadline) { err.textContent = "Pick a target date. You can change it later."; err.hidden = false; return; }
         if (deadline < start) { err.textContent = `Pick a date on or after ${fmt(start)}.`; err.hidden = false; return; }
-        const aspirationIds = [...links].filter(aspById), milestones = ms.map(m => ({...m, title: m.title.trim(), desc: (m.desc || "").trim()})).filter(m => m.title);
+        const aspirationIds = [...links].filter(aspById), milestones = ms.map(m => ({...m, title: m.title.trim()})).filter(m => m.title);
         const data = {title, desc: $("gDesc").value.trim(), aspirationIds, aspirationId: aspirationIds[0] || null, start, deadline, milestones};
         commit(s => {
           if (id) { const x = s.goals.find(x => x.id === id); if (deadline !== x.deadline) x.deadlineHistory.push({from: x.deadline, to: deadline, on: today(), note: ""}); Object.assign(x, data); }
@@ -3316,7 +3327,7 @@ function editAspiration(id, preset){
   const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
   openSheet(id ? "Edit dream" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one dream.</p>`}
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
-    <label class="field"><span>Describe it</span><textarea id="aDesc" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
+    <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
     <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your dreams a home on the map."}</small></label>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">New category…</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
@@ -3376,7 +3387,7 @@ function editAspiration(id, preset){
 function editCategories(){
   const draw = () => {
     $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name">${n ? `<span class="cat-n">${n} dream${n === 1 ? "" : "s"}</span>` : ""}<button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
-      <div class="cat-row"><input type="text" id="catNew" placeholder="New category" aria-label="New category"><button type="button" class="btn quiet sm" id="catAdd">${ICON.plus}Add</button></div>`;
+      <div class="cat-row"><input type="text" id="catNew" placeholder="New category" aria-label="New category"><button type="button" class="ibtn add-ic" id="catAdd" aria-label="Add category">${ICON.plus}</button></div>`;
     $("sheetB").querySelectorAll("[data-cat]").forEach(inp => inp.onchange = () => { const i = +inp.dataset.cat, old = S.categories[i], v = inp.value.trim(); if (!v || v === old) return; commit(s => { s.categories[i] = v; s.aspirations.forEach(a => { if (a.category === old) a.category = v; }); }); });
     $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} dream${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
     $("catAdd").onclick = () => { const v = $("catNew").value.trim(); if (v && !S.categories.includes(v)) { commit(s => s.categories.push(v)); draw(); } };
