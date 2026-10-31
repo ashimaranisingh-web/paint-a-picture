@@ -282,7 +282,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .as-title{font-size:15px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .seg-full{display:grid;grid-template-columns:1fr 1fr}
 .gcards{list-style:none;margin:0;padding:0;display:grid;gap:20px}
-.gcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px}
+.gcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px;transition:border-color .5s ease}
+/* arriving from the map: a pink edge that breathes twice, so the card is easy to find */
+.gcard.arrive{border-color:var(--accent);animation:garrive 1.1s ease-in-out .25s 2}
+@keyframes garrive{0%,100%{box-shadow:0 0 0 0 rgba(240,79,133,0)}50%{box-shadow:0 0 0 6px rgba(240,79,133,.18)}}
 .gcard.gone{background:transparent}
 .gc-head{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:start;padding:12px 0;margin:-12px 0}
 .gc-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
@@ -338,7 +341,7 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent-strong)}
 #avatarPrev{width:77px;height:112px;border-radius:14px;image-rendering:pixelated;background:#6f9c4a;flex:none}
 .muted{color:var(--muted)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.journey .you{transition:left .5s ease,width .5s ease!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.journey .you{transition:left .5s ease,width .5s ease!important}.gcard.arrive{animation:garrive 1.1s ease-in-out .25s 2!important}}
 
 /* ---------- world HUD, places strip, tips ---------- */
 #hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -2162,6 +2165,18 @@ function renderView(now){
   drawHud(now);
 }
 
+// the Paint a Picture star, outlined so it reads on grass, sea and fog alike; unlocked stars are solid, locked ones breathe
+const STAR = ["....#....", "...###...", "...###...", "#########", ".#######.", "..#####..", "..#####..", ".###.###.", ".##...##."];
+function drawDreamStar(g, cx, cy, lit, p){
+  const x0 = Math.round(cx) - 4 * p, y0 = Math.round(cy) - 6 * p;
+  const px = (fn) => STAR.forEach((r, j) => { for (let i = 0; i < 9; i++) if (r[i] === "#") fn(x0 + i * p, y0 + j * p); });
+  g.globalAlpha = lit ? 1 : .75 + ((t >> 3) % 2) * .25;
+  px((x, y) => F(g, x - p, y - p, 3 * p, 3 * p, "#3b1424"));
+  px((x, y) => F(g, x, y, p, p, lit ? "#f04f85" : "#ffb0cb"));
+  F(g, x0 + 4 * p, y0 + p, p, p, "#fff"); if (lit) F(g, x0 + 3 * p, y0 + 3 * p, p, p, "#ffd0e0");
+  g.globalAlpha = 1;
+}
+
 /* --- fog of the future + lens. Where you're from is already familiar; the future starts dark. --- */
 const lensR = () => Math.round(22 + 12 * discovery());
 function composeFog(now, cx, cy){
@@ -2187,9 +2202,10 @@ function composeFog(now, cx, cy){
     fctx.globalAlpha = 1; fctx.globalCompositeOperation = "source-over";
     ctx.drawImage(fog, 0, 0);
   }
-  if (veil > .3 && !preview) for (const l of locs) { // beacons over places still in the dark
-    const c = locLit(l, now); if (c >= 1) continue;
-    const bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -4 || bx > VW + 4 || by < -4 || by > VH + 4) continue;
+  if (!preview) for (const l of locs) { // a soft beacon over fixed places still in the dark; a bold star over every dream
+    const c = locLit(l, now), bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -12 || bx > VW + 12 || by < -14 || by > VH + 12) continue;
+    if (!l.fixed) { drawDreamStar(ctx, bx, by - (reduced ? 0 : (t >> 4) % 2), c >= 1, scale < 1.6 ? 2 : 1); continue; }
+    if (veil <= .3 || c >= 1) continue;
     ctx.globalAlpha = .55 + ((t >> 3) % 2) * .3;
     F(ctx, bx, by - 2, 1, 1, "#ffc2d6"); F(ctx, bx - 1, by - 1, 3, 1, "#ffc2d6"); F(ctx, bx - 2, by, 5, 1, "#ffc2d6"); F(ctx, bx - 1, by + 1, 3, 1, "#ffc2d6"); F(ctx, bx, by + 2, 1, 1, "#ffc2d6");
     ctx.globalAlpha = 1;
@@ -2454,7 +2470,7 @@ function endPreview(){ preview = null; holdStart = 0; }
 // The map card leads to the dream's own card in Paint a Picture, opened and scrolled into view.
 function openDreamCard(id){
   openDream = id; go("dreams");
-  requestAnimationFrame(() => { const c = document.querySelector(`#p-dreams [data-dream="${id}"]`)?.closest(".gcard"); if (c) c.scrollIntoView({block: "start", behavior: reduced ? "auto" : "smooth"}); });
+  requestAnimationFrame(() => { const c = document.querySelector(`#p-dreams [data-dream="${id}"]`)?.closest(".gcard"); if (c) { c.scrollIntoView({block: "start", behavior: reduced ? "auto" : "smooth"}); c.classList.add("arrive"); setTimeout(() => c.classList.remove("arrive"), 2700); } });
 }
 let bubbleTimer;
 function say(text, wx, wy){
