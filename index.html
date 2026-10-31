@@ -3435,6 +3435,8 @@ function editAspiration(id, preset){
   const goals = id ? S.goals.filter(g => (g.aspirationIds || []).includes(id)) : [];
   const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
   openSheet(id ? "Edit dream" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one dream.</p>`}
+    <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
+      <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     <label class="field"><span>The dream</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
     <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your dreams a home on the map."}</small></label>
@@ -3442,13 +3444,12 @@ function editAspiration(id, preset){
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
     <div class="field" id="aVis"></div>
-    <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
-      <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     ${id ? `<div class="field"><span>Goals for this dream</span>${goals.length ? `<ul class="steps">${goals.map(g => `<li><span>${esc(g.title)}</span>${deadlineLine(g)}</li>`).join("")}</ul>` : `<small>No goals linked yet. Linking a goal is how this place starts to clear.</small>`}
       <button type="button" class="btn ghost sm" id="aNewGoal" style="justify-self:start">${ICON.plus}Add a goal for this</button></div>` : ""}
     <p class="muted" id="aErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `${id ? `${delIcon("aDel")}<button class="btn ghost" id="aCancel">Cancel</button>` : `<button class="btn ghost" id="aCancel">Cancel</button>`}<button class="btn" id="aSave">Save</button>`, () => {
       let destTouched = !!id || !!preset?.destinationId, catTouched = !!id || !!preset?.category;
+      if (matchMedia("(pointer:fine)").matches) setTimeout(() => $("aTitle")?.focus()); // start typing the dream, not on the landmark list above it
       const KIND_CAT = {fitness: "Fitness & wellbeing", campus: "Career & education", studio: "Career & education", home: "Home & surroundings", garden: "Home & surroundings", car: "Money & material", drift: "Experiences & adventures", beach: "Experiences & adventures", balloon: "Places & travel", villa: "Places & travel", picnic: "Relationships & lifestyle", library: "Skills & growth"};
       const guessDest = txt => { const s = txt.toLowerCase(); const hit = dests.find(d => s.includes(d.name.toLowerCase()) || GAZ.some(p => p.name === d.name && p.alias && p.alias.split(",").some(al => al.length > 2 && s.includes(al)))); return hit ? hit.id : (dests.find(d => d.purpose !== "from") || dests[0])?.id || ""; };
       const env = () => dests.find(d => d.id === $("aDest").value)?.env || "town";
