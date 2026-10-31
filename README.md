@@ -33,7 +33,7 @@ Live artifact: https://claude.ai/artifact/B4MDarDt35HqJsXJCguokv
 - A future place's progress uses the same weighting over all goals linked to its dreams. The district lifts from dark as it rises, each dream lights by its own goals, and the place's landmark appears from 50% and is complete at 100%.
 - Everything is calculated from the goals data, so the world can't drift out of step with it. The last level you saw is kept in `revealSeen`; when it has gone up, the change plays on the map the next time you open your world.
 - Past places get a one-time review: tick the goals you achieved there and they move to Finished, marked "Achieved in …". Nothing is assumed, and they don't count as on-time finishes.
-- Holding the lens on a dream for 10 seconds steps inside it: its picture, description and the goals that build it.
+- Tapping a dream's card on the map steps inside it: its picture, description and the goals that build it.
 
 ## Backup
 Account → Download backup saves everything (dreams, goals, steps, entries, reflections, device-only images) as one JSON file. Account → Restore from file loads it back, after a confirmation.

@@ -49,7 +49,7 @@ button{cursor:pointer}
 .mark{display:grid;gap:1px;text-shadow:0 1px 10px rgba(0,0,0,.55)}
 .mark-name{font-size:13px;font-weight:600;line-height:1.2;color:rgba(255,255,255,.78);letter-spacing:.02em}
 .mark-app{font-family:var(--sans);font-size:13px;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.01em}
-.mark-sub{font-family:var(--serif);font-size:20px;line-height:1.1;color:#fff;letter-spacing:.005em}
+.mark-sub{font-family:var(--serif);font-size:24px;line-height:1.1;color:#fff;letter-spacing:.005em}
 .gbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   }
 .gbtn:hover{background:rgba(30,36,48,.75)}
@@ -93,7 +93,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .inside.in-open{opacity:1;transform:none}
 .in-pic{background:var(--sunk);aspect-ratio:4/3;flex:none}.in-pic img,.in-pic canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
 .in-body{padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:grid;gap:8px;align-content:start;flex:1}
-.in-body h2{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.15;margin:-4px 0 0}.in-body p{margin:0;font-size:15px;color:var(--ink-2)}
+.in-body h2{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.15;margin:-4px 0 0}.in-body p{margin:0;font-size:15px;color:var(--ink-2)}
 .in-prog{display:grid;gap:4px;margin-top:4px}.in-prog small{font-size:13px;color:var(--muted);font-weight:600}
 .in-goals{list-style:none;margin:8px 0 0;padding:0;display:grid}.in-goals li{display:flex;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid var(--line);font-size:15px}.in-goals li:last-child{border-bottom:0}.in-goals li.done{color:var(--muted)}
 .in-foot{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:6px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
@@ -217,7 +217,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 @keyframes rise{from{transform:translateY(40px);opacity:.4}}
 .sheet-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
 #sheetX{border:0;background:transparent;margin-right:-10px}#sheetX:hover{background:var(--sunk)}
-.sheet-h h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-height:1.05}
+.sheet-h h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.05}
 .sheet-b{overflow:auto;padding:4px max(18px,env(safe-area-inset-right,0px)) 16px max(18px,env(safe-area-inset-left,0px));display:grid;gap:16px}
 .sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
 .progress-dots{display:flex;gap:5px}
@@ -349,7 +349,7 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .journey .you{bottom:8px}
 .tips{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px;display:grid;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
-.tips h3{font-family:var(--serif);font-weight:400;font-size:17px;margin:0;line-height:1.1}
+.tips h3{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.1}
 
 /* ---------- date pairs and button pairs that never collide ---------- */
 .dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:12px}
@@ -396,7 +396,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-dots{display:flex;gap:5px}.ob-dots i{width:18px;height:4px;border-radius:9px;background:var(--line-2)}.ob-dots i.on{background:var(--accent)}
 .ob-main{flex:1;min-height:0;overflow:auto;padding:10px max(20px,env(safe-area-inset-right,0px)) 24px max(20px,env(safe-area-inset-left,0px));display:grid;gap:16px;align-content:start}
 .ob-foot{display:flex;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
-.ob-h{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.02;margin:6px 0 0;letter-spacing:-.005em}
+.ob-h{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.1;margin:6px 0 0;letter-spacing:-.005em}
 .ob-p{font-size:17px;margin:0;color:rgba(255,255,255,.82)}
 .ob-sub{margin:-6px 0 0;color:var(--muted);font-size:15px}
 .ob-note{background:var(--sunk);color:var(--ink-2)}.ob-note b{color:var(--ink)}
@@ -410,7 +410,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-build{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .ob-build li{display:flex;gap:10px;align-items:center;font-weight:600}
 .ob-build .cb{transition:background .2s,border-color .2s}
-@media (min-width:560px){.ob-h{font-size:20px}}
+
 </style>
 
 <div id="app">
@@ -434,7 +434,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <div class="loccard" id="loccard" hidden></div>
     <div class="inside" id="inside" role="dialog" aria-modal="true" aria-labelledby="insideTitle" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Keep it on a dream for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -2202,7 +2202,6 @@ function composeFog(now, cx, cy){
       F(ctx, lx + co * (R + 3), ly + si * (R + 3), 1, 1, "rgba(5,8,15,.55)"); F(ctx, lx + co * (R + 2), ly + si * (R + 2), 1, 1, "rgba(250,236,226,.95)");
       if (a > 3.6 && a < 4.5) F(ctx, lx + co * (R - 1), ly + si * (R - 1), 1, 1, "rgba(255,255,255,.4)");
     }
-    if (lensHover && holdStart) { const p = Math.min(1, (now - holdStart) / 10000); for (let i = 0; i < 160 * p; i++) { const a = -Math.PI / 2 + i / 160 * Math.PI * 2; F(ctx, lx + Math.cos(a) * (R + 2), ly + Math.sin(a) * (R + 2), 1, 1, "#f04f85"); F(ctx, lx + Math.cos(a) * (R + 3), ly + Math.sin(a) * (R + 3), 1, 1, "#f04f85"); } }
   }
 }
 
@@ -2448,9 +2447,8 @@ function checkHold(now){
   const l = lens ? locs.find(l => Math.hypot(l.x - lens.x, l.y - 14 - lens.y) < 22) : null;
   if (l !== lensHover) { lensHover = l; holdStart = l ? now : 0; if (l) showLoc(l); }
   if (l && !holdStart && mode !== "lens") holdStart = now;
-  if (l && holdStart && !preview && now - holdStart > 10000) startPreview(l);
 }
-// Holding the lens on a dream for 10 seconds steps inside it: its picture, what it's about and the goals that build it.
+// Tapping a dream's card steps inside it: its picture, what it's about and the goals that build it.
 function startPreview(l){
   holdStart = 0; if (l.fixed) return;
   const a = l.a, c = clarityOf(a), img = a.image ? imgUrl(a.image) : null, gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), d = destOf(a);
@@ -2505,11 +2503,12 @@ function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-open-asp="${a.id}" aria-label="Open ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
-      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="lc-hint">Keep the lens here for 10 seconds to step inside.</small></button>
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="Step inside ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
+      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="lc-hint">Tap to step inside</small></button>
       <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
+  card.querySelector("[data-enter]").onclick = () => startPreview(l);
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
@@ -3887,7 +3886,7 @@ function obWorld(M, Fo){
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
       <li><span class="cb" aria-hidden="true"></span><span>Your character</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Keep it on a dream for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));
