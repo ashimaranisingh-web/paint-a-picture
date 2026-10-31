@@ -13,6 +13,7 @@
 /* Layout: phone-shaped app. Home = a dark, immersive pixel world with glass controls (mark top-left, menu top-right, Goals / This week at the bottom).
    Product screens = warm light paper, editorial serif titles, compact ruled lists, bottom sheets for editing. */
 :root{
+  --safe-top:env(safe-area-inset-top,0px); /* the notch / Dynamic Island; the desktop iPhone 14 frame uses 47px */
   --paper:#f7f4ee; --surface:#fffdf9; --sunk:#f0ece3;
   --ink:#1f2420; --ink-2:#474c46; --muted:#686961; --line:#e6e0d4; --line-2:#d6cfbf;
   --accent:#f04f85; --accent-strong:#cf3367; --accent-2:#b82a5a; --accent-ink:#c22f60; --accent-soft:#fde8ef;
@@ -33,7 +34,7 @@ button{cursor:pointer}
 #app{height:100%;max-width:390px;margin:0 auto;position:relative;overflow:hidden;background:var(--paper)}
 /* On a computer the app is shown at iPhone 14 size (390 × 844), centred; on a phone it fills the screen. */
 @media (min-width:560px){#app{box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(31,36,32,.14)}}
-@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:28px}}
+@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:28px;--safe-top:47px}}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column}
 .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
@@ -43,7 +44,7 @@ button{cursor:pointer}
 #scene{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:grab}
 #scene:focus-visible{outline:none}
 .home-top{position:absolute;inset:0 0 auto;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
-  padding:14px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+  padding:calc(var(--safe-top) + 14px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));pointer-events:none}
 .home-top>*{pointer-events:auto}
 .mark{display:grid;gap:1px;text-shadow:0 1px 10px rgba(0,0,0,.55)}
 .mark-name{font-size:13px;font-weight:600;line-height:1.2;color:rgba(255,255,255,.78);letter-spacing:.02em}
@@ -54,7 +55,7 @@ button{cursor:pointer}
 .gbtn:hover{background:rgba(30,36,48,.75)}
 .gbtn,.pbtn{position:relative}
 body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px rgba(16,19,27,.6)}
-.home-chips{position:absolute;top:66px;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:5;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.home-chips{position:absolute;top:calc(var(--safe-top) + 66px);left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:5;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
 .chip-g{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;border-radius:99px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   font-size:13px;font-weight:700;padding:6px 11px;}
 .chip-g.gold{background:rgba(232,196,110,.92);color:#2b2108;border-color:transparent}
@@ -87,6 +88,17 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
 .loccard .x{margin-left:auto}
+.lc-hint{display:block;margin-top:6px;font-size:11px;color:var(--muted);font-weight:600}
+.inside{position:absolute;inset:0;z-index:12;background:#fff;color:var(--ink);display:flex;flex-direction:column;overflow:auto;opacity:0;transform:scale(.2);transition:opacity .3s ease,transform .32s cubic-bezier(.2,.8,.2,1)}
+.inside.in-open{opacity:1;transform:none}
+.in-pic{background:var(--sunk);aspect-ratio:4/3;flex:none}.in-pic img,.in-pic canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.in-body{padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:grid;gap:8px;align-content:start;flex:1}
+.in-body h2{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.15;margin:-4px 0 0}.in-body p{margin:0;font-size:15px;color:var(--ink-2)}
+.in-prog{display:grid;gap:4px;margin-top:4px}.in-prog small{font-size:13px;color:var(--muted);font-weight:600}
+.in-goals{list-style:none;margin:8px 0 0;padding:0;display:grid}.in-goals li{display:flex;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid var(--line);font-size:15px}.in-goals li:last-child{border-bottom:0}.in-goals li.done{color:var(--muted)}
+.in-foot{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:6px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
+.in-foot .btn.ghost{background:transparent;border-color:transparent;color:var(--accent-ink)}
+@media (prefers-reduced-motion:reduce){.inside{transition:none}}
 .clar{display:grid;gap:5px}
 .clar-bar{height:4px;border-radius:9px;background:var(--line);overflow:hidden}
 .clar-bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
@@ -103,27 +115,27 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .journey button[aria-current="true"]{color:#ff8db3}
 .journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .journey .you{position:absolute;bottom:4px;height:2px;width:0;border-radius:2px;background:var(--accent);box-shadow:0 0 6px rgba(240,79,133,.6);transition:left .6s cubic-bezier(.4,0,.2,1),width .6s cubic-bezier(.4,0,.2,1);pointer-events:none}
-.vision-banner{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
+.vision-banner{position:absolute;left:50%;top:calc(var(--safe-top) + 70px);transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
 /* ---------- product pages ---------- */
 .pages{background:var(--paper)}
 .iconbtn{all:unset;cursor:pointer;box-sizing:border-box;width:44px;height:44px;display:grid;place-items:center;margin-left:-12px;border-radius:12px;color:var(--ink);flex:none}
 .iconbtn:hover{background:var(--sunk)}.iconbtn:focus-visible{outline:2px solid var(--accent-strong);outline-offset:-2px}
-.pmain{padding-top:env(safe-area-inset-top,0px)}
+.pmain{padding-top:var(--safe-top)}
 .ptop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--paper)}
 .brand{all:unset;cursor:pointer;display:flex;align-items:center;min-height:44px;font-family:var(--serif);font-size:20px;line-height:1}
 .pbtn{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .pbtn:hover{background:var(--sunk)}
 .pmain{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
-.page{padding:22px max(18px,env(safe-area-inset-right,0px)) 32px max(18px,env(safe-area-inset-left,0px));display:grid;gap:22px;align-content:start}
+.page{padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:grid;gap:20px;align-content:start}
 .pnav{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
 .pnav button{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;padding:9px 0 10px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .pnav button[aria-current="page"]{color:var(--accent-ink)}
 .pnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .phead h1{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1;margin:0;letter-spacing:-.005em}
-.phead .sub{font-size:13px;color:var(--muted);font-weight:600;margin-top:6px}
+.phead .sub{font-size:13px;color:var(--muted);font-weight:600;margin-top:4px}
 .eyebrow{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-height:1.1}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border:1px solid transparent;border-radius:var(--r);padding:10px 15px;font-weight:700;font-size:15px;background:var(--accent-strong);color:#fff;white-space:nowrap}
@@ -176,7 +188,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .stats div:first-child{border-left:0}
 .stats b{display:block;font-family:var(--serif);font-weight:400;font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
 .stats span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
-.panel{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:12px}
+.panel{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px}
 .insight{font-size:15px;color:var(--ink-2);display:grid;gap:6px}
 .insight div{display:flex;gap:9px}
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
@@ -191,7 +203,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .asp .d{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 
 /* forms + sheet */
-.field{display:grid;gap:6px}
+.field{display:grid;gap:8px}
 .field>span{font-size:13px;font-weight:700;color:var(--ink-2)}
 .field small{font-size:13px;color:var(--muted)}
 input[type=text],input[type=search],input[type=email],input[type=url],input[type=date],input[type=datetime-local],input[type=number],select,textarea{width:100%;min-width:0;border:0;border-bottom:1.5px solid var(--line-2);border-radius:0;background:transparent;padding:11px 2px;font-size:16px;font-weight:500;line-height:1.35}
@@ -213,6 +225,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
 .cklist{display:grid}
+.gcard.just-done{position:relative;animation:gdone .7s ease forwards}
+.gcard.just-done::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--accent-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/24px no-repeat;animation:gtick .45s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes gtick{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes gdone{0%,55%{opacity:1;transform:none}100%{opacity:0;transform:scale(.96)}}
 .av-one{display:grid;justify-items:center}.av-one canvas{width:120px;height:150px;border-radius:var(--r-lg)}
 .cb.round{border-radius:50%}
 .ck{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:44px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15px;font-weight:500}
@@ -228,7 +244,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .imgdrop{display:flex;gap:12px;align-items:center}
 .imgdrop img{width:72px;height:72px;border-radius:12px;object-fit:cover;background:var(--sunk)}
 .kindprev{width:72px;height:66px;border-radius:12px;image-rendering:pixelated;background:#6f9c4a;flex:none}
-.menu{position:absolute;top:64px;right:max(16px,env(safe-area-inset-right,0px));z-index:30;min-width:220px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;
+.menu{position:absolute;top:calc(var(--safe-top) + 64px);right:max(16px,env(safe-area-inset-right,0px));z-index:30;min-width:220px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:6px;
   box-shadow:0 20px 50px rgba(0,0,0,.22);display:grid}
 .menu button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;font-weight:700;font-size:15px}
 .menu button:hover,.menu button:focus-visible{background:var(--sunk)}
@@ -237,7 +253,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .toast{position:absolute;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;z-index:40;background:var(--ink);color:var(--paper);
   font-weight:700;font-size:13px;padding:10px 15px;border-radius:12px;transition:transform .25s,opacity .25s;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
 .toast.show{transform:translate(-50%,0);opacity:1}
-.toast.top{bottom:auto;top:calc(118px + env(safe-area-inset-top,0px))}
+.toast.top{bottom:auto;top:calc(118px + var(--safe-top))}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .ph-left{display:flex;align-items:center;gap:4px}
 .phead:has(.ph-left){align-items:center}
@@ -246,7 +262,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .sheet-f .btn.ghost:hover{background:var(--accent-soft)}
 .pl-head{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px}
 .pl-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
-.pp-intro{margin:-12px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.pp-intro{margin:-16px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
 .as-hello{margin:-8px 0 0;font-size:15px;color:var(--ink-2)}
 .acc-head{display:flex;align-items:center;gap:6px}
 .acc-head .pbtn{border-color:transparent;background:transparent;color:var(--muted)}.acc-head .pbtn:hover{background:var(--sunk)}
@@ -263,20 +279,21 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .as-blank{display:grid;place-items:center;font-family:var(--serif);font-size:20px;color:var(--muted);border:1px solid var(--line)}
 .as-title{font-size:15px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .seg-full{display:grid;grid-template-columns:1fr 1fr}
-.gcards{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.gcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:14px 14px 12px;display:grid;gap:10px}
+.gcards{list-style:none;margin:0;padding:0;display:grid;gap:20px}
+.gcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px}
 .gcard.gone{background:transparent}
-.gc-head{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:start;min-height:44px}
+.gc-head{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:start;padding:12px 0;margin:-12px 0}
 .gc-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .gc-title{font-size:15px;font-weight:700;line-height:1.3}
 .gc-head .acc-chev{grid-row:1/3;grid-column:2;align-self:start;padding:2px}
 .gc-desc{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .gc-links{display:flex;flex-wrap:wrap;gap:6px}
+.gc-past{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .gc-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:99px;padding:3px 8px}
 .gc-link .ico{width:11px;height:11px;fill:currentColor;stroke:none}
 .gc-prog{display:grid;gap:5px}
 .gc-dates{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);font-weight:600}
-.gc-body{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:10px}
+.gc-body{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:8px}
 .ms-list li{align-items:flex-start;padding:6px 0}.ms-list .cb{margin-top:1px}
 .ms-text{all:unset;cursor:pointer;flex:1;display:grid;gap:1px;min-height:24px}.ms-text small{font-size:13px;color:var(--muted)}
 .ms-list li.done .ms-text span{color:var(--muted);text-decoration:line-through}
@@ -362,7 +379,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 
 /* ---------- onboarding ---------- */
 .ob{background:var(--paper);z-index:15}
-.ob-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) 8px max(18px,env(safe-area-inset-left,0px))}
+.ob-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(var(--safe-top) + 12px) max(18px,env(safe-area-inset-right,0px)) 8px max(18px,env(safe-area-inset-left,0px))}
 .ob-brand{font-family:var(--serif);font-size:20px}
 .ob-dots{display:flex;gap:5px}.ob-dots i{width:18px;height:4px;border-radius:9px;background:var(--line-2)}.ob-dots i.on{background:var(--accent)}
 .ob-main{flex:1;min-height:0;overflow:auto;padding:10px max(20px,env(safe-area-inset-right,0px)) 24px max(20px,env(safe-area-inset-left,0px));display:grid;gap:16px;align-content:start}
@@ -403,8 +420,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <div class="hint" id="hint">Drag to explore · pinch or scroll to zoom</div>
     <nav class="journey" id="journey" aria-label="Your places"></nav>
     <div class="loccard" id="loccard" hidden></div>
+    <div class="inside" id="inside" role="dialog" aria-modal="true" aria-labelledby="insideTitle" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Keep it on a dream for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -456,6 +474,8 @@ const KINDS = {villa:"Modern villa", home:"Home", studio:"Studio", campus:"Unive
 const ZONE = {home:"home", library:"home", campus:"any", villa:"city", studio:"city", car:"city", drift:"car", fitness:"field", beach:"coast", balloon:"field", garden:"field", picnic:"field", fountain:"any"};
 const CAT_KIND = {"Places to live":"villa", "Places & travel":"balloon", "Home & surroundings":"home", "Career & creative work":"studio", "Career & education":"campus", "Fitness & wellbeing":"fitness", "Experiences & adventures":"balloon", "Money & material":"car", "Skills & growth":"library", "Relationships & lifestyle":"picnic"};
 const TIMEFRAMES = ["Within 2 years", "2–5 years", "5–10 years", "10–15 years"];
+// Where a place sits in her story: lived there before, lives there now, or somewhere she's working towards.
+const STAGES = {past: "Lived here before", current: "Live here now", future: "Want to get to"};
 const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", visit: "Visit", experience: "Experience"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
 const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"]};
@@ -517,6 +537,8 @@ function normalize(o){
   if (ORDER.every(id => s.destinations.some(d => d.id === id))) s.destinations = s.destinations.map((d, i) => [d, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map(x => x[0]);
   s.destinations.forEach(d => { if (d.id === "d-la" && d.name === "Los Angeles") d.name = "LA"; });
   addTaglines(s);
+  s.destinations.forEach(d => { if (!STAGES[d.stage]) d.stage = d.purpose === "from" ? "past" : d.id === "dm-delhi" ? "current" : "future"; }); // the demo lives in Delhi
+  s.revealSeen = o.revealSeen && typeof o.revealSeen === "object" ? o.revealSeen : null;
   s.destinations.forEach(d => { if (d.landmark === undefined || (d.landmark !== "none" && !landmarkOptions(d).includes(d.landmark))) d.landmark = defaultLandmark(d, s.aspirations || []); });
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; if (!Array.isArray(g.aspirationIds)) g.aspirationIds = g.aspirationId ? [g.aspirationId] : []; g.aspirationId = g.aspirationIds[0] || null; });
   s.entries.forEach(e => { e.goalIds ||= []; });
@@ -569,7 +591,7 @@ const goalById = id => S.goals.find(g => g.id === id);
 const aspById = id => S.aspirations.find(a => a.id === id);
 const originalDeadline = g => g.deadlineHistory.length ? g.deadlineHistory[0].from : g.deadline;
 const isOverdue = g => g.status === "active" && dayDiff(g.deadline, today()) < 0;
-const metDeadline = g => g.status === "done" && g.doneAt <= g.deadline;
+const metDeadline = g => g.status === "done" && !g.pastCity && g.doneAt <= g.deadline;
 function goalActivity(g){ return S.entries.filter(e => e.goalIds.includes(g.id)); }
 function goalProgress(g){
   const ms = g.milestones, done = ms.filter(m => m.doneAt).length;
@@ -582,13 +604,26 @@ function clarityOf(a){
   if (clarCache.has(a.id)) return clarCache.get(a.id);
   const r = clarityRaw(a); clarCache.set(a.id, r); return r;
 }
+// A dream unlocks only through finished goals. A goal linked to k dreams counts 1/k towards each, so it's never
+// counted twice; let-go and deleted goals don't count. Reopening a goal takes its share back.
 function clarityRaw(a){
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
-  let score = 0, entries = 0, steps = 0, done = 0;
-  for (const e of S.entries) if (e.goalIds.some(id => ids.has(id))) { score += e.size || 1; entries++; }
-  for (const g of gs) { for (const m of g.milestones) if (m.doneAt) { score += 3; steps++; } if (g.status === "done") { score += 8; done++; } }
-  return {c: Math.min(1, score / 24), entries, steps, done, goals: gs.length};
+  let total = 0, got = 0, entries = 0, steps = 0, done = 0;
+  for (const e of S.entries) if (e.goalIds.some(id => ids.has(id))) entries++;
+  for (const g of gs) { const w = 1 / g.aspirationIds.length; total += w; steps += g.milestones.filter(m => m.doneAt).length; if (g.status === "done") { got += w; done++; } }
+  return {c: total ? got / total : 0, entries, steps, done, goals: gs.length};
 }
+// A place you want to get to: the share of its linked goals that are finished, by the same weighting.
+function cityProgress(d){
+  let total = 0, got = 0;
+  for (const g of S.goals) {
+    if (g.status === "cancelled" || !(g.aspirationIds || []).length) continue;
+    const here = g.aspirationIds.map(aspById).filter(a => a && destOf(a)?.id === d.id).length; if (!here) continue;
+    const w = here / g.aspirationIds.length; total += w; if (g.status === "done") got += w;
+  }
+  return total ? got / total : 0;
+}
+const isLit = d => d.stage === "past" || d.stage === "current";
 // Overall discovery: any logged work, linked or not, slowly lifts the dark and widens the lens.
 function discovery(){
   if (clarVer === modelVer && discVal >= 0) return discVal;
@@ -598,11 +633,9 @@ function discovery(){
   for (const g of S.goals) { s += g.milestones.filter(m => m.doneAt).length * 2; if (g.status === "done") s += 5; }
   return (discVal = Math.min(1, s / 60));
 }
-// A clear view comes from each goal finished on time, plus one free view every week (it doesn't carry over).
-const clearViewsEarned = () => S.goals.filter(metDeadline).length;
-const weeklyViewFree = () => S.rewards.weekUsed !== weekStart(today());
-const clearViewsLeft = () => Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0)) + (weeklyViewFree() ? 1 : 0);
-function spendClearView(){ commit(s => { if (s.rewards.weekUsed !== weekStart(today())) s.rewards.weekUsed = weekStart(today()); else s.rewards.clearViewsUsed = (s.rewards.clearViewsUsed || 0) + 1; }); }
+// The clear view: one minute of the whole picture, once a day.
+const clearViewsLeft = () => S.rewards.dayUsed === today() ? 0 : 1;
+function spendClearView(){ commit(s => { s.rewards.dayUsed = today(); }); }
 
 /* =====================================================================
    3. MATCHING — local keyword matcher (always) + optional Claude
@@ -782,7 +815,7 @@ function newDestination(p, purpose){
     if (same.length) { lat = same.reduce((s, g) => s + g.lat, 0) / same.length; lon = same.reduce((s, g) => s + g.lon, 0) / same.length; }
   }
   const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "visit"), custom: !!p.custom, createdAt: today()};
-  d.landmark = defaultLandmark(d, []); return d;
+  d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" ? "past" : "future"; return d;
 }
 
 /* ---------------- placing districts on the grid ----------------
@@ -1935,13 +1968,25 @@ function prebuildIdle(){
   const run = () => { idleQueued = false; const D = [...DIST.values()].find(D => !D.terrain); if (!D) return; buildDistrictTerrain(D); prebuildIdle(); };
   (window.requestIdleCallback || (f => setTimeout(f, 120)))(run);
 }
-// A fixed landmark is as clear as the clearest dream in its place; places you're from start familiar.
+// A place's own landmarks and scenery begin to appear once it's past halfway, and are complete at 100%.
 function locClarity(l){
   if (!l.fixed) return clarityOf(l.a);
-  const rel = S.aspirations.filter(a => a.destinationId === l.D.d.id), best = rel.map(clarityOf).sort((a, b) => b.c - a.c)[0];
-  const base = l.D.d.purpose === "from" ? .6 : 0;
-  return best ? {...best, c: Math.max(base, best.c)} : {c: base, entries: 0, steps: 0, done: 0, goals: 0, unlinked: true};
+  return {c: Math.max(0, Math.min(1, (cityProgress(l.D.d) - .5) / .5)), entries: 0, steps: 0, done: 0, goals: 0};
 }
+/* --- how lit each part of the world is ---
+   Places you've lived and where you live now: fully lit. Places you want to get to: the district by its progress, each dream by
+   its own goals, its landmark from halfway. All of it comes from the goals data, so it stays in step with it. When the numbers
+   go up, the change plays once on the map (reveal), from what you saw last time (S.revealSeen) to now. */
+let reveal = null;
+const litKey = l => (l.fixed ? "f:" : "a:") + l.a.id;
+function litNow(){ const out = {}; for (const D of DIST.values()) out["d:" + D.d.id] = isLit(D.d) ? 1 : cityProgress(D.d); for (const l of locs) out[litKey(l)] = isLit(l.D.d) ? 1 : locClarity(l).c; return out; }
+function litShown(key, now){
+  if (!reveal || !(key in reveal.to)) return null;
+  const k = Math.max(0, Math.min(1, (now - reveal.start) / reveal.dur)), e = k * k * (3 - 2 * k);
+  return reveal.from[key] + (reveal.to[key] - reveal.from[key]) * e;
+}
+const districtLit = (D, now) => { const v = litShown("d:" + D.d.id, now); return v != null ? v : isLit(D.d) ? 1 : cityProgress(D.d); };
+const locLit = (l, now) => { const v = litShown(litKey(l), now); return v != null ? v : isLit(l.D.d) ? 1 : locClarity(l).c; };
 /* ---------------- the character, from her sheet ---------------- */
 const AV = {
   front: ["....oooooo....", "...ohhHchhho..", "..ohHhhhhchho.", ".ohhcssssshHho", ".ohhgggogggHho", "ohhhsssSssshho", "ohcnssllsshnho", "ohhhhsSSshhcho",
@@ -2100,12 +2145,13 @@ function composeFog(now, cx, cy){
     fctx.globalCompositeOperation = "multiply"; fctx.globalAlpha = veil; fctx.fillStyle = toHex(hex("#46506e").map((v, i) => v + (hex("#9aa2ba")[i] - v) * disc)); fctx.fillRect(0, 0, VW, VH);
     fctx.globalCompositeOperation = "destination-out"; fctx.fillStyle = "#000";
     for (const D of DIST.values()) {
-      if (D.d.purpose !== "from") continue;
+      const L = districtLit(D, now); if (L <= 0) continue;
       const x = D.ox - cx, y = D.oy - cy; if (x > VW || y > VH || x + CW < 0 || y + CH < 0) continue;
-      for (const [ins, a] of [[0, .3], [16, .5], [34, .8]]) { fctx.globalAlpha = a; fctx.fillRect(x + ins, y + ins, CW - 2 * ins, CH - 2 * ins); }
+      const k = Math.pow(L, 1.5); // early progress lifts the dark gently; the last stretch brings it fully to life
+      for (const [ins, a] of [[0, .45], [10, .75], [22, 1]]) { fctx.globalAlpha = a * k; fctx.fillRect(x + ins, y + ins, CW - 2 * ins, CH - 2 * ins); }
     }
     const hole = (x, y, r, k) => { if (x < -r || x > VW + r || y < -r || y > VH + r) return; for (const [f, a] of [[1, .35], [.82, .55], [.66, 1]]) { fctx.globalAlpha = a * k; oval(fctx, Math.round(x), Math.round(y), Math.max(1, Math.round(r * f)), Math.max(1, Math.round(r * f)), "#000"); } };
-    for (const l of locs) { const c = locClarity(l).c; if (c > 0) hole(l.x - cx, l.y - 14 - cy, 10 + 30 * c, Math.min(1, .45 + c)); }
+    for (const l of locs) { const c = locLit(l, now); if (c > 0 && c < 1.01) hole(l.x - cx, l.y - 14 - cy, 10 + 30 * c, Math.min(1, .45 + c)); }
     hole(av.x - cx, av.y - 12 - cy, 16, .9);
     if (preview) { const k = Math.min(1, (now - preview.start) / 700, (preview.end - now) / 700); hole(preview.l.x - cx, preview.l.y - 14 - cy, 64, Math.max(0, k)); }
     else if (lens) hole(lens.x - cx, lens.y - cy, lensR() + 2, 1);
@@ -2113,7 +2159,7 @@ function composeFog(now, cx, cy){
     ctx.drawImage(fog, 0, 0);
   }
   if (veil > .3 && !preview) for (const l of locs) { // beacons over places still in the dark
-    const c = locClarity(l).c; if (c >= 1) continue;
+    const c = locLit(l, now); if (c >= 1) continue;
     const bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -4 || bx > VW + 4 || by < -4 || by > VH + 4) continue;
     ctx.globalAlpha = .55 + ((t >> 3) % 2) * .3;
     F(ctx, bx, by - 2, 1, 1, "#ffc2d6"); F(ctx, bx - 1, by - 1, 3, 1, "#ffc2d6"); F(ctx, bx - 2, by, 5, 1, "#ffc2d6"); F(ctx, bx - 1, by + 1, 3, 1, "#ffc2d6"); F(ctx, bx, by + 2, 1, 1, "#ffc2d6");
@@ -2189,7 +2235,7 @@ function sizeScene(){
 }
 const homeDistrict = () => DIST.get((worldDests().find(d => d.purpose === "from") || worldDests()[0]).id) || [...DIST.values()][0];
 function refreshWorld(){
-  const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name, d.landmark || ""]));
+  const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name, d.landmark || "", d.stage || ""]));
   const ak = JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", a.destinationId || ""]));
   if (lk !== layoutKey) {
     const cxw = camX + VW / 2, cyw = camY + VH / 2, oldD = layoutKey ? districtAt(cxw, cyw, true) : null, rel = oldD ? {id: oldD.d.id, x: cxw - oldD.ox, y: cyw - oldD.oy} : null;
@@ -2205,6 +2251,7 @@ let lastTick = 0, camAnim = null, inertia = null;
 function loop(ts){
   requestAnimationFrame(loop);
   if (route !== "home" || document.hidden) return;
+  if (reveal) { viewDirty = true; if (ts > reveal.start + reveal.dur + 400) reveal = null; }
   if (zoomAnim) { const k = Math.min(1, (ts - zoomAnim.s) / zoomAnim.d), e = 1 - Math.pow(1 - k, 3); applyZoom(zoomAnim.z0 + (zoomAnim.z1 - zoomAnim.z0) * e, zoomAnim.ax, zoomAnim.ay); if (k >= 1) zoomAnim = null; }
   if (camAnim) { const k = Math.min(1, (ts - camAnim.s) / camAnim.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; camX = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e; camY = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e; clampCam(); if (k >= 1) { camAnim = null; saveCam(); } }
   moveTraveller(ts);
@@ -2373,16 +2420,28 @@ function checkHold(now){
   if (l && !holdStart && mode !== "lens") holdStart = now;
   if (l && holdStart && !preview && now - holdStart > 10000) startPreview(l);
 }
+// Holding the lens on a dream for 10 seconds steps inside it: its picture, what it's about and the goals that build it.
 function startPreview(l){
-  preview = {l, start: performance.now(), end: performance.now() + 9000, cam: {x: camX, y: camY, z: zoom}};
-  holdStart = 0; setZoom(Math.min(2.2, zoom * 1.6), l.x - camX, l.y - 14 - camY);
-  setTimeout(() => glideTo(l.x, l.y - 14, 900), 0);
-  showLoc(l, true);
+  holdStart = 0; if (l.fixed) return;
+  const a = l.a, c = clarityOf(a), img = a.image ? imgUrl(a.image) : null, gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), d = destOf(a);
+  preview = {l, start: performance.now(), end: Infinity};
+  const el = $("inside"), r = $("stage").getBoundingClientRect(), ox = (l.x - camX) * scale, oy = (l.y - 14 - camY) * scale;
+  el.style.transformOrigin = `${Math.round(ox)}px ${Math.round(oy)}px`;
+  el.innerHTML = `<div class="in-pic">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="96" height="72" aria-hidden="true"></canvas>`}</div>
+    <div class="in-body"><div class="eyebrow">${esc(a.category)}${d ? ` · ${esc(d.name)}` : ""}</div><h2 id="insideTitle">${esc(a.title)}</h2>${a.desc ? `<p>${esc(a.desc)}</p>` : ""}
+      <div class="in-prog"><span class="clar-bar" aria-hidden="true"><i style="width:${Math.round(c.c * 100)}%"></i></span><small>${gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"} finished` : "No goals linked yet. Add one to start building this."}</small></div>
+      ${gs.length ? `<ul class="in-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</li>`).join("")}</ul>` : ""}</div>
+    <div class="in-foot"><button class="btn ghost" id="inEdit">Open dream</button><button class="btn" id="inOut">Step outside</button></div>`;
+  const cv = el.querySelector("canvas"); if (cv) drawKindPreview(cv, a);
+  el.hidden = false; requestAnimationFrame(() => el.classList.add("in-open"));
+  $("loccard").hidden = true;
+  $("inOut").onclick = endPreview; $("inOut").focus();
+  $("inEdit").onclick = () => { endPreview(); go("dreams"); editAspiration(a.id); };
 }
 function endPreview(){
   if (!preview) return;
-  const c = preview.cam; preview = null; holdStart = 0;
-  setZoom(c.z); setTimeout(() => glideTo(c.x + VW / 2, c.y + VH / 2, 700), 0);
+  preview = null; holdStart = 0;
+  const el = $("inside"); el.classList.remove("in-open"); setTimeout(() => { if (!preview) el.hidden = true; }, reduced ? 0 : 320);
   if (lensHover) showLoc(lensHover);
 }
 let bubbleTimer;
@@ -2417,20 +2476,19 @@ function showLoc(l){
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
   card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-open-asp="${a.id}" aria-label="Open ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
-      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
+      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="lc-hint">Keep the lens here for 10 seconds to step inside.</small></button>
       <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
-  const n = clearViewsLeft(), fromGoals = Math.max(0, clearViewsEarned() - (S.rewards.clearViewsUsed || 0)) > 0, next = fmt(addDays(weekStart(today()), 7), {weekday: "long", day: "numeric", month: "short"});
-  if (!n) {
-    openSheet("The whole picture", `<p style="margin:0">Everything in your world reveals itself as you move through your goals. Finish a goal by its deadline and this opens for a minute, so you can see the whole picture you're painting. You also get one free look every week; your next one comes on ${esc(next)}.</p>`,
+  if (!clearViewsLeft()) {
+    openSheet("You've had today's look", `<p style="margin:0">Your dreams unlock as you achieve your goals. You can see the full picture for a minute a day, so come back tomorrow for another look.</p>`,
       `<button class="btn" id="cvOk">Got it</button>`, () => { $("cvOk").onclick = closeSheet; });
     return;
   }
-  openSheet("Do you want to see the whole picture you painted?", `<p style="margin:0">Everything in your world reveals itself as you move through your goals. ${fromGoals ? "You just achieved a goal, so this gets you a minute to see the whole picture and get motivated." : "This week's free look gets you a minute to see the whole picture and get motivated."}</p>`,
+  openSheet("See the whole picture?", `<p style="margin:0">Your dreams unlock as you achieve your goals. So you can see the full picture for a minute a day. Want to proceed?</p>`,
     `<button class="btn ghost" id="cvNo">Cancel</button><button class="btn" id="cvGo">Proceed</button>`, () => {
       $("cvNo").onclick = closeSheet;
       $("cvGo").onclick = () => { closeSheet(); spendClearView(); vision = {start: performance.now(), end: performance.now() + 60000}; $("visionBanner").hidden = false; setZoom(.75); renderHomeChips(); };
@@ -2443,7 +2501,7 @@ function renderHomeChips(){
   // The eye in the map controls: shut and gold when there's a view to spend, shut and dimmed when not, open while one runs.
   const v = $("useVision"), st = vision ? "open" : n ? "ready" : "off";
   v.className = "eye " + st; v.setAttribute("aria-pressed", !!vision);
-  v.setAttribute("aria-label", vision ? "Clear view running" : n ? `See your whole world for a minute (${n} available)` : "Clear view: locked");
+  v.setAttribute("aria-label", vision ? "Clear view running" : n ? "See your whole world for a minute" : "Clear view: used today");
   v.onclick = () => { if (!vision) clearViewSheet(); };
 }
 
@@ -2716,12 +2774,24 @@ function go(r){
 }
 function renderPage(r){ ({goals: renderGoals, week: renderWeek, dreams: renderDreams, account: renderAccount, assets: renderAssets, journal: renderJournal})[r]?.(); }
 function afterChange(){ modelVer++; viewDirty = true; updateTitle(); if (route === "home") { refreshWorld(); renderHomeChips(); if (overviewOn) drawOverview(); } else renderPage(route); }
-// When a place becomes fully clear for the first time, celebrate it once on the world.
+// Coming back to the world: anything your finished goals have lit since you last looked comes to life in front of you.
 function celebrateNew(){
-  const full = S.aspirations.filter(a => clarityOf(a).c >= 1).map(a => a.id), seen = new Set(S.seenBuilt || []), fresh = full.filter(id => !seen.has(id));
-  if (!fresh.length) return;
-  S.seenBuilt = full; save();
-  setTimeout(() => { fresh.forEach(id => { const l = locs.find(l => l.a.id === id); if (l) { sparkleAt(l); glideTo(l.x, l.y - 14); } }); toast("Fully revealed: " + fresh.map(id => aspById(id)?.title).join(", ")); }, 400);
+  refreshWorld();
+  const now = litNow(), seen = S.revealSeen;
+  S.revealSeen = now; save();
+  if (!seen) return; // the first time: nothing to replay
+  const up = Object.keys(now).filter(k => now[k] > (seen[k] ?? 0) + .001);
+  if (!up.length) return;
+  const from = {}, to = {}; up.forEach(k => { from[k] = seen[k] ?? 0; to[k] = now[k]; });
+  reveal = {from, to, start: performance.now() + 900, dur: reduced ? 1 : 2600};
+  const ds = up.filter(k => k.startsWith("d:")).map(k => DIST.get(k.slice(2))).filter(Boolean).sort((a, b) => (to["d:" + b.d.id] - from["d:" + b.d.id]) - (to["d:" + a.d.id] - from["d:" + a.d.id]));
+  const D = ds[0] || locs.find(l => up.includes(litKey(l)))?.D;
+  if (D) setTimeout(() => glideTo(D.ox + CW / 2, D.oy + CH / 2, 900), 200);
+  setTimeout(() => {
+    locs.filter(l => to[litKey(l)] >= 1 && (from[litKey(l)] ?? 0) < 1).forEach(sparkleAt);
+    const names = ds.map(D => D.d.name), full = ds.filter(D => to["d:" + D.d.id] >= 1).map(D => D.d.name);
+    if (names.length) toast(full.length ? `${full.join(" and ")} ${full.length === 1 ? "is" : "are"} fully revealed.` : `${names.join(" and ")} ${names.length === 1 ? "is" : "are"} coming to life.`);
+  }, 900 + (reduced ? 0 : 2600));
 }
 
 /* --- menu + sheet + toast --- */
@@ -2733,7 +2803,7 @@ document.addEventListener("click", e => {
   const oa = e.target.closest("[data-open-asp]"); if (oa) { go("dreams"); editAspiration(oa.dataset.openAsp); return; }
   if (!e.target.closest("#menu")) closeMenu();
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("sheet").hidden) closeSheet(); else closeMenu(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("sheet").hidden) closeSheet(); else if (preview) endPreview(); else closeMenu(); } });
 let sheetReturn = null;
 function openSheet(title, body, foot, mount){
   sheetReturn = document.activeElement;
@@ -2764,6 +2834,7 @@ const monthYear = s => { const d = parseDay(s); return MONTHS[d.getMonth()] + "'
 const goalAsps = g => (g.aspirationIds || []).map(aspById).filter(Boolean);
 function deadlineLine(g){
   const d = dayDiff(g.deadline, today());
+  if (g.status === "done" && g.pastCity) return `<span class="tag dot">Achieved in ${esc(S.destinations.find(d => d.id === g.pastCity)?.name || "a past city")}</span>`;
   if (g.status === "done") return metDeadline(g) ? `<span class="tag green dot">Finished ${fmt(g.doneAt)}, on time</span>` : `<span class="tag dot">Finished ${fmt(g.doneAt)}</span>`;
   if (g.status === "paused") return `<span class="tag dot">Paused</span>`;
   if (g.status === "cancelled") return `<span class="tag dot">Let go</span>`;
@@ -2785,19 +2856,39 @@ function renderGoals(){
   const list = goalTab === "active" ? active.sort((a, b) => a.deadline.localeCompare(b.deadline)) : done.sort(byEnd);
   el.innerHTML = `
     <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Goals</h1></div><button class="btn quiet" id="newGoal">${ICON.plus}Add Goal</button></div>
-    <div class="sub" style="margin-top:-12px;font-size:11px">${active.length} Active Goal${active.length === 1 ? "" : "s"} · ${done.length} Finished Goal${done.length === 1 ? "" : "s"}</div>
-    <div class="seg seg-full" role="tablist" aria-label="Goals">${[["active", "Active"], ["finished", "Finished"]].map(([k, l]) => `<button role="tab" aria-selected="${goalTab === k}" aria-pressed="${goalTab === k}" data-gt="${k}">${l}</button>`).join("")}</div>
+    ${pastReviewHTML()}
+    <div class="seg seg-full" role="tablist" aria-label="Goals">${[["active", `Active (${active.length})`], ["finished", `Finished (${done.length})`]].map(([k, l]) => `<button role="tab" aria-selected="${goalTab === k}" aria-pressed="${goalTab === k}" data-gt="${k}">${l}</button>`).join("")}</div>
     ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>${goalTab === "active" ? "Nothing in motion yet" : "Nothing finished yet"}</b>${goalTab === "active" ? "Add a goal and connect it to the dreams it moves you towards." : "Goals you finish will be kept here."}</div>`}
     ${goalTab === "finished" && gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
   $("newGoal").onclick = () => editGoal(null);
+  el.querySelectorAll("[data-review]").forEach(b => b.onclick = () => reviewPastCity(b.dataset.review));
   el.querySelectorAll("[data-gt]").forEach(b => b.onclick = () => { goalTab = b.dataset.gt; openGoal = null; renderGoals(); });
   wireGoalCards(el);
+}
+// Places you've lived: once, you can confirm which of the goals linked to their dreams you achieved there. Only what you tick
+// moves to Finished (marked as achieved in that place); nothing is assumed, and those don't count as on-time finishes.
+const pastCandidates = d => S.goals.filter(g => (g.status === "active" || g.status === "paused") && goalAsps(g).some(a => destOf(a)?.id === d.id));
+function pastReviewHTML(){
+  const d = S.destinations.find(d => d.stage === "past" && !d.reviewed && pastCandidates(d).length); if (!d) return "";
+  return `<section class="panel past-review"><div class="eyebrow">Your time in ${esc(d.name)}</div><p style="margin:0;font-size:15px">Did you achieve any of your goals while you lived there? Confirm them once and they move to Finished.</p><button class="btn quiet sm" data-review="${d.id}" style="justify-self:start">Review ${esc(d.name)}</button></section>`;
+}
+function reviewPastCity(id){
+  const d = S.destinations.find(x => x.id === id), list = pastCandidates(d), pick = new Set();
+  openSheet(`Your time in ${esc(d.name)}`, `<p class="muted" style="margin:0">Tick only the goals you actually achieved while you lived in ${esc(d.name)}. You can do this once.</p>
+    <div class="cklist">${list.map(g => `<button type="button" class="ck" aria-pressed="false" data-pg="${g.id}"><span class="cb" aria-hidden="true"></span>${esc(g.title)}</button>`).join("")}</div>`,
+    `<button class="btn ghost" id="prNone">None of these</button><button class="btn" id="prSave">Save</button>`, () => {
+      $("sheetB").querySelectorAll("[data-pg]").forEach(b => b.onclick = () => { const k = b.dataset.pg, on = !pick.has(k); on ? pick.add(k) : pick.delete(k); b.setAttribute("aria-pressed", on); b.querySelector(".cb").setAttribute("aria-checked", on); });
+      const finish = () => { commit(s => { s.destinations.find(x => x.id === id).reviewed = true; s.goals.forEach(g => { if (pick.has(g.id)) { g.status = "done"; g.doneAt = today(); g.pastCity = id; } }); }); closeSheet(); toast(pick.size ? `${pick.size} achievement${pick.size === 1 ? "" : "s"} from ${d.name} moved to Finished.` : "Noted."); };
+      $("prNone").onclick = () => { pick.clear(); finish(); };
+      $("prSave").onclick = finish;
+    });
 }
 function goalCard(g){
   const p = goalProgress(g), pct = Math.round((p.ratio || 0) * 100), open = openGoal === g.id, asps = goalAsps(g), closed = g.status === "done" || g.status === "cancelled";
   return `<li class="gcard${g.status === "cancelled" ? " gone" : ""}">
     <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="gc-title">${esc(g.title)}</span><span class="acc-chev">${ICON_DOWN}</span>
       ${g.desc ? `<span class="gc-desc">${esc(g.desc)}</span>` : ""}</button>
+    ${g.pastCity ? `<div class="gc-past">Achieved in ${esc(S.destinations.find(d => d.id === g.pastCity)?.name || "a past city")}</div>` : ""}
     ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${GI.star}${esc(a.title)}</span>`).join("")}</div>` : ""}
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% of milestones done" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${monthYear(g.start)}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${monthYear(closed && g.doneAt ? g.doneAt : g.deadline)}</span></div></div>
@@ -2819,11 +2910,17 @@ function wireGoalCards(el){
   el.querySelectorAll("[data-addms]").forEach(f => f.onsubmit = e => { e.preventDefault(); const v = f.querySelector("input").value.trim(); if (!v) return; commit(s => s.goals.find(g => g.id === f.dataset.addms).milestones.push({id: uid(), title: v, desc: "", due: "", doneAt: null})); });
   on("[data-finish]", b => {
     const g = goalById(b.dataset.finish), onTime = today() <= g.deadline;
-    commit(s => { const x = s.goals.find(x => x.id === g.id); x.status = "done"; x.doneAt = today(); });
-    openGoal = null; toast(onTime ? "Finished on time. You earned a one-minute view of your whole world." : "Finished. It took longer, and it still counts.");
+    // the card gets a tick and folds away, then the goal moves to Finished
+    const card = b.closest(".gcard"); if (card) card.classList.add("just-done");
+    setTimeout(() => {
+      const before = new Map(S.destinations.map(d => [d.id, cityProgress(d)]));
+      commit(s => { const x = s.goals.find(x => x.id === g.id); x.status = "done"; x.doneAt = today(); });
+      const lit = S.destinations.filter(d => !isLit(d) && cityProgress(d) > (before.get(d.id) || 0)).map(d => d.name);
+      openGoal = null; renderGoals(); toast(lit.length ? `Finished. ${lit.join(" and ")} just got brighter. Open your world to see it.` : onTime ? "Finished on time." : "Finished. It took longer, and it still counts.");
+    }, reduced ? 0 : 700);
   });
   on("[data-cancel]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.cancel); g.status = "cancelled"; g.closedAt = today(); }); openGoal = null; toast("Let go. It's kept under Finished, in Let go."); });
-  on("[data-reopen]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.reopen); g.status = "active"; g.doneAt = null; g.closedAt = null; }); openGoal = null; goalTab = "active"; renderGoals(); });
+  on("[data-reopen]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.reopen); g.status = "active"; g.doneAt = null; g.closedAt = null; delete g.pastCity; }); openGoal = null; goalTab = "active"; renderGoals(); });
   on("[data-editgoal]", b => editGoal(b.dataset.editgoal));
   on("[data-delgoal]", b => {
     if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.innerHTML = GI.del + "Tap again to delete"; return; }
@@ -3005,7 +3102,7 @@ function logEntry(editId){
         commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f); else s.entries.push({id: uid(), ...f}); });
         const grew = S.aspirations.filter(a => clarityOf(a).c > (before.get(a.id) || 0));
         closeSheet();
-        toast(grew.length ? `Logged. ${grew.map(a => a.title).join(" and ")} got clearer.` : "Logged. Your world got a little lighter.");
+        toast("Logged. Finishing the goal is what lights up its place.");
       };
     }
   }
@@ -3396,7 +3493,7 @@ async function restoreBackup(file){
 function demoState(profile){
   const s = blankState(); s.onboarded = true; s.onboarding = {step: 6, done: true};
   s.profile = Object.assign(s.profile, {name: "Maya", email: ""}, profile ? {avatar: {...profile.avatar}} : {});
-  const P = (id, gazName, purpose, name) => { const g = GAZ.find(p => p.name === gazName); return {id, name: name || g.name, country: g.country, lat: g.lat, lon: g.lon, env: g.env, purpose, custom: false, createdAt: addDays(today(), -60)}; };
+  const P = (id, gazName, purpose, name) => { const g = GAZ.find(p => p.name === gazName); return {id, name: name || g.name, country: g.country, lat: g.lat, lon: g.lon, env: g.env, purpose, stage: purpose === "from" ? "past" : id === "dm-delhi" ? "current" : "future", custom: false, createdAt: addDays(today(), -60)}; };
   s.destinations = [P("dm-mumbai", "Mumbai", "from"), P("dm-delhi", "Delhi", "work"), P("dm-la", "LA", "live"), P("dm-ny", "New York", "visit"), P("dm-greece", "Santorini", "experience", "Greece")];
   layoutAll(s.destinations);
   const d = n => addDays(today(), n);
@@ -3481,10 +3578,10 @@ function setDemoMode(on){
 
 
 /* --- shared pieces: place search, the avatar editor --- */
-function addDestination(p, purpose){
+function addDestination(p, purpose, stage){
   if (S.destinations.length >= MAX_DEST) { toast(`Your world has room for ${MAX_DEST} places.`); return null; }
   if (!p.custom && S.destinations.some(d => d.name === p.name)) { toast(`${p.name} is already in your world.`); return null; }
-  const d = newDestination(p, purpose); placeDestination(d, S.destinations.concat(d));
+  const d = newDestination(p, purpose); if (STAGES[stage]) d.stage = stage; placeDestination(d, S.destinations.concat(d));
   commit(s => s.destinations.push(d));
   return d;
 }
@@ -3510,7 +3607,7 @@ function placeSearch(root, onPick){
 }
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
-  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow"><b>${esc(d.name)}</b><span>${esc([d.country, (GENERIC_ENVS.includes(d.env) ? ENV_LABEL[d.env] + " scenery" : ENV_LABEL[d.env] + " artwork"), LANDMARKS[d.landmark] && LANDMARKS[d.landmark].title].filter(Boolean).join(" · "))}</span></div>
+  return list.length ? `<ul class="list">${list.map(d => `<li class="dest-row"><div class="grow"><b>${esc(d.name)}</b><span>${esc([STAGES[d.stage], d.country, (GENERIC_ENVS.includes(d.env) ? ENV_LABEL[d.env] + " scenery" : ENV_LABEL[d.env] + " artwork"), LANDMARKS[d.landmark] && LANDMARKS[d.landmark].title].filter(Boolean).join(" · "))}</span></div>
     <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     ${opts && opts.edit ? `<button type="button" class="pbtn icon-sm" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>` : ""}<button type="button" class="pbtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
@@ -3528,6 +3625,7 @@ function editDestination(id){
   const d = S.destinations.find(x => x.id === id); if (!d) return;
   openSheet("Edit place", `<label class="field"><span>Name</span><input type="text" id="edName" value="${esc(d.name)}"></label>
     <label class="field"><span>A line about it (optional)</span><input type="text" id="edTag" value="${esc(d.tagline || "")}" maxlength="40" placeholder="e.g. Love living here"><small>Shown under the place's name in your world.</small></label>
+    <label class="field"><span>In your story</span><select id="edStage">${Object.entries(STAGES).map(([k, v]) => `<option value="${k}" ${d.stage === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you've lived and where you live now are fully lit. Places you want to get to come to life as you finish the goals linked to them.</small></label>
     <label class="field"><span>What it is for you</span><select id="edPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you're from start already clear. Everywhere else starts in the dark.</small></label>
     <div id="edLm"></div>
     <label class="field"><span>Scenery</span><select id="edEnv">${(GENERIC_ENVS.includes(d.env) ? [] : [d.env]).concat(GENERIC_ENVS).map(k => `<option value="${k}" ${d.env === k ? "selected" : ""}>${ENV_LABEL[k]}${GENERIC_ENVS.includes(k) ? "" : " (its own artwork)"}</option>`).join("")}</select></label>`,
@@ -3538,15 +3636,17 @@ function editDestination(id){
           : `<div class="field"><span>Landmark</span><small>There's no landmark artwork for this place yet, so it keeps the scenery without one.</small></div>`; };
       lmField(); $("edEnv").onchange = lmField; $("edName").onchange = lmField;
       $("edCancel").onclick = closeSheet;
-      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, env: $("edEnv").value, landmark: $("edLmSel") ? $("edLmSel").value : "none"})); regionShown = ""; closeSheet(); toast("Place updated"); };
+      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, stage: $("edStage").value, env: $("edEnv").value, landmark: $("edLmSel") ? $("edLmSel").value : "none"})); regionShown = ""; closeSheet(); toast("Place updated"); };
     });
 }
 function addPlaceSheet(after){
   openSheet("Add a place", `<p class="muted" style="margin:0">Somewhere you'd love to live, study, work or explore. It becomes a part of your map.</p><div id="apSearch" style="display:grid;gap:12px"></div>
+<div class="field"><span>In your story</span><div class="pills" id="apStage">${Object.entries(STAGES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "future"}" data-st="${k}">${v}</button>`).join("")}</div></div>
     <div class="field"><span>It's a place to…</span><div class="pills" id="apPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "visit"}" data-pp="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
-    let purpose = "visit";
+    let purpose = "visit", stage = "future";
+    $("apStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("apStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
     $("apPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; $("apPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "visit" ? "study" : purpose); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
+    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "visit" ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
   });
 }
 function avatarEditor(root, onChange){
@@ -3652,15 +3752,17 @@ function obProfile(M, Fo){
   };
 }
 function obPlaces(M, Fo){
-  let purpose = "live", touched = false;
+  let purpose = "live", touched = false, stage = "future";
   const draw = () => {
     M.innerHTML = `<h1 class="ob-h dark">Where would you love to live, study, work or explore?</h1>
       <p class="ob-sub">Add as many as you like. Include where you're from: those places start already clear.</p>
+<div class="field"><span>In your story</span><div class="pills" id="obStage">${Object.entries(STAGES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === stage}" data-st="${k}">${v}</button>`).join("")}</div></div>
       <div class="field"><span>Add it as a place to…</span><div class="pills" id="obPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === purpose}" data-pp="${k}">${v}</button>`).join("")}</div></div>
       <div id="obSearch" style="display:grid;gap:12px"></div>
       <section><div class="eyebrow" style="margin:6px 0">Your places · ${S.destinations.length}</div>${destRows(S.destinations) || `<div class="empty" style="padding:8px 2px">No places yet. Search above, or tap an idea.</div>`}</section>`;
     $("obPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; touched = true; $("obPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" && !touched ? "study" : purpose)) draw(); });
+    $("obStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("obStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" && !touched ? "study" : purpose, purpose === "from" && stage === "future" ? "past" : stage)) draw(); });
     wireDestRows(M, draw);
   };
   draw();
@@ -3713,7 +3815,7 @@ function obWorld(M, Fo){
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
       <li><span class="cb" aria-hidden="true"></span><span>Your character</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Hold it over a landmark for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Keep it on a dream for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));

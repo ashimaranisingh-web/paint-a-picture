@@ -1,6 +1,6 @@
 # Paint a Picture
 
-A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where they want to live, study, work or explore. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Your world starts in the dark; real progress on goals linked to a dream makes that place clearer. Meet a deadline and you earn a one-minute view of the whole picture; everyone also gets one free view a week. Miss one and you lose nothing.
+A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where they want to live, study, work or explore. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Places you've lived and where you live now are fully lit; places you want to get to start dark and come to life as you finish the goals linked to their dreams. Once a day you can see the whole picture for a minute. Miss one and you lose nothing.
 
 ## Run it
 Open `index.html` in a browser, or serve the folder:
@@ -26,6 +26,14 @@ python3 -m http.server 8000
 - Data is saved in the browser (`localStorage`). When opened as a claude.ai artifact it also syncs to the owner's private store and can use Claude for goal matching; outside claude.ai it falls back to local keyword matching.
 
 Live artifact: https://claude.ai/artifact/B4MDarDt35HqJsXJCguokv
+
+## How goals unlock the world
+- Each place has a stage: lived here before, live here now, or want to get to (`d.stage`). Past and current places are fully lit.
+- A dream's progress is the share of its linked goals that are finished. A goal linked to several dreams counts 1/k towards each, so it's never counted twice. Let-go and deleted goals don't count; reopening a goal takes its share back.
+- A future place's progress uses the same weighting over all goals linked to its dreams. The district lifts from dark as it rises, each dream lights by its own goals, and the place's landmark appears from 50% and is complete at 100%.
+- Everything is calculated from the goals data, so the world can't drift out of step with it. The last level you saw is kept in `revealSeen`; when it has gone up, the change plays on the map the next time you open your world.
+- Past places get a one-time review: tick the goals you achieved there and they move to Finished, marked "Achieved in …". Nothing is assumed, and they don't count as on-time finishes.
+- Holding the lens on a dream for 10 seconds steps inside it: its picture, description and the goals that build it.
 
 ## Backup
 Account → Download backup saves everything (dreams, goals, steps, entries, reflections, device-only images) as one JSON file. Account → Restore from file loads it back, after a confirmation.
