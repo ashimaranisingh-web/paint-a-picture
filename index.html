@@ -84,21 +84,12 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard h3{font-family:var(--serif);font-weight:400;font-size:14px;line-height:1.2;margin:0}
 .lc-open{all:unset;cursor:pointer;flex:1;min-width:0;display:grid;gap:4px;padding:4px 0}.lc-open:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 .lc-open .clar-bar{margin-top:4px}
+.lc-open{grid-template-columns:minmax(0,1fr) auto;column-gap:8px}.lc-open>*:not(.lc-go){grid-column:1}.lc-go{grid-column:2;grid-row:1/4;align-self:center;color:var(--muted)}.lc-go .ico{width:16px;height:16px}
 .loccard .meta{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:var(--sunk)}
 .loccard .x{margin-left:auto}
 .lc-hint{display:block;margin-top:6px;font-size:11px;color:var(--muted);font-weight:600}
-.inside{position:absolute;inset:0;z-index:12;background:#fff;color:var(--ink);display:flex;flex-direction:column;overflow:auto;opacity:0;transform:scale(.2);transition:opacity .3s ease,transform .32s cubic-bezier(.2,.8,.2,1)}
-.inside.in-open{opacity:1;transform:none}
-.in-pic{background:var(--sunk);aspect-ratio:4/3;flex:none}.in-pic img,.in-pic canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
-.in-body{padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:grid;gap:8px;align-content:start;flex:1}
-.in-body h2{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.15;margin:-4px 0 0}.in-body p{margin:0;font-size:15px;color:var(--ink-2)}
-.in-prog{display:grid;gap:4px;margin-top:4px}.in-prog small{font-size:13px;color:var(--muted);font-weight:600}
-.in-goals{list-style:none;margin:8px 0 0;padding:0;display:grid}.in-goals li{display:flex;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid var(--line);font-size:15px}.in-goals li:last-child{border-bottom:0}.in-goals li.done{color:var(--muted)}
-.in-foot{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:6px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
-.in-foot .btn.ghost{background:transparent;border-color:transparent;color:var(--accent-ink)}
-@media (prefers-reduced-motion:reduce){.inside{transition:none}}
 .clar{display:grid;gap:5px}
 .clar-bar{height:4px;border-radius:9px;background:var(--line);overflow:hidden}
 .clar-bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
@@ -193,6 +184,12 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .insight div{display:flex;gap:9px}
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
 .weeknav{display:flex;align-items:center;gap:6px}
+.wk-strip{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;align-items:end;gap:4px;margin-top:-8px}
+.wk-arrow{all:unset;cursor:pointer;display:grid;place-items:center;width:32px;height:44px;color:var(--muted);border-radius:10px}.wk-arrow:hover{background:var(--sunk)}.wk-arrow:disabled{opacity:.3;cursor:default;background:none}.wk-arrow .ico{width:16px;height:16px}
+.wk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.wk-month{grid-column:1/-1;text-align:left;font-size:13px;font-weight:700;color:var(--ink-2);padding:0 4px 6px}
+.wk-day{display:grid;gap:2px;padding:6px 0;border-radius:10px}.wk-day small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.wk-day b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.wk-day.today{background:var(--sunk)}.wk-day.today b{color:var(--accent-ink)}
 .entry{padding:14px 2px;display:grid;gap:7px}
 .entry .t{font-size:15px;font-weight:600}
 .entry .refl{font-size:13px;color:var(--ink-2);display:grid;gap:2px}
@@ -225,6 +222,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .progress-dots i.on{background:var(--accent)}
 .sugg{display:grid;gap:8px}
 .cklist{display:grid}
+.steps li:has(.cat-why){flex-wrap:wrap}.cat-why{flex-basis:100%;font-size:11px;color:var(--muted);font-weight:600;margin-top:-2px}.btn.is-off{opacity:.45}
 .gcard.just-done{position:relative;animation:gdone .7s ease forwards}
 .gcard.just-done::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--accent-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/24px no-repeat;animation:gtick .45s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes gtick{from{transform:scale(0)}to{transform:scale(1)}}
@@ -293,7 +291,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .gc-desc{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .gc-links{display:flex;flex-wrap:wrap;gap:6px}
 .dc-title{display:flex;align-items:center;gap:12px;min-width:0}.dc-thumb{width:44px;height:44px;flex:none;border-radius:10px;overflow:hidden;background:var(--sunk)}.dc-thumb img,.dc-thumb canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
-.dc-actions{grid-template-columns:repeat(3,1fr)}
+.dc-text{display:grid;gap:2px;min-width:0}
+.dc-actions{display:flex;justify-content:flex-end;gap:2px;border-top:1px solid var(--line);padding-top:4px;margin-right:-10px}
+.dc-del{color:var(--danger)}.dc-del.armed{width:auto;padding:0 10px;gap:6px;display:flex;align-items:center;font-size:13px;font-weight:700;background:var(--sunk)}
 .gc-past{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .gc-link{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:99px;padding:3px 8px}
 .gc-link .ico{width:11px;height:11px;fill:currentColor;stroke:none}
@@ -432,9 +432,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <div class="hint" id="hint">Drag to explore · pinch or scroll to zoom</div>
     <nav class="journey" id="journey" aria-label="Your places"></nav>
     <div class="loccard" id="loccard" hidden></div>
-    <div class="inside" id="inside" role="dialog" aria-modal="true" aria-labelledby="insideTitle" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
-    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
+    <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
       <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
@@ -2448,29 +2447,11 @@ function checkHold(now){
   if (l !== lensHover) { lensHover = l; holdStart = l ? now : 0; if (l) showLoc(l); }
   if (l && !holdStart && mode !== "lens") holdStart = now;
 }
-// Tapping a dream's card steps inside it: its picture, what it's about and the goals that build it.
-function startPreview(l){
-  holdStart = 0; if (l.fixed) return;
-  const a = l.a, c = clarityOf(a), img = a.image ? imgUrl(a.image) : null, gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), d = destOf(a);
-  preview = {l, start: performance.now(), end: Infinity};
-  const el = $("inside"), r = $("stage").getBoundingClientRect(), ox = (l.x - camX) * scale, oy = (l.y - 14 - camY) * scale;
-  el.style.transformOrigin = `${Math.round(ox)}px ${Math.round(oy)}px`;
-  el.innerHTML = `<div class="in-pic">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="96" height="72" aria-hidden="true"></canvas>`}</div>
-    <div class="in-body"><div class="eyebrow">${esc(a.category)}${d ? ` · ${esc(d.name)}` : ""}</div><h2 id="insideTitle">${esc(a.title)}</h2>${a.desc ? `<p>${esc(a.desc)}</p>` : ""}
-      <div class="in-prog"><span class="clar-bar" aria-hidden="true"><i style="width:${Math.round(c.c * 100)}%"></i></span><small>${gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"} finished` : "No goals linked yet. Add one to start building this."}</small></div>
-      ${gs.length ? `<ul class="in-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</li>`).join("")}</ul>` : ""}</div>
-    <div class="in-foot"><button class="btn ghost" id="inEdit">Open dream</button><button class="btn" id="inOut">Step outside</button></div>`;
-  const cv = el.querySelector("canvas"); if (cv) drawKindPreview(cv, a);
-  el.hidden = false; requestAnimationFrame(() => el.classList.add("in-open"));
-  $("loccard").hidden = true;
-  $("inOut").onclick = endPreview; $("inOut").focus();
-  $("inEdit").onclick = () => { endPreview(); go("dreams"); editAspiration(a.id); };
-}
-function endPreview(){
-  if (!preview) return;
-  preview = null; holdStart = 0;
-  const el = $("inside"); el.classList.remove("in-open"); setTimeout(() => { if (!preview) el.hidden = true; }, reduced ? 0 : 320);
-  if (lensHover) showLoc(lensHover);
+function endPreview(){ preview = null; holdStart = 0; }
+// The map card leads to the dream's own card in Paint a Picture, opened and scrolled into view.
+function openDreamCard(id){
+  openDream = id; go("dreams");
+  requestAnimationFrame(() => { const c = document.querySelector(`#p-dreams [data-dream="${id}"]`)?.closest(".gcard"); if (c) c.scrollIntoView({block: "start", behavior: reduced ? "auto" : "smooth"}); });
 }
 let bubbleTimer;
 function say(text, wx, wy){
@@ -2503,12 +2484,12 @@ function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { card.hidden = true; return; } // places' own scenery has no card; only your dreams do
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="Step inside ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
-      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="lc-hint">Tap to step inside</small></button>
+  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${esc(a.title)}</h3>
+      <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span><span class="lc-go" aria-hidden="true">${ICON.right}</span></button>
       <button class="iconbtn x" id="locClose" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
   card.hidden = false;
   $("locClose").onclick = () => { card.hidden = true; if (preview) endPreview(); };
-  card.querySelector("[data-enter]").onclick = () => startPreview(l);
+  card.querySelector("[data-enter]").onclick = () => openDreamCard(a.id);
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
@@ -2832,7 +2813,7 @@ document.addEventListener("click", e => {
   const oa = e.target.closest("[data-open-asp]"); if (oa) { go("dreams"); editAspiration(oa.dataset.openAsp); return; }
   if (!e.target.closest("#menu")) closeMenu();
 });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("sheet").hidden) closeSheet(); else if (preview) endPreview(); else closeMenu(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { if (!$("sheet").hidden) closeSheet(); else closeMenu(); } });
 let sheetReturn = null;
 function openSheet(title, body, foot, mount){
   sheetReturn = document.activeElement;
@@ -3042,19 +3023,20 @@ function renderWeek(){
   if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
-    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><div><h1>${isNow ? "This week" : "Week of " + fmt(ws)}</h1><div class="sub">${esc(weekRange(ws))}</div></div></div>
-      <div class="weeknav"><button class="pbtn" id="wPrev" aria-label="Previous week">${ICON.left}</button><button class="pbtn" id="wNext" aria-label="Next week" ${isNow ? "disabled style='opacity:.4'" : ""}>${ICON.right}</button></div></div>
+    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>${weekTitle(ws)}</h1></div>${isNow ? "" : `<button class="btn quiet sm" id="wToday">This week</button>`}</div>
+    ${weekStripHTML(ws)}
     ${weekHistoryHTML()}
-    <button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>
+    ${canLog(ws) ? `<button class="btn" id="logBtn" style="justify-self:start">${ICON.plus}Log progress</button>` : ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section class="panel"><div class="eyebrow">Weekly review</div>
       ${insights.length ? `<div class="insight">${insights.map(i => `<div>${i}</div>`).join("")}</div>` : `<p class="muted" style="margin:0">${isNow ? "Nothing logged yet this week. Anything counts: an email sent, a page drafted, a lesson booked." : "Nothing was logged this week."}</p>`}
 </section>
     <section><h2 class="sec" style="margin-bottom:8px">Logged</h2>
       ${entries.length ? `<ul class="list">${entries.map(entryRow).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>
     ${honestNumbersHTML()}`;
-  $("wPrev").onclick = () => { weekOf = addDays(weekOf, -7); renderWeek(); };
-  $("wNext").onclick = () => { if (!isNow) { weekOf = addDays(weekOf, 7); renderWeek(); } };
-  $("logBtn").onclick = () => logEntry();
+  $("wPrev").onclick = () => { if (weekOf > firstWeek()) { weekOf = addDays(weekOf, -7); renderWeek(); } };
+  $("wNext").onclick = () => { if (weekOf < lastWeek()) { weekOf = addDays(weekOf, 7); renderWeek(); } };
+  if ($("wToday")) $("wToday").onclick = () => { weekOf = weekStart(today()); renderWeek(); };
+  if ($("logBtn")) $("logBtn").onclick = () => logEntry();
   wireWeekHistory();
   el.querySelectorAll("[data-delentry]").forEach(b => b.onclick = () => {
     if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Tap again"; return; }
@@ -3071,14 +3053,25 @@ function entryRow(e){
     <div class="actions"><button class="btn quiet sm" data-editentry="${e.id}">Edit</button><button class="btn quiet sm" data-delentry="${e.id}" style="color:var(--danger)">Delete</button></div></li>`;
 }
 // Progress is logged per week: an entry's date is the Monday of its week (older entries may still carry a day).
-function weekChoices(){
+// You can browse from the week you started logging to two weeks ahead; progress is logged for this week or last week only.
+const firstWeek = () => { const ds = S.entries.map(e => e.date).sort(); return ds.length ? weekStart(ds[0]) < weekStart(today()) ? weekStart(ds[0]) : weekStart(today()) : weekStart(today()); };
+const lastWeek = () => addDays(weekStart(today()), 14);
+const canLog = ws => ws === weekStart(today()) || ws === addDays(weekStart(today()), -7);
+function weekTitle(ws){ const now = weekStart(today()); return ws === now ? "This week" : ws === addDays(now, -7) ? "Last week" : ws === addDays(now, 7) ? "Next week" : ws === addDays(now, 14) ? "In two weeks" : "Week of " + fmt(ws); }
+function weekStripHTML(ws){
+  const t = today(), days = [...Array(7)].map((_, i) => addDays(ws, i)), month = fmt(ws, {month: "long", year: "numeric"});
+  return `<div class="wk-strip" aria-label="${esc(weekRange(ws))}"><button class="wk-arrow" id="wPrev" aria-label="Previous week" ${ws <= firstWeek() ? "disabled" : ""}>${ICON.left}</button>
+    <div class="wk-days"><span class="wk-month">${esc(month)}</span>${days.map(d => `<span class="wk-day${d === t ? " today" : ""}"><small>${fmt(d, {weekday: "short"})}</small><b>${parseDay(d).getDate()}</b></span>`).join("")}</div>
+    <button class="wk-arrow" id="wNext" aria-label="Next week" ${ws >= lastWeek() ? "disabled" : ""}>${ICON.right}</button></div>`;
+}
+function weekChoices(ex){
   const now = weekStart(today()), list = [now, addDays(now, -7)];
-  if (weekOf !== now && !list.includes(weekOf)) list.push(weekOf);
+  if (ex && !list.includes(weekStart(ex.date))) list.push(weekStart(ex.date)); // an older entry keeps its own week
   return list;
 }
 function logEntry(editId){
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
-  const f = ex ? {...ex, goalIds: ex.goalIds.slice()} : {text: "", type: "did", date: weekOf, goalIds: [], size: 2, learned: "", blocked: "", next: ""};
+  const f = ex ? {...ex, goalIds: ex.goalIds.slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: ""};
   let step = 1, sugg = [], rejected = new Set(), asking = false, claudeTried = false;
   const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
   function draw(){
@@ -3087,7 +3080,7 @@ function logEntry(editId){
       B.innerHTML = `${dots()}
         <label class="field"><span>What happened?</span><textarea id="eText" placeholder="e.g. Researched three surf schools and compared course prices">${esc(f.text)}</textarea></label>
         <div class="field"><span>This was something I…</span><div class="seg" role="group"><button type="button" aria-pressed="${f.type === "did"}" data-type="did">Accomplished</button><button type="button" aria-pressed="${f.type === "worked"}" data-type="worked">Worked on</button></div></div>
-        <div class="field"><span>Which week?</span><div class="seg" role="group">${weekChoices().map(w => `<button type="button" aria-pressed="${weekStart(f.date) === w}" data-wk="${w}">${w === weekStart(today()) ? "This week" : w === addDays(weekStart(today()), -7) ? "Last week" : esc(weekRange(w))}</button>`).join("")}</div></div>
+        <div class="field"><span>Which week?</span><div class="seg" role="group">${weekChoices(ex).map(w => `<button type="button" aria-pressed="${weekStart(f.date) === w}" data-wk="${w}">${w === weekStart(today()) ? "This week" : w === addDays(weekStart(today()), -7) ? "Last week" : esc(weekRange(w))}</button>`).join("")}</div></div>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
       B.querySelectorAll("[data-wk]").forEach(b => b.onclick = () => { f.date = b.dataset.wk; B.querySelectorAll("[data-wk]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
@@ -3183,33 +3176,41 @@ function dreamCard(a){
   const c = clarityOf(a), pct = Math.round(c.c * 100), img = a.image ? imgUrl(a.image) : null, d = destOf(a), open = openDream === a.id;
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled");
   return `<li class="gcard">
-    <button class="gc-head" data-dream="${a.id}" aria-expanded="${open}"><span class="dc-title"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="gc-title">${esc(a.title)}</span></span><span class="acc-chev">${ICON_DOWN}</span>
-      ${a.desc ? `<span class="gc-desc">${esc(a.desc)}</span>` : ""}</button>
+    <button class="gc-head" data-dream="${a.id}" aria-expanded="${open}"><span class="dc-title"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="dc-text"><span class="gc-title">${esc(a.title)}</span>${a.desc ? `<span class="gc-desc">${esc(a.desc)}</span>` : ""}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% unlocked" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
     ${open ? `<div class="gc-body">
       ${gs.length ? `<ul class="steps ms-list">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No goals yet. Each goal you finish brings this dream to life in your world.</p>`}
       <button class="btn quiet sm" data-addgoal="${a.id}" style="justify-self:start">${ICON.plus}Add a goal</button>
-      <div class="gc-actions dc-actions">
-        <button class="gc-act" data-editdream="${a.id}">${GI.edit}Edit</button>
-        ${a.achievedAt ? `<button class="gc-act" data-undream="${a.id}">${GI.undo}Not yet</button>` : `<button class="gc-act" data-achieve="${a.id}">${GI.done}Achieved</button>`}
-        <button class="gc-act danger" data-deldream="${a.id}">${GI.del}Delete</button></div></div>` : ""}</li>`;
+      <div class="dc-actions"><button class="ibtn" data-editdream="${a.id}" aria-label="Edit dream">${GI.edit}</button><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete dream">${GI.del}</button></div></div>` : ""}</li>`;
 }
 function wireDreamCards(el){
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
   on("[data-dream]", b => { openDream = openDream === b.dataset.dream ? null : b.dataset.dream; renderDreams(); });
   on("[data-opengoal]", b => { const g = goalById(b.dataset.opengoal); goalTab = g.status === "done" ? "finished" : "active"; openGoal = g.id; go("goals"); });
-  on("[data-addgoal]", b => editGoal(null, {aspirationId: b.dataset.addgoal}));
+  on("[data-addgoal]", b => linkGoalsSheet(b.dataset.addgoal));
   on("[data-editdream]", b => editAspiration(b.dataset.editdream));
-  on("[data-achieve]", b => { commit(s => { s.aspirations.find(x => x.id === b.dataset.achieve).achievedAt = today(); }); toast("Achieved. It's fully lit in your world."); });
-  on("[data-undream]", b => commit(s => { delete s.aspirations.find(x => x.id === b.dataset.undream).achievedAt; }));
   on("[data-deldream]", b => {
-    if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.innerHTML = GI.del + "Tap again"; return; }
+    if (!armDelete(b)) return;
     const id = b.dataset.deldream; openDream = null;
     commit(s => { s.aspirations = s.aspirations.filter(x => x.id !== id); s.goals.forEach(g => { g.aspirationIds = (g.aspirationIds || []).filter(x => x !== id); g.aspirationId = g.aspirationIds[0] || null; }); });
     toast("Dream removed. Its goals are kept.");
   });
+}
+// Goals live in Goals; a dream links to them. New goals are made in Goals (already linked to this dream).
+function linkGoalsSheet(aid){
+  const a = aspById(aid), pick = new Set(S.goals.filter(g => (g.aspirationIds || []).includes(aid)).map(g => g.id));
+  const list = S.goals.filter(g => g.status !== "cancelled").sort((p, q) => (p.status === "done") - (q.status === "done") || p.title.localeCompare(q.title));
+  openSheet("Add a goal", `<p class="muted" style="margin:0">Pick the goals that build “${esc(a.title)}”.</p>
+    ${list.length ? `<div class="cklist">${list.map(g => `<button type="button" class="ck" aria-pressed="${pick.has(g.id)}" data-lg="${g.id}"><span class="cb" aria-hidden="true" ${pick.has(g.id) ? 'aria-checked="true"' : ""}></span>${esc(g.title)}${g.status === "done" ? ` <small class="muted">· Finished</small>` : ""}</button>`).join("")}</div>` : `<p class="muted" style="margin:0">You don't have any goals yet.</p>`}
+    <button type="button" class="btn quiet sm" id="lgNew" style="justify-self:start">${ICON.plus}Create a new goal</button>`,
+    `<button class="btn ghost" id="lgCancel">Cancel</button><button class="btn" id="lgSave">Save</button>`, () => {
+      $("sheetB").querySelectorAll("[data-lg]").forEach(b => b.onclick = () => { const k = b.dataset.lg, on = !pick.has(k); on ? pick.add(k) : pick.delete(k); b.setAttribute("aria-pressed", on); b.querySelector(".cb").setAttribute("aria-checked", on); });
+      $("lgCancel").onclick = closeSheet;
+      $("lgSave").onclick = () => { commit(s => s.goals.forEach(g => { const has = (g.aspirationIds || []).includes(aid); if (pick.has(g.id) && !has) g.aspirationIds = [...(g.aspirationIds || []), aid]; if (!pick.has(g.id) && has) g.aspirationIds = g.aspirationIds.filter(x => x !== aid); g.aspirationId = g.aspirationIds[0] || null; })); closeSheet(); };
+      $("lgNew").onclick = () => { closeSheet(); goalTab = "active"; go("goals"); editGoal(null, {aspirationId: aid}); };
+    });
 }
 function aspRow(a){
   const c = clarityOf(a), pct = Math.round(c.c * 100), img = a.image ? imgUrl(a.image) : null, d = destOf(a);
@@ -3311,10 +3312,10 @@ function editAspiration(id, preset){
 }
 function editCategories(){
   const draw = () => {
-    $("sheetB").innerHTML = `<ul class="steps">${S.categories.map((c, i) => `<li><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name" style="padding:8px 10px;font-size:15px"><button type="button" class="btn quiet sm" data-rmcat="${i}" ${S.aspirations.some(a => a.category === c) ? "disabled title='In use'" : ""}>Remove</button></li>`).join("")}</ul>
+    $("sheetB").innerHTML = `<ul class="steps">${S.categories.map((c, i) => `<li><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name" style="padding:8px 10px;font-size:15px">${(n => `<button type="button" class="btn quiet sm${n ? " is-off" : ""}" data-rmcat="${i}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>Remove</button>${n ? `<small class="cat-why">Used by ${n} dream${n === 1 ? "" : "s"}. Move ${n === 1 ? "it" : "them"} to another category to remove this one.</small>` : ""}`)(S.aspirations.filter(a => a.category === c).length)}</li>`).join("")}</ul>
       <div style="display:flex;gap:8px"><input type="text" id="catNew" placeholder="New category"><button type="button" class="btn ghost" id="catAdd">Add</button></div>`;
     $("sheetB").querySelectorAll("[data-cat]").forEach(inp => inp.onchange = () => { const i = +inp.dataset.cat, old = S.categories[i], v = inp.value.trim(); if (!v || v === old) return; commit(s => { s.categories[i] = v; s.aspirations.forEach(a => { if (a.category === old) a.category = v; }); }); });
-    $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
+    $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} dream${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
     $("catAdd").onclick = () => { const v = $("catNew").value.trim(); if (v && !S.categories.includes(v)) { commit(s => s.categories.push(v)); draw(); } };
   };
   openSheet("Categories", "", `<span></span><button class="btn" id="catDone">Done</button>`, () => { draw(); $("catDone").onclick = closeSheet; });
@@ -3886,7 +3887,7 @@ function obWorld(M, Fo){
     <ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="cb" aria-hidden="true"></span><span>${esc(d.name)}${d.placeholder ? " (add your places later)" : ` · ${esc(PURPOSES[d.purpose])}`}</span></li>`).join("")}
       <li><span class="cb" aria-hidden="true"></span><span>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"} placed as landmarks, still in the dark</span></li>
       <li><span class="cb" aria-hidden="true"></span><span>Your character</span></li></ul>
-    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card to step inside.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
+    <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to call your character over.</div></div></div>`;
   Fo.innerHTML = `<span></span><button class="btn" id="obEnter" disabled>Enter your world</button>`;
   const items = [...$("obBuild").children];
   items.forEach((li, i) => setTimeout(() => { li.querySelector(".cb").setAttribute("aria-checked", "true"); if (i === items.length - 1) { $("obReady").hidden = false; $("obEnter").disabled = false; M.querySelector(".ob-h").textContent = "Your world is waiting for you."; } }, reduced ? 0 : 280 + i * 260));
