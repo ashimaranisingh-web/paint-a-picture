@@ -72,12 +72,6 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .eye-open,.eye-shut{transform-origin:12px 12px;transition:transform .45s ease,opacity .3s ease}
 .eye .eye-open{transform:scaleY(.08);opacity:0}.eye.open .eye-open{transform:none;opacity:1}.eye.open .eye-shut{opacity:0;transform:scaleY(.4)}
 @media (prefers-reduced-motion:reduce){.eye-open,.eye-shut{transition:none}}
-.home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:16px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
-  font-weight:700;font-size:15px;letter-spacing:.01em;}
-.htab:hover{background:rgba(30,36,48,.8)}
-.htab.main{background:rgba(247,244,238,.95);color:var(--ink);border-color:transparent}
 .loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:6;
   background:rgba(247,244,238,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px 14px 12px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .loccard .row{display:flex;gap:12px;align-items:flex-start}
@@ -129,10 +123,14 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .pbtn:hover{background:var(--sunk)}
 .pmain{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
 .page{padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:grid;gap:20px;align-content:start}
-.pnav{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
-.pnav button{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;padding:9px 0 10px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
-.pnav button[aria-current="page"]{color:var(--accent-ink)}
-.pnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+/* the tab bar: one row of five on every screen; dark glass over the world, paper on the pages */
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--surface);padding:0 max(4px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(4px,env(safe-area-inset-left,0px))}
+.tabbar button{all:unset;cursor:pointer;box-sizing:border-box;min-width:0;display:grid;justify-items:center;gap:3px;padding:9px 2px 10px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.01em;text-align:center}
+.tabbar button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabbar button[aria-current="page"]{color:var(--accent-ink)}
+.tabbar button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+.tabbar.dark{position:absolute;left:0;right:0;bottom:0;z-index:5;background:rgba(16,19,27,.9);border-top-color:var(--glass-line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.tabbar.dark button{color:rgba(255,255,255,.66)}.tabbar.dark button[aria-current="page"]{color:#ffc2d6}
 .phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .phead h1{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1;margin:0;letter-spacing:-.005em}
 .phead .sub{font-size:13px;color:var(--muted);font-weight:600;margin-top:4px}
@@ -426,9 +424,12 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
     <div class="inside" id="inside" role="dialog" aria-modal="true" aria-labelledby="insideTitle" hidden></div>
     <div class="bubble" id="bubble" hidden></div>
     <div class="tips" id="tips" hidden><h3>This is your world</h3><div class="insight"><div>Drag to explore in any direction. Two fingers work too.</div><div>Pinch or scroll to zoom.</div><div>Tap to move the lens. Keep it on a dream for 10 seconds to step inside.</div><div>Tap three times anywhere to call your character over.</div></div><button class="btn sm" id="tipsOk" style="justify-self:start">Got it</button></div>
-    <nav class="home-tabs" aria-label="Primary">
-      <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-      <button class="htab main" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
+    <nav class="tabbar dark" aria-label="Primary">
+      <button data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span class="navWorld">Your World</span></button>
+      <button data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span>Goals</span></button>
+      <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg><span>This Week</span></button>
+      <button data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets</span></button>
+      <button data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint</span></button>
     </nav>
   </section>
 
@@ -442,17 +443,18 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
       <div class="page" id="p-assets" hidden></div>
       <div class="page" id="p-journal" hidden></div>
     </main>
-    <nav class="pnav" aria-label="Primary">
-      <button data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-      <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>This week</button>
+    <nav class="tabbar" aria-label="Primary">
+      <button data-go="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20l6-14 4 8 3-4 5 10z"/></svg><span class="navWorld">Your World</span></button>
+      <button data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span>Goals</span></button>
+      <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/></svg><span>This Week</span></button>
+      <button data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets</span></button>
+      <button data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint</span></button>
     </nav>
   </section>
 
   <section class="screen ob" id="onboard" hidden></section>
 
   <div class="menu" id="menu" role="menu" hidden>
-    <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint a Picture<small>Describe the life you're building</small></span></button>
-    <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
   </div>
   <div class="scrim" id="scrim" hidden></div>
@@ -2706,7 +2708,7 @@ function visualPicker(root, o){
 const firstName = () => (S.profile.name || "").trim().split(/\s+/)[0];
 function updateTitle(){
   const n = firstName();
-  if ($("navWorld")) $("navWorld").textContent = n ? `${n}'s World` : "Your World";
+  document.querySelectorAll(".navWorld").forEach(e => e.textContent = n ? `${n}'s World` : "Your World");
   $("greet").textContent = n ? `Hi ${n}` : "Hi there";
 }
 let overviewOn = false, ovFit = null;
@@ -2782,7 +2784,7 @@ function go(r){
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
   for (const k of ["goals", "week", "dreams", "account", "assets", "journal"]) $("p-" + k).hidden = k !== r;
-  document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === r ? "page" : "false"));
+  document.querySelectorAll(".tabbar button").forEach(b => b.setAttribute("aria-current", b.dataset.go === r ? "page" : "false"));
   if (r === "home") { requestAnimationFrame(sizeScene); renderHomeChips(); celebrateNew(); }
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
