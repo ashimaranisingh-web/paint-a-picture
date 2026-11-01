@@ -205,7 +205,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .jpaper{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 2px 14px rgba(70,60,40,.06);padding:28px 22px 32px;display:grid;gap:2px}
 .jp-title{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.15;margin:14px 0 4px;color:var(--ink)}
 .jp-pic{margin:18px 0 6px;border-radius:8px;overflow:hidden;background:var(--sunk);display:grid;place-items:center}.jp-pic img{display:block;max-width:100%;max-height:440px;object-fit:contain}
-.jp-body{margin:18px 0 0;padding:0 0 0 20px;font-size:17px;line-height:1.6;color:var(--ink);display:grid;gap:8px}.jp-body li::marker{color:var(--accent)}
+.jp-body{margin:18px 0 0;padding:0 0 0 18px;font-size:12px;line-height:1.6;color:var(--ink);display:grid;gap:8px}.jp-body li::marker{color:var(--accent)}
 .jp-notes{margin:16px 0 0;display:grid;gap:14px;border-top:1px solid var(--line);padding-top:18px}.jp-notes dt{font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}.jp-notes dd{margin:4px 0 0;font-size:16px;line-height:1.65}
 .jp-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:20px;font-size:13px;color:var(--muted)}
 .jp-menu{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:64px;z-index:8;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 14px 30px rgba(31,36,32,.14);display:grid;min-width:190px}
@@ -356,7 +356,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .ms-list li.done .ms-date{text-decoration:none}
 .ms-edit{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .ms-edit li{display:grid;gap:4px}
-.ms-row{display:flex;gap:8px;align-items:end}.ms-row input[data-f=title],.ms-row input[data-f=desc]{flex:1;min-width:0}
+.ms-row{display:flex;gap:8px;align-items:end}.ms-row textarea.pt{flex:1;min-width:0;resize:none}.ms-row input[data-f=title],.ms-row input[data-f=desc]{flex:1;min-width:0}
 .ms-row input[data-f=desc]{font-size:13px;padding-top:6px;padding-bottom:6px}
 .note-ex{font-size:13px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .sheet.tall{height:92%}.sheet.tall .sheet-b{flex:1;grid-template-rows:auto auto 1fr auto}
@@ -754,46 +754,6 @@ function discovery(){
 // The clear view: one minute of the whole picture, once a day.
 const clearViewsLeft = () => S.rewards.dayUsed === today() ? 0 : 1;
 function spendClearView(){ commit(s => { s.rewards.dayUsed = today(); }); }
-
-/* =====================================================================
-   3. MATCHING — local keyword matcher (always) + optional Claude
-   ===================================================================== */
-const STOP = new Set("the a an and or to of for in on at my i me with did got done this that was is it by from up out some more new get just about into over then than our your their week today one two three four five six seven eight nine ten first second last few many lot".split(" "));
-const SYN = [["surf", "wave", "ocean", "beach", "board", "lesson", "swim"], ["save", "money", "budget", "fund", "bank", "invest", "saving", "income", "salary", "debt"],
-  ["portfolio", "website", "site", "case", "design", "project", "client"], ["move", "relocat", "apartment", "rent", "visa", "city", "lease"],
-  ["car", "porsche", "drive", "license", "vehicle"], ["fitness", "gym", "workout", "run", "yoga", "train", "health"], ["learn", "course", "study", "class", "read", "book", "degree"],
-  ["travel", "trip", "flight", "japan", "visit", "tour"], ["garden", "plant", "grow", "seed"], ["job", "apply", "application", "interview", "resume", "career", "role"]];
-const stem = w => w.replace(/(ings|ing|ed|es|s)$/, "").slice(0, 7);
-function toks(text){ return (String(text || "").toLowerCase().match(/[a-z0-9]+/g) || []).filter(w => w.length > 2 && !STOP.has(w)).map(stem); }
-function expand(ts){
-  const out = new Set(ts);
-  for (const t of ts) for (const grp of SYN) if (grp.some(g => stem(g) === t || t.startsWith(stem(g)))) grp.forEach(g => out.add(stem(g)));
-  return out;
-}
-function localMatches(text){
-  const raw = new Set(toks(text)), ex = expand([...raw]), res = [];
-  for (const g of S.goals.filter(g => g.status === "active" || g.status === "paused")) {
-    const a = (g.aspirationIds || []).map(aspById).filter(Boolean)[0] || null;
-    const fields = [["goal title", g.title, 3], ["a step", g.milestones.map(m => m.title).join(" "), 2], ["its description", g.desc, 1], ["your dream", a ? a.title + " " + a.desc : "", 1.5]];
-    let score = 0, why = null, words = [];
-    for (const [label, txt, w] of fields) {
-      const hit = toks(txt).filter(t => ex.has(t));
-      const direct = hit.filter(t => raw.has(t)).length, related = hit.length - direct;
-      const sc = (direct + related * .5) * w;
-      if (sc > 0) { score += sc; words.push(...hit); if (!why) why = label; }
-    }
-    if (score >= 1.5) res.push({goalId: g.id, score, reason: `Shares “${[...new Set(words)].slice(0, 2).join("”, “")}” with ${why}.`, source: "Keyword match"});
-  }
-  return res.sort((a, b) => b.score - a.score).slice(0, 3);
-}
-async function claudeMatches(text){
-  const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
-  if (!sampleFn || !goals.length) return null;
-  const list = goals.map(g => { const a = (g.aspirationIds || []).map(aspById).filter(Boolean)[0] || null; return `- id ${g.id}: ${g.title}${g.desc ? " — " + g.desc : ""}${g.milestones.length ? " | steps: " + g.milestones.map(m => m.title).join("; ") : ""}${a ? " | dream: " + a.title : ""}`; }).join("\n");
-  const res = await sampleFn.json(`Someone logged this progress in their weekly journal: "${text}"\n\nTheir goals:\n${list}\n\nWhich goals did this progress plausibly move forward? Only include clear matches. Reply with JSON only: {"matches":[{"goalId":"<id from the list>","reason":"<under 14 words, address them as you>"}]}. Use an empty list if none fit.`, {modelTier: "quick"});
-  const ids = new Set(goals.map(g => g.id));
-  return (res && Array.isArray(res.matches) ? res.matches : []).filter(m => ids.has(m.goalId)).slice(0, 3).map(m => ({goalId: m.goalId, reason: String(m.reason || ""), source: "Claude"}));
-}
 
 /* =====================================================================
    4. WORLD — a two-dimensional map built from each person's own destinations.
@@ -3490,53 +3450,39 @@ function logEntry(editId){
   const f = ex ? {...ex, goalIds: ex.goalIds.slice(), tags: (ex.tags || []).slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: "", tags: [], notes: "", image: null};
   let photo = null; // a newly chosen photo, kept until Save
   let points = (f.notes || "").split(/\n+/).map(t => t.trim()).filter(Boolean); if (!points.length) points = [""]; // the description, one pointer per line
-  const readPoints = () => { const rows = $("ePoints")?.querySelectorAll("input"); if (rows) points = [...rows].map(i => i.value); };
-  let step = 1, sugg = [], rejected = new Set(), asking = false, claudeTried = false;
+  const readPoints = () => { const rows = $("ePoints")?.querySelectorAll("textarea"); if (rows) points = [...rows].map(i => i.value); };
+  let step = 1;
   const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
   function draw(){
     const B = $("sheetB"), Fo = $("sheetF");
     if (step === 1) {
       B.innerHTML = `${dots()}
         <label class="field"><span>${ex ? "Title" : "Give it a title"}</span><input type="text" id="eTitle" value="${esc(f.text)}" placeholder="e.g. A week of little victories"></label>
-        <div class="field"><span>Write it down</span><ul class="ms-edit" id="ePoints">${points.map((t, i) => `<li><div class="ms-row"><input type="text" value="${esc(t)}" placeholder="${i ? "Another pointer" : "e.g. Booked my first driving lesson"}" aria-label="Pointer ${i + 1}">${points.length > 1 ? `<button type="button" class="ibtn" data-rmpoint="${i}" aria-label="Remove this pointer">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
+        <div class="field"><span>Write it down</span><ul class="ms-edit" id="ePoints">${points.map((t, i) => `<li><div class="ms-row"><textarea class="fit pt" rows="1" placeholder="${i ? "Another pointer" : "e.g. Booked my first driving lesson"}" aria-label="Pointer ${i + 1}">${esc(t)}</textarea>${points.length > 1 ? `<button type="button" class="ibtn" data-rmpoint="${i}" aria-label="Remove this pointer">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
           <button type="button" class="btn quiet sm" id="eAddPoint" style="justify-self:start">${ICON.plus}Add another pointer</button></div>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
       const keep = () => { f.text = $("eTitle").value.trim(); readPoints(); };
-      const addPoint = at => { keep(); points.splice(at, 0, ""); draw(); $("ePoints").children[at].querySelector("input").focus(); };
+      const addPoint = at => { keep(); points.splice(at, 0, ""); draw(); $("ePoints").children[at].querySelector("textarea").focus(); };
       B.querySelectorAll("[data-rmpoint]").forEach(b => b.onclick = () => { keep(); points.splice(+b.dataset.rmpoint, 1); draw(); });
       $("eAddPoint").onclick = () => addPoint(points.length);
-      $("ePoints").querySelectorAll("input").forEach((inp, i) => inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); addPoint(i + 1); } }); // Enter starts the next pointer
+      $("ePoints").querySelectorAll("textarea").forEach(fitArea);
+      $("ePoints").querySelectorAll("textarea").forEach((inp, i) => inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); addPoint(i + 1); } }); // Enter starts the next pointer
       $("eCancel").onclick = closeSheet;
       $("eNext").onclick = () => {
         keep(); points = points.map(t => t.trim()).filter(Boolean); f.notes = points.join("\n"); if (!points.length) points = [""];
         if (!f.text) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; return; }
-        sugg = localMatches(f.text + " " + f.notes).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
+        step = 2; draw();
       };
     } else if (step === 2) {
       const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
-      const suggIds = new Set(sugg.map(s => s.goalId)), others = goals.filter(g => !suggIds.has(g.id));
       B.innerHTML = `${dots()}
         <p class="quote" style="margin:0;font-weight:700">“${esc(f.text)}”</p>
-        <div class="field"><span>Suggested goals</span>
-          ${asking ? `<p class="muted" style="margin:0">Asking Claude…</p>` : sugg.length ? `<div class="sugg">${sugg.map(s => { const g = goalById(s.goalId); return `<button type="button" class="sugg-item" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span><span class="grow"><b>${esc(g.title)}</b><small>${esc(s.reason)} · ${s.source}</small></span><span class="btn quiet sm" data-reject="${g.id}" role="button">Not this</span></button>`; }).join("")}</div>
-            <small>Tap to link. Nothing is linked until you choose it.</small>` : `<p class="muted" style="margin:0">${goals.length ? "No clear match from your goals." : "You don't have any active goals yet. You can still log this."}</p>`}
-          ${sampleFn && goals.length && !claudeTried && !asking ? `<button type="button" class="btn ghost sm" id="askClaude" style="justify-self:start">Ask Claude for matches</button><small>Uses your Claude account. The keyword matcher above works without it.</small>` : ""}</div>
-        ${others.length ? `<div class="field"><span>${sugg.length ? "Or choose any goal" : "Choose goals yourself"}</span><div class="cklist">${others.map(g => `<button type="button" class="ck" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("")}</div></div>` : ""}
+        <div class="field"><span>Which goal did this add towards?</span>${goals.length ? `<div class="cklist">${goals.map(g => `<button type="button" class="ck" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("")}</div>` : `<p class="muted" style="margin:0">You don't have any active goals yet. You can still log this.</p>`}</div>
         <div class="field"><span>How much did it move things?</span><div class="seg" role="group">${[1, 2, 3].map(n => `<button type="button" aria-pressed="${f.size === n}" data-size="${n}">${SIZE_LABEL[n]}</button>`).join("")}</div></div>`;
       Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eNext">${f.goalIds.length ? "Next" : "Next, without a goal"}</button>`;
-      B.querySelectorAll("[data-pick]").forEach(b => b.onclick = e => {
-        if (e.target.closest("[data-reject]")) { const id = e.target.closest("[data-reject]").dataset.reject; rejected.add(id); sugg = sugg.filter(s => s.goalId !== id); f.goalIds = f.goalIds.filter(x => x !== id); draw(); return; }
-        const id = b.dataset.pick; f.goalIds = f.goalIds.includes(id) ? f.goalIds.filter(x => x !== id) : [...f.goalIds, id]; draw();
-      });
+      B.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { const id = b.dataset.pick; f.goalIds = f.goalIds.includes(id) ? f.goalIds.filter(x => x !== id) : [...f.goalIds, id]; draw(); });
       B.querySelectorAll("[data-size]").forEach(b => b.onclick = () => { f.size = +b.dataset.size; draw(); });
-      const ask = $("askClaude");
-      if (ask) ask.onclick = async () => {
-        asking = true; draw();
-        try { const res = await claudeMatches(f.text); claudeTried = true; if (res) { const have = new Set(sugg.map(s => s.goalId)); res.filter(r => !rejected.has(r.goalId)).forEach(r => { if (have.has(r.goalId)) sugg.find(s => s.goalId === r.goalId).reason = r.reason, sugg.find(s => s.goalId === r.goalId).source = "Claude"; else sugg.push(r); }); if (!res.length) toast("Claude didn't find a clear match"); } }
-        catch (e) { claudeTried = true; toast(e && e.code === "not_granted" ? "Claude wasn't allowed. Keyword matches still work." : "Couldn't reach Claude. Keyword matches still work."); }
-        asking = false; draw();
-      };
       $("eBack").onclick = () => { step = 1; draw(); };
       $("eNext").onclick = () => { step = 3; draw(); };
     } else {

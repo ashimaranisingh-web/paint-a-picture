@@ -45,7 +45,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.ashimasingh.paintapicture
         PRODUCT_NAME: PaintAPicture
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "2"
         TARGETED_DEVICE_FAMILY: "1"
         DEVELOPMENT_TEAM: M8USK73B4P
         CODE_SIGN_STYLE: Automatic
