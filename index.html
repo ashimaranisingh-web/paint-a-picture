@@ -3085,9 +3085,11 @@ addEventListener("keydown", e => { if (e.key === "Escape" && overviewOn) closeOv
 let route = "home";
 const ROUTES = ["home", "goals", "week", "dreams", "account", "assets", "journal", "entry"];
 $("tipsOk").onclick = () => { $("tips").hidden = true; };
+let weekFrom = "home";
 function go(r){
   if (!ROUTES.includes(r)) r = "home";
   if (r === "goals" && route !== "goals") openGoal = null; // cards start collapsed each time you come back
+  if (r === "week" && route !== "week" && route !== "entry") weekFrom = route; // the journal's back arrow returns where she came from
   route = r; closeMenu(); closeSheet();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
@@ -3369,7 +3371,7 @@ function renderWeek(){
   const offPlan = entries.filter(e => !e.goalIds.length);
   const rv = weeklyReview(ws, entries, goalsMoved, steps, metW, passed, offPlan);
   el.innerHTML = `
-    <div class="phead" style="align-items:center"><h1>Weekly Journal</h1><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
+    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="${weekFrom}" aria-label="${weekFrom === "home" ? "Back to your world" : "Back"}">${ICON_BACK}</button><h1>Weekly Journal</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section class="panel review"><div class="eyebrow">Weekly review</div>
@@ -3387,8 +3389,8 @@ function renderWeek(){
 // A week, as a journal knows it: "OCTOBER — WEEK 2" and "(12 OCTOBER – 18 OCTOBER)", from the Monday of the entry's week.
 const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 function weekRef(date){
-  const ws = weekStart(date), a = parseDay(ws), b = parseDay(addDays(ws, 6)), M = d => MONTH_NAMES[d.getMonth()].toUpperCase();
-  return {label: `${M(a)} — WEEK ${Math.ceil(a.getDate() / 7)}`, range: `(${a.getDate()} ${M(a)} – ${b.getDate()} ${M(b)})`};
+  const ws = weekStart(date), a = parseDay(ws), b = parseDay(addDays(ws, 6)), M = d => MONTH_NAMES[d.getMonth()].toUpperCase(), S3 = d => MONTH_NAMES[d.getMonth()].slice(0, 3);
+  return {label: `${M(a)} — WEEK ${Math.ceil(a.getDate() / 7)}`, range: `(${S3(a)} ${a.getDate()} – ${S3(b)} ${b.getDate()})`};
 }
 const JOURNAL_TAGS = ["Personal growth", "Work", "Fitness", "Learning", "Travel", "Creativity", "Money", "Relationships"];
 const entryTags = e => [e.type === "did" ? "Accomplished" : "Worked on"].concat(e.tags || []);
