@@ -183,20 +183,24 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .history{font-size:13px;color:var(--muted);display:grid;gap:3px}
 .panel{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px}
 .insight{font-size:15px;color:var(--ink-2);display:grid;gap:6px}
+.rv-cheer{margin:0;font-family:var(--serif);font-size:21px;line-height:1.25;color:var(--ink)}
+.rv-nudge{margin:4px 0 0;padding-top:10px;border-top:.5px solid var(--line-2);font-size:14px;font-weight:600;color:var(--accent-ink)}
 .insight div{display:flex;gap:9px}
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
 .weeknav{display:flex;align-items:center;gap:6px}
 .entry{display:grid;gap:8px}
 .jcards{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.jcard{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:0 1px 2px rgba(31,36,32,.04)}
+.jcard{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:grid;gap:12px;padding:16px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:0 1px 2px rgba(31,36,32,.04)}
 .jcard:hover{border-color:var(--line-2)}.jcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.jc-top{display:flex;gap:14px;align-items:center}
 .jc-text{flex:1;min-width:0;display:grid;gap:2px}
+.jc-wrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .jc-week{font-size:11px;font-weight:500;line-height:1.3;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
-.jc-range{font-size:11px;letter-spacing:.02em;color:var(--muted)}
+.jc-range{font-size:11px;letter-spacing:.02em;color:var(--muted);margin-left:auto;text-align:right}
 .jc-title{font-family:var(--serif);font-size:21px;line-height:1.2;color:var(--ink);margin-top:8px}
-.jc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.jtag{font-size:12px;font-weight:600;color:var(--ink-2);background:var(--sunk);border-radius:99px;padding:3px 10px}
-.jc-pic{width:84px;height:84px;flex:none;border-radius:8px;overflow:hidden;background:var(--sunk);display:grid;place-items:center}.jc-pic img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.jc-tags{display:flex;flex-wrap:wrap;gap:6px}.jcard .jc-tags{padding-top:12px;border-top:.5px solid var(--line-2)}
+.jtag{font-size:12px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);border-radius:99px;padding:3px 10px}
+.jc-pic{width:84px;height:84px;flex:none;align-self:flex-start;border-radius:8px;overflow:hidden;background:var(--sunk);display:grid;place-items:center}.jc-pic img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .jp-page{position:relative}
 .jpaper{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 2px 14px rgba(70,60,40,.06);padding:28px 22px 32px;display:grid;gap:2px}
 .jp-title{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.15;margin:14px 0 4px;color:var(--ink)}
@@ -3363,18 +3367,15 @@ function renderWeek(){
   const metW = due.filter(g => g.status === "done" && g.doneAt <= g.deadline && g.deadline >= ws && g.deadline <= we);
   const passed = due.filter(g => !(g.status === "done" && g.doneAt <= (g.deadlineHistory.find(h => h.from >= ws && h.from <= we)?.from || g.deadline)) && (g.deadlineHistory.some(h => h.from >= ws && h.from <= we) || (g.deadline <= (isNow ? today() : we) && g.status !== "done")));
   const offPlan = entries.filter(e => !e.goalIds.length);
-  const insights = [];
-  if (entries.length) insights.push(`You logged ${entries.length} thing${entries.length === 1 ? "" : "s"}${goalsMoved.size ? ` and moved ${goalsMoved.size} goal${goalsMoved.size === 1 ? "" : "s"} forward` : ""}.`);
-  if (steps.length) insights.push(`${steps.length} step${steps.length === 1 ? "" : "s"} completed: ${steps.slice(0, 3).map(m => esc(m.title)).join(", ")}.`);
-  if (offPlan.length) insights.push(`${offPlan.length} ${offPlan.length === 1 ? "piece" : "pieces"} of progress happened outside the plan. That's still progress.`);
-  if (metW.length) insights.push(`Deadline met: ${metW.map(g => esc(g.title)).join(", ")}.`);
-  if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
+  const rv = weeklyReview(ws, entries, goalsMoved, steps, metW, passed, offPlan);
   el.innerHTML = `
     <div class="phead" style="align-items:center"><h1>Weekly Journal</h1><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
-    <section class="panel"><div class="eyebrow">Weekly review</div>
-      ${insights.length ? `<div class="insight">${insights.map(i => `<div>${i}</div>`).join("")}</div>` : `<p class="muted" style="margin:0">${isNow ? "Nothing logged yet this week. Anything counts: an email sent, a page drafted, a lesson booked." : "Nothing was logged this week."}</p>`}
+    <section class="panel review"><div class="eyebrow">Weekly review</div>
+      <p class="rv-cheer">${rv.cheer}</p>
+      ${rv.lines.length ? `<div class="insight">${rv.lines.map(i => `<div>${i}</div>`).join("")}</div>` : ""}
+      ${rv.nudge ? `<p class="rv-nudge">${rv.nudge}</p>` : ""}
 </section>
     <section style="display:grid;gap:12px"><h2 class="sec">Logged</h2>
       ${entries.length ? `<ul class="jcards">${entries.map(journalCard).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>`;
@@ -3392,11 +3393,52 @@ function weekRef(date){
 const JOURNAL_TAGS = ["Personal growth", "Work", "Fitness", "Learning", "Travel", "Creativity", "Money", "Relationships"];
 const entryTags = e => [e.type === "did" ? "Accomplished" : "Worked on"].concat(e.tags || []);
 // A journal card: the week anchors it, her own title is the hook, tags to scan, and her photo when there is one.
+// The weekly review reads the week back like a friend who was paying attention: what she did, what moved, what's next.
+// Worked out on the phone from her own entries and goals; the wording is picked per week so it doesn't change on every visit.
+function weeklyReview(ws, entries, goalsMoved, steps, metW, passed, offPlan){
+  const isNow = ws === weekStart(today()), name = firstName();
+  const pick = list => list[[...ws].reduce((n, c) => n + c.charCodeAt(0), 0) % list.length];
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  const list = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
+  const inWeek = w => S.entries.filter(e => weekStart(e.date) === w);
+  let streak = 0; for (let w = ws; inWeek(w).length; w = addDays(w, -7)) streak++;
+  const prev = inWeek(addDays(ws, -7)).length, did = entries.filter(e => e.type !== "worked");
+  const tagCount = {}; entries.forEach(e => (e.tags || []).forEach(t => tagCount[t] = (tagCount[t] || 0) + 1));
+  const topTags = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t]) => t.toLowerCase());
+  const hi = name ? `, ${esc(name)}` : "";
+  if (!entries.length) {
+    const cheer = isNow ? pick([`A fresh week${hi}. It's all yours.`, `Clean page${hi}. What's the first small win?`, `New week, same big dreams${hi}.`])
+      : `This week stayed quiet. That's allowed${hi}.`;
+    const lines = [];
+    if (steps.length) lines.push(`You still ticked off ${plural(steps.length, "step")}: ${list(steps.slice(0, 3).map(m => esc(m.title)))}.`);
+    if (metW.length) lines.push(`And you hit a deadline: ${list(metW.map(g => esc(g.title)))}.`);
+    return {cheer, lines, nudge: isNow ? "Anything counts: an email sent, a page drafted, a lesson booked. Log one thing and the week starts moving." : ""};
+  }
+  const big = entries.length >= 4 || goalsMoved.size >= 3 || metW.length;
+  const cheer = big ? pick([`What a week${hi}! You showed up and it shows.`, `Look at you go${hi}. This is what momentum feels like.`, `Big week${hi}. Your future self is taking notes.`])
+    : entries.length >= 2 ? pick([`Steady and strong${hi}. Keep this rhythm.`, `Nice work${hi}. Small steps, real movement.`, `You kept your promises to yourself this week${hi}.`])
+    : pick([`One step is still a step${hi}. Proud of you.`, `You moved${hi}. That's the whole game.`, `Progress logged${hi}. The picture just got a little clearer.`]);
+  const lines = [];
+  if (did.length) lines.push(`You accomplished ${did.length === 1 ? `“${esc(did[0].text)}”` : `${plural(did.length, "thing")}, including “${esc(did[0].text)}”`}.`);
+  if (entries.length > did.length) lines.push(`You put work into ${plural(entries.length - did.length, "thing")} that ${entries.length - did.length === 1 ? "isn't" : "aren't"} done yet. That counts.`);
+  if (goalsMoved.size) lines.push(`${list([...goalsMoved].map(goalById).filter(Boolean).slice(0, 3).map(g => esc(g.title)))} moved forward because of you.`);
+  if (steps.length) lines.push(`${plural(steps.length, "step")} done: ${list(steps.slice(0, 3).map(m => esc(m.title)))}.`);
+  if (metW.length) lines.push(`Deadline met on ${list(metW.map(g => esc(g.title)))}. On time, as promised.`);
+  if (offPlan.length && offPlan.length < entries.length) lines.push(`${plural(offPlan.length, "win")} came from outside the plan. Life counts too.`);
+  if (topTags.length) lines.push(`Most of your energy went to ${list(topTags)}.`);
+  if (streak >= 2) lines.push(`That's ${streak} weeks in a row of showing up. Don't break the chain.`);
+  else if (prev && entries.length > prev) lines.push(`More than last week (${prev}). You're picking up speed.`);
+  if (passed.length) lines.push(`${list(passed.map(g => esc(g.title)))} ran past a date. Plans bend; you're still building.`);
+  const blocked = entries.find(e => e.blocked), next = entries.find(e => e.next);
+  const nudge = next ? `Next up: ${esc(next.next)}. You've got this.` : blocked ? `“${esc(blocked.blocked)}” got in the way, and you still showed up. Be gentle with yourself.` : isNow ? "Keep going. Every entry adds a brushstroke to the picture." : "";
+  return {cheer, lines, nudge};
+}
 function journalCard(e){
   const w = weekRef(e.date), img = e.image ? imgUrl(e.image) : "";
-  return `<li><button type="button" class="jcard" data-entry="${e.id}"><span class="jc-text"><span class="jc-week">${w.label}</span><span class="jc-range">${w.range}</span>
-    <span class="jc-title">${esc(e.text)}</span><span class="jc-tags">${entryTags(e).map(t => `<span class="jtag">${esc(t)}</span>`).join("")}</span></span>
-    ${img ? `<span class="jc-pic"><img src="${esc(img)}" alt=""></span>` : ""}</button></li>`;
+  const tags = entryTags(e);
+  return `<li><button type="button" class="jcard" data-entry="${e.id}"><span class="jc-top">${img ? `<span class="jc-pic"><img src="${esc(img)}" alt=""></span>` : ""}<span class="jc-text"><span class="jc-wrow"><span class="jc-week">${w.label}</span><span class="jc-range">${w.range}</span></span>
+    <span class="jc-title">${esc(e.text)}</span></span></span>
+    ${tags.length ? `<span class="jc-tags">${tags.map(t => `<span class="jtag">${esc(t)}</span>`).join("")}</span>` : ""}</button></li>`;
 }
 let openEntryId = null;
 function openEntry(id){ openEntryId = id; go("entry"); }
@@ -3410,7 +3452,7 @@ function renderEntry(){
       <button class="iconbtn" id="jpMenu" aria-label="Entry options" aria-expanded="false" style="margin-right:-12px"><svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></button></div>
     <div class="jp-menu" id="jpMenuList" role="menu" hidden><button role="menuitem" id="jpEdit">${GI.edit}<span>Edit entry</span></button><button role="menuitem" id="jpDel" class="danger">${GI.del}<span>Delete entry</span></button></div>
     <article class="jpaper">
-      <div class="jc-week">${w.label}</div><div class="jc-range">${w.range}</div>
+      <div class="jc-wrow"><span class="jc-week">${w.label}</span><span class="jc-range">${w.range}</span></div>
       <h2 class="jp-title">${esc(e.text)}</h2>
       <div class="jc-tags">${entryTags(e).map(t => `<span class="jtag">${esc(t)}</span>`).join("")}</div>
       ${img ? `<figure class="jp-pic"><img src="${esc(img)}" alt=""></figure>` : ""}
