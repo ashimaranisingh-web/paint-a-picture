@@ -205,7 +205,7 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .jpaper{background:#fffdf9;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 2px 14px rgba(70,60,40,.06);padding:28px 22px 32px;display:grid;gap:2px}
 .jp-title{font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.15;margin:14px 0 4px;color:var(--ink)}
 .jp-pic{margin:18px 0 6px;border-radius:8px;overflow:hidden;background:var(--sunk);display:grid;place-items:center}.jp-pic img{display:block;max-width:100%;max-height:440px;object-fit:contain}
-.jp-body{margin-top:18px;font-size:17px;line-height:1.75;color:var(--ink)}.jp-body p{margin:0 0 14px}
+.jp-body{margin:18px 0 0;padding:0 0 0 20px;font-size:17px;line-height:1.6;color:var(--ink);display:grid;gap:8px}.jp-body li::marker{color:var(--accent)}
 .jp-notes{margin:16px 0 0;display:grid;gap:14px;border-top:1px solid var(--line);padding-top:18px}.jp-notes dt{font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}.jp-notes dd{margin:4px 0 0;font-size:16px;line-height:1.65}
 .jp-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:20px;font-size:13px;color:var(--muted)}
 .jp-menu{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:64px;z-index:8;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 14px 30px rgba(31,36,32,.14);display:grid;min-width:190px}
@@ -3458,7 +3458,7 @@ function renderEntry(){
       <h2 class="jp-title">${esc(e.text)}</h2>
       <div class="jc-tags">${entryTags(e).map(t => `<span class="jtag">${esc(t)}</span>`).join("")}</div>
       ${img ? `<figure class="jp-pic"><img src="${esc(img)}" alt=""></figure>` : ""}
-      ${e.notes ? `<div class="jp-body">${esc(e.notes).split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("")}</div>` : ""}
+      ${e.notes ? `<ul class="jp-body">${e.notes.split(/\n+/).filter(t => t.trim()).map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
       ${notes.length ? `<dl class="jp-notes">${notes.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
       <div class="jp-meta"><span>${SIZE_LABEL[e.size || 1]}</span>${gs.length ? gs.map(g => `<span>→ ${esc(g.title)}</span>`).join("") : `<span>Not tied to a goal</span>`}</div>
     </article>`;
@@ -3489,35 +3489,35 @@ function logEntry(editId){
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
   const f = ex ? {...ex, goalIds: ex.goalIds.slice(), tags: (ex.tags || []).slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: "", tags: [], notes: "", image: null};
   let photo = null; // a newly chosen photo, kept until Save
-  let items = [f.text]; // each thing becomes its own entry; they share the type, week, goals and notes
-  const readItems = () => { const rows = $("eItems")?.querySelectorAll("input"); if (rows) items = [...rows].map(i => i.value); };
+  let points = (f.notes || "").split(/\n+/).map(t => t.trim()).filter(Boolean); if (!points.length) points = [""]; // the description, one pointer per line
+  const readPoints = () => { const rows = $("ePoints")?.querySelectorAll("input"); if (rows) points = [...rows].map(i => i.value); };
   let step = 1, sugg = [], rejected = new Set(), asking = false, claudeTried = false;
   const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
   function draw(){
     const B = $("sheetB"), Fo = $("sheetF");
     if (step === 1) {
       B.innerHTML = `${dots()}
-        <div class="field"><span>${ex ? "Title" : "Give it a title"}</span><ul class="ms-edit" id="eItems">${items.map((t, i) => `<li><div class="ms-row"><input type="text" value="${esc(t)}" placeholder="${i ? "Another entry" : "e.g. A week of little victories"}" aria-label="Thing ${i + 1}">${items.length > 1 ? `<button type="button" class="ibtn" data-rmitem="${i}" aria-label="Remove this one">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
-          ${ex ? "" : `<button type="button" class="btn quiet sm" id="eAddItem" style="justify-self:start">${ICON.plus}Add another entry</button>`}</div>
-        <label class="field"><span>Write it down</span><textarea id="eNotes" class="fit" rows="3" placeholder="How did the week feel? What do you want to remember?">${esc(f.notes || "")}</textarea></label>
+        <label class="field"><span>${ex ? "Title" : "Give it a title"}</span><input type="text" id="eTitle" value="${esc(f.text)}" placeholder="e.g. A week of little victories"></label>
+        <div class="field"><span>Write it down</span><ul class="ms-edit" id="ePoints">${points.map((t, i) => `<li><div class="ms-row"><input type="text" value="${esc(t)}" placeholder="${i ? "Another pointer" : "e.g. Booked my first driving lesson"}" aria-label="Pointer ${i + 1}">${points.length > 1 ? `<button type="button" class="ibtn" data-rmpoint="${i}" aria-label="Remove this pointer">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
+          <button type="button" class="btn quiet sm" id="eAddPoint" style="justify-self:start">${ICON.plus}Add another pointer</button></div>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
-      fitArea($("eNotes"));
-      const keepNotes = () => { f.notes = $("eNotes").value.trim(); };
-      B.querySelectorAll("[data-rmitem]").forEach(b => b.onclick = () => { readItems(); keepNotes(); items.splice(+b.dataset.rmitem, 1); draw(); });
-      if ($("eAddItem")) $("eAddItem").onclick = () => { readItems(); keepNotes(); items.push(""); draw(); $("eItems").lastElementChild.querySelector("input").focus(); };
+      const keep = () => { f.text = $("eTitle").value.trim(); readPoints(); };
+      const addPoint = at => { keep(); points.splice(at, 0, ""); draw(); $("ePoints").children[at].querySelector("input").focus(); };
+      B.querySelectorAll("[data-rmpoint]").forEach(b => b.onclick = () => { keep(); points.splice(+b.dataset.rmpoint, 1); draw(); });
+      $("eAddPoint").onclick = () => addPoint(points.length);
+      $("ePoints").querySelectorAll("input").forEach((inp, i) => inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); addPoint(i + 1); } }); // Enter starts the next pointer
       $("eCancel").onclick = closeSheet;
       $("eNext").onclick = () => {
-        readItems(); keepNotes(); items = items.map(t => t.trim()).filter(Boolean); if (!items.length) items = [""];
-        f.text = items.join(" · ");
-        if (!items[0]) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; return; }
-        sugg = localMatches(f.text).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
+        keep(); points = points.map(t => t.trim()).filter(Boolean); f.notes = points.join("\n"); if (!points.length) points = [""];
+        if (!f.text) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; return; }
+        sugg = localMatches(f.text + " " + f.notes).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
       };
     } else if (step === 2) {
       const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
       const suggIds = new Set(sugg.map(s => s.goalId)), others = goals.filter(g => !suggIds.has(g.id));
       B.innerHTML = `${dots()}
-        ${items.map(t => `<p class="quote" style="margin:0;font-weight:700">“${esc(t)}”</p>`).join("")}
+        <p class="quote" style="margin:0;font-weight:700">“${esc(f.text)}”</p>
         <div class="field"><span>Suggested goals</span>
           ${asking ? `<p class="muted" style="margin:0">Asking Claude…</p>` : sugg.length ? `<div class="sugg">${sugg.map(s => { const g = goalById(s.goalId); return `<button type="button" class="sugg-item" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span><span class="grow"><b>${esc(g.title)}</b><small>${esc(s.reason)} · ${s.source}</small></span><span class="btn quiet sm" data-reject="${g.id}" role="button">Not this</span></button>`; }).join("")}</div>
             <small>Tap to link. Nothing is linked until you choose it.</small>` : `<p class="muted" style="margin:0">${goals.length ? "No clear match from your goals." : "You don't have any active goals yet. You can still log this."}</p>`}
@@ -3564,7 +3564,7 @@ function logEntry(editId){
           else { try { localStorage.setItem("dreamLife.img." + key, photo.dataUrl); f.image = {local: key}; } catch (err) { f.image = ex ? ex.image : null; toast("No room on this device for the photo; saved without it."); } }
         }
         const before = new Map(S.aspirations.map(a => [a.id, clarityOf(a).c]));
-        commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f, {text: items[0]}); else items.forEach(t => s.entries.push({id: uid(), ...f, goalIds: f.goalIds.slice(), tags: f.tags.slice(), text: t})); });
+        commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f); else s.entries.push({id: uid(), ...f, goalIds: f.goalIds.slice(), tags: f.tags.slice()}); });
         const grew = S.aspirations.filter(a => clarityOf(a).c > (before.get(a.id) || 0));
         closeSheet();
         toast("Logged. Finishing the goal is what lights up its place.");
