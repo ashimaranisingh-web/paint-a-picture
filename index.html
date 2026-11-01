@@ -181,22 +181,11 @@ h2.sec{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;line-hei
 .notice b{color:#3d2c0c}
 .actions{display:flex;flex-wrap:wrap;gap:8px}
 .history{font-size:13px;color:var(--muted);display:grid;gap:3px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface)}
-.stats div{padding:12px 6px;text-align:center;border-left:1px solid var(--line)}
-.stats div:first-child{border-left:0}
-.stats b{display:block;font-family:var(--serif);font-weight:400;font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
-.stats span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .panel{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);padding:16px;display:grid;gap:8px}
 .insight{font-size:15px;color:var(--ink-2);display:grid;gap:6px}
 .insight div{display:flex;gap:9px}
 .insight div::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:8px}
 .weeknav{display:flex;align-items:center;gap:6px}
-.wk-strip{display:grid;gap:2px;margin-top:-8px}.wk-mrow{display:flex;align-items:center;margin-left:-8px}
-.wk-arrow{all:unset;cursor:pointer;display:grid;place-items:center;width:32px;height:44px;color:var(--muted);border-radius:8px}.wk-arrow:hover{background:var(--sunk)}.wk-arrow:disabled{opacity:.3;cursor:default;background:none}.wk-arrow .ico{width:16px;height:16px}
-.wk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
-.wk-month{font-size:15px;font-weight:400;color:var(--ink-2);min-width:56px;text-align:center}
-.wk-day{display:grid;gap:2px;padding:6px 0;border-radius:8px}.wk-day small{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.wk-day b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
-.wk-day.today{background:var(--sunk)}.wk-day.today b{color:var(--accent-ink)}
 .entry{display:grid;gap:8px}
 .jcards{list-style:none;margin:0;padding:0;display:grid;gap:12px}
 .jcard{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);box-shadow:0 1px 2px rgba(31,36,32,.04)}
@@ -3382,17 +3371,13 @@ function renderWeek(){
   if (passed.length) insights.push(`${passed.map(g => esc(g.title)).join(", ")} ${passed.length === 1 ? "ran" : "ran"} past a deadline. Your path changed. You're still building.`);
   el.innerHTML = `
     <div class="phead" style="align-items:center"><h1>Weekly Journal</h1><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
-    ${weekStripHTML(ws)}
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section class="panel"><div class="eyebrow">Weekly review</div>
       ${insights.length ? `<div class="insight">${insights.map(i => `<div>${i}</div>`).join("")}</div>` : `<p class="muted" style="margin:0">${isNow ? "Nothing logged yet this week. Anything counts: an email sent, a page drafted, a lesson booked." : "Nothing was logged this week."}</p>`}
 </section>
     <section style="display:grid;gap:12px"><h2 class="sec">Logged</h2>
-      ${entries.length ? `<ul class="jcards">${entries.map(journalCard).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>
-    ${honestNumbersHTML()}`;
-  $("wPrev").onclick = () => { if (weekOf > firstWeek()) { weekOf = addDays(weekOf, -7); renderWeek(); } };
-  $("wNext").onclick = () => { if (weekOf < lastWeek()) { weekOf = addDays(weekOf, 7); renderWeek(); } };
+      ${entries.length ? `<ul class="jcards">${entries.map(journalCard).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>`;
   if ($("wToday")) $("wToday").onclick = () => { weekOf = weekStart(today()); renderWeek(); };
   if ($("logBtn")) $("logBtn").onclick = () => logEntry();
   wireWeekHistory();
@@ -3453,22 +3438,9 @@ function entryRow(e){
     <div class="gc-actions" style="grid-template-columns:1fr 1fr"><button class="gc-act" data-editentry="${e.id}">${GI.edit}Edit</button><button class="gc-act danger" data-delentry="${e.id}">${GI.del}Delete</button></div></li>`;
 }
 // Progress is logged per week: an entry's date is the Monday of its week (older entries may still carry a day).
-// You can browse from the week you started logging to two weeks ahead; progress is logged for this week or last week only.
-const firstWeek = () => { const ds = S.entries.map(e => e.date).sort(); return ds.length ? weekStart(ds[0]) < weekStart(today()) ? weekStart(ds[0]) : weekStart(today()) : weekStart(today()); };
-const lastWeek = () => addDays(weekStart(today()), 14);
+// Progress is logged for this week or last week only.
 const canLog = ws => ws === weekStart(today()) || ws === addDays(weekStart(today()), -7);
 function weekTitle(ws){ const now = weekStart(today()); return ws === now ? "This week" : ws === addDays(now, -7) ? "Last week" : ws === addDays(now, 7) ? "Next week" : ws === addDays(now, 14) ? "In two weeks" : "Week of " + fmt(ws); }
-function weekStripHTML(ws){
-  const t = today(), days = [...Array(7)].map((_, i) => addDays(ws, i));
-  return `<div class="wk-strip" aria-label="${esc(weekRange(ws))}"><div class="wk-mrow"><button class="wk-arrow" id="wPrev" aria-label="Previous week" ${ws <= firstWeek() ? "disabled" : ""}>${ICON.left}</button>
-    <span class="wk-month">${esc(monthYear(ws))}</span><button class="wk-arrow" id="wNext" aria-label="Next week" ${ws >= lastWeek() ? "disabled" : ""}>${ICON.right}</button></div>
-    <div class="wk-days">${days.map(d => `<span class="wk-day${d === t ? " today" : ""}"><small>${fmt(d, {weekday: "short"})}</small><b>${parseDay(d).getDate()}</b></span>`).join("")}</div></div>`;
-}
-function weekChoices(ex){
-  const now = weekStart(today()), list = [now, addDays(now, -7)];
-  if (ex && !list.includes(weekStart(ex.date))) list.push(weekStart(ex.date)); // an older entry keeps its own week
-  return list;
-}
 function logEntry(editId){
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
   const f = ex ? {...ex, goalIds: ex.goalIds.slice(), tags: (ex.tags || []).slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: "", tags: [], notes: "", image: null};
@@ -3483,17 +3455,16 @@ function logEntry(editId){
       B.innerHTML = `${dots()}
         <div class="field"><span>${ex ? "Title" : "Give it a title"}</span><ul class="ms-edit" id="eItems">${items.map((t, i) => `<li><div class="ms-row"><input type="text" value="${esc(t)}" placeholder="${i ? "Another entry" : "e.g. A week of little victories"}" aria-label="Thing ${i + 1}">${items.length > 1 ? `<button type="button" class="ibtn" data-rmitem="${i}" aria-label="Remove this one">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
           ${ex ? "" : `<button type="button" class="btn quiet sm" id="eAddItem" style="justify-self:start">${ICON.plus}Add another entry</button>`}</div>
-        <div class="field"><span>This was something I…</span><div class="seg" role="group"><button type="button" aria-pressed="${f.type === "did"}" data-type="did">Accomplished</button><button type="button" aria-pressed="${f.type === "worked"}" data-type="worked">Worked on</button></div></div>
-        <div class="field"><span>Which week?</span><div class="seg" role="group">${weekChoices(ex).map(w => `<button type="button" aria-pressed="${weekStart(f.date) === w}" data-wk="${w}">${w === weekStart(today()) ? "This week" : w === addDays(weekStart(today()), -7) ? "Last week" : esc(weekRange(w))}</button>`).join("")}</div></div>
+        <label class="field"><span>Write it down</span><textarea id="eNotes" class="fit" rows="3" placeholder="How did the week feel? What do you want to remember?">${esc(f.notes || "")}</textarea></label>
         <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
       Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
-      B.querySelectorAll("[data-wk]").forEach(b => b.onclick = () => { f.date = b.dataset.wk; B.querySelectorAll("[data-wk]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-      B.querySelectorAll("[data-type]").forEach(b => b.onclick = () => { f.type = b.dataset.type; B.querySelectorAll("[data-type]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-      B.querySelectorAll("[data-rmitem]").forEach(b => b.onclick = () => { readItems(); items.splice(+b.dataset.rmitem, 1); draw(); });
-      if ($("eAddItem")) $("eAddItem").onclick = () => { readItems(); items.push(""); draw(); $("eItems").lastElementChild.querySelector("input").focus(); };
+      fitArea($("eNotes"));
+      const keepNotes = () => { f.notes = $("eNotes").value.trim(); };
+      B.querySelectorAll("[data-rmitem]").forEach(b => b.onclick = () => { readItems(); keepNotes(); items.splice(+b.dataset.rmitem, 1); draw(); });
+      if ($("eAddItem")) $("eAddItem").onclick = () => { readItems(); keepNotes(); items.push(""); draw(); $("eItems").lastElementChild.querySelector("input").focus(); };
       $("eCancel").onclick = closeSheet;
       $("eNext").onclick = () => {
-        readItems(); items = items.map(t => t.trim()).filter(Boolean); if (!items.length) items = [""];
+        readItems(); keepNotes(); items = items.map(t => t.trim()).filter(Boolean); if (!items.length) items = [""];
         f.text = items.join(" · ");
         if (!items[0]) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; return; }
         sugg = localMatches(f.text).filter(s => !rejected.has(s.goalId)); claudeTried = false; step = 2; draw();
@@ -3531,13 +3502,11 @@ function logEntry(editId){
           <div class="cat-row"><input type="text" id="eTagNew" placeholder="Your own tag" aria-label="Your own tag" maxlength="24"><button type="button" class="ibtn add-ic" id="eTagAdd" aria-label="Add tag">${ICON.plus}</button></div></div>
         <div class="field"><span>Photo (optional)</span>${pic ? `<div class="jp-pic" style="margin:0"><img src="${esc(pic)}" alt="" style="max-height:200px"></div>` : ""}
           <div class="actions"><label class="btn quiet sm" style="cursor:pointer">${pic ? "Change photo" : `${ICON.plus}Add a photo`}<input type="file" accept="image/*" hidden id="ePhoto"></label>${pic ? `<button type="button" class="btn quiet sm" id="ePhotoRm" style="color:var(--danger)">Remove</button>` : ""}</div></div>
-        <label class="field"><span>Write it down</span><textarea id="eNotes" class="fit" rows="3" placeholder="How did the week feel? What do you want to remember?">${esc(f.notes || "")}</textarea></label>
         <label class="field"><span>What I learned</span><input type="text" id="eLearn" value="${esc(f.learned)}" placeholder="e.g. Morning lessons are cheaper"></label>
         <label class="field"><span>What got in the way</span><input type="text" id="eBlock" value="${esc(f.blocked)}" placeholder="e.g. Work trip ate the weekend"></label>
         <label class="field"><span>What I'll do next</span><input type="text" id="eNextT" value="${esc(f.next)}" placeholder="e.g. Book the first lesson"></label>`;
       Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eSave">Save</button>`;
-      fitArea($("eNotes"));
-      const keep = () => { f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim(); f.notes = $("eNotes").value.trim(); };
+      const keep = () => { f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim(); };
       B.querySelectorAll("[data-tag]").forEach(b => b.onclick = () => { const t = b.dataset.tag, on = !f.tags.includes(t); f.tags = on ? f.tags.concat(t) : f.tags.filter(x => x !== t); b.setAttribute("aria-pressed", on); });
       $("eTagAdd").onclick = () => { const t = $("eTagNew").value.trim(); if (!t) return; keep(); if (!f.tags.includes(t)) f.tags.push(t); draw(); };
       $("ePhoto").onchange = async ev => { const file = ev.target.files[0]; if (!file) return; keep(); try { photo = await readImage(file); draw(); } catch (err) { toast("That file couldn't be read as an image. Try a JPG or PNG."); } };
@@ -3903,13 +3872,6 @@ function wireWeekHistory(){
   document.querySelectorAll("[data-week]").forEach(b => b.onclick = () => { weekOf = b.dataset.week; weekQuery = ""; renderWeek(); $("pmain").scrollTop = 0; });
 }
 
-function honestNumbersHTML(){
-  const done = S.goals.filter(g => g.status === "done"), met = done.filter(metDeadline).length;
-  const moved = S.goals.reduce((n, g) => n + g.deadlineHistory.length, 0);
-  return `<section><h2 class="sec" style="margin-bottom:6px">Honest numbers</h2>
-      <p class="muted" style="font-size:13px;margin:0 0 10px">Progress and punctuality are tracked separately: finishing a goal and finishing it on time are counted apart.</p>
-      <div class="stats"><div><b>${S.entries.length}</b><span>entries</span></div><div><b>${done.length}</b><span>goals done</span></div><div><b>${met}/${done.length}</b><span>on time</span></div><div><b>${moved}</b><span>dates moved</span></div></div></section>`;
-}
 
 /* --- ACCOUNT --- */
 function renderAccount(){
