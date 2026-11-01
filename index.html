@@ -90,6 +90,9 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .loccard p{margin:0;font-size:13px;color:var(--ink-2)}
 .loccard .thumb{width:58px;height:58px;border-radius:8px;object-fit:cover;flex:none;background:var(--sunk)}
 .loccard .x{margin-left:auto}
+.lc-pic{width:76px;height:76px;flex:none;border-radius:8px;overflow:hidden;background:var(--sunk)}.lc-pic img,.lc-pic canvas{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.lc-clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lc-side{display:grid;gap:2px;margin:-6px -6px 0 0}
 .lc-hint{display:block;margin-top:6px;font-size:11px;color:var(--muted);font-weight:600}
 .clar{display:grid;gap:5px}
 .clar-bar{height:4px;border-radius:8px;background:var(--line);overflow:hidden}
@@ -533,6 +536,19 @@ const CAT_KIND = {"Places to live":"villa", "Places & travel":"balloon", "Home &
 const TIMEFRAMES = ["Within 2 years", "2–5 years", "5–10 years", "10–15 years"];
 // Where a place sits in her story: lived there before, lives there now, or somewhere she's working towards.
 const STAGES = {past: "Lived here before", current: "Live here now", future: "Want to get to"};
+// A city's status says where it sits in her story. It decides whether the city's own world is lit (status), which is
+// separate from whether her dreams there are unlocked (goals). stage is kept in step with it for the lighting code.
+const STATUS = {loved: "Done & Loved", current: "Currently Living", destination: "Future Destination", futureLiving: "Future Living"};
+const statusStage = st => st === "loved" ? "past" : st === "current" ? "current" : "future";
+function statusFrom(d){
+  if (d.stage === "current") return "current";
+  if (d.stage === "past" || d.purpose === "from" || d.purpose === "loved") return "loved";
+  return d.purpose === "live" ? "futureLiving" : "destination";
+}
+function setStatus(d, st){
+  d.status = st; d.stage = statusStage(st);
+  d.purpose = st === "loved" ? "loved" : st === "destination" ? (["study", "work", "experience"].includes(d.purpose) ? d.purpose : "experience") : "live";
+}
 const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", experience: "Travel", loved: "Done & Loved"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
 const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"]};
@@ -597,6 +613,9 @@ function normalize(o){
   s.destinations.forEach(d => { if (d.id === "d-la" && d.name === "Los Angeles") d.name = "LA"; });
   addTaglines(s);
   s.destinations.forEach(d => { if (!STAGES[d.stage]) d.stage = d.purpose === "from" ? "past" : d.id === "dm-delhi" ? "current" : "future"; }); // the demo lives in Delhi
+  // every city gets one status (older data had a purpose and a stage that could disagree); only one can be home now
+  let home = false;
+  s.destinations.forEach(d => { if (!STATUS[d.status]) d.status = statusFrom(d); if (d.status === "current") { if (home) d.status = "loved"; home = true; } d.stage = statusStage(d.status); });
   s.revealSeen = o.revealSeen && typeof o.revealSeen === "object" ? o.revealSeen : null;
   s.destinations.forEach(d => { if (d.landmark === undefined || (d.landmark !== "none" && !landmarkOptions(d).includes(d.landmark))) d.landmark = defaultLandmark(d, s.aspirations || []); });
   s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; g.status ||= "active"; if (!Array.isArray(g.aspirationIds)) g.aspirationIds = g.aspirationId ? [g.aspirationId] : []; g.aspirationId = g.aspirationIds[0] || null; });
@@ -900,7 +919,7 @@ function newDestination(p, purpose){
     if (same.length) { lat = same.reduce((s, g) => s + g.lat, 0) / same.length; lon = same.reduce((s, g) => s + g.lon, 0) / same.length; }
   }
   const d = {id: "d-" + uid(), name: p.name, country: p.country || "", lat, lon, env: p.env || "town", purpose: purpose || (p.type === "uni" ? "study" : "experience"), custom: !!p.custom, createdAt: today()};
-  d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" || d.purpose === "loved" ? "past" : "future"; return d;
+  d.landmark = defaultLandmark(d, []); d.stage = d.purpose === "from" || d.purpose === "loved" ? "past" : "future"; d.status = statusFrom(d); return d;
 }
 
 /* ---------------- placing districts on the grid ----------------
@@ -1279,6 +1298,13 @@ function lifeDelhi(g, D, vis){
   if (vis(trainX, 244, 120)) for (let k = 0; k < 6; k++) { const x = trainX - k * 15; F(g, x, 239, 14, 7, C.out); F(g, x + 1, 240, 12, 5, k === 0 ? "#b5372e" : "#2f5aa8"); F(g, x + 1, 242, 12, 1, "#e9e1cf"); for (let w = x + 2; w < x + 12; w += 3) F(g, w, 240, 2, 2, "#1d2633"); }
   for (let k = 0; k < 4; k++) { const x = ((t * (0.7 + k * .15) + k * 90) % 360) - 10; if (vis(x, 300, 20)) autoRickshaw(g, x, 297 + (k % 2) * 4, true); }
 }
+function gatewayOfIndia(g, x, y){
+  oval(g, x, y + 1, 27, 4, "rgba(30,30,15,.25)"); F(g, x - 25, y - 3, 50, 4, "#cdbb95");
+  lbox(g, x - 20, y - 30, 40, 27, "#e4cfa4"); F(g, x - 6, y - 22, 12, 19, "#4f4236"); oval(g, x, y - 22, 6, 5, "#4f4236");
+  for (const s of [-1, 1]) { F(g, x + s * 14 - 2, y - 15, 4, 12, "#5e5040"); oval(g, x + s * 14, y - 15, 2, 2, "#5e5040"); }
+  F(g, x - 20, y - 31, 40, 2, "#cdb88c"); for (let i = -18; i <= 18; i += 4) F(g, x + i, y - 33, 1, 1, "#b9a57c");
+  for (const s of [-1, 0, 1]) { lbox(g, x + s * 15 - 4, y - 41, 8, 10, "#e8d5ad"); oval(g, x + s * 15, y - 42, 4, 3, "#d9c49a"); }
+}
 function buildMumbai(g){
   const cm = y => coastM(y), X0 = 356;
   for (const y of [140, 420]) road(g, X0, y, cm(y) - 30 - X0, 10, false);
@@ -1294,12 +1320,13 @@ function buildMumbai(g){
   for (let y = 10; y < AH; y += 30) palm(g, cm(y) - 34, y, 15, true);
   // art-deco row facing the sea, towers behind
   for (const y of [140, 290, 420]) {
-    streetRow(g, X0 + 2, cm(y) - 40, y, {w: k => 20 + (k * 8 | 0), gap: k => 3, draw: (g, x, by, w, k) => k > .45 ? artDeco(g, x, by, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#dfe3e6"], k)) : tower(g, x, by, w, 8 + (k * 9 | 0), pick(["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4"], hash(x, 3, 3)))});
+    streetRow(g, X0 + 2, cm(y) - 40, y, {w: k => 20 + (k * 8 | 0), gap: k => 3, skip: (x, w) => y === 290 && x < 560 && x + w > 490, draw: (g, x, by, w, k) => k > .45 ? artDeco(g, x, by, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#dfe3e6"], k)) : tower(g, x, by, w, 8 + (k * 9 | 0), pick(["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4"], hash(x, 3, 3)))});
   }
   for (const y of [70, 214, 362, 500]) {
     F(g, X0, y, cm(y) - 34 - X0, 6, "#8d8a85");
     streetRow(g, X0 + 2, cm(y) - 40, y + 1, {w: k => 18 + (k * 8 | 0), gap: k => 2, draw: (g, x, by, w, k) => k > .5 ? artDeco(g, x, by, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#f0d0c8"], k)) : tower(g, x, by, w, 7 + (k * 8 | 0), pick(["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4", "#e7d9c4"], hash(x, 5, 5)))});
   }
+  gatewayOfIndia(g, 525, 288);
   // Sea Link: a cable-stayed bridge running out over the water
   const by = 470, x0 = cm(by) - 4, x1 = x0 + 110;
   F(g, x0, by - 2, x1 - x0, 6, C.out); F(g, x0, by - 1, x1 - x0, 4, "#c9c6bf"); F(g, x0, by + 1, x1 - x0, 1, "#a8a59e");
@@ -1337,6 +1364,8 @@ function buildLA(g){
     skip: (x, w) => (x < 1161 && x + w > 1148) || (y === 420 && x + w > 1104),
     draw: (g, x, by, w, k) => spanishHouse(g, x, by - 4, w, pick(STUCCO, k), hash(x, 2, 2))});
   for (const y of ROADS) for (let x = 1004; x < LAX1 - 10; x += 44) roundTree(g, x + 6, y + 40, 6, hash(x, y, 65) > .55 ? ["#4a3a78", "#6a54a8", "#8b74c9", "#b39ae6"] : C.leaf);
+  for (const y of [236, 380, 508]) streetRow(g, cl(y) + 78, LAX1 - 4, y, {w: k => 24 + (k * 8 | 0), gap: k => 6 + (k * 8 | 0),
+    skip: (x, w) => x < 1162 && x + w > 1146, draw: (g, x, by, w, k) => spanishHouse(g, x, by - 4, w, pick(STUCCO, k), hash(x, 5, 2))});
 }
 function lifeLA(g, D, vis){
   for (let k = 0; k < 4; k++) { const y = AH - (((t * (1.1 + k * .12)) + k * 130) % (AH + 40)) + 20; const x = coastL(y) + 52 + (k % 2) * 7; if (vis(x, y, 20)) { F(g, x - 1, y - 1, 7, 12, C.out); F(g, x, y, 5, 10, ["#f2efe8", "#2e3138", "#7d1f2a", "#5d7f9a"][k]); F(g, x + 1, y + 6, 3, 2, "#3b4f66"); } }
@@ -1705,7 +1734,8 @@ const PACKS = {
     walk: () => step(14, 330, 8).map(x => [x, 306])},
   mumbai: {tx: -340, ty: 20, land: (x, y) => x < coastM(y), build: buildMumbai, life: lifeMumbai,
     slots: [[400, 138, "any"], [520, 138, "any"], [460, 288, "home"], [400, 418, "any"], [520, 418, "any"]],
-    fixed: [{id: "marine", title: "Marine Drive", desc: "The sea face at dusk, the curve of lights along the bay.", x: coastM(260) - 12, y: 270, h: 20}],
+    fixed: [{id: "marine", title: "Marine Drive", desc: "The sea face at dusk, the curve of lights along the bay.", x: coastM(260) - 12, y: 270, h: 20},
+      {id: "gateway", title: "Gateway of India", desc: "The basalt arch on the waterfront at Apollo Bunder.", x: 525, y: 288, h: 44}],
     walk: () => step(-10, AH + 10, 6).map(y => [coastM(y) - 11, y])},
   la: {tx: -862, ty: 20, land: (x, y) => x > coastL(y), sand: (x, y) => { const sd = x - coastL(y); return sd >= 0 && sd < 44 ? sd : -1; }, build: buildLA, life: lifeLA,
     slots: [[1052, 138, "city"], [1200, 138, "city"], [1118, 138, "any"], [1052, 288, "home"], [1200, 288, "any"], [1052, 418, "field"], [1214, 418, "home", true], [961, 348, "coast"], [961, 468, "coast"]],
@@ -1749,7 +1779,7 @@ const PACKS = {
    hand-made district (the Sea Link, Harvard Yard, Mount Fuji, the pier) and add nothing new.
    A place gets landmarks from LM_PLACES by its name or other names; places not listed get none rather
    than someone else's monument. The choice is stored on the destination (d.landmark, or "none"). */
-Object.assign(PACKS.delhi, {lm: [300, 90]}); Object.assign(PACKS.la, {lm: [1190, 46]}); Object.assign(PACKS.japan, {lm: [300, 302]});
+Object.assign(PACKS.delhi, {lm: [300, 90], lm2: [[40, 100], [236, 100]]}); Object.assign(PACKS.la, {lm: [1190, 46], lm2: [[1048, 52]]}); Object.assign(PACKS.japan, {lm: [300, 302]});
 Object.assign(PACKS.city, {lm: [203, 318]}); Object.assign(PACKS.coast, {lm: [200, 90]}); Object.assign(PACKS.nature, {lm: [200, 272]});
 Object.assign(PACKS.campus, {lm: [200, 300]}); Object.assign(PACKS.town, {lm: [200, 228]});
 function lbox(g, x, y, w, h, c){ F(g, x - 1, y - 1, w + 2, h + 2, C.out); F(g, x, y, w, h, c); const s = Math.max(1, w / 4 | 0); F(g, x + w - s, y, s, h, shade(c, -.2)); F(g, x, y, w, 1, shade(c, .3)); }
@@ -1775,6 +1805,12 @@ const GLYPH = {H: "101101111101101", O: "111101101101111", L: "100100100100111",
 function word(g, x, y, s, c){ s.split("").forEach((ch, n) => { const m = GLYPH[ch], dy = Math.round(Math.sin(n * .9) * 1.5); for (let r = 0; r < 5; r++) for (let q = 0; q < 3; q++) if (m[r * 3 + q] === "1") { F(g, x + n * 9 + q * 2 + 1, y + dy + r * 2 + 1, 2, 2, "rgba(40,30,20,.45)"); F(g, x + n * 9 + q * 2, y + dy + r * 2, 2, 2, c); } F(g, x + n * 9 + 2, y + dy + 10, 1, 4, C.out); }); }
 function water(g, x, y, w){ F(g, x - w / 2, y - 3, w, 7, C.water[1]); F(g, x - w / 2, y - 3, w, 1, C.water[3]); for (let i = 0; i < w; i += 7) F(g, x - w / 2 + i, y + (i % 2), 3, 1, C.water[2]); }
 const LANDMARKS = {
+  redfort: {title: "Red Fort", desc: "Shah Jahan's red sandstone fort in Old Delhi.", h: 46, draw(g, x, y){
+    lbox(g, x - 26, y - 22, 52, 22, "#b5543c"); for (let i = -26; i < 26; i += 4) F(g, x + i, y - 24, 2, 2, "#b5543c"); F(g, x - 26, y - 12, 52, 1, "#9a4430");
+    for (const s of [-1, 1]) { lbox(g, x + s * 22 - 3, y - 30, 6, 30, "#a84c36"); oval(g, x + s * 22, y - 32, 3, 2, "#f2efe6"); }
+    lbox(g, x - 9, y - 34, 18, 34, "#c25f45"); F(g, x - 4, y - 14, 8, 14, "#4a2a22"); F(g, x - 3, y - 16, 6, 2, "#4a2a22");
+    for (const s of [-1, 1]) { oval(g, x + s * 5, y - 37, 3, 3, "#f2efe6"); F(g, x + s * 5, y - 42, 1, 2, "#d9b44a"); }
+    F(g, x, y - 50, 1, 10, "#5a4a3a"); F(g, x + 1, y - 50, 6, 2, "#e8893a"); F(g, x + 1, y - 48, 6, 2, "#f4f2ec"); F(g, x + 1, y - 46, 6, 2, "#2f8a3a"); }},
   indiagate: {title: "India Gate", desc: "The sandstone arch on Rajpath, lawns on every side.", h: 52, draw(g, x, y){
     lbox(g, x - 18, y - 40, 36, 40, "#c9a37a"); F(g, x - 7, y - 30, 14, 30, "#4a3a30"); F(g, x - 5, y - 32, 10, 2, "#4a3a30"); F(g, x - 3, y - 33, 6, 1, "#4a3a30");
     for (const s of [-1, 1]) F(g, x + s * 12 - 1, y - 36, 2, 30, "#a8835e");
@@ -1888,7 +1924,7 @@ const LANDMARKS = {
   lodhi: {art: "delhi", title: "Lodhi Garden", desc: "A sandstone tomb among neem trees."}
 };
 const LM_PLACES = {
-  "Delhi": ["indiagate", "qutub", "lodhi"], "IIT Delhi": ["qutub", "indiagate", "lodhi"], "Mumbai": ["sealink", "marine"], "Agra": ["tajmahal"],
+  "Delhi": ["indiagate", "qutub", "redfort", "lodhi"], "IIT Delhi": ["qutub", "indiagate", "lodhi"], "Mumbai": ["sealink", "marine"], "Agra": ["tajmahal"],
   "LA": ["hollywood", "griffith", "pier"], "Santa Monica": ["pier", "hollywood"], "Malibu": ["pier", "hollywood"], "UCLA": ["hollywood", "griffith"], "USC": ["hollywood", "griffith"],
   "Boston": ["harvard"], "Cambridge (Massachusetts)": ["harvard"], "Harvard University": ["harvard"], "MIT": ["harvard"],
   "Japan": ["fuji", "tokyotower", "torii"], "Tokyo": ["tokyotower", "fuji"], "Kyoto": ["torii", "fuji"], "Hakone": ["fuji", "torii"], "Ebisu Circuit": ["fuji"],
@@ -1914,6 +1950,11 @@ function defaultLandmark(d, aspirations){
   return opts.find(id => (LM_WORDS[id] || []).some(w => text.includes(w))) || opts[0];
 }
 // The landmark to draw for a place, or null when there's nothing extra to draw.
+// A city's other famous landmarks are part of its world too, wherever its artwork has room for them.
+function otherLandmarks(D){
+  const spots = D.pack.lm2 || [], main = districtLandmark(D);
+  return landmarkOptions(D.d).filter(id => !LANDMARKS[id].art && id !== (main && main.id)).slice(0, spots.length).map((id, i) => ({id, ...LANDMARKS[id], x: spots[i][0], y: spots[i][1]}));
+}
 function districtLandmark(D){
   const id = D.d.landmark, L = id && LANDMARKS[id];
   return L && !L.art && landmarkOptions(D.d).includes(id) ? {id, ...L} : null;
@@ -2005,13 +2046,14 @@ function buildDistrictTerrain(D){
     const Q = PAL[D.d.env] || PAL.town; F(g, x, y, 1, 2, Q[0]); F(g, x + 2, y, 1, 2, Q[0]); F(g, x + 1, y + 1, 1, 1, Q[0]); F(g, x, y - 1, 1, 1, Q[3]);
   }
   CUR_SLOTS = pack.slots;
-  g.save(); g.translate(tx, ty); pack.build(g, D); const L = districtLandmark(D); if (L) drawLandmarkAt(g, L, pack.lm[0], pack.lm[1]); g.restore();
+  g.save(); g.translate(tx, ty); pack.build(g, D); const L = districtLandmark(D); if (L) drawLandmarkAt(g, L, pack.lm[0], pack.lm[1]);
+  otherLandmarks(D).forEach(o => drawLandmarkAt(g, o, o.x, o.y)); g.restore();
   D.terrain = c; D.mask = mask;
   for (let i = 0; i < 70; i++) { const x = hash(i, 9, D.seed) * CW | 0, y = hash(i, 10, D.seed) * CH | 0; if (!mask[y * CW + x] && dist[y * CW + x] > 6) sparkles.push({x: D.ox + x, y: D.oy + y, s: i + D.seed, d: D.d.id}); }
 }
 // Which dreams sit where. Dreams go to their own destination's slots, nearest zone first.
 function assignSlots(D){
-  const used = new Set(), out = [], first = worldDests().find(d => d.purpose !== "from") || worldDests()[0];
+  const used = new Set(), out = [], first = worldDests().find(d => !isLit(d)) || worldDests()[0];
   const mine = S.aspirations.filter(a => (DIST.has(a.destinationId) ? a.destinationId : first.id) === D.d.id);
   for (const pass of [0, 1, 2]) for (const a of mine) {
     if (out.some(o => o.a === a)) continue;
@@ -2028,7 +2070,26 @@ function computeLocs(){
     D.assigned = assignSlots(D);
     for (const {a, slot} of D.assigned) locs.push({a, D, x: tx + slot[0], y: ty + slot[1], h: slot[3] && a.kind === "home" ? 36 : KIND_H[a.kind] || 24, slot});
     const L = districtLandmark(D); if (L) locs.push({fixed: true, D, a: {id: "lm-" + D.d.id, title: L.title, desc: L.desc, category: D.d.name, kind: "fountain"}, x: tx + D.pack.lm[0], y: ty + D.pack.lm[1], h: L.h});
+    for (const o of otherLandmarks(D)) locs.push({fixed: true, D, a: {id: "lm-" + D.d.id + "-" + o.id, title: o.title, desc: o.desc, category: D.d.name, kind: "fountain"}, x: tx + o.x, y: ty + o.y, h: o.h});
     for (const f of D.pack.fixed) locs.push({fixed: true, D, a: {id: "fx-" + D.d.id + "-" + f.id, title: f.title, desc: f.desc, category: D.d.name, kind: "fountain"}, x: tx + f.x, y: ty + f.y, h: f.h});
+  }
+}
+// An empty lot isn't left bare: it holds an ordinary building in the place's own style (or trees on open ground),
+// which gives way as soon as a dream is placed there.
+function drawFiller(g, env, slot){
+  const [x, y, zone] = slot, k = hash(x, y, 71);
+  if (zone === "coast") { palm(g, x - 8, y, 20, true); palm(g, x + 9, y + 2, 16); return; }
+  if (zone === "field" || zone === "car" || env === "nature") { roundTree(g, x - 9, y, 7); roundTree(g, x + 8, y + 3, 6); if (env === "nature") pine(g, x, y - 4, 16); return; }
+  const w = 28, bx = x - w / 2;
+  switch (env) {
+    case "la": spanishHouse(g, bx, y - 4, w, pick(STUCCO, k), k); break;
+    case "delhi": indianHouse(g, bx, y, w, 2 + (k * 2.4 | 0), pick(DELHI_WALLS, k), k); break;
+    case "mumbai": k > .5 ? artDeco(g, bx, y, w, pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6"], k)) : tower(g, bx, y, w, 7 + (k * 6 | 0), pick(["#dfe3e6", "#d9dde2", "#e5e1d8"], k)); break;
+    case "boston": brownstone(g, bx, y, w, pick(["#9a4a3a", "#a85a42", "#8a4434"], k), k > .5); break;
+    case "campus": campusHall(g, x - 20, y, 40, pick(["#ddd2b8", "#e5dccb", "#cfc2a6"], k)); break;
+    case "coast": whiteHouse(g, bx, y, w, k); break;
+    case "town": cottage(g, x, y, k > .5 ? ROOF.home : ROOF.library, k > .3 ? C.wall : C.stoneWall); break;
+    default: tower(g, bx, y, w, 6 + (k * 8 | 0), pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf", "#dcd3c6"], k));
   }
 }
 function drawDistrict(D){
@@ -2039,7 +2100,9 @@ function drawDistrict(D){
   const tx = D.ox + (D.pack.tx || 0), ty = D.oy + (D.pack.ty || 0);
   LMO.x = tx; LMO.y = ty; LMO.d = D.d.id;
   bctx.save(); bctx.translate(tx, ty);
-  (D.assigned || []).slice().sort((p, q) => p.slot[1] - q.slot[1]).forEach(({a, slot}) => drawKind(bctx, a, slot[0], slot[1], D.d.env, slot[3]));
+  const taken = new Set((D.assigned || []).map(o => o.slot));
+  const items = (D.assigned || []).map(o => ({slot: o.slot, a: o.a})).concat(D.pack.slots.filter(sl => !taken.has(sl)).map(slot => ({slot})));
+  items.sort((p, q) => p.slot[1] - q.slot[1]).forEach(({a, slot}) => a ? drawKind(bctx, a, slot[0], slot[1], D.d.env, slot[3]) : drawFiller(bctx, D.d.env, slot));
   bctx.restore();
   D.drawn = true;
 }
@@ -2188,7 +2251,7 @@ function renderView(now){
   const sea = EMPTY[EMPTY.length >> 1];
   if (sea) { const shx = sea.ox + 200 + Math.round(Math.sin(t / 200) * 60), shy = sea.oy + 300 + (Math.sin(t / 30) > .3 ? 1 : 0);
     if (inV(shx, shy, 60)) { F(g, shx - 32, shy - 2, 64, 9, C.out); F(g, shx - 31, shy - 1, 62, 7, "#26354d"); F(g, shx - 31, shy + 4, 62, 2, "#9b2f2a"); for (let i = 0; i < 9; i++) F(g, shx - 26 + i * 6, shy - 7, 5, 6, ["#c45a3b", "#2f6f8f", "#d9a43a", "#5b7c4b"][i % 4]); F(g, shx + 20, shy - 12, 8, 11, "#e9e6df"); F(g, shx + 21, shy - 10, 6, 2, "#2f4256"); F(g, shx - 36 + (t % 4), shy + 3, 3, 1, "#d8f3f6"); } }
-  const ds = worldDests(), from = ds.find(d => d.purpose === "from"), to = ds.find(d => d.purpose !== "from" && from && d.id !== from.id);
+  const ds = worldDests(), from = ds.find(d => d.status === "current") || ds.find(d => isLit(d)), to = ds.find(d => !isLit(d) && from && d.id !== from.id);
   if (from && to && DIST.has(from.id) && DIST.has(to.id)) {
     const A = DIST.get(from.id), B = DIST.get(to.id), ax = A.ox + CW / 2, ay = A.oy + 60, bx = B.ox + CW / 2, by = B.oy + 60, lift = Math.min(120, Math.hypot(bx - ax, by - ay) * .15);
     const at = k => [ax + (bx - ax) * k, ay + (by - ay) * k - Math.sin(k * Math.PI) * lift];
@@ -2253,7 +2316,7 @@ function composeFog(now, cx, cy){
     fctx.globalCompositeOperation = "multiply"; fctx.globalAlpha = veil; fctx.fillStyle = toHex(hex("#46506e").map((v, i) => v + (hex("#9aa2ba")[i] - v) * disc)); fctx.fillRect(0, 0, VW, VH);
     fctx.globalCompositeOperation = "destination-out"; fctx.fillStyle = "#000";
     for (const D of DIST.values()) {
-      const L = districtLit(D, now); if (L <= 0) continue;
+      const L = Math.max(districtLit(D, now), .3); // a future city is never a blank silhouette: its streets show faintly
       const x = D.ox - cx, y = D.oy - cy; if (x > VW || y > VH || x + CW < 0 || y + CH < 0) continue;
       const k = Math.pow(L, 1.5); // early progress lifts the dark gently; the last stretch brings it fully to life
       for (const [ins, a] of [[0, .45], [10, .75], [22, 1]]) { fctx.globalAlpha = a * k; fctx.fillRect(x + ins, y + ins, CW - 2 * ins, CH - 2 * ins); }
@@ -2358,7 +2421,7 @@ function sizeScene(){
     lens = {x: camX + VW * .62, y: camY + VH * .42}; }
   renderView(performance.now()); markPlaces();
 }
-const homeDistrict = () => DIST.get((worldDests().find(d => d.purpose === "from") || worldDests()[0]).id) || [...DIST.values()][0];
+const homeDistrict = () => DIST.get((worldDests().find(d => d.status === "current") || worldDests().find(d => isLit(d)) || worldDests()[0]).id) || [...DIST.values()][0];
 function refreshWorld(){
   const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name, d.landmark || "", d.stage || ""]));
   const ak = JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", a.destinationId || ""]));
@@ -2373,10 +2436,28 @@ function refreshWorld(){
   viewDirty = true; prebuildIdle();
 }
 let lastTick = 0, camAnim = null, inertia = null;
+let focusAnim = null, focusFrom = null; // focusFrom: where the camera was before a dream was brought into focus
+function tweenCam(cx1, cy1, z1, d){
+  zoomAnim = null; camAnim = null; inertia = null;
+  focusAnim = {s: performance.now(), d: reduced ? 1 : d, z0: zoom, z1: Math.max(zMin(), Math.min(ZMAX, z1)), cx0: camX + VW / 2, cy0: camY + VH / 2, cx1, cy1};
+}
+// Bring a dream into focus: zoom in on where it actually stands, high enough on screen that its card doesn't cover it.
+function focusOn(l){
+  if (!focusFrom) focusFrom = {cx: camX + VW / 2, cy: camY + VH / 2, z: zoom};
+  const z = Math.max(zoom, 2.2);
+  tweenCam(l.x, l.y - l.h / 2 + baseVH / z * .16, z, 700);
+}
+function unfocus(){ if (!focusFrom) return; const f = focusFrom; focusFrom = null; tweenCam(f.cx, f.cy, f.z, 650); }
 function loop(ts){
   requestAnimationFrame(loop);
   if (route !== "home" || document.hidden) return;
   if (reveal) { viewDirty = true; if (ts > reveal.start + reveal.dur + 400) reveal = null; }
+  if (focusAnim) {
+    const f = focusAnim, k = Math.min(1, (ts - f.s) / f.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    applyZoom(f.z0 + (f.z1 - f.z0) * e);
+    camX = f.cx0 + (f.cx1 - f.cx0) * e - VW / 2; camY = f.cy0 + (f.cy1 - f.cy0) * e - VH / 2; clampCam(); viewDirty = true;
+    if (k >= 1) { focusAnim = null; saveCam(); }
+  }
   if (zoomAnim) { const k = Math.min(1, (ts - zoomAnim.s) / zoomAnim.d), e = 1 - Math.pow(1 - k, 3); applyZoom(zoomAnim.z0 + (zoomAnim.z1 - zoomAnim.z0) * e, zoomAnim.ax, zoomAnim.ay); if (k >= 1) zoomAnim = null; }
   if (camAnim) { const k = Math.min(1, (ts - camAnim.s) / camAnim.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; camX = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e; camY = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e; clampCam(); if (k >= 1) { camAnim = null; saveCam(); } }
   moveTraveller(ts);
@@ -2457,7 +2538,7 @@ function hideHint(){ if ($("hint").hidden) return; $("hint").hidden = true; try 
 cv.addEventListener("pointerdown", e => {
   try { cv.setPointerCapture(e.pointerId); } catch (err) {}
   ptrs.set(e.pointerId, {x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY});
-  camAnim = null; inertia = null; zoomAnim = null;
+  camAnim = null; inertia = null; zoomAnim = null; focusAnim = null;
   if (ptrs.size === 2) { mode = "pan2"; const [a, b] = [...ptrs.values()]; pinch0 = {d: Math.hypot(a.x - b.x, a.y - b.y), z: zoom}; }
   else if (ptrs.size === 1) { const w = toWorld(e.clientX, e.clientY); mode = lens && !preview && Math.hypot(w.x - lens.x, w.y - lens.y) < lensR() + 6 ? "lens?" : "pan?"; panV = {vx: 0, vy: 0, t: performance.now()}; }
   if (preview && ptrs.size === 1) endPreview();
@@ -2513,7 +2594,7 @@ function endPtr(e){
 cv.addEventListener("pointerup", endPtr);
 cv.addEventListener("pointercancel", endPtr);
 cv.addEventListener("wheel", e => {
-  e.preventDefault(); camAnim = null; inertia = null;
+  e.preventDefault(); camAnim = null; inertia = null; focusAnim = null;
   const lines = e.deltaMode === 1, mouseWheel = lines || (!e.deltaX && Math.abs(e.deltaY) >= 50 && Number.isInteger(e.deltaY));
   if (e.ctrlKey || e.metaKey || mouseWheel) { const m = toLocal(e.clientX, e.clientY), dy = lines ? e.deltaY * 33 : e.deltaY; setZoom(zoom * Math.exp(-dy * (e.ctrlKey ? .01 : .0022)), m.x, m.y); }
   else { camX += e.deltaX / scale; camY += e.deltaY / scale; clampCam(); }
@@ -2535,9 +2616,9 @@ function tapAt({x, y}){
   if (Math.abs(x - av.x) < 9 * ak && y > av.y - 29 * ak && y < av.y + 3) { avatarSays(); return; }
   $("tips").hidden = true;
   const l = locAt(x, y);
-  if (l) { lens = {x: l.x, y: l.y - 14, moved: true}; showLoc(l); viewDirty = true; return; }
+  if (l) { lens = {x: l.x, y: l.y - 14, moved: true}; showLoc(l); if (!l.fixed) focusOn(l); viewDirty = true; return; }
   lens = {x, y, moved: true}; viewDirty = true;
-  $("loccard").hidden = true; lensHover = null;
+  $("loccard").hidden = true; lensHover = null; focusFrom = null;
 }
 function checkHold(now){
   if (mode === "lens") holdStart = 0;
@@ -2589,6 +2670,8 @@ const FAMOUS = {
   "Qutub Minar": ["At about 73 metres, the tallest brick minaret in the world.", "Begun around 1200 under Qutb ud-Din Aibak.", "Next to it stands an iron pillar that has barely rusted in 1,600 years.", "A UNESCO World Heritage Site."],
   "Lodhi Garden": ["Home to tombs of the Sayyid and Lodi rulers, 15th and 16th century.", "Laid out as a park in 1936.", "Delhi's favourite place for a morning walk.", "Its Bara Gumbad and Shish Gumbad domes sit right in the middle of the lawns."],
   "Marine Drive": ["Called the Queen's Necklace for its curve of lights at night.", "A 3.6 km promenade along the Arabian Sea.", "Lined with Art Deco buildings that are part of a UNESCO World Heritage Site.", "Mumbai's favourite spot to watch the sun go down."],
+  "Red Fort": ["Built by Shah Jahan and finished in 1648.", "India's Prime Minister raises the flag here every Independence Day.", "A UNESCO World Heritage Site since 2007."],
+  "Gateway of India": ["Finished in 1924 to mark a 1911 royal visit to Bombay.", "The last British troops left India through its arch in 1948.", "It looks out over the harbour from the waterfront at Apollo Bunder."],
   "Bandra-Worli Sea Link": ["Opened in 2009, cutting a slow drive across the city to minutes.", "India's first cable-stayed bridge built over open sea.", "About 5.6 km long across Mahim Bay.", "Its cables light up at night over the water."],
   "Tokyo Tower": ["At 333 metres, built in 1958 to stand taller than the Eiffel Tower.", "Painted orange and white for air-safety rules.", "Lit warm orange in winter and white in summer.", "Its observation decks look out to Mount Fuji on clear days."],
   "Mount Fuji": ["Japan's highest mountain, at 3,776 metres.", "A UNESCO World Heritage Site since 2013.", "An active volcano that last erupted in 1707.", "Painted again and again by Hokusai."],
@@ -2634,12 +2717,17 @@ function showLoc(l){
     return;
   }
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
-  card.innerHTML = `<div class="row">${img ? `<img class="thumb" src="${esc(img)}" alt="">` : ""}<button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a, true)}${esc(a.title)}</h3>
+  card.innerHTML = `<div class="row"><div class="lc-pic">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</div>
+      <button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a, true)}${esc(a.title)}</h3>${a.desc ? `<p class="lc-desc lc-clamp">${esc(a.desc)}</p>` : ""}
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
-      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture">${ICON.right}</button></div>`;
+      <div class="lc-side"><button class="iconbtn x" id="locX" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture">${ICON.right}</button></div></div>`;
   card.hidden = false;
-  $("locGo").onclick = () => { card.hidden = true; if (preview) endPreview(); openDreamCard(a.id); };
-  card.querySelector("[data-enter]").onclick = () => openDreamCard(a.id);
+  card.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, a));
+  const leave = () => { card.hidden = true; if (preview) endPreview(); focusFrom = null; openDreamCard(a.id); };
+  $("locX").onclick = () => { card.hidden = true; if (preview) endPreview(); unfocus(); };
+  $("locGo").onclick = leave;
+  card.querySelector("[data-enter]").onclick = leave;
 }
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
@@ -2920,7 +3008,7 @@ function updateTitle(){
 let overviewOn = false, ovFit = null;
 function placeReveal(D){ // 0 = dark, 1 = clear
   const best = Math.max(0, ...locs.filter(l => l.D === D).map(l => locClarity(l).c));
-  return Math.min(1, Math.max(D.d.purpose === "from" ? .75 : 0, best, discovery() * .35));
+  return Math.min(1, Math.max(isLit(D.d) ? 1 : 0, best, discovery() * .35));
 }
 function openOverview(){
   if (overviewOn) return;
@@ -3423,7 +3511,7 @@ function renderDreams(){
   el.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
 }
 // The place a dream belongs to; dreams whose place was removed fall back to the first place you're heading to.
-function destOf(a){ return S.destinations.find(d => d.id === a.destinationId) || S.destinations.find(d => d.purpose !== "from") || S.destinations[0] || null; }
+function destOf(a){ return S.destinations.find(d => d.id === a.destinationId) || S.destinations.find(d => !isLit(d)) || S.destinations[0] || null; }
 // A dream card works like a goal card: tap to open it, see the goals that build it, add one, edit, mark it achieved or delete.
 // Milestones build a goal; goals build a dream.
 let openDream = null;
@@ -3905,10 +3993,26 @@ function setDemoMode(on){
 
 
 /* --- shared pieces: place search, the avatar editor --- */
+// Only one city is Currently Living. Moving somewhere new asks what the old home is now; its dreams, goals and history stay.
+function changeStatus(id, st, done){
+  const d = S.destinations.find(x => x.id === id), prev = st === "current" && S.destinations.find(x => x.status === "current" && x.id !== id);
+  const apply = prevSt => { commit(s => { setStatus(s.destinations.find(x => x.id === id), st); if (prev) setStatus(s.destinations.find(x => x.id === prev.id), prevSt); }); done && done(); };
+  if (!d || d.status === st) { done && done(); return; }
+  if (!prev) { apply(); return; }
+  let pick = "loved";
+  openSheet(`Moving to ${esc(d.name)}?`, `<p style="margin:0">${esc(prev.name)} is your current city. What is it to you now?</p>
+    <div class="cklist" id="prevSt">${["loved", "destination", "futureLiving"].map((k, i) => `<button type="button" class="ck" data-ps="${k}" aria-pressed="${!i}"><span class="cb round" aria-hidden="true" ${!i ? 'aria-checked="true"' : ""}></span>${STATUS[k]}</button>`).join("")}</div>
+    <small class="muted">Its dreams, goals and history stay as they are.</small>`,
+    `<button class="btn ghost" id="psCancel">Cancel</button><button class="btn" id="psOk">Move</button>`, () => {
+      $("prevSt").querySelectorAll("[data-ps]").forEach(b => b.onclick = () => { pick = b.dataset.ps; $("prevSt").querySelectorAll("[data-ps]").forEach(x => { x.setAttribute("aria-pressed", x === b); x.querySelector(".cb").setAttribute("aria-checked", x === b); }); });
+      $("psCancel").onclick = () => { closeSheet(); done && done(); };
+      $("psOk").onclick = () => { closeSheet(); apply(pick); };
+    });
+}
 function addDestination(p, purpose, stage){
   if (S.destinations.length >= MAX_DEST) { toast(`Your world has room for ${MAX_DEST} places.`); return null; }
   if (!p.custom && S.destinations.some(d => d.name === p.name)) { toast(`${p.name} is already in your world.`); return null; }
-  const d = newDestination(p, purpose); if (STAGES[stage]) d.stage = stage; placeDestination(d, S.destinations.concat(d));
+  const d = newDestination(p, purpose); if (STAGES[stage]) d.stage = stage; d.status = statusFrom(d); if (d.status === "current" && S.destinations.some(x => x.status === "current")) d.status = "loved"; d.stage = statusStage(d.status); placeDestination(d, S.destinations.concat(d));
   commit(s => s.destinations.push(d));
   return d;
 }
@@ -3935,7 +4039,7 @@ function placeSearch(root, onPick){
 const plusIcon = '<svg class="ico" viewBox="0 0 24 24" style="width:14px;height:14px;margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>';
 function destRows(list, opts){
   return list.length ? `<ul class="list dests">${list.map(d => `<li class="dest-row" data-dest="${d.id}">${opts && opts.edit ? `<button type="button" class="ibtn dest-grip" data-grip aria-label="Move ${esc(d.name)} (drag, or use the arrow keys)"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg></button>` : ""}<div class="grow">${opts && opts.edit ? `<button type="button" class="dest-name" data-editdest="${d.id}" aria-label="Edit ${esc(d.name)}">${esc(d.name)}</button>` : `<b>${esc(d.name)}</b>`}</div>
-    <select data-purpose="${d.id}" aria-label="What ${esc(d.name)} is for you">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+    <select data-status="${d.id}" aria-label="Status of ${esc(d.name)}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${d.status === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     <button type="button" class="ibtn icon-sm" data-rmdest="${d.id}" aria-label="Remove ${esc(d.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
 }
 function wireDestRows(root, redraw){
@@ -3967,11 +4071,7 @@ function wireDestRows(root, redraw){
       e.preventDefault(); li.parentNode.insertBefore(sib, up ? li.nextSibling : li); h.focus(); saveOrder();
     };
   });
-  root.querySelectorAll("[data-purpose]").forEach(s => s.onchange = () => commit(st => {
-    const d = st.destinations.find(d => d.id === s.dataset.purpose), lived = v => v === "from" || v === "loved";
-    d.purpose = s.value;
-    if (lived(s.value) && d.stage === "future") d.stage = "past"; else if (!lived(s.value) && d.stage === "past") d.stage = "future";
-  }));
+  root.querySelectorAll("[data-status]").forEach(s => s.onchange = () => changeStatus(s.dataset.status, s.value, () => (redraw || (() => renderPage(route)))()));
   root.querySelectorAll("[data-rmdest]").forEach(b => b.onclick = () => {
     const id = b.dataset.rmdest, n = S.aspirations.filter(a => a.destinationId === id).length;
     if (n && b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.classList.add("confirm"); b.textContent = `Remove? ${n} dream${n === 1 ? "" : "s"} move`; return; }
@@ -3984,8 +4084,7 @@ function editDestination(id){
   const d = S.destinations.find(x => x.id === id); if (!d) return;
   openSheet("Edit place", `<label class="field"><span>Name</span><input type="text" id="edName" value="${esc(d.name)}"></label>
     <label class="field"><span>A line about it (optional)</span><input type="text" id="edTag" value="${esc(d.tagline || "")}" maxlength="40" placeholder="e.g. Love living here"><small>Shown under the place's name in your world.</small></label>
-    <label class="field"><span>In your story</span><select id="edStage">${Object.entries(STAGES).map(([k, v]) => `<option value="${k}" ${d.stage === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you've lived and where you live now are fully lit. Places you want to get to come to life as you finish the goals linked to them.</small></label>
-    <label class="field"><span>What it is for you</span><select id="edPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<option value="${k}" ${d.purpose === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Places you're from start already clear. Everywhere else starts in the dark.</small></label>
+    <label class="field"><span>Status</span><select id="edStatus">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${d.status === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Done & Loved and Currently Living are fully lit. Future places come to life as you finish the goals linked to their dreams.</small></label>
     <div id="edLm"></div>
     <label class="field"><span>Scenery</span><select id="edEnv">${(GENERIC_ENVS.includes(d.env) ? [] : [d.env]).concat(GENERIC_ENVS).map(k => `<option value="${k}" ${d.env === k ? "selected" : ""}>${ENV_LABEL[k]}${GENERIC_ENVS.includes(k) ? "" : " (its own artwork)"}</option>`).join("")}</select></label>`,
     `<button class="btn ghost" id="edCancel">Cancel</button><button class="btn" id="edSave">Save</button>`, () => {
@@ -3995,17 +4094,15 @@ function editDestination(id){
           : `<div class="field"><span>Landmark</span><small>There's no landmark artwork for this place yet, so it keeps the scenery without one.</small></div>`; };
       lmField(); $("edEnv").onchange = lmField; $("edName").onchange = lmField;
       $("edCancel").onclick = closeSheet;
-      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), purpose: $("edPurpose").value, stage: $("edStage").value, env: $("edEnv").value, landmark: $("edLmSel") ? $("edLmSel").value : "none"})); regionShown = ""; closeSheet(); toast("Place updated"); };
+      $("edSave").onclick = () => { const name = $("edName").value.trim() || d.name; commit(s => Object.assign(s.destinations.find(x => x.id === id), {name, tagline: $("edTag").value.trim(), env: $("edEnv").value, landmark: $("edLmSel") ? $("edLmSel").value : "none"})); const st = $("edStatus").value; closeSheet(); changeStatus(id, st); regionShown = ""; closeSheet(); toast("Place updated"); };
     });
 }
 function addPlaceSheet(after){
   openSheet("Add a place", `<p class="muted" style="margin:0">Somewhere you'd love to live, study, work or explore. It becomes a part of your map.</p><div id="apSearch" style="display:grid;gap:12px"></div>
-<div class="field"><span>In your story</span><div class="pills" id="apStage">${Object.entries(STAGES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "future"}" data-st="${k}">${v}</button>`).join("")}</div></div>
-    <div class="field"><span>It's a place to…</span><div class="pills" id="apPurpose">${Object.entries(PURPOSES).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "experience"}" data-pp="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
-    let purpose = "experience", stage = "future";
-    $("apStage").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { stage = b.dataset.st; $("apStage").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    $("apPurpose").querySelectorAll("[data-pp]").forEach(b => b.onclick = () => { purpose = b.dataset.pp; $("apPurpose").querySelectorAll("[data-pp]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" && purpose === "experience" ? "study" : purpose, (purpose === "from" || purpose === "loved") && stage === "future" ? "past" : stage); if (d) { closeSheet(); toast(`${d.name} added to your world`); after && after(d); } });
+<div class="field"><span>Status</span><div class="pills" id="apStatus">${Object.entries(STATUS).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "destination"}" data-st="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
+    let status = "destination";
+    $("apStatus").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { status = b.dataset.st; $("apStatus").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" ? "study" : "experience", "future"); if (d) { closeSheet(); toast(`${d.name} added to your world`); changeStatus(d.id, status, () => after && after(d)); } });
   });
 }
 function avatarEditor(root, onChange, opts){
@@ -4063,7 +4160,7 @@ function finishOnboarding(){
   $("onboard").hidden = true; cancelAnimationFrame(obAnim);
   go("home"); sizeScene();
   $("tips").hidden = false; hideHint();
-  const d = worldDests().find(d => d.purpose !== "from"); if (d) setTimeout(() => travelTo(d.id), 300);
+  const d = worldDests().find(d => !isLit(d)); if (d) setTimeout(() => travelTo(d.id), 300);
 }
 function drawOb(){
   cancelAnimationFrame(obAnim);
@@ -4126,7 +4223,7 @@ function obPlaces(M, Fo){
       <p class="ob-sub">Add the places you want to get to eventually for a job, life, travel or work.</p>
       <div id="obSearch" style="display:grid;gap:12px"></div>
       <section><div class="eyebrow" style="margin:6px 0">Your places · ${S.destinations.length}</div>${destRows(S.destinations) || `<div class="empty" style="padding:8px 2px">No places yet. Search above, or tap an idea.</div>`}</section>`;
-    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" ? "study" : "live", "future")) draw(); });
+    placeSearch($("obSearch"), p => { if (addDestination(p, p.type === "uni" ? "study" : "experience", "future")) draw(); });
     wireDestRows(M, draw);
   };
   draw();
@@ -4174,7 +4271,7 @@ const OB_PIN = '<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10
 function obWorld(M, Fo){
   const ds = S.destinations;
   M.innerHTML = `<h1 class="ob-h dark">Painting your world…</h1>
-    <section class="panel ob-build-card"><ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="ob-ic">${OB_PIN}</span><span class="grow"><b>${esc(d.name)}</b><small>${d.placeholder ? "Add your places later" : esc(PURPOSES[d.purpose])}</small></span><span class="cb" aria-hidden="true"></span></li>`).join("")}
+    <section class="panel ob-build-card"><ul class="ob-build" id="obBuild">${(ds.length ? ds : [PLACEHOLDER]).map(d => `<li><span class="ob-ic">${OB_PIN}</span><span class="grow"><b>${esc(d.name)}</b><small>${d.placeholder ? "Add your places later" : esc(STATUS[d.status] || "")}</small></span><span class="cb" aria-hidden="true"></span></li>`).join("")}
       <li><span class="ob-ic star">${GI.star}</span><span class="grow"><b>${S.aspirations.length} dream${S.aspirations.length === 1 ? "" : "s"}</b><small>Placed as landmarks, still in the dark</small></span><span class="cb" aria-hidden="true"></span></li>
       <li><span class="ob-ic av"><canvas id="obMe" width="40" height="40" aria-hidden="true"></canvas></span><span class="grow"><b>You</b><small>${avatarLook().style === "doll" ? "2D" : "Pixel art"} character</small></span><span class="cb" aria-hidden="true"></span></li></ul></section>
     <div class="panel" id="obReady" hidden><div class="eyebrow">How to move around</div><div class="insight"><div>Drag to explore in any direction.</div><div>Use 2 fingers to zoom in and out.</div><div>Tap a dream to see it, then tap its card for the details.</div><div>Tap three times anywhere to bring your character there.</div></div></div>`;
