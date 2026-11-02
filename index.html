@@ -4182,19 +4182,23 @@ document.addEventListener("click", e => {
 /* --- the loader: one screen for the bigger jobs (switching profile, setting up a world). Each stage is real work and its
    line says what that work is; the bar moves as stages finish. Small actions never show it. --- */
 const pause = ms => new Promise(res => setTimeout(res, ms));
+// It stays up for a standard time, at least four seconds, shared out across the stages (and never under a second each), so
+// every line can be read; the bar fills steadily through each stage. Longer work simply takes longer.
+const LOADER_MIN = 4000, STAGE_MIN = 1000;
 async function runLoader(title, stages){
-  const el = $("loader"), bar = $("ldBar"), list = stages.filter(st => !st.skip), hold = reduced ? 120 : 480; // long enough to read each line
+  const el = $("loader"), bar = $("ldBar"), list = stages.filter(st => !st.skip), hold = Math.max(STAGE_MIN, LOADER_MIN / Math.max(1, list.length));
   $("ldH").textContent = title; bar.style.transition = "none"; bar.style.width = "0%"; el.classList.remove("out"); el.hidden = false;
-  await pause(30); bar.style.transition = "";
+  await pause(30);
   for (let i = 0; i < list.length; i++) {
     const st = list[i], t0 = performance.now();
     $("ldMsg").textContent = st.text; drawLoaderArt(st.art);
+    bar.style.transition = `width ${hold}ms linear`; bar.style.width = Math.round((i + 1) / list.length * 100) + "%";
     await pause(30); // let the line and picture show before the work starts
     try { await st.run(); } catch (e) { console.error(e); }
-    bar.style.width = Math.round((i + 1) / list.length * 100) + "%";
     const left = hold - (performance.now() - t0); if (left > 0) await pause(left);
   }
-  el.classList.add("out"); await pause(reduced ? 0 : 260); el.hidden = true; el.classList.remove("out");
+  await pause(200);
+  el.classList.add("out"); await pause(260); el.hidden = true; el.classList.remove("out"); bar.style.transition = "";
 }
 // Build every city's scenery now rather than as you scroll, a city at a time so the page stays responsive.
 async function buildAllTerrain(){ for (const D of DIST.values()) if (!D.terrain) { buildDistrictTerrain(D); await pause(0); } for (const D of DIST.values()) D.drawn = false; viewDirty = true; }
