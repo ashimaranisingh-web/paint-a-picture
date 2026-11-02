@@ -147,7 +147,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .journey button[aria-current="true"]{color:#ff8db3}
 .journey button:focus-visible{outline:2px solid var(--accent);border-radius:8px}
 /* the original dot: it sits on the line behind the names and glides to the place you're looking at, its glow lighting the name it passes */
-.journey .you{position:absolute;z-index:0;top:50%;left:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:0 0 8px 4px rgba(255,255,255,.22),0 0 22px 11px rgba(255,255,255,.1);transition:left .9s cubic-bezier(.45,0,.2,1);pointer-events:none;will-change:left}
+.journey .you{position:absolute;z-index:0;top:50%;left:0;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(240,79,133,.3),0 0 16px 6px rgba(240,79,133,.32);transition:left .7s cubic-bezier(.4,0,.2,1);pointer-events:none;will-change:left}
 .vision-banner{position:absolute;left:50%;top:calc(var(--safe-top) + 70px);transform:translateX(-50%);z-index:6;background:rgba(247,244,238,.97);color:var(--ink);border-radius:99px;padding:8px 14px;
   font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
@@ -432,7 +432,7 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .journey::before{display:none}
 .journey .link{flex:1 1 8px;min-width:8px;height:1px;background:rgba(255,255,255,.28);align-self:center}
 .journey button{flex:0 1 auto;min-width:44px;height:44px;padding:0 8px;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s;box-sizing:border-box}
-.journey button[aria-current="true"]{color:#ff7aa8;text-shadow:0 0 10px rgba(255,255,255,.35)}
+.journey button[aria-current="true"]{color:#fff}
 .tour{position:absolute;left:50%;transform:translateX(-50%);width:min(340px,calc(100% - 32px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
   background:var(--glass);border:1px solid var(--glass-line);color:#fff;border-radius:var(--r-lg);padding:14px 16px 12px;display:grid;gap:6px;box-shadow:0 18px 40px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .25s}
 .tour.fade{opacity:0}
