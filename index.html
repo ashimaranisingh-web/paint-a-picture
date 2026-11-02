@@ -432,16 +432,15 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 .journey .link{flex:1 1 8px;min-width:8px;height:1px;background:rgba(255,255,255,.28);align-self:center}
 .journey button{flex:0 1 auto;min-width:44px;height:44px;padding:0 8px;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s;box-sizing:border-box}
 .journey button[aria-current="true"]{color:#fff}
-.tour{position:absolute;left:50%;transform:translateX(-50%);width:min(340px,calc(100% - 32px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
-  background:var(--glass);border:1px solid var(--glass-line);color:#fff;border-radius:var(--r-lg);padding:14px 16px 12px;display:grid;gap:6px;box-shadow:0 18px 40px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .25s}
+/* the tour card: a white card in the Goals card style, floating over the map */
+.tour{position:absolute;left:50%;transform:translateX(-50%);width:min(358px,calc(100% - 32px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:var(--r-lg);padding:16px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35);transition:opacity .25s}
 .tour.fade{opacity:0}
 .tour-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.tour-top .eyebrow{color:rgba(255,255,255,.7)}
-.tour-top button{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:rgba(255,255,255,.75);min-height:32px;padding:0 4px;display:flex;align-items:center}
-.tour-hi{margin:0;font-size:13px;color:rgba(255,255,255,.75)}
+.tour-top button{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--accent-ink);min-height:32px;margin:-6px -4px;padding:0 4px;display:flex;align-items:center}
+.tour-hi{margin:0;font-size:13px;color:var(--muted)}
 .tour-t{margin:0;display:flex;align-items:center;gap:12px;font-family:var(--serif);font-size:22px;line-height:1.2}.tour-t span{font-size:16px;line-height:1.35}
-.tour-t .ico{width:28px;height:28px;flex:none;color:#ff8db3;stroke-width:1.6}
-.tour-dots{display:flex;gap:5px;margin-top:4px}.tour-dots i{width:16px;height:3px;border-radius:8px;background:rgba(255,255,255,.22)}.tour-dots i.on{background:#ff8db3}
+.tour-t .ico{width:24px;height:24px;flex:none;color:var(--accent);stroke-width:1.6}
 @media (prefers-reduced-motion:no-preference){.tour-t .ico{animation:tourNudge 1.8s ease-in-out infinite}}
 @keyframes tourNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
 
@@ -2611,7 +2610,7 @@ function tourShow(i){
   el.innerHTML = `<div class="tour-top"><span class="eyebrow">Explore your world · ${i + 1} of ${TOUR.length}</span><button type="button" id="tourSkip">Skip</button></div>
     ${i === 0 ? `<p class="tour-hi">This is your world. Learn it by doing, one move at a time.</p>` : ""}
     <p class="tour-t"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${st.ic}</svg><span>${st.t}</span></p>
-    <div class="tour-dots" aria-hidden="true">${TOUR.map((_, n) => `<i class="${n <= i ? "on" : ""}"></i>`).join("")}</div>`;
+`;
   el.hidden = false; el.classList.remove("fade");
   $("tourSkip").onclick = tourEnd;
 }
