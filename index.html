@@ -1958,7 +1958,7 @@ const LM_WORDS = {qutub: ["qutub", "mehrauli"], indiagate: ["india gate", "rajpa
   griffith: ["stars", "observatory", "telescope"], hollywood: ["film", "movie", "actor", "hollywood"], pier: ["beach", "pier", "surf"], empire: ["office", "career", "work"], liberty: ["move", "new life"],
   towerbridge: ["river", "thames"], bigben: ["parliament", "politics"], marine: ["sea face", "marine drive", "walk"]};
 function landmarkOptions(d){
-  const pack = PACKS[d.env] || PACKS.town, key = d.name.toLowerCase();
+  const pack = PACKS[d.env] || PACKS.town, key = (d.name || "").toLowerCase(); // previews (the welcome screen's little world) have no name
   const g = GAZ.find(p => p.name === d.name) || GAZ.find(p => p.alias.split(",").includes(key));
   const ids = LM_PLACES[d.name] || (g && LM_PLACES[g.name]) || [];
   return ids.filter(id => LANDMARKS[id].art ? LANDMARKS[id].art === d.env : !!pack.lm);
