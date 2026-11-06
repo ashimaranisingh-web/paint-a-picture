@@ -514,10 +514,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-eyebrow{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 .st-bar{flex:1;height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}.st-bar i{display:block;height:100%;background:var(--accent)}
 .st-main{gap:12px}
-.st-first{justify-items:center;text-align:center;padding-top:calc(var(--safe-top) + 64px)}
+.st-first{justify-items:center;text-align:center;padding-top:calc(var(--safe-top) + 48px)}
 .st-h{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;margin:4px 0 0;letter-spacing:-.005em}
 .st-h.st-md{font-size:28px;margin:0}
-.st-h.st-xl{font-size:38px;line-height:1.08;margin:52px 0 0}
+.st-h.st-xl{font-size:24px;line-height:1.15;margin:28px 0 0}
 .st-p{margin:-4px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
 .st-paper .st-p{font-size:16px;line-height:1.55;color:var(--ink-2)}
 .st-paper .st-p.st-wline{font-size:14px;line-height:1.5;margin:0}
@@ -536,6 +536,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-pic{position:relative;width:100%;height:100%;overflow:hidden}
 .st-bg{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;filter:grayscale(.85) brightness(.55);transition:filter .6s ease}
 .st-blank{position:absolute;inset:0;box-sizing:border-box;border:1.5px dashed #c9bfa9;display:grid;place-items:center;color:#a39a87;font-size:13px;font-weight:700}
+.st-puzzle{width:min(100%,340px);aspect-ratio:200/150;image-rendering:pixelated;display:block}
 .st-blank svg{width:40px;height:40px;fill:none;stroke:#b8af9c;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .st-breathe{animation:st-breathe 3.2s ease-in-out infinite}
 .st-empty{width:min(100%,300px);aspect-ratio:300/230;padding:14px;margin:0;box-shadow:0 0 0 10px #6b5236,0 0 0 12px #3f2f1e,0 24px 44px rgba(31,36,32,.28)}
@@ -4562,7 +4563,7 @@ function stTerrain(env){
   return stTerr[env];
 }
 // A crop of a place's scenery around its landmark (or, by the sea, its shore), w × h world pixels.
-const ST_VIEW = {coast: [200, 414]};
+const ST_VIEW = {coast: [200, 404]};
 function stCrop(env, w, h){
   const T = stTerrain(env), P = PACKS[env] || PACKS.town, c = document.createElement("canvas"); c.width = w; c.height = h;
   const [cx, cy] = ST_VIEW[env] || (P.lm ? [P.lm[0] + (P.tx || 0), P.lm[1] + (P.ty || 0)] : [200, 280]);
@@ -4629,12 +4630,75 @@ function stFoot(Fo, note, next, o){
 
 /* --- Act 1, the idea --- */
 function obFrame(M, Fo){
-  M.innerHTML = `<div class="st-frame st-empty" aria-hidden="true"><div class="st-pic"><div class="st-blank st-breathe">${ST_BRUSH}</div></div></div>
-    <h1 class="st-h st-xl">You already carry a picture of your future.</h1>
-    <p class="st-p st-c">A home you love, a body you feel strong in, work you're proud of. This is where you paint it, and watch it come true.</p>`;
-  Fo.innerHTML = `<div class="st-cta"><button class="btn st-big" id="obBegin">Begin</button><button class="btn quiet" id="obSkipAll">Skip</button></div>`;
+  M.innerHTML = `<canvas class="st-puzzle" id="stPuzzle" role="img" aria-label="A pixel picture of a future, pieced together one piece at a time: a city, a home, work, a healthy body and family"></canvas>
+    <h1 class="st-h st-xl">We all have a picture of the future we want!</h1>
+    <p class="st-p st-c">A city we want to live in, the house we want, a career based on what we love and a healthy body and a loving family. We enable you to make that picture your reality.</p>`;
+  Fo.innerHTML = `<div class="st-cta"><button class="btn st-big" id="obBegin">Let's Paint</button></div>`;
   $("obBegin").onclick = () => obGo(1);
-  $("obSkipAll").onclick = () => finishOnboarding();
+  stPuzzle($("stPuzzle"));
+}
+// The first screen's picture: a future drawn in the world's own pixel art (the city, a home, work, a healthy body,
+// family and her character), cut into twelve jigsaw pieces that slide into place one by one, then again.
+const PZ = {W: 200, H: 150, X: 20, Y: 15, w: 160, h: 120, cols: 4, rows: 3, cell: 40, order: [5, 0, 10, 3, 7, 1, 11, 4, 8, 2, 9, 6]};
+function stPuzzleScene(){
+  const c = document.createElement("canvas"); c.width = PZ.w; c.height = PZ.h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+  sky(g, PZ.w, 46, "#fcd9c4", "#f9b9cc"); oval(g, 128, 18, 7, 7, "#fff1c9"); oval(g, 128, 18, 5, 5, "#fffaf0");
+  for (let i = 0; i < 9; i++) tower(g, 2 + i * 18, 46, 12, 3 + (i * 5) % 4, pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf"], i / 9));
+  grassBand(g, PZ.w, PZ.h, 44);
+  F(g, 0, 78, PZ.w, 5, "#d8cdb2"); F(g, 0, 78, PZ.w, 1, "#e8e0c8");
+  drawKind(g, {kind: "villa"}, 36, 76, "coast"); drawKind(g, {kind: "studio"}, 122, 74, "city"); roundTree(g, 80, 72, 5);
+  drawKind(g, {kind: "fitness"}, 40, 112, "town"); drawKind(g, {kind: "picnic"}, 122, 110, "town");
+  bush(g, 6, 100, 3, "#ef8fa0"); bush(g, 154, 98, 3, "#f6d36b");
+  g.drawImage(avatarSprite("down", 0), 73, 84);
+  return c;
+}
+function stPuzzlePieces(scene){
+  const {w, h, cols, rows, cell} = PZ, tab = (a, b, k) => hash(a, b, k) > .5 ? 1 : -1; // which way each joint's tab points
+  const owner = new Int8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const c = Math.min(cols - 1, x / cell | 0), r = Math.min(rows - 1, y / cell | 0); let o = r * cols + c;
+    for (const cc of [c, c + 1]) if (cc > 0 && cc < cols) { const d = tab(cc, r, 31), X = cc * cell; if ((x - (X + 4 * d)) ** 2 + (y - (r * cell + 20)) ** 2 <= 36) o = r * cols + (d > 0 ? cc - 1 : cc); }
+    for (const rr of [r, r + 1]) if (rr > 0 && rr < rows) { const d = tab(c, rr, 47), Y = rr * cell; if ((x - (c * cell + 20)) ** 2 + (y - (Y + 4 * d)) ** 2 <= 36) o = (d > 0 ? rr - 1 : rr) * cols + c; }
+    owner[y * w + x] = o;
+  }
+  const src = scene.getContext("2d").getImageData(0, 0, w, h).data, edge = (x, y, i) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const X = x + dx, Y = y + dy; return X < 0 || Y < 0 || X >= w || Y >= h || owner[Y * w + X] !== i; });
+  const make = (x0, y0, pw, ph, i, dark) => { const c = document.createElement("canvas"); c.width = pw; c.height = ph; const g = c.getContext("2d"), im = g.createImageData(pw, ph);
+    for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) { const X = x0 + x, Y = y0 + y; if (X < 0 || Y < 0 || X >= w || Y >= h || owner[Y * w + X] !== i) continue;
+      const s = (Y * w + X) * 4, o = (y * pw + x) * 4, k = edge(X, Y, i) ? dark : 1; im.data[o] = src[s] * k; im.data[o + 1] = src[s + 1] * k; im.data[o + 2] = src[s + 2] * k; im.data[o + 3] = 255; }
+    g.putImageData(im, 0, 0); return c; };
+  const pieces = [];
+  for (let i = 0; i < cols * rows; i++) { const c = i % cols, r = i / cols | 0, x0 = c * cell - 10, y0 = r * cell - 10; const loose = make(x0, y0, cell + 20, cell + 20, i, .62), shadow = document.createElement("canvas"); shadow.width = shadow.height = cell + 20;
+    const sg = shadow.getContext("2d"); sg.drawImage(loose, 0, 0); sg.globalCompositeOperation = "source-in"; F(sg, 0, 0, cell + 20, cell + 20, "rgba(31,36,32,.28)");
+    pieces.push({i, x0, y0, loose, shadow, set: make(x0, y0, cell + 20, cell + 20, i, .9), c, r}); }
+  // the empty board: a paper slot with every piece's outline faintly drawn in
+  const ghost = document.createElement("canvas"); ghost.width = w; ghost.height = h; const gg = ghost.getContext("2d");
+  F(gg, 0, 0, w, h, "#ece5d6"); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (edge(x, y, owner[y * w + x]) && (x + y) % 2) F(gg, x, y, 1, 1, "#cfc4ae");
+  return {pieces, ghost};
+}
+function stPuzzle(cvs){
+  const k = 3; cvs.width = PZ.W * k; cvs.height = PZ.H * k;
+  const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
+  const {pieces, ghost} = stPuzzle.cache ||= stPuzzlePieces(stPuzzleScene());
+  const STEP = 340, FLY = 520, HOLD = 3200, FADE = 450, total = STEP * (pieces.length - 1) + FLY;
+  const ease = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2; // ease out with a small overshoot, so each piece clicks in
+  const draw = ts => {
+    if (!cvs.isConnected) return;
+    const t = (ts - (stPuzzle.t0 ??= ts)) % (total + HOLD + FADE);
+    g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, PZ.W, PZ.H);
+    g.drawImage(ghost, PZ.X, PZ.Y);
+    const out = t > total + HOLD ? 1 - (t - total - HOLD) / FADE : 1;
+    PZ.order.forEach((i, n) => {
+      const p = pieces[i], u = Math.min(1, Math.max(0, (t - n * STEP) / FLY)); if (u <= 0) return;
+      const m = reduced ? 0 : 1, dx = m * ((p.c - 1.5) * 18 + (n % 2 ? 6 : -6)), dy = m * ((p.r - 1) * 18 - 14), e = ease(u); // with reduced motion each piece appears in its place instead of sliding in
+      const x = Math.round(PZ.X + p.x0 + dx * (1 - e)), y = Math.round(PZ.Y + p.y0 + dy * (1 - e));
+      g.globalAlpha = (reduced ? 1 : Math.min(1, u * 3)) * out;
+      if (u < 1 && !reduced) g.drawImage(p.shadow, x + 2, y + 3); // lifted off the board until it lands
+      g.drawImage(u < 1 && !reduced ? p.loose : p.set, x, y);
+    });
+    g.globalAlpha = 1;
+    obAnim = requestAnimationFrame(draw);
+  };
+  stPuzzle.t0 = undefined; obAnim = requestAnimationFrame(draw);
 }
 function obParts(M, Fo){
   const P = [["villa", "Home by the sea", 2, 42], ["studio", "My podcast", 34, 7], ["fitness", "Run 10k", 66, 45]];
