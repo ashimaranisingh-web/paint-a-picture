@@ -835,10 +835,11 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .home:not(.night) .mark{text-shadow:none}.home:not(.night) .mark-name{color:rgba(31,36,32,.62)}.home:not(.night) .mark-sub{color:var(--ink)}
 .home:not(.night) .journey button{color:var(--ink)}.home:not(.night) .journey .link{background:rgba(64,44,30,.2)}
 /* the places strip: every name in full on one line, 60px apart, scrolling sideways when they don't fit */
-.journey{overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 18px}
+.journey{overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 12px;scroll-snap-type:x proximity}
 .journey::-webkit-scrollbar{display:none}
-.journey button{flex:none;overflow:visible;text-overflow:clip;padding:0;min-width:0}
-.journey .link{flex:none;width:36px;min-width:36px;margin:0 12px}
+/* five places in view at a time; more scroll in from the side */
+.journey button{flex:none;width:calc((100% - 4 * 10px) / 5);overflow:hidden;text-overflow:ellipsis;padding:0;min-width:0;font-size:12px;scroll-snap-align:start}
+.journey .link{flex:none;width:6px;min-width:6px;margin:0 2px}
 /* the map: no pink fills, a pink ring once a step is reached */
 .st-map span.on i{background:#fff;box-shadow:inset 0 0 0 1.5px #e39ab3}
 /* the loader: a bigger piece with soft edges */
@@ -2720,6 +2721,7 @@ function renderView(now){
   const grade = g.createLinearGradient(-cx, 0, W - cx, 0);
   grade.addColorStop(0, "rgba(255,170,80,.10)"); grade.addColorStop(.45, "rgba(255,190,120,.04)"); grade.addColorStop(.6, "rgba(120,170,220,.04)"); grade.addColorStop(1, "rgba(160,200,255,.06)");
   g.fillStyle = grade; g.fillRect(0, 0, VW, VH);
+  seaShade(g); // depth in the water: lighter where the light falls, deeper further down
   if (isNight()) { g.globalCompositeOperation = "multiply"; g.fillStyle = "#4c5a8c"; g.fillRect(0, 0, VW, VH); g.globalCompositeOperation = "source-over"; } // night where she is
   composeFog(now, cx, cy);
   const D = districtAt(cx + VW / 2, cy + VH / 2);
@@ -2743,6 +2745,18 @@ function seaLife(g, cx, cy, inV){
       F(g, x - 3, y, 6, 2, "#6f8fa6"); F(g, x - 2, y - 1, 3, 1, "#8fb0c4"); F(g, x, y - 2, 1, 1, "#6f8fa6"); F(g, x + 3, y + 1, 1, 1, "#6f8fa6");
       if (ph < 3 || ph > 15) F(g, bx + (ph < 3 ? 0 : 18) - 2, by + 2, 5, 1, "rgba(255,255,255,.7)"); }
   }
+}
+const seaC = document.createElement("canvas");
+function seaShade(g){
+  if (seaC.width !== VW || seaC.height !== VH) { seaC.width = VW; seaC.height = VH; }
+  const s = seaC.getContext("2d"), cx = Math.round(camX), cy = Math.round(camY);
+  s.globalCompositeOperation = "source-over"; s.clearRect(0, 0, VW, VH);
+  const v = s.createLinearGradient(0, 0, 0, VH); v.addColorStop(0, "rgba(232,248,252,.34)"); v.addColorStop(.45, "rgba(150,210,232,0)"); v.addColorStop(1, "rgba(28,96,146,.34)");
+  s.fillStyle = v; s.fillRect(0, 0, VW, VH);
+  const r = s.createRadialGradient(VW * .3, VH * .18, 0, VW * .3, VH * .18, Math.max(VW, VH) * .7); r.addColorStop(0, "rgba(255,255,255,.16)"); r.addColorStop(1, "rgba(255,255,255,0)");
+  s.fillStyle = r; s.fillRect(0, 0, VW, VH);
+  s.globalCompositeOperation = "destination-out"; s.drawImage(landC, -cx, -cy); // only the water
+  g.drawImage(seaC, 0, 0);
 }
 // Night on Home follows the clock on her phone: from 7pm to 6am the world is in moonlight (checked once a minute).
 let nightAt = 0, nightOn = false;
