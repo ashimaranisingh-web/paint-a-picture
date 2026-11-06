@@ -693,7 +693,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .st-lvl>span{order:-1}
 .st-lvl canvas#stHowPic{width:200px;height:167px}
 .st-pills b{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:12.5px;padding:6px 10px;background:#fff;color:#8a857c;box-shadow:0 0 0 1px #ece5da}
-.st-pills canvas{width:18px;height:18px;image-rendering:pixelated}
+.st-pills canvas{width:22px;height:22px;image-rendering:pixelated}
 /* her name, asked as before */
 .st-fields{display:grid;gap:16px}
 /* chips and tabs: white, a warm hairline; picked, a blush fill and a pink ring */
@@ -724,7 +724,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 [aria-checked="true"]>.st-rad{border:6px solid var(--accent-strong)}
 /* the map: white nodes, a trophy for goals, her in the picture */
 .st-map span i{background:#fff;box-shadow:inset 0 0 0 1.5px #ece5da}
-.st-map span i canvas{width:20px;height:20px;image-rendering:pixelated}
+.st-map span i canvas{width:22px;height:22px;image-rendering:pixelated}
 .st-map .st-mpic{width:36px;height:30px;padding:0;overflow:hidden;background:#8cbb5a}
 .st-map .st-mpic canvas{width:28px;height:30px}
 .st-map span[data-n="3"].on .st-mpic{background:#8cbb5a;box-shadow:inset 0 0 0 2px #e39ab3}
@@ -765,7 +765,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .st-ticks .cb::after{transition:transform .4s cubic-bezier(.34,1.4,.64,1) .15s}
 .st-lvl[data-l="3"]{width:100%}
 .st-chainv{gap:4px}
-.st-lvl canvas#stHowPic{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:16px;box-shadow:0 14px 30px -14px rgba(64,44,30,.35)}
+.st-lvl canvas#stHowPic{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:16px;box-shadow:0 14px 30px -14px rgba(64,44,30,.35)}
 /* colour and shape changes aren't motion, so they still ease when Reduce Motion is on */
 @media (prefers-reduced-motion:reduce){
   .st-ticks .cb,.st-ticks .cb::after,.st-cb,.st-cb svg,.cb,.cb::after{transition-property:border-radius,background-color,border-color,opacity,transform!important;transition-duration:.45s!important;transition-timing-function:cubic-bezier(.65,0,.35,1)!important}
@@ -5098,6 +5098,8 @@ function drawTrophy(g, cx, by){
 }
 let stTrophyArt = null;
 function stTrophy(){ if (!stTrophyArt) { const c = document.createElement("canvas"); c.width = c.height = 60; drawTrophy(c.getContext("2d"), 30, 48); stTrophyArt = c; } return stTrophyArt; }
+// the trophy on its own, cropped close, so it reads at icon size
+function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d"); g.clearRect(0, 0, 22, 22); drawTrophy(g, 11, 22); }
 // the trophy as a piece: standing on a patch of grass, like the others
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
@@ -5217,7 +5219,7 @@ function obHow(M, Fo){
       <div class="st-lvl" data-l="2"><span>Pieces</span><div class="st-row3">${["villa", "studio", "fitness"].map(k => `<canvas data-hp="${k}"></canvas>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="3"><span>Your picture</span><canvas id="stHowPic"></canvas></div></div>`;
   const pic = $("stHowPic"), k = 2; pic.width = PZ.w * k; pic.height = PZ.h * k; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(stPuzzle.scene ||= stPuzzleScene(), 0, 0, PZ.w * k, PZ.h * k);
-  M.querySelectorAll("canvas[data-tro]").forEach(c => { c.width = c.height = 60; c.getContext("2d").drawImage(stTrophy(), 0, 0); });
+  M.querySelectorAll("canvas[data-tro]").forEach(stTrophyIcon);
   const pieces = [...M.querySelectorAll("[data-hp]")]; pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, false, i));
   const lvl = n => M.querySelector(`[data-l="${n}"]`), at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
   M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(500 + i * 340, () => c.setAttribute("aria-checked", "true"))); // the milestones tick off, one after another
@@ -5234,7 +5236,7 @@ const stMap = () => `<div class="st-map" id="stMap" aria-hidden="true">
   <span data-n="2"><i>${GI.star}</i>Piece</span>${ICON.right}<span data-n="3"><i class="st-mpic"><canvas data-mme></canvas></i>Picture</span></div>`;
 // the map's little pictures: a trophy for goals, and her, standing in the picture
 function stMapArt(M){
-  M.querySelectorAll("canvas[data-mtro]").forEach(c => { c.width = c.height = 60; c.getContext("2d").drawImage(stTrophy(), 0, 0); });
+  M.querySelectorAll("canvas[data-mtro]").forEach(stTrophyIcon);
   M.querySelectorAll("canvas[data-mme]").forEach(c => { c.width = 28; c.height = 30; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; g.fillStyle = "#8cbb5a"; g.fillRect(0, 0, 28, 30); g.drawImage(avatarSprite("down", 0), 7, 1); });
 }
 // Milestones finish a goal; two goals light up the house; then the rest of the picture comes to life, piece by piece.
