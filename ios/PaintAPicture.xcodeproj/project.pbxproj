@@ -9,16 +9,16 @@
 /* Begin PBXBuildFile section */
 		20151F63DEF5A8AD22CBCA7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B20B2953BFA7F60615CAE36B /* Assets.xcassets */; };
 		279966844FABEEE759AB2DE0 /* avatar in Resources */ = {isa = PBXBuildFile; fileRef = F92387EC4AE6EC945651E73F /* avatar */; };
-		7381DBD5E11839C916B69FEC /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 1F59C3EDA8B913DF94FB7A80 /* index.html */; };
 		87BFE53D9587EECCEC06DAF9 /* PaintAPictureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F82E5E285A6FE48B09AF18 /* PaintAPictureApp.swift */; };
+		9090EC5FD4D07FAE4C9D4888 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = A2008920D092C37F684FBC35 /* index.html */; };
 		A8B1A19162F9CBDDDE99535F /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = CC3DA48EFA5DE470721F6560 /* Fonts */; };
 		ABC1B1CEED7F9A36318D17B1 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC527CA9A93524AADC7C5068 /* WebViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1F59C3EDA8B913DF94FB7A80 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		4BDB76FF6A7A8BDD9458A925 /* PaintAPicture.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PaintAPicture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C467047286F5EB20A1CC511 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A2008920D092C37F684FBC35 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
 		B20B2953BFA7F60615CAE36B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CC3DA48EFA5DE470721F6560 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = SOURCE_ROOT; };
 		DC527CA9A93524AADC7C5068 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
@@ -27,22 +27,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		62BA02C8FFE2671BDDF60B4B /* paint-a-picture */ = {
-			isa = PBXGroup;
-			children = (
-				1F59C3EDA8B913DF94FB7A80 /* index.html */,
-			);
-			name = "paint-a-picture";
-			path = ..;
-			sourceTree = "<group>";
-		};
 		86EC505B7F22C3D8CF343DF0 = {
 			isa = PBXGroup;
 			children = (
 				F92387EC4AE6EC945651E73F /* avatar */,
 				CC3DA48EFA5DE470721F6560 /* Fonts */,
-				62BA02C8FFE2671BDDF60B4B /* paint-a-picture */,
 				97389A8585352CB1C2E74984 /* PaintAPicture */,
+				F0EC453B1A4239044A091FD3 /* PAP */,
 				925E5C32DFD49CF887B72F53 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -64,6 +55,15 @@
 				DC527CA9A93524AADC7C5068 /* WebViewController.swift */,
 			);
 			path = PaintAPicture;
+			sourceTree = "<group>";
+		};
+		F0EC453B1A4239044A091FD3 /* PAP */ = {
+			isa = PBXGroup;
+			children = (
+				A2008920D092C37F684FBC35 /* index.html */,
+			);
+			name = PAP;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,7 +129,7 @@
 				20151F63DEF5A8AD22CBCA7C /* Assets.xcassets in Resources */,
 				A8B1A19162F9CBDDDE99535F /* Fonts in Resources */,
 				279966844FABEEE759AB2DE0 /* avatar in Resources */,
-				7381DBD5E11839C916B69FEC /* index.html in Resources */,
+				9090EC5FD4D07FAE4C9D4888 /* index.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,7 +154,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = M8USK73B4P;
 				ENABLE_PREVIEWS = NO;
 				INFOPLIST_FILE = PaintAPicture/Info.plist;
@@ -233,7 +233,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = M8USK73B4P;
 				ENABLE_PREVIEWS = NO;
 				INFOPLIST_FILE = PaintAPicture/Info.plist;
