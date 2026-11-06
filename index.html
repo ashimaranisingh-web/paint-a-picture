@@ -4593,7 +4593,7 @@ const LD_ART = {
 };
 // drawn on a 120 × 90 grid, scaled to the screen's own pixels so the art stays crisp and the 2D character stays sharp
 function drawLoaderArt(kind){ const c = document.createElement("canvas"); c.width = 120; c.height = 90; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; try { (LD_ART[kind] || LD_ART.world)(g); } catch (e) { ldGrass(g, 120, 90); }
-  const sq = document.createElement("canvas"); sq.width = sq.height = 72; sq.getContext("2d").drawImage(c, 24, 14, 72, 72, 0, 0, 72, 72); stJig($("ldArt"), sq, {line: "#e3d9ca"}); }
+  const sq = document.createElement("canvas"); sq.width = sq.height = 72; sq.getContext("2d").drawImage(c, 24, 14, 72, 72, 0, 0, 72, 72); stJig($("ldArt"), sq, {line: "#e3d9ca", v: stJigV(["city", "landmark", "aspiration", "goals", "character", "world"].indexOf(kind) + 3)}); }
 function drawLoaderArtBoxed(kind){ const cvs = $("ldArt"), k = 2 * Math.min(3, Math.max(1, Math.round(devicePixelRatio || 1))); if (cvs.width !== 120 * k) { cvs.width = 120 * k; cvs.height = 90 * k; } const g = cvs.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, 120, 90); g.imageSmoothingEnabled = false; try { (LD_ART[kind] || LD_ART.world)(g); } catch (e) { ldGrass(g, 120, 90); } }
 
 
@@ -4969,26 +4969,34 @@ function stPuzzle(cvs){
 // A jigsaw piece: a square with a tab out on the right and the top and a socket on the left. Any picture can be cut into
 // one: it's fitted to cover the piece, then outlined (in pink, twice as thick, when it's picked).
 const ST_JN = 60, ST_JM = 10;
-const stInJig = (x, y) => { const N = ST_JN, M = ST_JM, sq = x >= M && x < N - M && y >= M && y < N - M, tabR = (x - (N - M + 2)) ** 2 + (y - N / 2) ** 2 <= 49, tabT = (x - N / 2) ** 2 + (y - (M - 2)) ** 2 <= 49, sockL = (x - (M + 2)) ** 2 + (y - N / 2) ** 2 <= 49; return (sq && !sockL) || tabR || tabT; };
-let stJigMask = null;
+// Every edge (top, right, bottom, left) is a tab (1), a socket (-1) or flat (0), so pieces in a group never share a shape.
+const ST_JV = (() => { const out = []; for (let i = 0; i < 81; i++) { const v = [i % 3, (i / 3 | 0) % 3, (i / 9 | 0) % 3, (i / 27 | 0) % 3].map(n => n - 1); if (v.filter(Boolean).length >= 3) out.push(v); }
+  const key = v => hash(v[0] * 27 + v[1] * 9 + v[2] * 3 + v[3] + 40, 5, 9); return out.sort((a, b) => key(a) - key(b)); })(); // shuffled once, the same every time
+const stJigV = i => ST_JV[((i % ST_JV.length) + ST_JV.length) % ST_JV.length];
+const stInJig = (x, y, v) => { const N = ST_JN, M = ST_JM, c = N / 2, r = 49, d2 = (cx, cy) => (x - cx) ** 2 + (y - cy) ** 2 <= r;
+  const edges = [[c, M, 0, -1], [N - M, c, 1, 0], [c, N - M, 0, 1], [M, c, -1, 0]]; // edge midpoints and their outward direction
+  let inside = x >= M && x < N - M && y >= M && y < N - M;
+  edges.forEach(([ex, ey, dx, dy], i) => { if (v[i] === 1 && d2(ex + dx * 2, ey + dy * 2)) inside = true; if (v[i] === -1 && d2(ex - dx * 2, ey - dy * 2)) inside = false; });
+  return inside; };
+const stJigMasks = {};
 function stJig(cvs, src, o){
-  o = o || {}; const N = ST_JN, k = 3; cvs.width = cvs.height = N * k; const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
-  if (!stJigMask) { stJigMask = document.createElement("canvas"); stJigMask.width = stJigMask.height = N; const mg = stJigMask.getContext("2d"); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (stInJig(x, y)) F(mg, x, y, 1, 1, "#000"); }
-  g.drawImage(stJigMask, 0, 0, N * k, N * k); g.globalCompositeOperation = "source-in";
+  o = o || {}; const N = ST_JN, k = 3, v = o.v || [1, 1, 0, -1], key = v.join(","), inJ = (x, y) => stInJig(x, y, v); cvs.width = cvs.height = N * k; const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
+  let mask = stJigMasks[key]; if (!mask) { mask = stJigMasks[key] = document.createElement("canvas"); mask.width = mask.height = N; const mg = mask.getContext("2d"); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (inJ(x, y)) F(mg, x, y, 1, 1, "#000"); }
+  g.drawImage(mask, 0, 0, N * k, N * k); g.globalCompositeOperation = "source-in";
   const sw = src.width || src.naturalWidth, sh = src.height || src.naturalHeight, sc = Math.max(N / sw, N / sh);
   g.drawImage(src, (N - sw * sc) / 2 * k, (N - sh * sc) / 2 * k, sw * sc * k, sh * sc * k);
   g.globalCompositeOperation = "destination-over";
-  const near = (x, y, d) => { for (let dy = -d; dy <= d; dy++) for (let dx = -d; dx <= d; dx++) if (Math.abs(dx) + Math.abs(dy) <= d && stInJig(x + dx, y + dy)) return true; return false; };
+  const near = (x, y, d) => { for (let dy = -d; dy <= d; dy++) for (let dx = -d; dx <= d; dx++) if (Math.abs(dx) + Math.abs(dy) <= d && inJ(x + dx, y + dy)) return true; return false; };
   const w = o.ring ? 2 : 1, col = o.ring ? "#cf3367" : (o.line || "#cbbfad");
-  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!stInJig(x, y) && near(x, y, w)) F(g, x * k, y * k, k, k, col);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inJ(x, y) && near(x, y, w)) F(g, x * k, y * k, k, k, col);
   g.globalCompositeOperation = "source-over";
 }
 const stJigImg = (cvs, url, o) => { const im = new Image(); im.onload = () => { if (cvs.isConnected || !o?.wait) stJig(cvs, im, o); }; im.src = url; };
 // A piece as a jigsaw piece: its art on a little patch of grass, in the fog (or lit), with its star and lock.
-function stPieceThumb(cvs, kind, lit){
+function stPieceThumb(cvs, kind, lit, i){
   const N = 60, c = document.createElement("canvas"); c.width = c.height = N; const base = document.createElement("canvas"); base.width = base.height = N; grassBand(base.getContext("2d"), N, N, 0);
   const sc = {w: N, h: N, env: "town", base, pieces: [{kind, x: N / 2, y: N - 12, lit: lit ? 1 : 0}], fog: lit ? 0 : 1}; stRender(c, sc);
-  const one = document.createElement("canvas"); one.width = one.height = N; one.getContext("2d").drawImage(c, 0, 0, c.width, c.height, 0, 0, N, N); stJig(cvs, one, {line: "#2a2730"});
+  const one = document.createElement("canvas"); one.width = one.height = N; one.getContext("2d").drawImage(c, 0, 0, c.width, c.height, 0, 0, N, N); stJig(cvs, one, {line: "#2a2730", v: stJigV(i || 0)});
 }
 // A pixel trophy: what a finished goal looks like.
 function drawTrophy(g, cx, by){
@@ -5114,12 +5122,12 @@ function obHow(M, Fo){
       <div class="st-lvl" data-l="3"><span>Your picture</span><canvas id="stHowPic"></canvas></div></div>`;
   const pic = $("stHowPic"), k = 2; pic.width = PZ.w * k; pic.height = PZ.h * k; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(stPuzzle.scene ||= stPuzzleScene(), 0, 0, PZ.w * k, PZ.h * k);
   M.querySelectorAll("canvas[data-tro]").forEach(c => { c.width = c.height = 60; c.getContext("2d").drawImage(stTrophy(), 0, 0); });
-  const pieces = [...M.querySelectorAll("[data-hp]")]; pieces.forEach(c => stPieceThumb(c, c.dataset.hp, false));
+  const pieces = [...M.querySelectorAll("[data-hp]")]; pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, false, i));
   const lvl = n => M.querySelector(`[data-l="${n}"]`), at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
   M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(400 + i * 260, () => c.setAttribute("aria-checked", "true"))); // the milestones tick off
   at(2100, () => lvl(0).classList.add("on"));
   at(2300, () => lvl(1).classList.add("on")); // they finish the goals
-  at(2900, () => { lvl(2).classList.add("on"); pieces.forEach(c => stPieceThumb(c, c.dataset.hp, true)); }); // the goals unlock the pieces
+  at(2900, () => { lvl(2).classList.add("on"); pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, true, i)); }); // the goals unlock the pieces
   at(3600, () => lvl(3).classList.add("on")); // and the pieces paint the picture
   stNextIdea(Fo);
 }
@@ -5232,7 +5240,7 @@ function stFigure(o){
 }
 function stFigureDone(M){
   stDrawMe($("stMe"));
-  M.querySelectorAll("canvas[data-orb]").forEach(c => { const b = JSON.parse(c.dataset.orb), o = {ring: b.ring};
+  M.querySelectorAll("canvas[data-orb]").forEach((c, i) => { const b = JSON.parse(c.dataset.orb), o = {ring: b.ring, v: stJigV(i + 7)};
     if (b.goal) stJig(c, stTrophy(), o); else if (b.env) stJig(c, b.env === "coast" ? stMeadow(60, 60) : stCrop(b.env, 60, 60), o); else if (b.lib) stJigImg(c, libUrl(b.lib), o);
     else { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, {kind: b.kind}); stJig(c, t, o); } });
 }
@@ -5268,8 +5276,8 @@ function obPick(M, Fo){
         ${d.own.map(aspById).filter(Boolean).map(a => `<button type="button" class="st-tile" data-own="${a.id}" aria-pressed="true"><canvas data-jkind="${a.id}" aria-hidden="true"></canvas><span>${esc(a.title)}</span></button>`).join("")}</div>
       <button type="button" class="btn quiet st-mid" id="stOwn">${plusIcon}Describe your own</button>`;
     stFigureDone(M);
-    M.querySelectorAll("[data-part]").forEach(b => stJigImg(b.querySelector("canvas"), libUrl(b.querySelector("canvas").dataset.jlib), {ring: b.getAttribute("aria-pressed") === "true"}));
-    M.querySelectorAll("canvas[data-jkind]").forEach(c => { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, aspById(c.dataset.jkind)); stJig(c, t, {ring: true}); });
+    M.querySelectorAll("[data-part]").forEach((b, i) => stJigImg(b.querySelector("canvas"), libUrl(b.querySelector("canvas").dataset.jlib), {ring: b.getAttribute("aria-pressed") === "true", v: stJigV(i)}));
+    M.querySelectorAll("canvas[data-jkind]").forEach((c, i) => { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, aspById(c.dataset.jkind)); stJig(c, t, {ring: true, v: stJigV(ST_PARTS.length + i)}); });
     $("stNote").textContent = n ? `${n} piece${n === 1 ? "" : "s"}` : "Pick at least one";
     $("stNote").classList.remove("warn");
     M.querySelectorAll("[data-part]").forEach(b => b.onclick = () => {
