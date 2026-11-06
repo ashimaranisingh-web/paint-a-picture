@@ -66,7 +66,7 @@ body.demo-on .toast:not(.top){bottom:calc(136px + env(safe-area-inset-bottom,0px
 .ob:not(.ob-dark) .pill{background:#f3f3f1;border-color:#f3f3f1;color:var(--ink)}
 .ob:not(.ob-dark) .pill[aria-pressed="true"]{background:#fff;border-color:var(--accent);color:var(--ink)}
 .ob-hint{margin:-2px 0 8px;font-size:13px;color:var(--muted)}
-.loader{position:absolute;inset:0;z-index:50;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(var(--safe-top) + 96px) 32px calc(56px + env(safe-area-inset-bottom,0px));transition:opacity .25s}
+.loader{position:absolute;inset:0;z-index:50;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(var(--safe-top) + 60px) 32px calc(56px + env(safe-area-inset-bottom,0px));transition:opacity .25s}
 .loader.out{opacity:0}
 .ld-art canvas{width:240px;height:180px;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:12px;display:block}
 .ld-h{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.15;margin:36px 0 0;max-width:300px}
@@ -709,8 +709,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 /* pieces to pick, as jigsaw pieces */
 .st-tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}
 .st-tile{background:none;border:0;padding:0;gap:6px}
-.st-tile canvas{width:92px;height:92px;max-width:100%;border-radius:0;image-rendering:pixelated;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
-.st-tile[aria-pressed="true"] canvas{transform:scale(1.04)}
+.st-tile canvas{width:66px;height:66px;max-width:100%;border-radius:0;image-rendering:pixelated;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.st-tile[aria-pressed="true"] canvas{transform:scale(1.04);filter:drop-shadow(0 10px 12px rgba(120,40,70,.22)) drop-shadow(0 2px 3px rgba(64,44,30,.12))}
 .st-tile span{font-size:12px;font-weight:600;color:#3e3b37}
 .st-tile[aria-pressed="true"] span{color:var(--accent-ink);font-weight:700}
 .st-tile:focus-visible{outline-offset:4px;border-radius:12px}
@@ -783,8 +783,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 /* around her: her places as islands, her pieces as jigsaw pieces she can drag anywhere, behind her too */
 .st-figure{height:auto}
 .st-me-c{z-index:2;pointer-events:none}
-.st-orb,.st-figure.small .st-orb{width:54px;height:54px;right:auto;z-index:1;transform:rotate(var(--r,0deg))}
-.st-orb canvas,.st-figure.small .st-orb canvas{width:54px;height:54px}
+.st-orb,.st-figure.small .st-orb{width:58px;height:58px;right:auto;z-index:1;transform:rotate(var(--r,0deg))}
+.st-orb canvas,.st-figure.small .st-orb canvas{width:58px;height:58px}
 .st-tile[aria-pressed="true"]{background:none} /* the pink outline says it's picked; no pink square behind it */
 .st-orb.isle,.st-figure.small .st-orb.isle{width:68px;height:68px;margin:-8px}.st-orb.isle canvas,.st-figure.small .st-orb.isle canvas{width:68px;height:68px}
 .st-orb.jig{cursor:grab;touch-action:none;filter:drop-shadow(0 4px 5px rgba(64,44,30,.16))}
@@ -821,6 +821,24 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
   .st-jp canvas.on{animation:st-jpop .5s cubic-bezier(.3,1.5,.5,1)!important}
   #stPzLbl{transition:opacity .3s!important}
 }
+/* the hand that shows a piece can be moved */
+.st-hand{position:absolute;z-index:6;width:30px;height:30px;pointer-events:none;filter:drop-shadow(0 3px 4px rgba(42,39,48,.3));animation:st-hand 1.6s cubic-bezier(.45,0,.25,1) 2 both}
+.st-hand svg{width:100%;height:100%}
+.st-orb.nudge{z-index:5;animation:st-nudge 1.6s cubic-bezier(.45,0,.25,1) 2}
+@keyframes st-hand{0%{opacity:0;transform:translate(6px,8px)}12%{opacity:1;transform:none}22%{transform:scale(.88)}55%{transform:translate(34px,-10px) scale(.88)}75%{transform:scale(.88)}88%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes st-nudge{0%,22%{transform:rotate(var(--r,0deg))}55%{transform:translate(34px,-10px) rotate(var(--r,0deg)) scale(1.08)}75%,100%{transform:rotate(var(--r,0deg))}}
+@media (prefers-reduced-motion:reduce){.st-hand{animation:st-hand 1.6s cubic-bezier(.45,0,.25,1) 2 both!important}.st-orb.nudge{animation:st-nudge 1.6s cubic-bezier(.45,0,.25,1) 2!important}}
+/* Home in daylight: the controls are light glass with ink text, so they sit softly on the light sea; at night they turn dark */
+.home:not(.night){--glass:rgba(255,253,249,.86);--glass-line:rgba(64,44,30,.10)}
+.home:not(.night) :is(.gbtn,.chip-g,.mapctl button,.htab,.hint,.journey){color:var(--ink);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.home:not(.night) :is(.gbtn,.htab,.journey,.mapctl,.chip-g){box-shadow:0 1px 2px rgba(64,44,30,.06),0 8px 22px -10px rgba(64,44,30,.28)}
+.home:not(.night) .mark{text-shadow:none}.home:not(.night) .mark-name{color:rgba(31,36,32,.62)}.home:not(.night) .mark-sub{color:var(--ink)}
+.home:not(.night) .journey button{color:var(--ink)}.home:not(.night) .journey .link{background:rgba(64,44,30,.2)}
+/* the places strip: every name in full on one line, 60px apart, scrolling sideways when they don't fit */
+.journey{overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 18px}
+.journey::-webkit-scrollbar{display:none}
+.journey button{flex:none;overflow:visible;text-overflow:clip;padding:0;min-width:0}
+.journey .link{flex:none;width:36px;min-width:36px;margin:0 12px}
 /* the map: no pink fills, a pink ring once a step is reached */
 .st-map span.on i{background:#fff;box-shadow:inset 0 0 0 1.5px #e39ab3}
 /* the loader: a bigger piece with soft edges */
@@ -2702,6 +2720,7 @@ function renderView(now){
   const grade = g.createLinearGradient(-cx, 0, W - cx, 0);
   grade.addColorStop(0, "rgba(255,170,80,.10)"); grade.addColorStop(.45, "rgba(255,190,120,.04)"); grade.addColorStop(.6, "rgba(120,170,220,.04)"); grade.addColorStop(1, "rgba(160,200,255,.06)");
   g.fillStyle = grade; g.fillRect(0, 0, VW, VH);
+  if (isNight()) { g.globalCompositeOperation = "multiply"; g.fillStyle = "#4c5a8c"; g.fillRect(0, 0, VW, VH); g.globalCompositeOperation = "source-over"; } // night where she is
   composeFog(now, cx, cy);
   const D = districtAt(cx + VW / 2, cy + VH / 2);
   if (D && D.d.id !== regionShown && !camAnim && !overviewOn) showRegion(D);
@@ -2725,6 +2744,9 @@ function seaLife(g, cx, cy, inV){
       if (ph < 3 || ph > 15) F(g, bx + (ph < 3 ? 0 : 18) - 2, by + 2, 5, 1, "rgba(255,255,255,.7)"); }
   }
 }
+// Night on Home follows the clock on her phone: from 7pm to 6am the world is in moonlight (checked once a minute).
+let nightAt = 0, nightOn = false;
+function isNight(){ const n = Date.now(); if (n - nightAt > 60000) { nightAt = n; const h = new Date().getHours(); nightOn = h >= 19 || h < 6; $("home")?.classList.toggle("night", nightOn); } return nightOn; }
 // the Paint a Picture star, outlined so it reads on grass, sea and fog alike; unlocked stars are solid, locked ones breathe
 const STAR = ["....#....", "...###...", "...###...", "#########", ".#######.", "..#####..", "..#####..", ".###.###.", ".##...##."];
 function drawDreamStar(g, cx, cy, lit, p, locked){
@@ -2942,6 +2964,7 @@ function markPlaces(){
   el.querySelectorAll("[data-dest]").forEach(b => {
     const on = b.dataset.dest === regionShown; b.setAttribute("aria-current", on ? "true" : "false");
     if (on && you) you.style.left = (b.offsetLeft + b.offsetWidth / 2) + "px";
+    if (on && el.scrollWidth > el.clientWidth) el.scrollTo({left: b.offsetLeft + b.offsetWidth / 2 - el.clientWidth / 2, behavior: reduced ? "auto" : "smooth"});
   });
 }
 // Straight to the place you tapped: the camera and your character travel together, nothing in between is visited.
@@ -4792,7 +4815,7 @@ function placeSearch(root, onPick){
     root.innerHTML = `<div class="search"><input type="search" id="psQ" placeholder="Search a city, country or university" autocomplete="off" aria-label="Search places"><ul class="search-res" id="psRes" role="listbox" hidden></ul></div>
       <div class="pills" aria-label="Ideas">${["LA", "Boston", "Tokyo", "London", "New York", "Bali"].map(n => `<button type="button" class="pill" data-quick="${n}">${plusIcon}${n}</button>`).join("")}</div>
       ${custom ? `<div class="panel" style="gap:10px"><div class="eyebrow">A place that isn't listed</div>
-        <div class="grid2"><label class="field"><span>Name</span><input type="text" id="pcName" placeholder="e.g. Nani's village"></label><label class="field"><span>Country (optional)</span><input type="text" id="pcCountry" placeholder="e.g. India"></label></div>
+        <div class="grid2"><label class="field"><span>Name</span><input type="text" id="pcName" placeholder="e.g. Nani's village"></label><label class="field"><span>Country</span><input type="text" id="pcCountry" placeholder="e.g. India"></label></div>
         <label class="field"><span>What it's like</span><select id="pcEnv">${GENERIC_ENVS.map(k => `<option value="${k}">${ENV_LABEL[k]}</option>`).join("")}</select><small>Places without their own artwork use this scenery, labelled with your name for the place.</small></label>
         <div class="actions"><button type="button" class="btn sm" id="pcAdd">Add place</button><button type="button" class="btn quiet sm" id="pcCancel">Cancel</button></div></div>`
       : `<button type="button" class="btn quiet sm" id="psCustom" style="justify-self:start">Add a place that isn't listed</button>`}`;
@@ -4801,7 +4824,7 @@ function placeSearch(root, onPick){
     q.oninput = show; q.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); const r = searchPlaces(q.value); if (r[0]) { onPick(r[0]); q.value = ""; res.hidden = true; } } };
     root.querySelectorAll("[data-quick]").forEach(b => b.onclick = () => onPick(GAZ.find(p => p.name === b.dataset.quick)));
     const c = $("psCustom"); if (c) c.onclick = () => { custom = true; draw(); $("pcName").focus(); };
-    const add = $("pcAdd"); if (add) add.onclick = () => { const name = $("pcName").value.trim(); if (!name) { $("pcName").focus(); return; } onPick({name, country: $("pcCountry").value.trim(), env: $("pcEnv").value, custom: true}); custom = false; draw(); };
+    const add = $("pcAdd"); if (add) add.onclick = () => { const name = $("pcName").value.trim(); if (!name) { $("pcName").focus(); return; } if (!$("pcCountry").value.trim()) { $("pcCountry").focus(); return; } /* every place is somewhere real: it needs its country */ onPick({name, country: $("pcCountry").value.trim(), env: $("pcEnv").value, custom: true}); custom = false; draw(); };
     const cc = $("pcCancel"); if (cc) cc.onclick = () => { custom = false; draw(); };
   }
   draw();
@@ -4928,7 +4951,7 @@ function drawAvatarPreview(cvs, style){
    pieces and goal when she builds her world, so going back and forth never duplicates or removes
    anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["splash", "frame", "how", "name", "look", "where", "pick", "goal", "reveal", "paint", "weeks", "world"];
+const OB = ["splash", "frame", "how", "name", "look", "where", "pick", "reveal", "paint", "weeks", "world"]; // goals are set on pieces after onboarding
 // The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [ // the whole picture library, each with a first goal and the milestones that get it going
   {id: "home", t: "Home by the sea", tab: "Home", kind: "villa", lib: "surf", cat: "Home & surroundings", goal: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]},
@@ -5061,10 +5084,10 @@ function stLoop(cvs, sc, tick){
 const stEase = u => u < 0 ? 0 : u > 1 ? 1 : 1 - (1 - u) ** 3;
 // Her picture in Act 2: her place's scenery (by the sea, the open coast), her pieces in the slots, the first goal's piece a little lit.
 function stPicture(o){
-  o = o || {}; const parts = stParts(), lit = o.lit === undefined ? stLitKey() : o.lit, env = stEnv(), h = o.h || 104, oy = Math.max(0, Math.round((h - 104) / 2));
-  return {w: 200, h, env, base: env === "coast" ? stMeadow(200, h) : stCrop(env, 200, h), fog: 1,
-    pieces: parts.slice(0, ST_SLOTS.length).map((p, i) => ({key: p.key, kind: p.kind, x: ST_SLOTS[i][0], y: ST_SLOTS[i][1] + oy, lit: p.key === lit ? .35 : 0, drop: p.key === o.drop ? 1 : 0})),
-    char: o.char ? {x: 102, y: oy + 80, dir: "down", frame: 0} : null};
+  o = o || {}; const parts = stParts(), lit = o.lit === undefined ? stLitKey() : o.lit, env = stEnv(), w = o.w || 200, h = o.h || 104, oy = Math.max(0, Math.round((h - 104) / 2)), ox = Math.round((w - 200) / 2);
+  return {w, h, env, base: env === "coast" ? stMeadow(w, h) : stCrop(env, w, h), fog: 1,
+    pieces: parts.slice(0, ST_SLOTS.length).map((p, i) => ({key: p.key, kind: p.kind, x: ST_SLOTS[i][0] + ox, y: ST_SLOTS[i][1] + oy, lit: p.key === lit ? .35 : 0, drop: p.key === o.drop ? 1 : 0})),
+    char: o.char ? {x: 102 + ox, y: oy + 80, dir: "down", frame: 0} : null};
 }
 
 /* --- the first picture: a future in pixel art, pieced together --- */
@@ -5139,11 +5162,11 @@ function stPuzzle(cvs){
     const out = t > total + HOLD ? 1 - (t - total - HOLD) / FADE : 1;
     P.order.forEach((i, n) => {
       const p = pieces[i], u = Math.min(1, Math.max(0, (t - n * STEP) / FLY)); if (u <= 0) return;
-      const m = reduced ? 0 : 1, dx = m * ((p.c - 2.5) * 10 + (n % 2 ? 6 : -6)), dy = m * ((p.r - (rows - 1) / 2) * 10 - 14), e = pop(u); // with reduced motion each piece appears in its place instead of sliding in
+      const m = 1, dx = m * ((p.c - 2.5) * 10 + (n % 2 ? 6 : -6)), dy = m * ((p.r - (rows - 1) / 2) * 10 - 14), e = pop(u); // with reduced motion each piece appears in its place instead of sliding in
       const x = Math.round(PZ.X + p.x0 + dx * (1 - e)), y = Math.round(PZ.Y + p.y0 + dy * (1 - e));
-      g.globalAlpha = (reduced ? 1 : Math.min(1, u * 3)) * out;
-      if (u < 1 && !reduced) g.drawImage(p.shadow, x + 2, y + 3); // lifted off the board until it lands
-      g.drawImage(u < 1 && !reduced ? p.loose : p.set, x, y);
+      g.globalAlpha = Math.min(1, u * 3) * out;
+      if (u < 1) g.drawImage(p.shadow, x + 2, y + 3); // lifted off the board until it lands
+      g.drawImage(u < 1 ? p.loose : p.set, x, y);
     });
     g.globalAlpha = 1;
     obAnim = requestAnimationFrame(draw);
@@ -5206,7 +5229,7 @@ function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d");
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
-const ST_PAGES = [["frame", "how"], ["paint", "weeks"]], ST_IDEA = ST_PAGES.flat(), ST_ME = ["name", "look", "where", "pick", "goal"];
+const ST_PAGES = [["frame", "how"], ["paint", "weeks"]], ST_IDEA = ST_PAGES.flat(), ST_ME = ["name", "look", "where", "pick"];
 function startOnboarding(step){
   obStep = Math.max(0, Math.min(OB.length - 1, step ?? S.onboarding.step ?? 0));
   if (step === 0 && S.onboarding.done) S.onboarding.draft = null; // seeing the introduction again starts a fresh picture; her world stays as it is
@@ -5267,8 +5290,8 @@ function stFoot(Fo, note, next, o){
 }
 // Her picture, sized to fill the stage above the panel.
 function stStage(o, tick){
-  const st = $("stStage"), r = st.getBoundingClientRect(), h = Math.max(96, Math.min(420, Math.round(200 * r.height / Math.max(1, r.width))));
-  const sc = stPicture({...o, h}); stLoop($("stWorld"), sc, tick && (now => tick(now, sc))); return sc;
+  const st = $("stStage"), r = st.getBoundingClientRect(), w = o.w || 200, h = Math.max(96, Math.min(640, Math.round(w * r.height / Math.max(1, r.width))));
+  const sc = stPicture({...o, w, h}); stLoop($("stWorld"), sc, tick && (now => tick(now, sc))); return sc;
 }
 
 /* --- the splash: a pink star in the dark opens like the lens and shows the world, then the name --- */
@@ -5357,7 +5380,7 @@ function obPaint(M, Fo){
   let unlockAt = 0;
   M.innerHTML = stHead("Milestones → Goals → Pieces → <em>Picture</em>", "Finish milestones to achieve a goal; unlock your pieces and paint the picture you worked hard towards.")
     + stMap() + `<canvas class="st-world" id="stWorld" role="img" aria-label="A picture in the fog of the future: a home by the sea, a studio, a hot-air balloon, a running track and a picnic, each with a pink star and a lock"></canvas>
-    <p class="st-status" id="stSub" aria-live="polite">Tick them off and watch the house.</p><div id="stCards" class="st-cards"></div>`;
+    <p class="st-status" id="stSub" aria-live="polite" hidden>Tick them off and watch the house.</p><div id="stCards" class="st-cards"></div>`;
   stMapArt(M);
   const map = n => $("stMap").querySelectorAll("[data-n]").forEach(s => s.classList.toggle("on", +s.dataset.n <= n));
   stLoop($("stWorld"), sc, now => {
@@ -5373,7 +5396,7 @@ function obPaint(M, Fo){
   const draw = () => {
     const d0 = on[0].size === 3, d1 = on[1].size === 3, goals = d0 + d1;
     $("stCards").innerHTML = card(G[0], 0) + card(G[1], 1); // both goals, side by side in the list
-    if (!sc.whole) { map(goals === 2 ? 2 : d0 || on[0].size || on[1].size ? (d0 ? 1 : 0) : -1);
+    if (!sc.whole) { map(goals === 2 ? 2 : d0 || d1 ? 0 : -1); // milestones complete with the third tick
       $("stSub").textContent = goals === 2 ? "Unlocked! 3 milestones finish a goal, 2 goals unlock a piece." : goals ? "One goal done. The house needs the other one too." : "Tick them off and watch the house."; }
     if (goals === 2 && !unlockAt) { unlockAt = performance.now(); $("obNext").classList.remove("st-wait"); }
     $("stCards").querySelectorAll("[data-ms]").forEach(b => b.onclick = () => { const s = on[+b.dataset.g], j = +b.dataset.ms; s.has(j) ? s.delete(j) : s.add(j); draw(); ($("stCards").querySelector(`[data-g="${b.dataset.g}"][data-ms="${j}"]`) || $("stCards").querySelector("[data-ms]"))?.focus(); });
@@ -5384,32 +5407,32 @@ function obPaint(M, Fo){
 // Six weeks of real life: she walks to whatever moved that week. A piece lights up when its milestones are done; a moved deadline is progress somewhere else.
 function obWeeks(M, Fo){
   const P = {pod: {t: "Podcast", kind: "studio", env: "city", x: 46, y: 56, c: "#cf3367"}, run: {t: "Run 10k", kind: "fitness", x: 150, y: 60, c: "#8e2f57"}, home: {t: "Home", kind: "villa", env: "coast", x: 100, y: 88, c: "#4a3a42"}}; // rose, berry, aubergine
-  const W = [["pod", "Recorded the pilot episode"], ["run", "Ran 5k without stopping"], ["pod", "Booked three guests"], ["home", "Opened a savings pot"], ["run", "Ran 8k, a week late and proud"], ["pod", "Launched episode one"]];
+  const W = [["pod", "Recorded the pilot episode"], ["run", "Ran 5k without stopping"], ["pod", "Booked three guests"], ["home", "Opened a savings pot"], ["run", "Ran 8k, a week late and proud"], ["pod", "Launched episode one"], ["run", "Ran the 10k"]];
   const ids = Object.keys(P), sc = {w: 200, h: 100, env: "town", base: stMeadow(200, 100), fog: 1, pieces: ids.map(id => ({id, ...P[id], lit: 0})), char: {x: 100, y: 72, dir: "down", frame: 0}};
-  let w = 0, walk = null, litAt = 0;
+  let w = 0, walk = null; const litAt = {}; // when each piece unlocked (three milestones each)
   M.innerHTML = stHead("Life isn't <em>one thing</em> at a time.", "Some weeks the podcast moves, some weeks your run. All of it counts.", "stSub")
     + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your character in a picture with a podcast studio, a running track and a home, each in the fog with a pink star and a lock"></canvas>
     <div class="st-legend" id="stLegend"></div><div class="st-weeks" id="stWeeks"></div><div class="st-plays" id="stPlays"></div><div id="stWeek" class="st-weekcard" aria-live="polite" hidden></div>`;
   stLoop($("stWorld"), sc, now => {
     if (walk) { const u = Math.min(1, (now - walk.t0) / walk.ms), ch = sc.char; ch.x = walk.x0 + (walk.x1 - walk.x0) * u; ch.y = walk.y0 + (walk.y1 - walk.y0) * u;
       ch.frame = u < 1 ? ((now / 140 | 0) % 2) + 1 : 0; ch.dir = u < 1 ? (Math.abs(walk.x1 - walk.x0) > Math.abs(walk.y1 - walk.y0) ? (walk.x1 > walk.x0 ? "right" : "left") : (walk.y1 > walk.y0 ? "down" : "up")) : "down"; if (u >= 1) walk = null; }
-    const pod = sc.pieces[0]; if (litAt) { pod.lit = stEase((now - litAt) / 900); pod.open = Math.min(1, (now - litAt) / 600); } else { pod.lit = 0; pod.open = 0; }
+    sc.pieces.forEach(p => { const at = litAt[p.id]; p.lit = at ? stEase((now - at) / 900) : 0; p.open = at ? Math.min(1, (now - at) / 600) : 0; });
   });
   const draw = () => {
     const k = {pod: 0, run: 0, home: 0}; W.slice(0, w).forEach(([p]) => k[p]++);
-    if (k.pod >= 3 && !litAt) litAt = performance.now(); if (k.pod < 3) litAt = 0;
+    ids.forEach(id => { if (k[id] >= 3 && !litAt[id]) litAt[id] = performance.now(); if (k[id] < 3) litAt[id] = 0; });
     if (w) { const p = P[W[w - 1][0]], ch = sc.char; walk = {t0: performance.now(), ms: reduced ? 1 : 900, x0: ch.x, y0: ch.y, x1: p.x + (p.x < 100 ? 22 : -22), y1: Math.min(94, p.y + 6)}; }
     $("stLegend").innerHTML = ids.map(id => `<span><b style="color:${P[id].c}">${P[id].t}</b> <span class="st-dots" aria-label="${k[id]} of 3 milestones">${[0, 1, 2].map(j => `<i style="${j < k[id] ? `background:${P[id].c}` : ""}"></i>`).join("")}</span></span>`).join("");
     $("stWeeks").innerHTML = W.map(([p], i) => `<span style="${i < w ? `background:${P[p].c};color:#fff` : ""}">W${i + 1}</span>`).join("");
     const moved = w === 3 || w === 4;
     $("stWeek").className = "st-weekcard" + (moved ? " moved" : ""); $("stWeek").hidden = !w;
     $("stWeek").innerHTML = !w ? "" : moved ? `<b>"Run 8k" moved to next week.</b> You were busy with ${w === 3 ? "the podcast" : "your home"}. That's progress somewhere else, not falling behind.`
-      : `<b>Week ${w} · ${P[W[w - 1][0]].t}:</b> ${esc(W[w - 1][1])}${w === 6 ? ". The podcast's piece unlocks." : ""}`;
-    $("stSub").textContent = w >= 6 ? "One piece unlocked, two on their way. Record what moved and watch it add up." : "Some weeks the podcast moves, some weeks your run. All of it counts.";
-    $("stPlays").innerHTML = `${w ? `<button type="button" class="st-play" id="stPrev"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-7 6 7 6z"/></svg>Back a week</button>` : ""}${w < 6 ? `<button type="button" class="st-play on" id="stNext"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>${w ? "Play next week" : "Play week 1"}</button>` : ""}`;
+      : `<b>Week ${w} · ${P[W[w - 1][0]].t}:</b> ${esc(W[w - 1][1])}${w === 6 ? ". The podcast's piece unlocks." : w === 7 ? ". Your run's piece unlocks too." : ""}`;
+    $("stSub").textContent = w >= 7 ? "Two pieces unlocked, one on its way. Record what moved and watch it add up." : w >= 6 ? "One piece unlocked, two on their way. Record what moved and watch it add up." : "Some weeks the podcast moves, some weeks your run. All of it counts.";
+    $("stPlays").innerHTML = `${w ? `<button type="button" class="st-play" id="stPrev"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-7 6 7 6z"/></svg>Back a week</button>` : ""}${w < 7 ? `<button type="button" class="st-play on" id="stNext"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>${w ? "Play next week" : "Play week 1"}</button>` : ""}`;
     stIdeaFoot(Fo, `<button class="btn st-big" id="obNext">Let's Go</button>`);
     if ($("stPrev")) $("stPrev").onclick = () => { w = Math.max(0, w - 1); draw(); $("stPrev")?.focus(); };
-    if ($("stNext")) $("stNext").onclick = () => { w = Math.min(6, w + 1); draw(); $("stNext")?.focus(); };
+    if ($("stNext")) $("stNext").onclick = () => { w = Math.min(7, w + 1); draw(); $("stNext")?.focus(); };
     $("obNext").onclick = () => { stCommit(); obGo(obStep + 1); }; // her picks become her world
   };
   draw();
@@ -5441,7 +5464,7 @@ function stOrbs(o){
   return out;
 }
 // Free spots: two columns either side of her, the rows level with her middle first, then rows underneath across the full width.
-const ST_OP = 54, ST_OG = 4;
+const ST_OP = 58, ST_OG = 0; // the jigsaw tabs leave their own space between pieces
 function stSlots(n, fw, me){
   const c = ST_OP + ST_OG, cols = Math.max(0, Math.floor(((fw - me[0]) / 2 - ST_OG + ST_OG) / c)), rows = Math.ceil((me[1] + 6) / c), out = [];
   const order = Array.from({length: rows}, (_, r) => r).sort((a, b) => Math.abs(a - (rows - 1) / 2) - Math.abs(b - (rows - 1) / 2) || a - b);
@@ -5459,6 +5482,15 @@ function stFigure(o){
       return `<span class="st-orb ${b.isle ? "isle" : "jig"}${stOrbSeen.has(b.key) ? "" : " pop"}" data-key="${esc(b.key)}" style="left:${x}px;top:${y}px;--r:${r}deg;--fx:${Math.round(fw / 2 - ST_OP / 2 - x)}px;--fy:${Math.round(me[1] / 2 - y)}px" role="img" aria-label="${esc(b.label)}${b.isle ? "" : ". Drag to move it"}"${b.isle ? "" : ` tabindex="0"`}><canvas data-orb='${esc(JSON.stringify(b))}'></canvas></span>`; }).join("")}</div>`;
   stOrbSeen = new Set(orbs.map(b => b.key));
   return html;
+}
+// A hand shows, once, that a piece can be picked up: it presses on one, slides it a little and back, then lets go.
+let stHandShown = false;
+const ST_HAND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11V4.5a1.5 1.5 0 0 1 3 0V10h.5V8.5a1.5 1.5 0 0 1 3 0V10h.5v-.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.2a6 6 0 0 1-4.6-2.2L4.6 15.6a1.5 1.5 0 0 1 2.3-1.9L9 16z" fill="#fff" stroke="#2a2730" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+function stHandHint(M){
+  const el = M.querySelector(".st-orb.jig"); if (stHandShown || !el) return; // shown once it has played through; a tap that redraws the page just starts it again
+  clearTimeout(stHandHint.t); stHandHint.t = setTimeout(() => { if (!el.isConnected) return; const h = document.createElement("span"); h.className = "st-hand"; h.innerHTML = ST_HAND;
+    h.style.left = (el.offsetLeft + 30) + "px"; h.style.top = (el.offsetTop + 30) + "px"; el.parentNode.appendChild(h); el.classList.remove("pop"); el.classList.add("nudge");
+    setTimeout(() => { if (h.isConnected) stHandShown = true; h.remove(); el.classList.remove("nudge"); }, 3300); }, 900);
 }
 // A place as a little island, the way places sit on Home: its own scenery on the land, a sandy shore and shallow water round it.
 function stIsland(cvs, env, i){
@@ -5524,8 +5556,9 @@ function obPick(M, Fo){
     stFigureDone(M);
     M.querySelectorAll("[data-part]").forEach((b, i) => stJigImg(b.querySelector("canvas"), libUrl(b.querySelector("canvas").dataset.jlib), {ring: b.getAttribute("aria-pressed") === "true", v: stJigV(i)}));
     M.querySelectorAll("canvas[data-jkind]").forEach((c, i) => { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, aspById(c.dataset.jkind)); stJig(c, t, {ring: true, v: stJigV(ST_PARTS.length + i)}); });
-    $("stNote").textContent = n ? `${n} piece${n === 1 ? "" : "s"}` : "Pick at least one";
+    $("stNote").textContent = "";
     $("stNote").classList.remove("warn");
+    stHandHint(M);
     M.querySelectorAll("[data-part]").forEach(b => b.onclick = () => {
       const p = ST_PARTS.find(x => x.id === b.dataset.part), y = $("obMain").scrollTop;
       if (stHasPart(p)) d.hide = on(p) ? d.hide.concat(p.id) : d.hide.filter(x => x !== p.id); // one she already has stays in her world either way
@@ -5535,7 +5568,7 @@ function obPick(M, Fo){
     M.querySelectorAll("[data-own]").forEach(b => b.onclick = () => { stBefore = new Set(S.aspirations.map(a => a.id)); editAspiration(b.dataset.own); });
     $("stOwn").onclick = () => { stBefore = new Set(S.aspirations.map(a => a.id)); editAspiration(null); };
   };
-  stFoot(Fo, "", () => { if (!stParts().length) { $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
+  stFoot(Fo, "", () => { if (!stParts().length) { $("stNote").textContent = "Pick at least one"; $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
   draw();
 }
 const stThumbs = {};
@@ -5554,7 +5587,7 @@ function obWhere(M, Fo){
       + `<div class="st-chips">${chips.map(pl => `<button type="button" class="st-chip" data-place="${esc(pl.key)}" aria-pressed="${(!!stHasPlace(pl.p.name) && !d.hideP.includes(pl.key)) || d.places.some(x => x.key === pl.key)}"><img data-st-thumb="${pl.p.env}" alt="">${esc(pl.t)}</button>`).join("")}</div>
       <button type="button" class="btn quiet st-mid" id="stFind">${plusIcon}Search for another place</button>`;
     stFigureDone(M);
-    $("stNote").textContent = n ? `${n} place${n === 1 ? "" : "s"}` : "Pick at least one"; $("stNote").classList.remove("warn"); stFillThumbs(M);
+    $("stNote").textContent = ""; $("stNote").classList.remove("warn"); stFillThumbs(M);
     M.querySelectorAll("[data-place]").forEach(b => b.onclick = () => {
       const pl = chips.find(x => x.key === b.dataset.place), sel = d.places.some(x => x.key === pl.key);
       if (stHasPlace(pl.p.name)) { const y = $("obMain").scrollTop; d.hideP = d.hideP.includes(pl.key) ? d.hideP.filter(x => x !== pl.key) : d.hideP.concat(pl.key); save(); draw(); $("obMain").scrollTop = y; return; } // it stays in her world either way
@@ -5569,7 +5602,7 @@ function obWhere(M, Fo){
       d.places = d.places.concat({key, t: p.name, p: {...p}}); d.last = key; save(); closeSheet(); draw();
     }));
   };
-  stFoot(Fo, "", () => { if (!stPlaces().length) { $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
+  stFoot(Fo, "", () => { if (!stPlaces().length) { $("stNote").textContent = "Pick at least one"; $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
   draw();
 }
 // The goal card reads the way the work goes: its milestones first, then the goal they finish. Changing it opens a sheet.
@@ -5607,11 +5640,12 @@ function obReveal(M, Fo){
   Fo.innerHTML = `${stBack()}<button class="btn st-big st-wide" id="obNext">Continue</button>`; stWireBack();
   $("obNext").onclick = () => obGo(obStep + 1);
   const t0 = performance.now();
-  stStage({char: true}, (now, sc) => { sc.cover = reduced ? 0 : 1 - stEase((now - t0 - 300) / 1600); });
+  stStage({char: true, w: 320}, (now, sc) => { sc.cover = 1 - stEase((now - t0 - 300) / 1600); // zoomed out, then the whole picture unlocks
+    const u = stEase((now - t0 - 2000) / 1400); sc.fog = 1 - u; sc.pieces.forEach((p, i) => { const k = stEase((now - t0 - 2000 - i * 120) / 900); p.lit = Math.max(p.lit, k); p.open = k; }); });
 }
 // Her picks become real: places first so her pieces have somewhere to stand, then the pieces, then the first goal.
 function stCommit(){
-  const d = stDraft(), dests = [];
+  const d = stDraft(), dests = []; d.noGoal = true; // onboarding no longer sets a first goal
   for (const pl of stPlaces()) { const had = stHasPlace(pl.p.name); const x = had || addDestination(pl.p, pl.p.type === "uni" ? "study" : "experience", "future"); if (x) dests.push(x); }
   const pool = dests.length ? dests : S.destinations.slice(), want = {villa: "coast", beach: "coast", drift: "japan", campus: "boston"};
   const destFor = (kind, i) => (want[kind] && pool.find(x => x.env === want[kind])) || pool[i % Math.max(1, pool.length)] || null;
