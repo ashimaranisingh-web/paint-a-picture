@@ -797,12 +797,21 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .st-pz3.join .st-row3 canvas:nth-child(1){transform:translateX(98px) scale(.7)}.st-pz3.join .st-row3 canvas:nth-child(3){transform:translateX(-98px) scale(.7)}.st-pz3.join .st-row3 canvas:nth-child(2){transform:scale(.7)}
 .st-pz3.join .st-row3 canvas{opacity:0}
 .st-lvl .st-pz3 canvas#stHowPic{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;filter:none;opacity:0;transform:scale(.25);transition:opacity .9s ease .45s,transform 1.2s cubic-bezier(.3,1.15,.5,1) .45s}
-.st-pz3.join canvas#stHowPic{opacity:1;transform:none}
+.st-lvl .st-pz3 canvas#stHowPic{transform:none;transition:opacity .8s ease}
+.st-pz3.done canvas#stHowPic{opacity:1}
+.st-jp{position:absolute;inset:0;z-index:1;transition:opacity .8s ease}
+.st-jp canvas{position:absolute;width:50%;height:75%;image-rendering:pixelated;transform:scale(.62) rotate(var(--r));filter:grayscale(1) brightness(.62);transition:transform 1.1s cubic-bezier(.6,0,.3,1),filter .9s ease}
+.st-jp canvas.on{filter:none;animation:st-jpop .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes st-jpop{50%{transform:scale(.7) rotate(var(--r))}}
+.st-pz3.join .st-jp canvas{transform:none}
+.st-pz3.done .st-jp{opacity:0}
 #stPzLbl{transition:opacity .3s}#stPzLbl.swap{opacity:0}
 @media (prefers-reduced-motion:reduce){
   .st-pills b canvas{transition:filter .8s!important}
   .st-pz3 .st-row3 canvas{transition:transform 1s cubic-bezier(.6,0,.3,1),opacity .8s ease .35s!important}
-  .st-lvl .st-pz3 canvas#stHowPic{transition:opacity .9s ease .45s,transform 1.2s cubic-bezier(.3,1.15,.5,1) .45s!important}
+  .st-lvl .st-pz3 canvas#stHowPic,.st-jp{transition:opacity .8s ease!important}
+  .st-jp canvas{transition:transform 1.1s cubic-bezier(.6,0,.3,1),filter .9s ease!important}
+  .st-jp canvas.on{animation:st-jpop .5s cubic-bezier(.3,1.5,.5,1)!important}
   #stPzLbl{transition:opacity .3s!important}
 }
 /* the map: no pink fills, a pink ring once a step is reached */
@@ -5252,16 +5261,22 @@ function obHow(M, Fo){
     + `<div class="st-chainv" aria-hidden="true">
       <div class="st-lvl" data-l="0"><span>Milestones</span><div class="st-ticks">${[0, 1, 2, 3, 4, 5].map(() => `<i class="cb" aria-checked="false"></i>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="1"><span>Goals</span><div class="st-pills"><b><canvas data-tro></canvas>Save the deposit</b><b><canvas data-tro></canvas>Find the neighbourhood</b></div></div>${ST_DOWN}
-      <div class="st-lvl" data-l="2"><span id="stPzLbl">Pieces</span><div class="st-pz3" id="stPz3"><canvas id="stHowPic"></canvas><div class="st-row3">${["villa", "studio", "fitness"].map(k => `<canvas data-hp="${k}"></canvas>`).join("")}</div></div></div></div>`;
+      <div class="st-lvl" data-l="2"><span id="stPzLbl">Pieces</span><div class="st-pz3" id="stPz3"><canvas id="stHowPic"></canvas><div class="st-jp" id="stJp">${[0, 1, 2, 3, 4, 5].map(i => `<canvas data-jp="${i}" style="left:${(i % 3) * 100 / 3 - 100 / 6}%;top:${(i / 3 | 0) * 50 - 25}%;--r:${[-5, 4, -3, 6, -6, 3][i]}deg"></canvas>`).join("")}</div></div></div></div>`;
   const pic = $("stHowPic"), k = 2; pic.width = PZ.w * k; pic.height = PZ.h * k; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(stPuzzle.scene ||= stPuzzleScene(), 0, 0, PZ.w * k, PZ.h * k);
   M.querySelectorAll("canvas[data-tro]").forEach(stTrophyIcon);
-  const pieces = [...M.querySelectorAll("[data-hp]")]; pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, false, i));
+  // the picture cut into six jigsaw pieces (three across, two down) that fit back together exactly
+  const src = document.createElement("canvas"); src.width = 240; src.height = 160; src.getContext("2d").drawImage(stPuzzle.scene, 0, -20);
+  const tH = (c, r) => hash(c, r, 61) > .5 ? 1 : -1, tV = (c, r) => hash(c, r, 62) > .5 ? 1 : -1;
+  const pieces = [...M.querySelectorAll("[data-jp]")]; pieces.forEach(cv => { const i = +cv.dataset.jp, c = i % 3, r = i / 3 | 0;
+    const cell = document.createElement("canvas"); cell.width = cell.height = 120; cell.getContext("2d").drawImage(src, c * 80 - 20, r * 80 - 20, 120, 120, 0, 0, 120, 120);
+    stJig(cv, cell, {line: "#2a2730", v: [r ? -tV(c, 0) : 0, c < 2 ? tH(c, r) : 0, r ? 0 : tV(c, 0), c ? -tH(c - 1, r) : 0]}); });
   const lvl = n => M.querySelector(`[data-l="${n}"]`), at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
   M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(700 + i * 550, () => c.setAttribute("aria-checked", "true"))); // the milestones tick off, one after another, unhurried
   const pills = M.querySelectorAll(".st-pills b"); at(2300, () => pills[0].classList.add("on")); at(4400, () => pills[1].classList.add("on")); // three milestones finish each goal, one goal at a time
-  pieces.forEach((c, i) => at(5100 + i * 500, () => stPieceThumb(c, c.dataset.hp, true, i))); // the goals unlock the pieces, one by one
-  at(6700, () => $("stPz3").classList.add("join")); // then they come together into the picture
-  at(7200, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
+  pieces.forEach((c, i) => at(5100 + i * 400, () => c.classList.add("on"))); // the goals unlock the pieces, one by one
+  at(7600, () => $("stPz3").classList.add("join")); // then they slot together into the picture
+  at(8700, () => $("stPz3").classList.add("done"));
+  at(8500, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
   stNextIdea(Fo);
 }
 
