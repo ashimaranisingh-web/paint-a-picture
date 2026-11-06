@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap">
 </head>
 <body>
 <style>
@@ -21,7 +21,6 @@
   --night:#0f1420; --glass:rgba(16,19,27,.84); --glass-line:rgba(255,255,255,.14);
   --serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --sans:"Manrope", "Helvetica Neue", system-ui, sans-serif;
-  --story:"Playfair Display", "Iowan Old Style", Georgia, serif; /* onboarding headings: an editorial serif that reads well in whole sentences */
   --r-xs:4px; --r-sm:8px; --r:12px; --r-lg:12px; /* corners: 4, 8 or 12px, never more (pills stay round) */
   color-scheme:light;
 }
@@ -503,13 +502,13 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
 .jtabs{justify-self:start}
 .good-today{background:#fff;border-radius:16px;padding:16px;display:grid;gap:10px;box-shadow:0 1px 2px rgba(31,36,32,.05),0 6px 20px rgba(31,36,32,.07)}
-.good-h{font-family:var(--story);font-weight:400;font-size:24px;margin:0}
+.good-h{font-family:var(--serif);font-weight:400;font-size:30px;margin:0}
 .good-row{display:flex;align-items:center;gap:12px}.good-row input{flex:1;min-width:0}
-.good-n{width:28px;height:28px;flex:none;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--story);font-size:16px}
+.good-n{width:28px;height:28px;flex:none;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--serif);font-size:16px}
 .good-past li{display:grid;gap:2px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.good-past b{font-size:12px;font-weight:700;color:var(--muted)}
 .aff-card{position:relative;display:grid;justify-items:center;gap:8px;text-align:center;padding:28px 20px 18px;border-radius:20px;background:linear-gradient(160deg,#fef3f6,#fdf8f1);box-shadow:0 1px 2px rgba(31,36,32,.05),0 6px 20px rgba(31,36,32,.07)}
 .aff-star .ico{width:22px;height:22px;fill:var(--accent);stroke:none}
-.aff-text{margin:0;font-family:var(--story);font-size:24px;line-height:1.3;color:var(--ink);text-wrap:balance}
+.aff-text{margin:0;font-family:var(--serif);font-size:30px;line-height:1.15;color:var(--ink);text-wrap:balance}
 .aff-idea{white-space:normal;text-align:left;height:auto;min-height:40px}
 /* ---------- onboarding ---------- */
 .ob{background:var(--paper);z-index:15}
@@ -530,11 +529,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-dark .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
 .ob-dark .ob-list{color:rgba(255,255,255,.85)}
 .ob-actions{display:flex;gap:8px;align-items:center}
-/* ---------- onboarding, story first. Headings in Playfair Display (chic, and easy to read in whole sentences), the words
-   that carry the idea in pink italic. The idea: pages with a pager and one wide button. Her picture: the world on top, a white panel below. ---------- */
+/* ---------- onboarding, story first. Headings in the app's serif, a size up so whole sentences read easily, the words
+   that carry the idea in pink. The idea: pages with a pager and one wide button. Her picture: the world on top, a white panel below. ---------- */
 .st-head{display:grid;gap:8px}
-.st-h{font-family:var(--story);font-weight:400;font-size:28px;line-height:1.22;letter-spacing:-.01em;margin:0;text-wrap:balance}
-.st-h em{font-style:italic;color:var(--accent-ink)}
+.st-h{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.08;letter-spacing:0;margin:0;text-wrap:balance}
+.st-h em{font-style:normal;color:var(--accent-ink)}
 .st-sub{margin:0;font-size:15px;line-height:1.5;color:#55564f;text-wrap:pretty}
 .btn.st-left{justify-self:start;padding-left:0}
 .st-note{font-size:13px;font-weight:700;color:var(--muted);min-width:0}.st-note.warn{color:var(--accent-ink)}
@@ -562,7 +561,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-mdots i{background:rgba(255,255,255,.3)}.st-mdots i.on{background:var(--accent)}
 .st-panel{flex:none;max-height:70%;display:flex;flex-direction:column;background:#fff;border-radius:24px 24px 0 0;margin-top:-22px;position:relative;box-shadow:0 -12px 30px rgba(0,0,0,.25)}
 .st-pmain{display:grid;gap:16px;padding:22px 16px 12px;overflow:auto;align-content:start}
-.st-pmain .st-head{text-align:center;justify-items:center}.st-pmain .st-h{font-size:24px}
+.st-pmain .st-head{text-align:center;justify-items:center}.st-pmain .st-h{font-size:30px}
 .st-pfoot{background:#fff;border-top:0;align-items:center;gap:10px}
 .btn.st-wide{flex:1;width:100%}
 .st-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -574,7 +573,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-mark b{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1}
 .st-mark span{font-size:15px;font-weight:600;color:rgba(255,255,255,.88)}
 /* the pictures */
-.st-puzzle{width:min(100%,360px);aspect-ratio:280/200;image-rendering:pixelated;display:block}
+.st-puzzle{width:min(100%,380px);aspect-ratio:280/200;image-rendering:pixelated;display:block;-webkit-mask-image:radial-gradient(ellipse 58% 57% at 50% 50%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 58% 57% at 50% 50%,#000 52%,transparent 100%)} /* no board and no box: the picture fades into the page */
 .st-world{justify-self:center;width:100%;max-width:400px;height:auto;image-rendering:pixelated;display:block;border-radius:16px;box-shadow:0 6px 18px rgba(31,36,32,.12)}
 /* the pieces, unlocked, as jigsaw pieces */
 .st-list{list-style:none;margin:0;padding:0;display:grid;gap:14px;width:100%}
@@ -640,10 +639,10 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .st-me .st-head{text-align:center;justify-items:center}
 .st-mfoot{background:#fff;border-top:0;align-items:center;gap:10px}
 .btn.st-mid{align-self:center}
-.ob.st-me input.st-bigin.st-bigin,.ob.st-me input.st-bigin.st-bigin:is(:focus,:not(:placeholder-shown)){all:unset;box-sizing:border-box;width:100%;text-align:center;font-family:var(--story);font-size:30px;line-height:1.3;color:var(--ink);padding:6px 0 10px;border-bottom:1.5px solid #ebe6dd;transition:border-color .2s}
+.ob.st-me input.st-bigin.st-bigin,.ob.st-me input.st-bigin.st-bigin:is(:focus,:not(:placeholder-shown)){all:unset;box-sizing:border-box;width:100%;text-align:center;font-family:var(--serif);font-size:36px;line-height:1.2;color:var(--ink);padding:6px 0 10px;border-bottom:1.5px solid #ebe6dd;transition:border-color .2s}
 .st-bigin::placeholder{color:#cdc8be}.ob.st-me input.st-bigin.st-bigin:focus{border-bottom:1.5px solid var(--accent)}
 .st-choose{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.st-choose button{all:unset;box-sizing:border-box;cursor:pointer;border-radius:22px;background:#f7f5f1;padding:16px 8px 14px;display:grid;justify-items:center;gap:10px;font-family:var(--story);font-size:20px;color:var(--ink);border:2px solid transparent;transition:border-color .2s,background .2s}
+.st-choose button{all:unset;box-sizing:border-box;cursor:pointer;border-radius:22px;background:#f7f5f1;padding:16px 8px 14px;display:grid;justify-items:center;gap:10px;font-family:var(--serif);font-size:24px;color:var(--ink);border:2px solid transparent;transition:border-color .2s,background .2s}
 .st-choose button[aria-pressed="true"]{border-color:var(--accent);background:#fef3f6}.st-choose button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .st-choose canvas{width:60px;height:118px}
 .st-figure{position:relative;height:290px;flex:none}
@@ -683,8 +682,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .ld-ready.on .ld-ic{background:var(--accent);border-color:var(--accent)}.ld-ready.on .ld-ic .ico{opacity:1}
 .ld-ready b{display:block;font-size:20px;font-weight:800}.ld-ready small{display:block;margin-top:4px;font-size:14px;font-weight:500;color:var(--muted)}
 @keyframes ld-spin{to{transform:rotate(360deg)}}
-.ld-h{font-family:var(--story);font-weight:400;font-size:24px;line-height:1.25;letter-spacing:-.01em}
-.ld-ready b{font-family:var(--story);font-weight:400;font-size:22px}
+.ld-h{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.12;letter-spacing:0}
+.ld-ready b{font-family:var(--serif);font-weight:400;font-size:26px}
 
 </style>
 
@@ -4839,16 +4838,13 @@ function stPuzzlePieces(scene){
   for (let i = 0; i < cols * rows; i++) { const c = i % cols, r = i / cols | 0, x0 = c * cell - 10, y0 = r * cell - 10;
     const loose = make(x0, y0, cell + 20, cell + 20, i, .62), shadow = document.createElement("canvas"); shadow.width = shadow.height = cell + 20;
     const sg = shadow.getContext("2d"); sg.drawImage(loose, 0, 0); sg.globalCompositeOperation = "source-in"; F(sg, 0, 0, cell + 20, cell + 20, "rgba(31,36,32,.28)");
-    pieces.push({i, x0, y0, loose, shadow, set: make(x0, y0, cell + 20, cell + 20, i, .9), c, r}); }
-  // the empty board: a paper slot with every piece's outline faintly drawn in
-  const ghost = document.createElement("canvas"); ghost.width = w; ghost.height = h; const gg = ghost.getContext("2d");
-  F(gg, 0, 0, w, h, "#ece5d6"); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (edge(x, y, owner[y * w + x]) && (x + y) % 2) F(gg, x, y, 1, 1, "#cfc4ae");
-  return {pieces, ghost};
+    pieces.push({i, x0, y0, loose, shadow, set: make(x0, y0, cell + 20, cell + 20, i, 1), c, r}); } // once placed, no seams
+  return {pieces};
 }
 function stPuzzle(cvs){
   const k = 3; cvs.width = PZ.W * k; cvs.height = PZ.H * k;
   const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
-  const {pieces, ghost} = stPuzzle.cache ||= stPuzzlePieces(stPuzzleScene());
+  const {pieces} = stPuzzle.cache ||= stPuzzlePieces(stPuzzleScene());
   const STEP = 190, FLY = 480, HOLD = 3200, FADE = 450, total = STEP * (pieces.length - 1) + FLY;
   const pop = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2; // ease out with a small overshoot, so each piece clicks in
   let t0;
@@ -4856,7 +4852,6 @@ function stPuzzle(cvs){
     if (!cvs.isConnected) return;
     const t = (ts - (t0 ??= ts)) % (total + HOLD + FADE);
     g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, PZ.W, PZ.H);
-    g.drawImage(ghost, PZ.X, PZ.Y);
     const out = t > total + HOLD ? 1 - (t - total - HOLD) / FADE : 1;
     PZ.order.forEach((i, n) => {
       const p = pieces[i], u = Math.min(1, Math.max(0, (t - n * STEP) / FLY)); if (u <= 0) return;
