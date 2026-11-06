@@ -752,6 +752,43 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 @keyframes ld-spin{to{transform:rotate(360deg)}}
 .ld-h{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.12;letter-spacing:0}
 .ld-ready b{font-family:var(--serif);font-weight:400;font-size:26px}
+/* ---------- round six: 14px body copy, black labels, the pictures fade at their edges, everything left aligned ---------- */
+.st-sub{font-size:14px}
+.st-me .st-head{text-align:left;justify-items:start}
+.st-me .st-chips{justify-content:flex-start}
+.st-me .btn.st-mid{align-self:flex-start;padding-left:0}
+/* the first puzzle fills the space between the words and the pager, 24px clear of each */
+.st-visual{padding:0 0 16px;box-sizing:border-box} /* the column's own 24px gap sits above it; with the footer's 8px, 24px below */
+/* how it works: black labels; the ticks round off slowly, one after another; the picture is wide, its edges fading like Home */
+.st-lvl>span,.st-lvl.on>span{color:var(--ink)}
+.st-ticks .cb{transition:border-radius .55s cubic-bezier(.65,0,.35,1),background-color .45s ease,border-color .45s ease}
+.st-ticks .cb::after{transition:transform .4s cubic-bezier(.34,1.4,.64,1) .15s}
+.st-lvl[data-l="3"]{width:100%}
+.st-chainv{gap:4px}
+.st-lvl canvas#stHowPic{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:0;box-shadow:none;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 60% 58% at 50% 50%,#000 55%,transparent 100%)}
+/* colour and shape changes aren't motion, so they still ease when Reduce Motion is on */
+@media (prefers-reduced-motion:reduce){
+  .st-ticks .cb,.st-ticks .cb::after,.st-cb,.st-cb svg,.cb,.cb::after{transition-property:border-radius,background-color,border-color,opacity,transform!important;transition-duration:.45s!important;transition-timing-function:cubic-bezier(.65,0,.35,1)!important}
+  .st-lvl>span,.st-pills b,.st-lvl canvas#stHowPic{transition:color .5s,background .5s,filter 1s!important}
+}
+/* around her: her places as islands, her pieces as jigsaw pieces she can drag anywhere, behind her too */
+.st-figure{height:auto}
+.st-me-c{z-index:2;pointer-events:none}
+.st-orb,.st-figure.small .st-orb{width:50px;height:50px;right:auto;z-index:1;transform:rotate(var(--r,0deg))}
+.st-orb canvas,.st-figure.small .st-orb canvas{width:50px;height:50px}
+.st-tile[aria-pressed="true"]{background:none} /* the pink outline says it's picked; no pink square behind it */
+.st-orb.isle,.st-figure.small .st-orb.isle{width:68px;height:68px;margin:-8px}.st-orb.isle canvas,.st-figure.small .st-orb.isle canvas{width:68px;height:68px}
+.st-orb.jig{cursor:grab;touch-action:none;filter:drop-shadow(0 4px 5px rgba(64,44,30,.16))}
+.st-orb.jig:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.st-orb.drag{z-index:5;cursor:grabbing;transform:rotate(var(--r,0deg)) scale(1.1);filter:drop-shadow(0 12px 14px rgba(64,44,30,.26))}
+.st-orb.pop{animation:st-out .65s cubic-bezier(.3,1.25,.5,1) both}
+@keyframes st-out{from{transform:translate(var(--fx),var(--fy)) scale(.3);opacity:0}to{transform:rotate(var(--r,0deg));opacity:1}}
+@keyframes st-fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.st-orb.pop{animation:st-fade .45s ease both!important}}
+/* the map: no pink fills, a pink ring once a step is reached */
+.st-map span.on i{background:#fff;box-shadow:inset 0 0 0 1.5px #e39ab3}
+/* the loader: a bigger piece with soft edges */
+.ld-art canvas{width:240px;height:240px}
 
 </style>
 
@@ -2479,6 +2516,43 @@ function avatarSprite(dir, frame){
   const c = document.createElement("canvas"); c.width = AV_W; c.height = AV_H;
   const g = c.getContext("2d"), pal = avatarPal(), rows = avatarRows(dir, frame), flip = dir === "right";
   rows.forEach((row, r) => { for (let i = 0; i < row.length; i++) { const ch = flip ? row[row.length - 1 - i] : row[i]; if (ch !== ".") { g.fillStyle = pal[ch]; g.fillRect(i, r, 1, 1); } } });
+  spriteCache.set(key, c); return c;
+}
+// Her character, drawn big (dressing up, standing among her pieces, the loader): the sheet at twice the detail. Each pixel
+// becomes four; the face gets features (brows, eyes with a catchlight, a nose, lips, glasses as thin frames), the hair gets
+// strands, the outline thins to one pixel and rounds off at the corners, and each colour gets a lit side, a shaded side and a
+// soft shadow under every hem. Every look, hair, skin and outfit goes through the same pass, so each one gets the same detail.
+const AV_FACE = { // 14 × 10 over the face (columns 4–10, rows 3–7 of the sheet); * keeps what's there
+  eyes: ["**ssssssssss**", "**jjssssssjj**", "ssEYssssssEYss", "ssEEssssssEEss", "sssssssSssssss", "srrsssSSsssrrs", "ssssslLLlsss**", "ssssssllssss**", "**ssssssss****", "***sSSSSs*****"],
+  glasses: ["**jjjssssjjj**", "*gggggssggggg*", "sgEYsggggsEYgs", "sgEEsgssgsEEgs", "sgggggsSgggggs", "srrsssSSsssrrs", "ssssslLLlsss**", "ssssssllssss**", "**ssssssss****", "***sSSSSs*****"]
+};
+const AV_MAT = {s: 1, S: 1, r: 1, n: 1, p: 2, P: 2, u: 2, k: 3, K: 3, q: 3, t: 3, w: 4, W: 4, b: 5, B: 5, m: 6, M: 6, v: 6};
+function avatarBig(){
+  const key = "big" + lookKey(); if (spriteCache.has(key)) return spriteCache.get(key);
+  const a = avatarLook(), pal = {...avatarPal(), E: "#2a1a14", Y: "#ffffff"}, W = AV_W * 2, H = AV_H * 2, rows = avatarRows("down", 0);
+  pal.j = pal.h; pal.L = shade(pal.l, -.3);
+  const mix = (p, q, k) => toHex(hex(p).map((v, i) => v + (hex(q)[i] - v) * k));
+  const ch = []; for (let y = 0; y < H; y++) ch.push(rows[y >> 1].split("").flatMap(c => [c, c]));
+  (a.glasses ? AV_FACE.glasses : AV_FACE.eyes).forEach((r, y) => { if (a.cap && y < 2) return; if (a.look === "boy") r = r.replace(/[rl]/g, "s");
+    for (let x = 0; x < 14; x++) if (r[x] !== "*") ch[6 + y][8 + x] = r[x]; });
+  const at = (x, y) => y >= 0 && y < H && x >= 0 && x < W ? ch[y][x] : ".", out = (x, y) => at(x, y) === ".", N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const q = ch[y][x]; let v = q === "." ? null : pal[q]; if (!v) continue;
+    if (q === "n" && (x % 2 || y % 2)) v = pal.s; // earrings and the pendant shrink to a single glint
+    if (q === "o") {
+      if (!N4.some(([dx, dy]) => out(x + dx, y + dy))) { const n = N4.map(([dx, dy]) => at(x + dx, y + dy)).find(z => z !== "o" && z !== "." && pal[z]); if (n) v = shade(pal[n], -.35); } // inner half of the outline: a shaded rim
+      else if ([[-1, -1], [1, -1], [-1, 1], [1, 1]].some(([sx, sy]) => out(x + sx, y) && out(x, y + sy) && at(x - sx, y) === "o" && at(x, y - sy) === "o")) continue; // round the corners
+    } else if ("hH".includes(q) && !a.curl) { // strands: fanning out from the parting on top, falling straight below
+      const strand = y < 12 ? (x < 14 ? x + y : x - y + 40) % 4 === 0 : x % 3 === 1 && (y >> 1) % 5 !== 0;
+      if (strand) v = q === "h" ? mix(pal.h, pal.H, .6) : shade(pal.H, -.28);
+    } else if (AV_MAT[q]) {
+      const r = at(x + 1, y), l = at(x - 1, y), u = at(x, y - 1);
+      if (r === "o" || r === ".") v = shade(v, -.14); else if (l === "o" || l === ".") v = shade(v, .1); // lit from the left
+      if (y >= 18 && AV_MAT[u] && AV_MAT[u] !== AV_MAT[q]) v = shade(v, -.16); // a soft shadow under each hem
+    }
+    g.fillStyle = v; g.fillRect(x, y, 1, 1);
+  }
   spriteCache.set(key, c); return c;
 }
 function drawAvatar(g, x, y, dir, frame){ g.drawImage(avatarSprite(dir, frame), Math.round(x), Math.round(y)); }
@@ -4586,14 +4660,16 @@ const LD_ART = {
   character: g => {
     ldGrass(g, 120, 90); oval(g, 60, 82, 16, 4, C.grass[1]);
     if (avatarLook().style === "doll" && dollReady("down")) { g.save(); g.translate(60, 84); drawDoll(g, 72, "down", -1); g.restore(); }
-    else { g.imageSmoothingEnabled = false; g.drawImage(avatarSprite("down", 0), 60 - AV_W, 84 - AV_H * 2, AV_W * 2, AV_H * 2); }
+    else { g.imageSmoothingEnabled = false; g.drawImage(avatarBig(), 60 - AV_W, 84 - AV_H * 2); }
   },
   world: g => { const D = [...DIST.values()].find(D => D.terrain); if (!D) { ldGrass(g, 120, 90); return; } const lx = D.pack.lm ? D.pack.lm[0] + (D.pack.tx || 0) : 200, ly = D.pack.lm ? D.pack.lm[1] + (D.pack.ty || 0) : 280;
     g.drawImage(D.terrain, Math.max(0, Math.min(D.terrain.width - 120, lx - 60)), Math.max(0, Math.min(D.terrain.height - 90, ly - 55)), 120, 90, 0, 0, 120, 90); }
 };
 // drawn on a 120 × 90 grid, scaled to the screen's own pixels so the art stays crisp and the 2D character stays sharp
 function drawLoaderArt(kind){ const c = document.createElement("canvas"); c.width = 120; c.height = 90; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; try { (LD_ART[kind] || LD_ART.world)(g); } catch (e) { ldGrass(g, 120, 90); }
-  const sq = document.createElement("canvas"); sq.width = sq.height = 72; sq.getContext("2d").drawImage(c, 24, 14, 72, 72, 0, 0, 72, 72); stJig($("ldArt"), sq, {line: "#e3d9ca", v: stJigV(["city", "landmark", "aspiration", "goals", "character", "world"].indexOf(kind) + 3)}); }
+  const sq = document.createElement("canvas"); sq.width = sq.height = 80; sq.getContext("2d").drawImage(c, 20, 10, 80, 80, 0, 0, 80, 80); stJig($("ldArt"), sq, {k: 4, feather: 4, v: ldV(Math.max(0, ["city", "landmark", "aspiration", "goals", "character", "world"].indexOf(kind)))}); }
+// the loader's pieces: all different, none with a socket in the top or the bottom (so nothing's head or feet get cut off)
+let LD_V = null; const ldV = i => (LD_V ||= (() => { const out = []; for (let j = 3; out.length < 6; j++) { const v = stJigV(j); if (v[0] !== -1 && v[2] === 1) out.push(v); } return out; })())[i];
 function drawLoaderArtBoxed(kind){ const cvs = $("ldArt"), k = 2 * Math.min(3, Math.max(1, Math.round(devicePixelRatio || 1))); if (cvs.width !== 120 * k) { cvs.width = 120 * k; cvs.height = 90 * k; } const g = cvs.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, 120, 90); g.imageSmoothingEnabled = false; try { (LD_ART[kind] || LD_ART.world)(g); } catch (e) { ldGrass(g, 120, 90); } }
 
 
@@ -4749,7 +4825,7 @@ function drawAvatarPreview(cvs, style){
   const g = cvs.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cvs.width, cvs.height);
   const bgc = g.createLinearGradient(0, 0, 0, cvs.height); bgc.addColorStop(0, "#fde8ef"); bgc.addColorStop(1, "#f7d6e2"); g.fillStyle = bgc; g.fillRect(0, 0, cvs.width, cvs.height);
   if (style === "doll") { g.translate(cvs.width / 2, cvs.height - 6 * k); g.scale(k, k); drawDoll(g, h * .92, "down", -1); return; }
-  g.imageSmoothingEnabled = false; const s = Math.floor(cvs.height * .78 / AV_H); g.drawImage(avatarSprite("down", 0), (cvs.width - AV_W * s) / 2 | 0, cvs.height - AV_H * s - 8 * k | 0, AV_W * s, AV_H * s);
+  g.imageSmoothingEnabled = false; const B = avatarBig(), s = Math.max(1, Math.floor(cvs.height * .78 / B.height)); g.drawImage(B, (cvs.width - B.width * s) / 2 | 0, cvs.height - B.height * s - 8 * k | 0, B.width * s, B.height * s);
 }
 
 /* =====================================================================
@@ -4904,9 +4980,11 @@ function stPicture(o){
 
 /* --- the first picture: a future in pixel art, pieced together --- */
 const PZ = {W: 280, H: 240, X: 20, Y: 20, w: 240, h: 200, cols: 6, rows: 5, cell: 40};
-PZ.order = Array.from({length: PZ.cols * PZ.rows}, (_, i) => i).sort((a, b) => hash(a, 7, 3) - hash(b, 7, 3));
-function stPuzzleScene(){
-  const {w, h} = PZ, c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+// The puzzle is as tall as the page allows: five rows of pieces or more, each extra row a little more of the same meadow.
+const pzOf = rows => ({...PZ, rows, h: rows * PZ.cell, H: rows * PZ.cell + 2 * PZ.Y, order: Array.from({length: PZ.cols * rows}, (_, i) => i).sort((a, b) => hash(a, 7, 3) - hash(b, 7, 3))});
+const ST_PZ_MORE = [[["home", 52, "coast"], ["garden", 128, "town"], ["library", 198, "town"]], [["studio", 46, "city"], ["picnic", 124, "town"], ["home", 194, "boston"]]];
+function stPuzzleScene(rows){
+  const {w, h} = pzOf(rows || 5), c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
   sky(g, w, 48, "#fcd9c4", "#f9b9cc"); oval(g, 196, 16, 7, 7, "#fff1c9"); oval(g, 196, 16, 5, 5, "#fffaf0");
   for (let i = 0; i < 12; i++) tower(g, 2 + i * 20, 46, 13, 3 + (i * 5) % 4, pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf"], i / 12));
   grassBand(g, w, h, 44);
@@ -4916,12 +4994,13 @@ function stPuzzleScene(){
   drawKind(g, {kind: "balloon"}, 90, 64, "town"); roundTree(g, 106, 78, 5); roundTree(g, 136, 76, 4);
   drawKind(g, {kind: "fitness"}, 46, 124, "town"); drawKind(g, {kind: "picnic"}, 150, 124, "town"); drawKind(g, {kind: "garden"}, 206, 126, "town"); drawKind(g, {kind: "car"}, 100, 128, "city");
   drawKind(g, {kind: "library"}, 36, 168, "town"); drawKind(g, {kind: "fountain"}, 120, 166, "town"); drawKind(g, {kind: "home"}, 196, 168, "town"); roundTree(g, 76, 166, 4); roundTree(g, 160, 164, 5);
+  for (let y = 208, j = 0; y < h - 22; y += 40, j++) { ST_PZ_MORE[j % 2].forEach(([kind, x, env]) => drawKind(g, {kind}, x, y, env)); roundTree(g, j % 2 ? 88 : 90, y - 2, 4); roundTree(g, j % 2 ? 160 : 166, y - 4, 5); bush(g, j % 2 ? 222 : 16, y - 12, 3, "#ef8fa0"); }
   palm(g, 10, h - 16, 12); palm(g, 232, h - 15, 11); bush(g, 128, 112, 3, "#ef8fa0"); bush(g, 180, 106, 3, "#f6d36b"); bush(g, 92, 150, 3, "#ffffff"); bush(g, 222, 148, 3, "#ef8fa0");
   g.drawImage(avatarSprite("down", 0), 113, 98);
   return c;
 }
-function stPuzzlePieces(scene){
-  const {w, h, cols, rows, cell} = PZ, tab = (a, b, k) => hash(a, b, k) > .5 ? 1 : -1; // which way each joint's tab points
+function stPuzzlePieces(scene, P){
+  const {w, h, cols, rows, cell} = P || PZ, tab = (a, b, k) => hash(a, b, k) > .5 ? 1 : -1; // which way each joint's tab points
   const owner = new Int8Array(w * h);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const c = Math.min(cols - 1, x / cell | 0), r = Math.min(rows - 1, y / cell | 0); let o = r * cols + c;
@@ -4942,20 +5021,23 @@ function stPuzzlePieces(scene){
   return {pieces};
 }
 function stPuzzle(cvs){
-  const k = 3; cvs.width = PZ.W * k; cvs.height = PZ.H * k;
+  const box = cvs.parentElement, cs = getComputedStyle(box), sc = box.clientWidth / PZ.W, room = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom); // 24px clear above and below
+  const rows = Math.max(5, Math.min(11, Math.ceil(room / sc / PZ.cell - .15))), P = pzOf(rows), fit = Math.min(1, room / (P.h * sc));
+  cvs.style.width = Math.round(PZ.W * sc * fit) + "px"; cvs.style.height = Math.round(P.H * sc * fit) + "px"; cvs.style.margin = `${-Math.round(PZ.Y * sc * fit)}px 0`; // the pieces fill the space; the empty edge they fly in from hangs over it
+  const k = 3; cvs.width = P.W * k; cvs.height = P.H * k;
   const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
-  const {pieces} = stPuzzle.cache ||= stPuzzlePieces(stPuzzleScene());
+  const {pieces} = (stPuzzle.cache ||= {})[rows] ||= stPuzzlePieces(stPuzzleScene(rows), P);
   const STEP = 190, FLY = 480, HOLD = 3200, FADE = 450, total = STEP * (pieces.length - 1) + FLY;
   const pop = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2; // ease out with a small overshoot, so each piece clicks in
   let t0;
   const draw = ts => {
     if (!cvs.isConnected) return;
     const t = (ts - (t0 ??= ts)) % (total + HOLD + FADE);
-    g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, PZ.W, PZ.H);
+    g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, P.W, P.H);
     const out = t > total + HOLD ? 1 - (t - total - HOLD) / FADE : 1;
-    PZ.order.forEach((i, n) => {
+    P.order.forEach((i, n) => {
       const p = pieces[i], u = Math.min(1, Math.max(0, (t - n * STEP) / FLY)); if (u <= 0) return;
-      const m = reduced ? 0 : 1, dx = m * ((p.c - 2.5) * 10 + (n % 2 ? 6 : -6)), dy = m * ((p.r - 1.5) * 10 - 14), e = pop(u); // with reduced motion each piece appears in its place instead of sliding in
+      const m = reduced ? 0 : 1, dx = m * ((p.c - 2.5) * 10 + (n % 2 ? 6 : -6)), dy = m * ((p.r - (rows - 1) / 2) * 10 - 14), e = pop(u); // with reduced motion each piece appears in its place instead of sliding in
       const x = Math.round(PZ.X + p.x0 + dx * (1 - e)), y = Math.round(PZ.Y + p.y0 + dy * (1 - e));
       g.globalAlpha = (reduced ? 1 : Math.min(1, u * 3)) * out;
       if (u < 1 && !reduced) g.drawImage(p.shadow, x + 2, y + 3); // lifted off the board until it lands
@@ -4980,13 +5062,20 @@ const stInJig = (x, y, v) => { const N = ST_JN, M = ST_JM, c = N / 2, r = 49, d2
   return inside; };
 const stJigMasks = {};
 function stJig(cvs, src, o){
-  o = o || {}; const N = ST_JN, k = 3, v = o.v || [1, 1, 0, -1], key = v.join(","), inJ = (x, y) => stInJig(x, y, v); cvs.width = cvs.height = N * k; const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
+  o = o || {}; const N = ST_JN, k = o.k || 3, v = o.v || [1, 1, 0, -1], key = v.join(","), inJ = (x, y) => stInJig(x, y, v); cvs.width = cvs.height = N * k; const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
   let mask = stJigMasks[key]; if (!mask) { mask = stJigMasks[key] = document.createElement("canvas"); mask.width = mask.height = N; const mg = mask.getContext("2d"); for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (inJ(x, y)) F(mg, x, y, 1, 1, "#000"); }
   g.drawImage(mask, 0, 0, N * k, N * k); g.globalCompositeOperation = "source-in";
   const sw = src.width || src.naturalWidth, sh = src.height || src.naturalHeight, sc = Math.max(N / sw, N / sh);
   g.drawImage(src, (N - sw * sc) / 2 * k, (N - sh * sc) / 2 * k, sw * sc * k, sh * sc * k);
-  g.globalCompositeOperation = "destination-over";
   const near = (x, y, d) => { for (let dy = -d; dy <= d; dy++) for (let dx = -d; dx <= d; dx++) if (Math.abs(dx) + Math.abs(dy) <= d && inJ(x + dx, y + dy)) return true; return false; };
+  if (o.feather) { // soft edges: each pixel near the edge fades, in steps, the nearer it is
+    g.globalCompositeOperation = "source-over"; const F0 = o.feather, im = g.getImageData(0, 0, N * k, N * k), px = im.data;
+    const outNear = (x, y, d) => { for (let dy = -d; dy <= d; dy++) for (let dx = -d; dx <= d; dx++) if (Math.abs(dx) + Math.abs(dy) <= d && !inJ(x + dx, y + dy)) return true; return false; };
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { if (!inJ(x, y)) continue; let d = 1; while (d <= F0 && !outNear(x, y, d)) d++; if (d > F0) continue;
+      const a = d / (F0 + 1); for (let yy = 0; yy < k; yy++) for (let xx = 0; xx < k; xx++) px[((y * k + yy) * N * k + x * k + xx) * 4 + 3] *= a; }
+    g.putImageData(im, 0, 0); return;
+  }
+  g.globalCompositeOperation = "destination-over";
   const w = o.ring ? 2 : 1, col = o.ring ? "#cf3367" : (o.line || "#cbbfad");
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inJ(x, y) && near(x, y, w)) F(g, x * k, y * k, k, k, col);
   g.globalCompositeOperation = "source-over";
@@ -5008,7 +5097,9 @@ function drawTrophy(g, cx, by){
   F(g, cx - 1, by - 18, 2, 2, "#cf3367");
 }
 let stTrophyArt = null;
-function stTrophy(){ if (!stTrophyArt) { const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); sky(g, 60, 60, "#fde8ef", "#f8dce6"); drawTrophy(g, 30, 48); stTrophyArt = c; } return stTrophyArt; }
+function stTrophy(){ if (!stTrophyArt) { const c = document.createElement("canvas"); c.width = c.height = 60; drawTrophy(c.getContext("2d"), 30, 48); stTrophyArt = c; } return stTrophyArt; }
+// the trophy as a piece: standing on a patch of grass, like the others
+function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
 const ST_PAGES = [["frame", "how"], ["paint", "weeks"]], ST_IDEA = ST_PAGES.flat(), ST_ME = ["name", "look", "where", "pick", "goal"];
@@ -5078,16 +5169,22 @@ function stStage(o, tick){
 
 /* --- the splash: a pink star in the dark opens like the lens and shows the world, then the name --- */
 function obSplash(M){
-  M.innerHTML = `<canvas class="st-full" id="stSplash" aria-hidden="true"></canvas><div class="st-mark" id="stMark"><b>Paint a Picture</b><span>Your future, piece by piece</span></div>`;
+  M.innerHTML = `<canvas class="st-full" id="stSplash" role="img" aria-label="Paint a Picture"></canvas>`;
   const r = M.getBoundingClientRect(), w = 200, h = Math.max(200, Math.round(w * r.height / Math.max(1, r.width))), cy = Math.round(h * .42);
   const sc = {w, h, env: "town", base: stMeadow(w, h), fog: 1, lens: {x: 100, y: cy, r: 0},
     pieces: [{kind: "villa", env: "coast", x: 62, y: cy + 4, lit: 0, star: false}, {kind: "studio", env: "city", x: 140, y: cy + 2, lit: 0, star: false}, {kind: "balloon", x: 30, y: cy - 40, lit: 0, star: false},
-      {kind: "fitness", x: 66, y: cy + 44, lit: 0, star: false}, {kind: "picnic", x: 138, y: cy + 42, lit: 0, star: false}, {kind: "garden", x: 104, y: cy + 74, lit: 0, star: false}]};
+      {kind: "fitness", x: 66, y: cy + 44, lit: 0, star: false}, {kind: "picnic", x: 138, y: cy + 42, lit: 0, star: false}, {kind: "garden", x: 104, y: cy + 74, lit: 0, star: false}],
+    char: {x: 100, y: cy + 28, dir: "down", frame: 0}};
+  // she has a little wander in the light: right, a pause, across to the left, then back to the middle (a small sprite walking, so it plays with Reduce Motion too)
+  const WALK = [[0, 100, cy + 28], [1700, 100, cy + 28], [2400, 124, cy + 32], [2800, 124, cy + 32], [3900, 78, cy + 26], [4300, 78, cy + 26], [4900, 100, cy + 28]];
+  const walk = t => { const i = WALK.findIndex(p => p[0] > t), ch = sc.char; if (i <= 0) { ch.frame = 0; ch.dir = "down"; return; }
+    const [t0, x0, y0] = WALK[i - 1], [t1, x1, y1] = WALK[i], u = (t - t0) / (t1 - t0); ch.x = x0 + (x1 - x0) * u; ch.y = y0 + (y1 - y0) * u;
+    const moving = x0 !== x1 || y0 !== y1; ch.frame = moving ? ((t / 150 | 0) % 2) + 1 : 0; ch.dir = moving ? (x1 > x0 ? "right" : "left") : "down"; };
   const cvs = $("stSplash"), night = document.createElement("canvas"), t0 = performance.now(), move = !reduced;
   // with reduced motion nothing zooms: the star fades in, the dark fades away and the colour fades up around the star
   const frame = now => {
     if (!cvs.isConnected) return;
-    const t = now - t0, o = cvs.getContext("2d"), bloom = stEase((t - 1300) / 900), open = stEase((t - 700) / 1100);
+    const t = now - t0, o = cvs.getContext("2d"), bloom = stEase((t - 1300) / 900), open = stEase((t - 700) / 1100); walk(t);
     sc.lens.r = move ? 62 * bloom : 62; sc.lens.a = move ? 1 : bloom; // the colour opens around the star
     stRender(cvs, sc); const k = cvs.width / w;
     night.width = w; night.height = h; const n = night.getContext("2d"); F(n, 0, 0, w, h, "#0f1420");
@@ -5095,8 +5192,7 @@ function obSplash(M){
     o.imageSmoothingEnabled = false; o.globalAlpha = move ? 1 : 1 - open; o.drawImage(night, 0, 0, w * k, h * k); o.globalAlpha = 1;
     const pop = Math.min(1, Math.max(0, (t - 150) / 450)); // first, the star
     if (pop > 0) { o.save(); o.setTransform(k, 0, 0, k, 0, 0); o.globalAlpha = pop; drawDreamStar(o, 100, cy - 18, true, move && pop < 1 ? 2 : 3, false); o.restore(); }
-    $("stMark")?.classList.toggle("on", t > 1900);
-    if (t > 3600 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
+    if (t > 5300 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
     obAnim = requestAnimationFrame(frame);
   };
   obAnim = requestAnimationFrame(frame);
@@ -5124,11 +5220,11 @@ function obHow(M, Fo){
   M.querySelectorAll("canvas[data-tro]").forEach(c => { c.width = c.height = 60; c.getContext("2d").drawImage(stTrophy(), 0, 0); });
   const pieces = [...M.querySelectorAll("[data-hp]")]; pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, false, i));
   const lvl = n => M.querySelector(`[data-l="${n}"]`), at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
-  M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(400 + i * 260, () => c.setAttribute("aria-checked", "true"))); // the milestones tick off
-  at(2100, () => lvl(0).classList.add("on"));
-  at(2300, () => lvl(1).classList.add("on")); // they finish the goals
-  at(2900, () => { lvl(2).classList.add("on"); pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, true, i)); }); // the goals unlock the pieces
-  at(3600, () => lvl(3).classList.add("on")); // and the pieces paint the picture
+  M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(500 + i * 340, () => c.setAttribute("aria-checked", "true"))); // the milestones tick off, one after another
+  at(2700, () => lvl(0).classList.add("on"));
+  at(2900, () => lvl(1).classList.add("on")); // they finish the goals
+  at(3500, () => { lvl(2).classList.add("on"); pieces.forEach((c, i) => stPieceThumb(c, c.dataset.hp, true, i)); }); // the goals unlock the pieces
+  at(4200, () => lvl(3).classList.add("on")); // and the pieces paint the picture
   stNextIdea(Fo);
 }
 
@@ -5147,7 +5243,7 @@ function obPaint(M, Fo){
   const on = [new Set(), new Set()], sc = {w: 200, h: 96, env: "town", base: stMeadow(200, 96), fog: 1,
     pieces: [{kind: "villa", env: "coast", x: 44, y: 58, lit: 0}, {kind: "studio", env: "city", x: 150, y: 58, lit: 0}, {kind: "balloon", x: 98, y: 50, lit: 0}, {kind: "fitness", x: 64, y: 88, lit: 0}, {kind: "picnic", x: 172, y: 88, lit: 0}]};
   let unlockAt = 0;
-  M.innerHTML = stHead("<em>Milestones</em> finish goals. Goals <em>unlock</em> pieces.", "Pieces paint the full picture that makes the future you want your reality.")
+  M.innerHTML = stHead("Milestones → goals → pieces → <em>picture</em>", "Tick off three milestones to finish a goal. Finish both goals to unlock the piece. Pieces paint the full picture that makes the future you want your reality.")
     + stMap() + `<canvas class="st-world" id="stWorld" role="img" aria-label="A picture in the fog of the future: a home by the sea, a studio, a hot-air balloon, a running track and a picnic, each with a pink star and a lock"></canvas>
     <p class="st-status" id="stSub" aria-live="polite">Tick them off and watch the house.</p><div id="stCards" class="st-cards"></div>`;
   stMapArt(M);
@@ -5217,32 +5313,70 @@ function stDrawMe(cvs, look){
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
   oval(g, W / 2 | 0, H - Math.round(5 * d), Math.round(W * .3), Math.round(5 * d), "rgba(31,36,32,.12)"); // her shadow
   if (A.style === "doll" && !look) { g.translate(W / 2, H - 4 * d); drawDoll(g, H - 8 * d, "down", -1); }
-  else { const s = Math.max(1, Math.floor((H - 6 * d) / AV_H)); g.imageSmoothingEnabled = false; g.drawImage(avatarSprite("down", 0), (W - AV_W * s) / 2 | 0, H - 4 * d - AV_H * s | 0, AV_W * s, AV_H * s); }
+  else { const B = avatarBig(), s = Math.max(1, Math.floor((H - 6 * d) / B.height)); g.imageSmoothingEnabled = false; g.drawImage(B, (W - B.width * s) / 2 | 0, H - 4 * d - B.height * s | 0, B.width * s, B.height * s); }
   if (look) { A.look = keep; A.top = top; spriteCache.clear(); }
 }
-// What she has picked so far, gathered around her as jigsaw pieces: her places, then her pieces, then her first goal.
+// What she has picked so far, around her. On the places step her places stand round her as islands, the way places sit on
+// Home; after that only her pieces do, as jigsaw pieces, every one of them. They come out from behind her into the nearest
+// free spot, so none overlap, and she can drag any piece anywhere, behind her too; it stays where she leaves it.
 let stOrbSeen = new Set();
-const ST_ORBS = 8; // two columns of four beside her; anything more is counted on the last one
+const stDragPos = {};
 function stOrbs(o){
   const d = stDraft(), out = [];
-  stPlaces().forEach(pl => out.push({key: "c-" + pl.key, label: pl.t, env: pl.p.env}));
-  if (o.pieces) stParts().forEach(p => { const pre = ST_PARTS.find(x => x.id === p.key); out.push({key: "p-" + p.key, label: p.t, lib: pre ? pre.lib : "", kind: pre ? "" : p.kind, ring: o.goal && d.goal && !d.noGoal && d.goal.part === p.key}); });
+  if (!o.pieces) stPlaces().forEach(pl => out.push({key: "c-" + pl.key, label: pl.t, env: pl.p.env, isle: true}));
+  else stParts().forEach(p => { const pre = ST_PARTS.find(x => x.id === p.key); out.push({key: "p-" + p.key, label: p.t, lib: pre ? pre.lib : "", kind: pre ? "" : p.kind, ring: o.goal && d.goal && !d.noGoal && d.goal.part === p.key}); });
   if (o.goal && d.goal && !d.noGoal) out.push({key: "g", label: "First goal: " + d.goal.title, goal: true});
-  if (out.length > ST_ORBS) { const more = out.length - ST_ORBS + 1; out.splice(ST_ORBS - 1, out.length, {key: "more", label: `${more} more`, more}); }
   return out;
 }
+// Free spots: two columns either side of her, the rows level with her middle first, then rows underneath across the full width.
+const ST_OP = 50, ST_OG = 5;
+function stSlots(n, fw, me){
+  const c = ST_OP + ST_OG, cols = Math.max(0, Math.floor(((fw - me[0]) / 2 - ST_OG + ST_OG) / c)), rows = Math.ceil((me[1] + 6) / c), out = [];
+  const order = Array.from({length: rows}, (_, r) => r).sort((a, b) => Math.abs(a - (rows - 1) / 2) - Math.abs(b - (rows - 1) / 2) || a - b);
+  for (const r of order) for (let j = 0; j < cols; j++) { const y = r * c; out.push([fw / 2 - me[0] / 2 - ST_OG - (j + 1) * ST_OP - j * ST_OG, y], [fw / 2 + me[0] / 2 + ST_OG + j * c, y]); }
+  const per = Math.max(1, Math.floor((fw + ST_OG) / c)), x0 = (fw - (per * c - ST_OG)) / 2, y0 = Math.max(rows * c, me[1] + 12);
+  for (let i = 0; out.length < n; i++) out.push([x0 + (i % per) * c, y0 + Math.floor(i / per) * c]);
+  const pos = out.slice(0, n).map(([x, y]) => [Math.round(x), Math.round(y)]);
+  return {pos, h: Math.max(...pos.map(p => p[1] + ST_OP + 4), 0)};
+}
 function stFigure(o){
-  o = o || {}; const orbs = o.orbs ? stOrbs(o) : [];
-  const html = `<div class="st-figure${o.small ? " small" : ""}"><canvas class="st-me-c" id="stMe" role="img" aria-label="You"></canvas>
-    ${orbs.map((b, i) => `<span class="st-orb${stOrbSeen.has(b.key) ? "" : " pop"}${i % 2 ? " r" : ""}" style="top:${(i >> 1) * 25}%" role="img" aria-label="${esc(b.label)}">${b.more ? `<b>+${b.more}</b>` : `<canvas data-orb='${esc(JSON.stringify(b))}'></canvas>`}</span>`).join("")}</div>`;
+  o = o || {}; const orbs = o.orbs ? stOrbs(o) : [], fw = Math.max(280, ($("obMain")?.clientWidth || 390) - 40), me = o.small ? [112, 222] : [130, 256];
+  const {pos, h} = stSlots(orbs.length, fw, me);
+  const html = `<div class="st-figure${o.small ? " small" : ""}" style="height:${Math.max(o.small ? 268 : 300, h)}px"><canvas class="st-me-c" id="stMe" role="img" aria-label="You"></canvas>
+    ${orbs.map((b, i) => { const [x, y] = stDragPos[b.key] || pos[i], r = b.isle ? 0 : hashStr(b.key) % 13 - 6;
+      return `<span class="st-orb ${b.isle ? "isle" : "jig"}${stOrbSeen.has(b.key) ? "" : " pop"}" data-key="${esc(b.key)}" style="left:${x}px;top:${y}px;--r:${r}deg;--fx:${Math.round(fw / 2 - ST_OP / 2 - x)}px;--fy:${Math.round(me[1] / 2 - y)}px" role="img" aria-label="${esc(b.label)}${b.isle ? "" : ". Drag to move it"}"${b.isle ? "" : ` tabindex="0"`}><canvas data-orb='${esc(JSON.stringify(b))}'></canvas></span>`; }).join("")}</div>`;
   stOrbSeen = new Set(orbs.map(b => b.key));
   return html;
+}
+// A place as a little island, the way places sit on Home: its own scenery on the land, a sandy shore and shallow water round it.
+function stIsland(cvs, env, i){
+  const N = 60, src = env === "coast" ? stMeadow(N, N) : stCrop(env, N, N), sd = src.getContext("2d").getImageData(0, 0, N, N).data;
+  const c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d"), im = g.createImageData(N, N), px = im.data;
+  const put = (o, h, a) => { const v = hex(h); px[o] = v[0]; px[o + 1] = v[1]; px[o + 2] = v[2]; px[o + 3] = a; };
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const dx = (x - 30) / 20, dy = (y - 29) / 17, t = Math.atan2(dy, dx), o = (y * N + x) * 4, d = Math.hypot(dx, dy) / (1 + .09 * Math.sin(3 * t + i * 1.7) + .06 * Math.sin(5 * t + i));
+    if (d < .84) { px[o] = sd[o]; px[o + 1] = sd[o + 1]; px[o + 2] = sd[o + 2]; px[o + 3] = 255; }
+    else if (d < 1) put(o, dy > .2 && d > .93 ? "#b99a62" : hash(x, y, 79) > .8 ? C.sand[0] : C.sand[1], 255);
+    else if (d < 1.08) put(o, "#d4f1f4", 235);
+    else if (d < 1.2) put(o, "#55a9c6", 160);
+    else if (d < 1.3) put(o, "#55a9c6", 60);
+  }
+  g.putImageData(im, 0, 0); cvs.width = cvs.height = N * 3; const o2 = cvs.getContext("2d"); o2.imageSmoothingEnabled = false; o2.drawImage(c, 0, 0, N * 3, N * 3);
 }
 function stFigureDone(M){
   stDrawMe($("stMe"));
   M.querySelectorAll("canvas[data-orb]").forEach((c, i) => { const b = JSON.parse(c.dataset.orb), o = {ring: b.ring, v: stJigV(i + 7)};
-    if (b.goal) stJig(c, stTrophy(), o); else if (b.env) stJig(c, b.env === "coast" ? stMeadow(60, 60) : stCrop(b.env, 60, 60), o); else if (b.lib) stJigImg(c, libUrl(b.lib), o);
+    if (b.isle) stIsland(c, b.env, i); else if (b.goal) stJig(c, stTrophyPiece(), o); else if (b.lib) stJigImg(c, libUrl(b.lib), o);
     else { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, {kind: b.kind}); stJig(c, t, o); } });
+  // a piece can be picked up and put down anywhere: over the page, or behind her
+  M.querySelectorAll(".st-orb.jig").forEach(el => {
+    const move = (x, y) => { el.style.left = x + "px"; el.style.top = y + "px"; stDragPos[el.dataset.key] = [x, y]; };
+    el.onpointerdown = e => { e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.remove("pop"); el.classList.add("drag");
+      const x0 = el.offsetLeft, y0 = el.offsetTop, px = e.clientX, py = e.clientY;
+      el.onpointermove = m => move(x0 + m.clientX - px, y0 + m.clientY - py);
+      el.onpointerup = el.onpointercancel = () => { el.classList.remove("drag"); el.onpointermove = null; }; };
+    el.onkeydown = e => { const k = {ArrowLeft: [-8, 0], ArrowRight: [8, 0], ArrowUp: [0, -8], ArrowDown: [0, 8]}[e.key]; if (!k) return; e.preventDefault(); move(el.offsetLeft + k[0], el.offsetTop + k[1]); };
+  });
 }
 
 function obName(M, Fo){
@@ -5308,7 +5442,7 @@ function obWhere(M, Fo){
       + `<div class="st-chips">${chips.map(pl => `<button type="button" class="st-chip" data-place="${esc(pl.key)}" aria-pressed="${(!!stHasPlace(pl.p.name) && !d.hideP.includes(pl.key)) || d.places.some(x => x.key === pl.key)}"><img data-st-thumb="${pl.p.env}" alt="">${esc(pl.t)}</button>`).join("")}</div>
       <button type="button" class="btn quiet st-mid" id="stFind">${plusIcon}Search for another place</button>`;
     stFigureDone(M);
-    $("stNote").textContent = n ? `${n} place${n === 1 ? "" : "s"}` : "Pick at least one"; $("stNote").classList.remove("warn");
+    $("stNote").textContent = n ? `${n} place${n === 1 ? "" : "s"}` : "Pick at least one"; $("stNote").classList.remove("warn"); stFillThumbs(M);
     M.querySelectorAll("[data-place]").forEach(b => b.onclick = () => {
       const pl = chips.find(x => x.key === b.dataset.place), sel = d.places.some(x => x.key === pl.key);
       if (stHasPlace(pl.p.name)) { const y = $("obMain").scrollTop; d.hideP = d.hideP.includes(pl.key) ? d.hideP.filter(x => x !== pl.key) : d.hideP.concat(pl.key); save(); draw(); $("obMain").scrollTop = y; return; } // it stays in her world either way
