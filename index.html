@@ -864,7 +864,7 @@ function dreamMark(a, starOnly){
   if (open && lockShown.get(a.id)) unlockedAt.set(a.id, now); // seen locked earlier this visit: let the lock fall away once
   lockShown.set(a.id, !open);
   const going = open && now - (unlockedAt.get(a.id) ?? -1e9) < 1600;
-  return `<span class="dmark" role="img" aria-label="${open ? "Aspiration, unlocked" : "Aspiration, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
+  return `<span class="dmark" role="img" aria-label="${open ? "Piece, unlocked" : "Piece, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
 }
 function clarityRaw(a){
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
@@ -2882,11 +2882,11 @@ function showLoc(l){
 function sparkleAt(l){ if (reduced) return; for (let i = 0; i < 24; i++) fx.push({x: l.x - 16 + Math.random() * 32 | 0, y: l.y - Math.random() * 34 | 0, c: i % 2 ? "#ffd0e0" : "#ffffff", life: 20 + Math.random() * 30 | 0}); viewDirty = true; }
 function clearViewSheet(){
   if (!clearViewsLeft()) {
-    openSheet("You've had today's look", `<p style="margin:0">Your aspirations unlock as you achieve your goals. You can see the full picture for a minute a day, so come back tomorrow for another look.</p>`,
+    openSheet("You've had today's look", `<p style="margin:0">Your pieces unlock as you achieve your goals. You can see the full picture for a minute a day, so come back tomorrow for another look.</p>`,
       `<button class="btn" id="cvOk">Got it</button>`, () => { $("cvOk").onclick = closeSheet; });
     return;
   }
-  openSheet("See the whole picture?", `<p style="margin:0">Your aspirations unlock as you achieve your goals. So you can see the full picture for a minute a day. Want to proceed?</p>`,
+  openSheet("See the whole picture?", `<p style="margin:0">Your pieces unlock as you achieve your goals. So you can see the full picture for a minute a day. Want to proceed?</p>`,
     `<button class="btn ghost" id="cvNo">Cancel</button><button class="btn" id="cvGo">Proceed</button>`, () => {
       $("cvNo").onclick = closeSheet;
       $("cvGo").onclick = () => { closeSheet(); spendClearView(); vision = {start: performance.now(), end: performance.now() + 60000}; $("visionBanner").hidden = false; setZoom(.75); renderHomeChips(); };
@@ -3138,7 +3138,7 @@ function visualPicker(root, o){
     root.innerHTML = `<div class="vis-head"><span>Picture it</span><button type="button" class="btn quiet sm" data-browse aria-expanded="${browse}">${browse ? "Show less" : "Show full library"}</button></div>
       <div class="${browse ? "vis-grid" : "vis-strip"}">${own ? tile(own, "Your image") : ""}${made.map(m => tile(m, m.label)).join("")}${sugg.concat(rest).map(l => tile({lib: l.id}, l.label)).join("")}</div>
       ${cur ? `<button type="button" class="btn quiet sm" data-none style="justify-self:start">No picture</button>` : ""}
-      <small class="muted" data-note>${cur && cur.lib && libById(cur.lib)?.avatar ? "Your character, drawn for this aspiration. It's motivation, not a measurement, and your avatar itself doesn't change." : ""}</small>`;
+      <small class="muted" data-note>${cur && cur.lib && libById(cur.lib)?.avatar ? "Your character, drawn for this piece. It's motivation, not a measurement, and your avatar itself doesn't change." : ""}</small>`;
     root.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { const v = JSON.parse(b.dataset.v); cur = v.pending ? cur : v; if (!v.pending) o.onChange(cur); draw(); });
     root.querySelector("[data-browse]").onclick = () => { browse = !browse; draw(); };
     const none = root.querySelector("[data-none]"); if (none) none.onclick = () => { cur = null; o.onChange(null); draw(); };
@@ -3391,7 +3391,7 @@ function renderGoals(){
     <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Goals</h1></div><button class="btn quiet" id="newGoal">${ICON.plus}Add Goal</button></div>
     ${pastReviewHTML()}
     <div class="seg seg-full" role="tablist" aria-label="Goals">${[["active", `Active (${active.length})`], ["finished", `Finished (${done.length})`]].map(([k, l]) => `<button role="tab" aria-selected="${goalTab === k}" aria-pressed="${goalTab === k}" data-gt="${k}">${l}</button>`).join("")}</div>
-    ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>${goalTab === "active" ? "Nothing in motion yet" : "Nothing finished yet"}</b>${goalTab === "active" ? "Add a goal and connect it to the aspirations it moves you towards." : "Goals you finish will be kept here."}</div>`}
+    ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>${goalTab === "active" ? "Nothing in motion yet" : "Nothing finished yet"}</b>${goalTab === "active" ? "Add a goal and connect it to the pieces it moves you towards." : "Goals you finish will be kept here."}</div>`}
     ${goalTab === "finished" && gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
   $("newGoal").onclick = () => editGoal(null);
   el.querySelectorAll("[data-review]").forEach(b => b.onclick = () => reviewPastCity(b.dataset.review));
@@ -3502,7 +3502,7 @@ function editGoal(id, preset){
       let picsOpen = false;
       const drawPics = () => {
         const linked = [...links].filter(aspById).length;
-        $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${asps.length ? `${linked} of ${asps.length}` : "Add aspirations in Paint a Picture first"}</small></span>
+        $("gPics").innerHTML = `<div class="pl-row"><span class="pl-t">Link to a picture you painted<small>${asps.length ? `${linked} of ${asps.length}` : "Add pieces in Paint a Picture first"}</small></span>
           ${asps.length ? `<button type="button" class="ibtn${links.size ? " on" : ""}" id="gPicBtn" aria-expanded="${picsOpen}" aria-label="Choose pictures"><svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button>` : ""}</div>
           ${picsOpen ? `<div class="pl-pics" role="group" aria-label="Pictures this goal moves you towards">${asps.map(a => { const img = a.image ? imgUrl(a.image) : null; return `<button type="button" class="pl-pic" aria-pressed="${links.has(a.id)}" data-link="${a.id}"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="grow">${dreamMark(a)}${esc(a.title)}</span><span class="cb" aria-hidden="true" ${links.has(a.id) ? 'aria-checked="true"' : ""}></span></button>`; }).join("")}</div>` : ""}`;
         $("gPics").querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
@@ -3741,9 +3741,9 @@ function renderDreams(){
   if (orphan.length) byCat.push(["Other", orphan]);
   const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => destOf(a)?.id === d.id).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn quiet" id="newAsp" aria-label="New aspiration">${ICON.plus}New</button></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Paint a Picture</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button></div>
     <p class="pp-intro">Everything you add here is a piece of the bigger picture you're painting. The life you're building.</p>
-    ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} aspiration${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
+    ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} piece${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
     <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
       <button class="btn quiet sm" id="editCats" style="margin-left:auto;margin-right:-12px">Edit categories</button></div>
     <section class="panel" style="padding:12px"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span class="eyebrow">Places in your world (${S.destinations.length})</span><span class="acc-chev">${ICON_DOWN}</span></button>
@@ -3776,7 +3776,7 @@ function dreamCard(a){
     ${open ? `<div class="gc-body">
       ${gs.length ? `<ul class="steps ms-list dc-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No goals yet. Each goal you finish brings this to life in your world.</p>`}
-      <div class="dc-actions"><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete aspiration">${GI.del}</button><button class="ibtn" data-editdream="${a.id}" aria-label="Paint a Picture">${GI.edit}</button><button class="btn quiet sm" data-addgoal="${a.id}">${ICON.plus}Add a goal</button></div></div>` : ""}</li>`;
+      <div class="dc-actions"><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete piece">${GI.del}</button><button class="ibtn" data-editdream="${a.id}" aria-label="Paint a Picture">${GI.edit}</button><button class="btn quiet sm" data-addgoal="${a.id}">${ICON.plus}Add a goal</button></div></div>` : ""}</li>`;
 }
 function wireDreamCards(el){
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
@@ -3788,7 +3788,7 @@ function wireDreamCards(el){
     if (!armDelete(b)) return;
     const id = b.dataset.deldream; openDream = null;
     commit(s => { s.aspirations = s.aspirations.filter(x => x.id !== id); s.goals.forEach(g => { g.aspirationIds = (g.aspirationIds || []).filter(x => x !== id); g.aspirationId = g.aspirationIds[0] || null; }); });
-    toast("Aspiration removed. Its goals are kept.");
+    toast("Piece removed. Its goals are kept.");
   });
 }
 // Goals live in Goals; a dream links to them. New goals are made in Goals (already linked to this dream).
@@ -3845,16 +3845,16 @@ function editAspiration(id, preset){
   const goals = id ? S.goals.filter(g => (g.aspirationIds || []).includes(id)) : [];
   const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
   openSheet(id ? "Paint a Picture" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one.</p>`}
-    <label class="field"><span>Your aspiration</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
+    <label class="field"><span>Your piece</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
-    <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your aspirations a home on the map."}</small></label>
+    <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your pieces a home on the map."}</small></label>
     <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
       <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">Add category</option></select></label>
       <label class="field"><span>Timeframe</span><select id="aTime"><option value="">No timeframe</option>${TIMEFRAMES.map(tf => `<option ${tf === a.timeframe ? "selected" : ""}>${tf}</option>`).join("")}</select></label></div>
     <label class="field" id="aNewCatWrap" hidden><span>New category name</span><input type="text" id="aNewCat" placeholder="e.g. Health & body"></label>
     <div class="field" id="aVis"></div>
-    ${id ? `<div class="field"><span>Goals for this aspiration</span>${goals.length ? `<ul class="steps">${goals.map(g => `<li><span>${esc(g.title)}</span>${deadlineLine(g)}</li>`).join("")}</ul>` : `<small>No goals linked yet. Linking a goal is how this place starts to clear.</small>`}
+    ${id ? `<div class="field"><span>Goals for this piece</span>${goals.length ? `<ul class="steps">${goals.map(g => `<li><span>${esc(g.title)}</span>${deadlineLine(g)}</li>`).join("")}</ul>` : `<small>No goals linked yet. Linking a goal is how this place starts to clear.</small>`}
       <button type="button" class="btn ghost sm" id="aNewGoal" style="justify-self:start">${ICON.plus}Add a goal for this</button></div>` : ""}
     <p class="muted" id="aErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`,
     `${id ? `${delIcon("aDel")}<button class="btn ghost" id="aCancel">Cancel</button>` : `<button class="btn ghost" id="aCancel">Cancel</button>`}<button class="btn" id="aSave">Save</button>`, () => {
@@ -3882,12 +3882,12 @@ function editAspiration(id, preset){
       const del = $("aDel"); if (del) del.onclick = () => {
         if (!armDelete(del)) return;
         commit(s => { s.aspirations = s.aspirations.filter(x => x.id !== id); s.goals.forEach(g => { g.aspirationIds = (g.aspirationIds || []).filter(x => x !== id); g.aspirationId = g.aspirationIds[0] || null; }); });
-        closeSheet(); toast("Aspiration removed. Its goals are kept.");
+        closeSheet(); toast("Piece removed. Its goals are kept.");
       };
       const cancel = $("aCancel"); if (cancel) cancel.onclick = closeSheet;
       $("aSave").onclick = async () => {
         const title = $("aTitle").value.trim(); let cat = $("aCat").value;
-        if (!title) { $("aErr").textContent = "Name your aspiration."; $("aErr").hidden = false; $("aTitle").focus(); return; }
+        if (!title) { $("aErr").textContent = "Name your piece."; $("aErr").hidden = false; $("aTitle").focus(); return; }
         if (cat === "__new") { cat = $("aNewCat").value.trim(); if (!cat) { $("aErr").textContent = "Name the new category."; $("aErr").hidden = false; return; } }
         const aid = id || uid();
         if (pending) {
@@ -3906,10 +3906,10 @@ function editAspiration(id, preset){
 }
 function editCategories(){
   const draw = () => {
-    $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name">${n ? `<span class="cat-n">${n} aspiration${n === 1 ? "" : "s"}</span>` : ""}<button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
+    $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name">${n ? `<span class="cat-n">${n} piece${n === 1 ? "" : "s"}</span>` : ""}<button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
       <div class="cat-row"><input type="text" id="catNew" placeholder="New category" aria-label="New category"><button type="button" class="ibtn add-ic" id="catAdd" aria-label="Add category">${ICON.plus}</button></div>`;
     $("sheetB").querySelectorAll("[data-cat]").forEach(inp => inp.onchange = () => { const i = +inp.dataset.cat, old = S.categories[i], v = inp.value.trim(); if (!v || v === old) return; commit(s => { s.categories[i] = v; s.aspirations.forEach(a => { if (a.category === old) a.category = v; }); }); });
-    $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} aspiration${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
+    $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} piece${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
     $("catAdd").onclick = () => { const v = $("catNew").value.trim(); if (v && !S.categories.includes(v)) { commit(s => s.categories.push(v)); draw(); } };
   };
   openSheet("Categories", "", `<span></span><button class="btn" id="catDone">Done</button>`, () => { draw(); $("catDone").onclick = closeSheet; });
@@ -4091,10 +4091,10 @@ function renderAccount(){
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>
       <div class="pair"><button class="btn ghost" id="backupBtn" type="button">Download backup</button>
         <label class="btn ghost" style="cursor:pointer">Restore from file<input type="file" id="restoreFile" accept="application/json,.json" hidden></label></div>
-      <small class="muted" style="font-size:11px">${S.lastBackup ? `Last backup: ${fmt(S.lastBackup, {day: "numeric", month: "short", year: "numeric"})}.` : "No backup yet."} A backup is one file with all your aspirations, goals and entries.</small>
+      <small class="muted" style="font-size:11px">${S.lastBackup ? `Last backup: ${fmt(S.lastBackup, {day: "numeric", month: "short", year: "numeric"})}.` : "No backup yet."} A backup is one file with all your pieces, goals and entries.</small>
       <div class="notice" id="restoreConfirm" hidden></div></section>
     <div style="display:grid;justify-items:center;gap:6px;padding:4px 0 8px"><button class="btn quiet sm tertiary" id="wipe">${demoMode ? "Reset demo data" : "Delete account"}</button>
-      <p class="muted" id="wipeConfirm" style="margin:0;font-size:13px;text-align:center" hidden>This deletes every aspiration, goal and entry on this device. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></div>`;
+      <p class="muted" id="wipeConfirm" style="margin:0;font-size:13px;text-align:center" hidden>This deletes every piece, goal and entry on this device. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></div>`;
   avatarEditor($("acAv"));
   let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
 
@@ -4137,7 +4137,7 @@ async function restoreBackup(file){
   if (!st || !Array.isArray(st.goals) || !Array.isArray(st.entries)) { toast("That file isn't a Paint a Picture backup."); return; }
   const incoming = migrate(st), box = $("restoreConfirm");
   const when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleDateString(undefined, {day: "numeric", month: "short", year: "numeric"}) : "an earlier date";
-  box.innerHTML = `<div><b>Restore the backup from ${esc(when)}?</b> It has ${incoming.aspirations.length} aspirations, ${incoming.goals.length} goals and ${incoming.entries.length} entries. It replaces what's here now, so download a backup of the current data first if you might want it.</div>
+  box.innerHTML = `<div><b>Restore the backup from ${esc(when)}?</b> It has ${incoming.aspirations.length} pieces, ${incoming.goals.length} goals and ${incoming.entries.length} entries. It replaces what's here now, so download a backup of the current data first if you might want it.</div>
     <div class="actions"><button class="btn sm" id="restoreYes" type="button">Replace with backup</button><button class="btn sm ghost" id="restoreNo" type="button">Cancel</button></div>`;
   box.hidden = false;
   $("restoreNo").onclick = () => { box.hidden = true; };
@@ -4241,7 +4241,7 @@ async function setDemoMode(on, fromOtherTab){
   switching = true; closeProfileMenu(); closeMenu(); closeSheet();
   const back = route === "onboard" || route === "entry" ? "home" : route;
   await runLoader(on ? "Opening the demo world for you." : "Getting your personal world ready.", [
-    {text: on ? "Loading the demo's goals, places and aspirations..." : "Loading your goals, places and aspirations...", art: "goals", run: () => {
+    {text: on ? "Loading the demo's goals, places and pieces..." : "Loading your goals, places and pieces...", art: "goals", run: () => {
       if (on) { REAL = S; S = loadDemo(); S.profile.avatar = {...REAL.profile.avatar}; }
       else { let mine = REAL; if (fromOtherTab || !mine) { try { mine = migrate(JSON.parse(localStorage.getItem(LS_KEY) || "null")); } catch (e) {} } S = mine || blankState(); }
       demoMode = on; markMode();
@@ -4265,7 +4265,7 @@ addEventListener("storage", e => { if (e.key === MODE_KEY && e.newValue && (e.ne
 const TICK = '<svg class="ico tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function openProfileMenu(){
   const m = $("profMenu");
-  m.innerHTML = [["real", "Your Profile", "Your own goals, places and aspirations"], ["demo", "Demo Data", "A fictional world for showing the app"]].map(([k, t, d]) =>
+  m.innerHTML = [["real", "Your Profile", "Your own goals, places and pieces"], ["demo", "Demo Data", "A fictional world for showing the app"]].map(([k, t, d]) =>
     `<button role="menuitemradio" aria-checked="${(k === "demo") === demoMode}" data-profile="${k}"><span class="grow"><b>${t}</b><small>${d}</small></span>${TICK}</button>`).join("");
   m.hidden = false; $("profBtn").setAttribute("aria-expanded", "true"); closeMenu();
   m.querySelector('[aria-checked="true"]').focus();
@@ -4345,7 +4345,7 @@ function changeStatus(id, st, done){
   let pick = "loved";
   openSheet(`Moving to ${esc(d.name)}?`, `<p style="margin:0">${esc(prev.name)} is your current city. What is it to you now?</p>
     <div class="cklist" id="prevSt">${["loved", "futureLiving", "travel"].map((k, i) => `<button type="button" class="ck" data-ps="${k}" aria-pressed="${!i}"><span class="cb round" aria-hidden="true" ${!i ? 'aria-checked="true"' : ""}></span>${STATUS[k]}</button>`).join("")}</div>
-    <small class="muted">Its aspirations, goals and history stay as they are.</small>`,
+    <small class="muted">Its pieces, goals and history stay as they are.</small>`,
     `<button class="btn ghost" id="psCancel">Cancel</button><button class="btn" id="psOk">Move</button>`, () => {
       $("prevSt").querySelectorAll("[data-ps]").forEach(b => b.onclick = () => { pick = b.dataset.ps; $("prevSt").querySelectorAll("[data-ps]").forEach(x => { x.setAttribute("aria-pressed", x === b); x.querySelector(".cb").setAttribute("aria-checked", x === b); }); });
       $("psCancel").onclick = () => { closeSheet(); done && done(); };
@@ -4417,7 +4417,7 @@ function wireDestRows(root, redraw){
   root.querySelectorAll("[data-status]").forEach(s => s.onchange = () => changeStatus(s.dataset.status, s.value, () => (redraw || (() => renderPage(route)))()));
   root.querySelectorAll("[data-rmdest]").forEach(b => b.onclick = () => {
     const id = b.dataset.rmdest, n = S.aspirations.filter(a => a.destinationId === id).length;
-    if (n && b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.classList.add("confirm"); b.textContent = `Remove? ${n} aspiration${n === 1 ? "" : "s"} move`; return; }
+    if (n && b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.classList.add("confirm"); b.textContent = `Remove? ${n} piece${n === 1 ? "" : "s"} move`; return; }
     commit(st => { st.destinations = st.destinations.filter(d => d.id !== id); st.aspirations.forEach(a => { if (a.destinationId === id) a.destinationId = null; }); st.goals.forEach(g => { if (g.destinationId === id) g.destinationId = null; }); });
     redraw && redraw();
   });
@@ -4427,7 +4427,7 @@ function editDestination(id){
   const d = S.destinations.find(x => x.id === id); if (!d) return;
   openSheet("Edit place", `<label class="field"><span>Name</span><input type="text" id="edName" value="${esc(d.name)}"></label>
     <label class="field"><span>A line about it (optional)</span><input type="text" id="edTag" value="${esc(d.tagline || "")}" maxlength="40" placeholder="e.g. Love living here"><small>Shown under the place's name in your world.</small></label>
-    <label class="field"><span>Status</span><select id="edStatus">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${d.status === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Done & Loved and Currently Living are fully lit. Future places come to life as you finish the goals linked to their aspirations.</small></label>
+    <label class="field"><span>Status</span><select id="edStatus">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${d.status === k ? "selected" : ""}>${v}</option>`).join("")}</select><small>Done & Loved and Currently Living are fully lit. Future places come to life as you finish the goals linked to their pieces.</small></label>
     <div id="edLm"></div>
     <label class="field"><span>Scenery</span><select id="edEnv">${(GENERIC_ENVS.includes(d.env) ? [] : [d.env]).concat(GENERIC_ENVS).map(k => `<option value="${k}" ${d.env === k ? "selected" : ""}>${ENV_LABEL[k]}${GENERIC_ENVS.includes(k) ? "" : " (its own artwork)"}</option>`).join("")}</select></label>`,
     `<button class="btn ghost" id="edCancel">Cancel</button><button class="btn" id="edSave">Save</button>`, () => {
@@ -4926,7 +4926,7 @@ function obWorld(M, Fo){
   runLoader("We're setting up your world for you right now.", [
     {text: "Mapping the cities that make up your journey...", art: "city", run: () => { layoutKey = ""; landKey = aspKey(); refreshWorld(); }},
     {text: "Adding the landmarks that make each place unique...", art: "landmark", run: buildAllTerrain},
-    {text: "Bringing your personal aspirations into the world...", art: "aspiration", skip: !S.aspirations.length, run: () => { landKey = ""; refreshWorld(); }},
+    {text: "Bringing the pieces of your picture into the world...", art: "aspiration", skip: !S.aspirations.length, run: () => { landKey = ""; refreshWorld(); }},
     {text: "Preparing your achievements and milestones...", art: "goals", skip: !S.goals.length, run: () => { modelVer++; litNow(); }},
     {text: "Getting your character ready...", art: "character", run: prepareCharacter},
     {text: "Adding the finishing touches to your world...", art: "world", run: () => { landKey = ""; refreshWorld(); }}
