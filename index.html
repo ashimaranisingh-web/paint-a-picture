@@ -507,80 +507,58 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-dark .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
 .ob-dark .ob-list{color:rgba(255,255,255,.85)}
 .ob-actions{display:flex;gap:8px;align-items:center}
-/* ---------- onboarding, story first: a framed picture on every step, Act 1 on paper, Acts 2 and 3 on white ---------- */
-.ob.st-paper,.ob.st-paper .ob-foot{background:var(--paper)}
-.ob.st-paper .ob-foot{border-top:0}
-.st-top{justify-content:flex-start;gap:12px}
-.st-eyebrow{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.st-bar{flex:1;height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}.st-bar i{display:block;height:100%;background:var(--accent)}
-.st-main{gap:12px}
-.st-first{justify-items:center;text-align:center;padding-top:calc(var(--safe-top) + 48px)}
-.st-h{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;margin:4px 0 0;letter-spacing:-.005em}
-.st-h.st-md{font-size:28px;margin:0}
-.st-h.st-xl{font-size:24px;line-height:1.15;margin:28px 0 0}
-.st-p{margin:-4px 0 0;font-size:14px;line-height:1.5;color:var(--muted)}
-.st-paper .st-p{font-size:16px;line-height:1.55;color:var(--ink-2)}
-.st-paper .st-p.st-wline{font-size:14px;line-height:1.5;margin:0}
-.st-p.st-c{max-width:320px;margin:2px 0 0}
+/* ---------- onboarding, story first: one layout on every step (heading, its line 4px below, then the picture 8px below,
+   then the controls 20px apart), open pixel art from the world itself, no frames ---------- */
+.st-main{gap:20px}
+.st-head{display:grid;gap:4px;margin-bottom:-12px}
+.st-h{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.15;margin:6px 0 0;letter-spacing:-.005em}
+.st-sub{margin:0;font-size:15px;line-height:1.5;color:var(--muted)}
+.st-first{padding-top:calc(var(--safe-top) + 40px)}
 .btn.st-left{justify-self:start;padding-left:0}
-.st-foot{align-items:center}
 .st-note{font-size:13px;font-weight:700;color:var(--muted);min-width:0}.st-note.warn{color:var(--accent-ink)}
 .st-cta{display:grid;gap:4px;width:100%}
 .btn.st-big{min-height:54px;border-radius:14px;font-size:17px}
 .btn.st-dark{background:var(--ink)}
 .btn.st-wait{background:#c9a3b2}
-.btn.st-off{background:var(--sunk);color:#77776f}
 .btn.quiet:disabled{opacity:.45}
-/* the picture: open pixel art whose edges fade into the page, no frame */
-.st-frame{position:relative;justify-self:center;width:min(100%,340px);margin:2px 0}
-.st-pic{position:relative;width:100%;height:100%;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent);mask-composite:intersect}
-.st-tag.st-mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
-.st-bg{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;filter:grayscale(.85) brightness(.55);transition:filter .6s ease}
-.st-blank{position:absolute;inset:0;box-sizing:border-box;border:1.5px dashed #c9bfa9;display:grid;place-items:center;color:#a39a87;font-size:13px;font-weight:700}
-.st-puzzle{width:min(100%,340px);aspect-ratio:200/150;image-rendering:pixelated;display:block}
-.st-blank svg{width:40px;height:40px;fill:none;stroke:#b8af9c;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.st-breathe{animation:st-breathe 3.2s ease-in-out infinite}
-.st-empty{width:min(100%,300px);aspect-ratio:300/230;padding:14px;margin:0;box-shadow:0 0 0 10px #6b5236,0 0 0 12px #3f2f1e,0 24px 44px rgba(31,36,32,.28)}
-.st-part{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px}
-.st-part[data-in]{animation:st-in .6s ease-out both}
-.st-part[data-drop]{animation:st-drop .45s ease-out both}
-.st-part canvas{width:100%;aspect-ratio:64/44;image-rendering:pixelated;transition:filter .6s ease,opacity .6s ease}
-.st-tag{font-size:11px;font-weight:800;color:var(--ink);background:#fff;border-radius:99px;padding:3px 8px;white-space:nowrap}
-.st-char{position:absolute;aspect-ratio:120/220;image-rendering:pixelated;animation:st-step .6s ease-out both}.st-char.doll{image-rendering:auto}
-.st-sig{position:absolute;right:22px;bottom:14px;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--serif);font-style:italic;font-size:22px;color:#ff8db3;pointer-events:none}
-.st-ring{position:absolute;left:3%;top:38%;width:33%;aspect-ratio:104/96;box-sizing:border-box;border-radius:50%;border:2px dashed #ff8db3;animation:st-ring 1.6s ease-in-out infinite;transition:opacity .4s}
-.st-star{width:30px;height:30px;fill:#f04f85;stroke:#fff;stroke-width:1.4;stroke-linejoin:round;animation:st-pop .5s ease-out both}
-#stStar{position:absolute;left:14%;top:26%}#stStar.st-pstar{left:45%;top:0}#stStar.st-pstar .st-star{width:24px;height:24px}
-/* milestones, goal, part */
-.st-chain{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;font-size:12px;font-weight:800}
-.st-chain span{padding:6px 9px;white-space:nowrap;border-radius:99px;background:#ece7dc;color:#5f605a;transition:background .3s,color .3s}
-.st-chain span.on{background:var(--accent-strong);color:#fff}.st-chain span.lit{background:var(--night);color:#fff}
-.st-chain svg{width:12px;height:12px;flex:none;fill:none;stroke:#b8af9c;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.st-chain.sm span{padding:5px 8px}
-.st-goal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:4px}
-.st-gh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.st-gh b{font-size:16px}.st-gh span{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
-.st-prog{height:5px;border-radius:99px;background:var(--line);margin:2px 0 4px}.st-prog i{display:block;width:0;height:100%;border-radius:99px;background:#e0568a;transition:width .4s ease}
+/* the pictures: crisp pixels, open on the page */
+.st-puzzle{justify-self:center;width:min(100%,340px);aspect-ratio:280/200;image-rendering:pixelated;display:block}
+.st-world{justify-self:center;width:100%;max-width:400px;height:auto;image-rendering:pixelated;display:block;border-radius:12px}
+/* the pieces, as a list of jigsaw pieces */
+.st-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.st-list li{display:flex;align-items:center;gap:14px;animation:st-in .5s ease-out both}
+.st-list canvas{width:84px;height:84px;flex:none;image-rendering:pixelated}
+.st-list .grow{display:grid;gap:4px}.st-list b{font-size:16px}.st-list small{font-size:13px;color:var(--muted);display:flex;align-items:center}
+/* a piece, its goals and their milestones */
+.st-piecebar{display:flex;align-items:center;gap:2px;font-size:14px;margin-bottom:-8px}.st-piecebar .st-gl{margin-left:auto;font-size:13px;font-weight:700;color:var(--muted)}
+.st-cards{display:grid;gap:12px}
+.st-goal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 16px 12px;display:grid;gap:2px;animation:st-in .35s ease-out both}
+.st-goal.compact{padding:10px 16px}
 .st-ms{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:40px;font-size:14px;font-weight:500;color:var(--ink)}
 button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
-.st-cb{width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:7px;border:1.5px solid var(--line-2);background:#fff;display:grid;place-items:center;transition:background .2s,border-color .2s}
-button.st-ms .st-cb{width:24px;height:24px}
-.st-cb svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.st-cb{width:24px;height:24px;flex:none;box-sizing:border-box;border-radius:7px;border:1.5px solid var(--line-2);background:#fff;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.st-cb svg,.st-radio svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:0}
 .st-ms[aria-pressed="true"] .st-cb,.st-ms.done .st-cb{background:var(--accent-strong);border-color:var(--accent-strong)}
 .st-ms[aria-pressed="true"] .st-cb svg,.st-ms.done .st-cb svg{opacity:1}
 .st-ms[aria-pressed="true"] .st-mt,.st-ms.done .st-mt{color:var(--muted);text-decoration:line-through}
+.st-grow{display:flex;align-items:center;gap:12px;margin-top:6px;padding-top:10px;border-top:1px dashed var(--line-2)}
+.st-goal.compact .st-grow{margin:0;padding:0;border:0}
+.st-grow .grow{display:grid;gap:0;min-width:0;flex:1}.st-grow small{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.st-grow b{font-size:15px}
+.st-radio{width:24px;height:24px;flex:none;box-sizing:border-box;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;transition:background .25s,border-color .25s}
+.st-grow.on .st-radio{background:var(--accent-strong);border-color:var(--accent-strong)}.st-grow.on .st-radio svg{opacity:1}
+.st-gn{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}.st-grow.on .st-gn{color:var(--accent-ink)}
 .st-msed{display:grid;gap:8px}
-.st-line{margin:0;font-family:var(--serif);font-size:24px;line-height:1.2}
 /* six weeks */
-.st-legend{display:flex;justify-content:space-between;gap:4px}.st-legend span{flex:1 1 0;text-align:center;font-size:11px;font-weight:800}
+.st-legend{display:flex;justify-content:space-between;gap:6px;font-size:12px;margin-bottom:-8px}
+.st-legend>span{display:flex;align-items:center;gap:6px}
+.st-dots{display:inline-flex;gap:3px}.st-dots i{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
 .st-weeks{display:flex;gap:6px}.st-weeks span{flex:1 1 0;height:30px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:800;background:#ece7dc;color:#5f605a;transition:background .3s,color .3s}
-.st-log{display:grid;gap:6px}
-.st-moved{padding:10px 12px;border-radius:12px;background:var(--amber-soft);color:#6e4a12;font-size:13px;line-height:1.45;animation:st-fall .3s ease-out both}
-.st-entry{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px;line-height:1.35;animation:st-fall .3s ease-out both}
-.st-entry i{width:8px;height:8px;flex:none;border-radius:50%}
-/* parts, places and the part to start with */
+.st-weekcard{padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:14px;line-height:1.45;min-height:44px;animation:st-in .3s ease-out both}
+.st-weekcard.moved{background:var(--amber-soft);border-color:#ecd9b2;color:#6e4a12}
+/* her pieces, places and the piece to start with */
 .st-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .st-tile,.st-chip,.st-tab{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid #ebe7df;background:#fafaf8;color:var(--ink);transition:border-color .15s,background .15s}
-.st-tile:focus-visible,.st-chip:focus-visible,.st-tab:focus-visible,.st-hold:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.st-tile:focus-visible,.st-chip:focus-visible,.st-tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 :is(.st-tile,.st-chip,.st-tab)[aria-pressed="true"]{border-color:var(--accent);background:#fef3f6}
 .st-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px 8px;border-radius:12px;text-align:center;min-width:0}
 .st-tile img,.st-tile canvas{width:100%;height:50px;object-fit:cover;border-radius:8px;image-rendering:pixelated}
@@ -591,22 +569,7 @@ button.st-ms .st-cb{width:24px;height:24px}
 .st-chip img:not([src]){visibility:hidden}
 .st-tabs{display:flex;flex-wrap:wrap;gap:8px}
 .st-tab{flex:1 1 0;min-width:84px;min-height:40px;padding:0 10px;border-radius:99px;display:grid;place-items:center;text-align:center;font-size:13px;font-weight:700}
-/* signing */
-.st-main:has(.st-signed){justify-items:stretch}
-.st-signed{width:min(100%,300px)}
-.st-signed .st-sig{right:24px;bottom:22px;font-size:30px;color:var(--accent-ink);text-shadow:0 1px 0 #fff;opacity:0;transition:opacity .5s}.st-signed .st-sig.on{opacity:1}
-.st-cover{position:absolute;left:0;right:0;top:0;height:100%;box-sizing:border-box;background:rgba(255,253,249,.8);border-bottom:3px solid var(--accent)} /* a pale wash: the picture shows through like a sketch until it is painted in */
-.st-hold{justify-self:center;margin-top:10px;width:104px;height:104px;border-radius:50%;padding:7px;box-sizing:border-box;cursor:pointer;background:conic-gradient(var(--accent) var(--deg,0deg),var(--sunk) 0deg);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.st-hold span{width:90px;height:90px;border-radius:50%;background:var(--accent-strong);color:#fff;display:grid;place-items:center}
-.st-hold svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.st-hint{justify-self:center;font-size:13px;font-weight:700;color:var(--muted)}
-@keyframes st-breathe{0%,100%{opacity:.35}50%{opacity:.7}}
-@keyframes st-in{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:none}}
-@keyframes st-drop{0%{transform:translateY(-30px) scale(.6);opacity:0}70%{transform:translateY(3px) scale(1.05);opacity:1}100%{transform:none}}
-@keyframes st-ring{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:.5}}
-@keyframes st-pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
-@keyframes st-step{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
-@keyframes st-fall{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes st-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 </style>
 
@@ -2255,18 +2218,18 @@ function litShown(key, now){
 const districtLit = (D, now) => { const v = litShown("d:" + D.d.id, now); return v != null ? v : isLit(D.d) ? 1 : cityProgress(D.d); };
 const locLit = (l, now) => { const v = litShown(litKey(l), now); return v != null ? v : isLit(l.D.d) ? 1 : locClarity(l).c; };
 /* ---------------- the character, from her sheet ---------------- */
-const AV = {
-  front: ["....oooooo....", "...ohhHchhho..", "..ohHhhhhchho.", ".ohhcssssshHho", ".ohhgggogggHho", "ohhhsssSssshho", "ohcnssllsshnho", "ohhhhsSSshhcho",
-    "ohhcsssnssshHo", "ohhspppppppsbo", "ohcsppppppPsbb", "ohhsPpppppPsbB", "ohhssssSssssbb", "ohcnkkkkkkkSbo", ".ohskkkKkkksoo", ".okqqkkKkkqqko",
-    ".okqqkkKkkqqko", ".oktkkkKkkktko", ".okkkkkokkkkko", ".okqqkkokkqqko", ".okqqkkokkqqko", ".otkkkkokkkkto", ".okkkkkokkkkKo", "okkkkKkoKkkkko",
-    "oKkkkkkoKkkkKo", ".okwwwo.owwwko", "..owwwo.owwwo.", "..oooo..oooo.."],
-  back: null, side: ["......ooooo...", ".....ohhHchho.", "....ohhhhhhcho", "...osshhcHhhho", "..oggsshhhchho", ".oSsssnhhHhhho", "..olsshhhhcHho", "...osShhhHhhho",
-    "...osshhhhhcho", "...oppbhhhhhho", "...oPpbbhhchho", "...opsbBhhhho.", "...ossbbhhho..", "...okksbbho...", "...okkkkkko...", "...okqqkkko...",
-    "...okqqkkko...", "...oktkkkko...", "...okkkkKko...", "...okqqkKko...", "...okqqkKko...", "...otkkkKto...", "...okkkkKko...", "..okkkkkkKko..",
-    "..oKkkkkkKko..", "..owwwwwko....", ".owwwwwWo.....", ".ooooo.o......"]
+const AV = { // 14 × 28. Light comes from the upper left: a soft highlight across the hair, blush under the glasses, a lit top, cargos with a seam and small pockets, soles on the trainers
+  front: ["....oooooo....", "...ohhhHHhho..", "..ohhHccHhhho.", ".ohhHssssshhho", ".ohhgggogggHho", "ohhhsrsSsrshho", "ohhnssllsshnho", "ohhhhsSSshhHho",
+    "ohhHsssnssshho", "ohhsuupppppsbo", "ohHsupppppPsbb", "ohhsSpppppPSbB", "ohhssssSssssbb", "ohHnkkkkkkkSbo", ".ohskkkKkkksoo", ".okkkkkKkkkKko",
+    ".okqkkkKkkqKko", ".okqkkkKkkqKko", ".okkkkkokkkKko", ".okkkkkokkkKko", ".okkkkkokkkKko", ".otkkkkokkkKto", ".okkkkkokkkkKo", "okkkkKkoKkkkko",
+    "oKkkkkkoKkkkKo", ".okwwwo.owwwko", "..owWWo.oWWwo.", "..oooo..oooo.."],
+  back: null, side: ["......ooooo...", ".....ohhHHhho.", "....ohhHcchhho", "...osshhHhhhho", "..oggsshhhHhho", ".oSsrsnhhHhhho", "..olsshhhhhHho", "...osShhhHhhho",
+    "...osshhhhhHho", "...oupbhhhhhho", "...oPpbbhhHhho", "...opsbBhhhho.", "...ossbbhhho..", "...okksbbho...", "...okkkkkko...", "...okqkkkko...",
+    "...okqkkkko...", "...oktkkkko...", "...okkkkKko...", "...okkkkKko...", "...okkkkKko...", "...otkkkKto...", "...okkkkKko...", "..okkkkkkKko..",
+    "..oKkkkkkKko..", "..owwwwwko....", ".oWWWWWWo.....", ".ooooo.o......"]
 };
-AV.back = AV.front.slice(0, 3).concat([".ohhHhhhhhcHho", ".ohhhhcHhhhhho", "ohhHhhhhhhcHho", "ohhhhcHhhhhhho", "ohcHhhhhhHhhho", "ohhhhhcHhhhhho",
-  "ohhshhhhhhhsbo", "ohcshhhHhhhsbb", "ohhshhhhhhcsbB", "ohhsshhhhhssbb"], AV.front.slice(13));
+AV.back = ["....oooooo....", "...ohhhhhhho..", "..ohhHhhhhhho."].concat([".ohhhHhhhhhhho", ".ohhHhhhhhHhho", "ohhhHhhhhhHhho", "ohhHhhhhhhhHho", "ohhhHhhhHhhhho", "ohhhhhHhhhhhho",
+  "ohhshhhhhhhsbo", "ohhshhhHhhhsbb", "ohhshhhhhhHsbB", "ohhsshhhhhssbb"], AV.front.slice(13));
 const STEP = {front: [["..ooooo.owwwo.", "........oooo.."], ["..owwwo.ooooo.", "..oooo........"]],
   side: [[".oKkkko.okKko.", "owwwwo..oWwo..", "oooooo..oooo.."], ["..oKkkkkkKko..", "...owwwwwko...", "..owwwwwWo....", "..ooooo.o....."]]};
 const AV_W = 14, AV_H = 28;
@@ -2276,7 +2239,8 @@ function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
 const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || "", a.cap ? a.capColor : ""].join("."); };
 function avatarPal(){
   const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot], cp = TOPS[a.capColor] || TOPS.black;
-  return {o: "#2a1a14", h: hr[0], H: hr[1], c: hr[2], s: sk[0], S: sk[1], g: "#121014", l: "#b8606a", e: "#2a1a14",
+  const mixed = (a, b, k) => toHex(hex(a).map((v, n) => v + (hex(b)[n] - v) * k));
+  return {r: mixed(sk[0], "#e0607a", .42), u: shade(tp[0], .14), o: "#2a1a14", h: hr[0], H: hr[1], c: hr[2], s: sk[0], S: sk[1], g: "#121014", l: "#b8606a", e: "#2a1a14",
     p: tp[0], P: tp[1], m: cp[0], M: cp[1], v: shade(cp[1], -.2), n: "#d9dde2", k: bt[0], K: bt[1], q: shade(bt[0], .12), t: shade(bt[1], -.2), w: (BOOTS[a.boots] || BOOTS.white)[0], W: (BOOTS[a.boots] || BOOTS.white)[1], b: "#17151a", B: "#3a3640"};
 }
 function avatarRows(dir, frame){
@@ -2284,7 +2248,7 @@ function avatarRows(dir, frame){
   const walking = frame === 1 || frame === 2;
   if (walking && (dir === "down" || dir === "up")) { const s = STEP.front[frame - 1]; rows.splice(26, 2, ...s); }
   if (walking && (dir === "left" || dir === "right")) { const s = STEP.side[frame - 1]; rows.splice(28 - s.length, s.length, ...s); }
-  if (!avatarLook().glasses) { if (dir === "down") rows[4] = ".ohhsesssesHho"; else if (dir !== "up") rows[4] = "..osesshhhchho"; }
+  if (!avatarLook().glasses) { if (dir === "down") rows[4] = ".ohhsesssesHho"; else if (dir !== "up") rows[4] = "..osesshhhHhho"; }
   if (avatarLook().cap) { // a baseball cap: crown over the hair, brim over the forehead (forward in profile, none from behind)
     const cap = dir === "down" ? ["...oooooooo...", "..ommmmmmmmo..", ".ommmmMmmmmMo.", ".ovvvvvvvvvvvo"] : dir === "up" ? ["...oooooooo...", "..ommmmmmmmo..", ".ommmmmmmmmMo.", ".ommmmmmmmmmMo"] : [".....oooooo...", "....ommmmmmo..", "...ommmmmmmMo.", "ovvvvvvhhcHhho"];
     rows.splice(0, 4, ...cap);
@@ -2306,7 +2270,7 @@ function cutHair(rows, cut){
   });
 }
 function asBoy(rows, dir){
-  rows = rows.map((r, i) => i >= 5 && i <= 8 ? r.replace(/n/g, "s").replace(/l/g, "S") : r);
+  rows = rows.map((r, i) => i >= 5 && i <= 8 ? r.replace(/n/g, "s").replace(/l/g, "S").replace(/r/g, "s") : r);
   const r = rows[12].split("");
   if (dir === "down" || dir === "up") { const s0 = rows[12].search(/[sS]/), s1 = Math.max(rows[12].lastIndexOf("s"), rows[12].lastIndexOf("S")); for (let j = s0 + 1; j < s1; j++) if (/[sSh]/.test(r[j])) r[j] = "p"; }
   else if (r[4] === "s") r[4] = "p";
@@ -2910,7 +2874,7 @@ function renderHomeChips(){
 const DOLL_VIEWS = {down: "front", up: "back", left: "side-left", right: "side-right"};
 const dollSet = () => avatarLook().look === "boy" ? "male-" : "";
 const dollImgs = {};
-for (const v of ["", "male-"].flatMap(p => Object.values(DOLL_VIEWS).map(x => p + x))) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); if (route === "onboard") document.querySelectorAll("canvas[data-st-char]").forEach(stDrawChar); }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
+for (const v of ["", "male-"].flatMap(p => Object.values(DOLL_VIEWS).map(x => p + x))) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
 const dollParts = {};
 for (const v of ["", "male-"].flatMap(p => Object.values(DOLL_VIEWS).map(x => p + x))) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; }
 const loaded = im => !!(im && im.complete && im.naturalWidth);
@@ -4486,16 +4450,18 @@ function drawAvatarPreview(cvs, style){
 }
 
 /* =====================================================================
-   ONBOARDING — the story first, in three acts that follow the St boards. The idea: an empty frame, a
-   picture made of parts in the dark, three milestones that paint one part, six weeks where a different
-   part moves each week. Her picture: her name in the corner, the parts and places she picks, a first
-   goal already one milestone in, and her character. Then she signs it and her world is built.
-   Her picks wait in S.onboarding.draft and become her real places, aspirations and goal when she signs,
-   so going back and forth never duplicates or removes anything she already has. Progress is saved
-   after every step, so it resumes where she left off; the steps after her name can be skipped.
+   ONBOARDING — the story first. The idea: a picture of the future pieced together, the pieces it's made
+   of, milestones that finish goals and goals that light up a piece, and six weeks where something
+   different moves each week. Her picture: her name, the pieces and places she picks, a first goal
+   already one milestone in, her character, then her picture is unveiled and her world is built.
+   Every picture is a little of the world itself: the same scenery, the same fog of the future, the same
+   pink star and lock, lifting where a piece is lit. Every step has one layout: heading, the line under
+   it, the picture, then what you do. Her picks wait in S.onboarding.draft and become her real places,
+   pieces and goal when she builds her world, so going back and forth never duplicates or removes
+   anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["frame", "parts", "paint", "weeks", "name", "pick", "where", "goal", "you", "sign", "world"];
-// The parts she can pick. Each comes with a first goal and the milestones that get it going.
+const OB = ["frame", "pieces", "paint", "weeks", "name", "pick", "where", "goal", "you", "reveal", "world"];
+// The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [
   {id: "home", t: "Home by the sea", tab: "Home", kind: "villa", lib: "surf", cat: "Home & surroundings", goal: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]},
   {id: "pod", t: "My podcast", tab: "Podcast", kind: "studio", lib: "studio", cat: "Career & education", goal: "Launch episode one", ms: ["Pick a name and a theme", "Record a pilot", "Book three guests"]},
@@ -4506,7 +4472,7 @@ const ST_PARTS = [
   {id: "travel", t: "See the world", tab: "Travel", kind: "balloon", lib: "travel", cat: "Places & travel", goal: "Plan the first big trip", ms: ["Pick the first country", "Set a travel budget", "Book the flights"]},
   {id: "garden", t: "My own garden", tab: "Garden", kind: "garden", lib: "garden", cat: "Home & surroundings", goal: "Grow my first vegetables", ms: ["Pick a sunny spot", "Buy seeds and soil", "Plant the first bed"]}
 ];
-const ST_OWN = ["Picture what it looks like", "Find the first step", "Take the first step"]; // the first goal for a part she describes herself
+const ST_OWN = ["Picture what it looks like", "Find the first step", "Take the first step"]; // the first goal for a piece she describes herself
 const stGaz = (n, as) => ({...GAZ.find(p => p.name === n), ...(as ? {name: as} : {})});
 const ST_PLACES = [
   {key: "coast", t: "By the sea", p: {name: "By the sea", country: "", env: "coast", custom: true}},
@@ -4516,18 +4482,13 @@ const ST_PLACES = [
   {key: "delhi", t: "Delhi", p: stGaz("Delhi")},
   {key: "town", t: "A small town", p: {name: "A small town", country: "", env: "town", custom: true}}
 ];
-const ST_SLOTS = [[1, 48], [34, 5], [67, 50], [76, 4], [36, 56]]; // where the parts stand in the frame, in % of the picture
-const ST_CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-const ST_BRUSH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l6 6-9 9H5v-6zM12 6l6 6"/></svg>';
+const ST_SLOTS = [[40, 50], [102, 38], [164, 50], [62, 92], [142, 92]]; // where her pieces stand in a 200 × 104 picture (base centre)
 const ST_TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-const ST_STAR = '<svg class="st-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>';
-let obStep = 0, obAnim = 0, stTimer = 0, stBefore = null;
-const stLv = n => ({g: [1, .8, .45, 0][n], b: [0, .4, .75, 1][n], o: [.55, .75, .9, 1][n]}); // dark, a little, mostly, painted
-function stLight(cvs, n){ const l = stLv(n); cvs.style.filter = `grayscale(${l.g}) brightness(${l.b})`; cvs.style.opacity = l.o; }
+let obStep = 0, obAnim = 0, stBefore = null;
 function stDraft(){ return S.onboarding.draft ||= {parts: [], own: [], places: [], last: "", goal: null, noGoal: false}; }
 const stHasPart = p => S.aspirations.find(a => a.title === p.t);
 const stHasPlace = name => S.destinations.find(d => d.name === name);
-// The parts in her picture so far: the ones she picked or already has, then any she described herself.
+// The pieces in her picture so far: the ones she picked or already has, then any she described herself.
 function stParts(){
   const d = stDraft();
   return ST_PARTS.filter(p => d.parts.includes(p.id) || stHasPart(p)).map(p => ({key: p.id, t: p.t, tab: p.tab, kind: p.kind, goal: p.goal, ms: p.ms}))
@@ -4538,117 +4499,104 @@ function stEnv(){
   const d = stDraft(), all = stPlaces(), cur = all.find(x => x.key === d.last) || all[all.length - 1];
   return cur ? cur.p.env : (S.destinations.find(x => x.status === "current") || S.destinations[0])?.env || "coast";
 }
-// The parts as they stand in the frame; the one her first goal is for has its first bit of colour.
-function stSlots(parts, lit, drop){
-  return parts.slice(0, ST_SLOTS.length).map((p, i) => ({kind: p.kind, x: ST_SLOTS[i][0], y: ST_SLOTS[i][1], w: 23, n: p.key === lit ? 1 : 0, label: p.t, drop: p.key === drop}));
-}
 function stLitKey(){ const d = stDraft(); return !d.noGoal && d.goal ? d.goal.part : null; }
 
-/* --- the picture, open on the page: scenery from the world itself, pieces drawn by the world's own art --- */
-function stFrame(o){
-  return `<div class="st-frame${o.cls ? " " + o.cls : ""}" style="aspect-ratio:${o.ar}"><div class="st-pic">
-    <canvas class="st-bg" data-st-bg="${o.env || "coast"}" ${o.bgId ? `id="${o.bgId}"` : ""} aria-hidden="true"></canvas>${o.blank ? `<span class="st-tag st-mid">${o.blank}</span>` : ""}
-    ${(o.parts || []).map(p => { const l = stLv(p.n || 0); return `<div class="st-part" style="left:${p.x}%;top:${p.y}%;width:${p.w}%${p.delay != null ? `;animation-delay:${p.delay}s` : ""}"${p.drop ? " data-drop" : ""}${p.delay != null ? " data-in" : ""}>
-      <canvas data-st-kind="${p.kind}" data-env="${p.env || o.env}" ${p.id ? `id="${p.id}"` : ""} width="64" height="44" style="filter:grayscale(${l.g}) brightness(${l.b});opacity:${l.o}" ${p.label ? `role="img" aria-label="${esc(p.label)}"` : 'aria-hidden="true"'}></canvas>${p.tag ? `<span class="st-tag">${esc(p.tag)}</span>` : ""}</div>`; }).join("")}
-    ${o.char ? `<canvas class="st-char${avatarLook().style === "doll" ? " doll" : ""}" data-st-char width="120" height="220" style="left:${o.char[0]}%;top:${o.char[1]}%;width:${o.char[2]}%" role="img" aria-label="You"></canvas>` : ""}
-    ${o.extra || ""}</div>${o.sig != null ? `<span class="st-sig" ${o.sigId ? `id="${o.sigId}"` : ""}>${esc(o.sig)}</span>` : ""}</div>`;
+/* --- a little of the world: scenery, pieces under the fog of the future with the star and lock, her character --- */
+const stSprites = new Map();
+function stSprite(kind, env){ // a piece drawn by the world's own art, base centre at (32, 40), with how far up it reaches
+  const key = kind + "|" + env; if (stSprites.has(key)) return stSprites.get(key);
+  const c = document.createElement("canvas"); c.width = 64; c.height = 44; const g = c.getContext("2d"); g.imageSmoothingEnabled = false; drawKind(g, {kind}, 32, 40, env);
+  const d = g.getImageData(0, 0, 64, 44).data; let top = 40; for (let i = 3; i < d.length; i += 4) if (d[i]) { top = (i - 3) / 4 / 64 | 0; break; }
+  const s = {c, top: 40 - top}; stSprites.set(key, s); return s;
 }
-const stTerr = {};
-function stTerrain(env){
-  if (!stTerr[env]) {
-    const D = {d: {id: "st-" + env, env, purpose: "live"}, pack: PACKS[env] || PACKS.town, ox: -9999, oy: -9999, open: {n: 1, s: 1, e: 1, w: 1}, seed: 3};
-    buildDistrictTerrain(D); sparkles = sparkles.filter(s => s.d !== D.d.id); stTerr[env] = D.terrain;
-  }
-  return stTerr[env];
-}
-// A view of a place's scenery around its landmark (or, by the sea, its shore), w × h world pixels.
-const ST_VIEW = {coast: [200, 404, 446]}; // x, y and the lowest row to show (the coast's map ends in open sea below it)
-function stCrop(env, w, h){
-  const T = stTerrain(env), P = PACKS[env] || PACKS.town, c = document.createElement("canvas"); c.width = w; c.height = h;
-  const [cx, cy, bottom = T.height] = ST_VIEW[env] || (P.lm ? [P.lm[0] + (P.tx || 0), P.lm[1] + (P.ty || 0)] : [200, 280]);
-  c.getContext("2d").drawImage(T, Math.max(0, Math.min(T.width - w, cx - w / 2)), Math.max(0, Math.min(bottom - h, cy - h * .62)), w, h, 0, 0, w, h);
+function stMeadow(w, h){ // grass, a path, and the sea along the bottom: the world's own colours and plants
+  const c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d");
+  grassBand(g, w, h, 0); const py = Math.round(h * .66); F(g, 0, py, w, 4, "#d8cdb2"); F(g, 0, py, w, 1, "#e8e0c8");
+  for (let x = 0; x < w; x++) { const e = h - 9 + Math.round(Math.sin(x / 9) * 1.5); for (let y = e - 3; y < h; y++) F(g, x, y, 1, 1, y < e ? C.sand[1] : y < e + 2 ? "#d4f1f4" : y < e + 4 ? "#55a9c6" : "#3483a8"); }
+  palm(g, 8, h - 14, 12); palm(g, w - 9, h - 15, 11); roundTree(g, 14, 30, 4); roundTree(g, w - 14, 28, 5); bush(g, w / 2 + 34 | 0, py - 4, 3, "#ef8fa0"); bush(g, 24, py + 12, 3, "#f6d36b");
   return c;
 }
-function stDrawBg(cvs, env){
-  const r = cvs.getBoundingClientRect(), w = 170, h = Math.max(40, Math.round(w * (r.height || 1) / (r.width || 1)));
-  cvs.width = w; cvs.height = h; const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false; g.drawImage(stCrop(env, w, h), 0, 0);
+const stView = {}; // her places' own scenery, around the landmark (or the shore by the sea)
+const ST_VIEW = {coast: [200, 404, 446]}; // x, y and the lowest row to show (the coast's map ends in open sea below it)
+function stTerrain(env){
+  const D = {d: {id: "st-" + env, env, purpose: "live"}, pack: PACKS[env] || PACKS.town, ox: -9999, oy: -9999, open: {n: 1, s: 1, e: 1, w: 1}, seed: 3};
+  buildDistrictTerrain(D); sparkles = sparkles.filter(s => s.d !== D.d.id); return D.terrain;
 }
-function stDrawChar(cvs){
-  const g = cvs.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cvs.width, cvs.height); g.imageSmoothingEnabled = false;
-  cvs.classList.toggle("doll", avatarLook().style === "doll");
-  if (avatarLook().style === "doll") { g.translate(60, 216); drawDoll(g, 200, "down", -1); return; }
-  const s = Math.floor(200 / AV_H); g.drawImage(avatarSprite("down", 0), (120 - AV_W * s) / 2 | 0, 216 - AV_H * s, AV_W * s, AV_H * s);
+function stCrop(env, w, h){
+  const key = env + w + "x" + h; if (stView[key]) return stView[key];
+  const T = stView[env] ||= stTerrain(env), P = PACKS[env] || PACKS.town, c = document.createElement("canvas"); c.width = w; c.height = h;
+  const [cx, cy, bottom = T.height] = ST_VIEW[env] || (P.lm ? [P.lm[0] + (P.tx || 0), P.lm[1] + (P.ty || 0)] : [200, 280]);
+  c.getContext("2d").drawImage(T, Math.max(0, Math.min(T.width - w, cx - w / 2)), Math.max(0, Math.min(bottom - h, cy - h * .62)), w, h, 0, 0, w, h);
+  return stView[key] = c;
 }
-function stPaint(root){
-  root.querySelectorAll("canvas[data-st-bg]").forEach(c => stDrawBg(c, c.dataset.stBg));
-  root.querySelectorAll("canvas[data-st-kind]").forEach(c => { const g = c.getContext("2d"); g.clearRect(0, 0, 64, 44); g.imageSmoothingEnabled = false; drawKind(g, {kind: c.dataset.stKind}, 30, 40, c.dataset.env); });
-  root.querySelectorAll("canvas[data-st-char]").forEach(stDrawChar);
-}
-const stThumbs = {};
-async function stFillThumbs(root){ // the place chips show each place's own scenery, made a place at a time
-  for (const im of root.querySelectorAll("img[data-st-thumb]")) {
-    const env = im.dataset.stThumb;
-    if (!stThumbs[env]) { await pause(0); stThumbs[env] = stCrop(env, 60, 60).toDataURL(); }
-    im.src = stThumbs[env];
+const ST_LOCK_OPEN = [".###.", "#...#", "#....", ".....", "#####", "##.##", "#####"];
+const stWorldC = document.createElement("canvas"), stFogC = document.createElement("canvas");
+// sc: {w, h, base, pieces: [{kind, env, x, y, lit 0–1, open 0–1 (the lock), star}], char: {x, y, dir, frame}, fog 0–1, cover 0–1}
+function stRender(cvs, sc){
+  const {w, h} = sc, k = 3; if (cvs.width !== w * k) { cvs.width = w * k; cvs.height = h * k; }
+  stWorldC.width = w; stWorldC.height = h; stFogC.width = w; stFogC.height = h;
+  const g = stWorldC.getContext("2d"), f = stFogC.getContext("2d"); g.imageSmoothingEnabled = false;
+  g.drawImage(sc.base, 0, 0);
+  const items = sc.pieces.map(p => ({y: p.y, draw: () => g.drawImage(stSprite(p.kind, p.env || sc.env).c, p.x - 32, p.y - 40)}));
+  if (sc.char) items.push({y: sc.char.y, draw: () => { const ch = sc.char;
+    if (avatarLook().style === "doll") { g.save(); g.translate(Math.round(ch.x), Math.round(ch.y)); drawDoll(g, 32, ch.dir || "down", ch.frame ? ch.frame : -1); g.restore(); }
+    else g.drawImage(avatarSprite(ch.dir || "down", ch.frame || 0), Math.round(ch.x - AV_W / 2), Math.round(ch.y - AV_H)); }});
+  items.sort((a, b) => a.y - b.y).forEach(i => i.draw());
+  const fogAmt = (sc.fog ?? 1) * .8; // dusk rather than night, so every piece still reads
+  if (fogAmt > .01) { // the fog of the future, as on Home: greyed and dusk-blue, with soft holes where a piece is lit
+    f.drawImage(stWorldC, 0, 0); f.globalCompositeOperation = "saturation"; f.globalAlpha = .85; f.fillStyle = "#808080"; f.fillRect(0, 0, w, h);
+    f.globalCompositeOperation = "multiply"; f.globalAlpha = 1; f.fillStyle = "#46506e"; f.fillRect(0, 0, w, h);
+    f.globalCompositeOperation = "destination-out"; f.fillStyle = "#000";
+    const hole = (x, y, r, a0) => { for (const [q, a] of [[1, .35], [.82, .55], [.66, 1]]) { f.globalAlpha = a * a0; oval(f, Math.round(x), Math.round(y), Math.max(1, Math.round(r * q)), Math.max(1, Math.round(r * q)), "#000"); } };
+    sc.pieces.forEach(p => { if (p.lit > 0) hole(p.x, p.y - 14, 8 + 26 * p.lit, Math.min(1, .45 + p.lit)); });
+    if (sc.char) hole(sc.char.x, sc.char.y - 12, 13, .9);
+    f.globalAlpha = 1; f.globalCompositeOperation = "source-over";
+    g.globalAlpha = fogAmt; g.drawImage(stFogC, 0, 0); g.globalAlpha = 1;
   }
+  sc.pieces.forEach(p => { // the pink star above every piece, its lock at the foot until the piece is lit; the lock opens and falls away
+    if (p.star === false) return;
+    const s = stSprite(p.kind, p.env || sc.env), cx = p.x, cy = p.y - s.top - 4, open = p.open ?? (p.lit >= 1 ? 1 : 0);
+    drawDreamStar(g, cx, cy, p.lit >= 1, 1, open <= 0);
+    if (open > 0 && open < 1) { const lx = Math.round(cx) + 4, ly = Math.round(cy) - 1 - Math.round(open * 3); g.globalAlpha = 1 - open;
+      ST_LOCK_OPEN.forEach((r, j) => { for (let i = 0; i < 5; i++) if (r[i] === "#") { F(g, lx + i - 1, ly + j - 1, 3, 3, "#2a2730"); } });
+      ST_LOCK_OPEN.forEach((r, j) => { for (let i = 0; i < 5; i++) if (r[i] === "#") F(g, lx + i, ly + j, 1, 1, "#d9d3c6"); }); g.globalAlpha = 1; }
+  });
+  const o = cvs.getContext("2d"); o.imageSmoothingEnabled = false; o.clearRect(0, 0, cvs.width, cvs.height); o.drawImage(stWorldC, 0, 0, w * k, h * k);
+  if (sc.cover) { o.fillStyle = "rgba(255,253,249,.94)"; o.fillRect(0, 0, w * k, Math.round(h * k * sc.cover)); o.fillStyle = "#f04f85"; if (sc.cover < 1) o.fillRect(0, Math.round(h * k * sc.cover), w * k, 3); }
+}
+// Keep a picture drawn every frame (for the star's breathing, a lock opening, her walk) while its step is on screen.
+function stLoop(cvs, sc, tick){
+  const frame = now => { if (!cvs.isConnected) return; tick && tick(now); stRender(cvs, sc); obAnim = requestAnimationFrame(frame); };
+  obAnim = requestAnimationFrame(frame);
+}
+const stEase = u => u < 0 ? 0 : u > 1 ? 1 : 1 - (1 - u) ** 3;
+// Her picture in Act 2: her place's scenery, her pieces in the slots, the first goal's piece a little lit.
+function stPicture(o){
+  o = o || {}; const parts = stParts(), lit = o.lit === undefined ? stLitKey() : o.lit, env = stEnv();
+  return {w: 200, h: o.h || 104, env, base: env === "coast" ? stMeadow(200, o.h || 104) : stCrop(env, 200, o.h || 104), fog: 1, // by the sea: the open coast, the coast map is mostly houses
+    pieces: parts.slice(0, ST_SLOTS.length).map((p, i) => ({key: p.key, kind: p.kind, x: ST_SLOTS[i][0], y: ST_SLOTS[i][1] + (o.dy || 0) * (i > 2 ? 1 : 0), lit: p.key === lit ? .35 : 0, drop: p.key === o.drop ? 1 : 0})),
+    char: o.char ? {x: 102, y: (o.h || 104) - 18, dir: "down", frame: 0} : null};
+}
+function stPicLoop(cvs, sc){ // pieces that were just added drop in from above
+  const t0 = performance.now(), ys = sc.pieces.map(p => p.y);
+  stLoop(cvs, sc, now => sc.pieces.forEach((p, i) => { if (p.drop) p.y = Math.round(ys[i] - 26 * (1 - stEase((now - t0) / 420))); }));
 }
 
-/* --- moving between steps --- */
-function startOnboarding(step){
-  obStep = Math.max(0, Math.min(OB.length - 1, step ?? S.onboarding.step ?? 0));
-  if (step === 0 && S.onboarding.done) S.onboarding.draft = null; // seeing the introduction again starts a fresh picture; her world stays as it is
-  route = "onboard"; closeMenu(); closeSheet();
-  $("home").hidden = true; $("pages").hidden = true; $("onboard").hidden = false;
-  drawOb();
-}
-function obGo(n){ obStep = Math.max(0, Math.min(OB.length - 1, n)); S.onboarding.step = Math.max(S.onboarding.step || 0, obStep); save(); drawOb(); $("obMain")?.scrollTo?.(0, 0); }
-function finishOnboarding(){
-  S.onboarding.done = true; S.onboarding.step = OB.length - 1; S.onboarded = true; save();
-  $("onboard").hidden = true; cancelAnimationFrame(obAnim); clearInterval(stTimer);
-  go("home"); sizeScene();
-  hideHint(); setTimeout(tourMaybe, 900);
-  const d = worldDests().find(d => !isLit(d)); if (d) setTimeout(() => travelTo(d.id), 300);
-}
-function drawOb(){
-  cancelAnimationFrame(obAnim); clearInterval(stTimer);
-  const el = $("onboard"), k = OB[obStep], idea = obStep < 4, bare = k === "frame" || k === "world";
-  el.classList.remove("ob-dark"); el.classList.toggle("st-paper", idea);
-  const label = idea ? `The idea · ${obStep} of 3` : `Your picture · ${obStep - 3} of 5`;
-  el.innerHTML = `${bare ? "" : `<header class="ob-top st-top"><button class="pbtn" id="obBack" aria-label="Back">${ICON.left}</button>${k === "sign" ? `<div class="st-bar" aria-hidden="true"><i></i></div>` : `<span class="st-eyebrow">${label}</span>`}</header>`}
-    <main class="ob-main st-main${k === "frame" ? " st-first" : ""}" id="obMain"></main><footer class="ob-foot st-foot" id="obFoot"></footer>`;
-  if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
-  ({frame: obFrame, parts: obParts, paint: obPaint, weeks: obWeeks, name: obName, pick: obPick, where: obWhere, goal: obGoal, you: obYou, sign: obSign, world: obWorld})[k]($("obMain"), $("obFoot"));
-}
-// The footer of a step: a note on the left, then a quiet Skip on the steps that can wait, then Next.
-function stFoot(Fo, note, next, o){
-  o = o || {};
-  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn${o.cls ? " " + o.cls : ""}" id="obNext">${o.label || "Next"}</button></div>`;
-  $("obNext").onclick = next;
-  if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
-}
-
-/* --- Act 1, the idea --- */
-function obFrame(M, Fo){
-  M.innerHTML = `<canvas class="st-puzzle" id="stPuzzle" role="img" aria-label="A pixel picture of a future, pieced together one piece at a time: a city, a home, work, a healthy body and family"></canvas>
-    <h1 class="st-h st-xl">We all have a picture of the future we want!</h1>
-    <p class="st-p st-c">A city we want to live in, the house we want, a career based on what we love and a healthy body and a loving family. We enable you to make that picture your reality.</p>`;
-  Fo.innerHTML = `<div class="st-cta"><button class="btn st-big" id="obBegin">Let's Paint</button></div>`;
-  $("obBegin").onclick = () => obGo(1);
-  stPuzzle($("stPuzzle"));
-}
-// The first screen's picture: a future drawn in the world's own pixel art (the city, a home, work, a healthy body,
-// family and her character), cut into twelve jigsaw pieces that slide into place one by one, then again.
-const PZ = {W: 200, H: 150, X: 20, Y: 15, w: 160, h: 120, cols: 4, rows: 3, cell: 40, order: [5, 0, 10, 3, 7, 1, 11, 4, 8, 2, 9, 6]};
+/* --- the first picture: a future in pixel art, pieced together --- */
+const PZ = {W: 280, H: 200, X: 20, Y: 20, w: 240, h: 160, cols: 6, rows: 4, cell: 40};
+PZ.order = Array.from({length: PZ.cols * PZ.rows}, (_, i) => i).sort((a, b) => hash(a, 7, 3) - hash(b, 7, 3));
 function stPuzzleScene(){
-  const c = document.createElement("canvas"); c.width = PZ.w; c.height = PZ.h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
-  sky(g, PZ.w, 46, "#fcd9c4", "#f9b9cc"); oval(g, 128, 18, 7, 7, "#fff1c9"); oval(g, 128, 18, 5, 5, "#fffaf0");
-  for (let i = 0; i < 9; i++) tower(g, 2 + i * 18, 46, 12, 3 + (i * 5) % 4, pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf"], i / 9));
-  grassBand(g, PZ.w, PZ.h, 44);
-  F(g, 0, 78, PZ.w, 5, "#d8cdb2"); F(g, 0, 78, PZ.w, 1, "#e8e0c8");
-  drawKind(g, {kind: "villa"}, 36, 76, "coast"); drawKind(g, {kind: "studio"}, 122, 74, "city"); roundTree(g, 80, 72, 5);
-  drawKind(g, {kind: "fitness"}, 40, 112, "town"); drawKind(g, {kind: "picnic"}, 122, 110, "town");
-  bush(g, 6, 100, 3, "#ef8fa0"); bush(g, 154, 98, 3, "#f6d36b");
-  g.drawImage(avatarSprite("down", 0), 73, 84);
+  const {w, h} = PZ, c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+  sky(g, w, 48, "#fcd9c4", "#f9b9cc"); oval(g, 196, 16, 7, 7, "#fff1c9"); oval(g, 196, 16, 5, 5, "#fffaf0");
+  for (let i = 0; i < 12; i++) tower(g, 2 + i * 20, 46, 13, 3 + (i * 5) % 4, pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf"], i / 12));
+  grassBand(g, w, h, 44);
+  F(g, 0, 84, w, 5, "#d8cdb2"); F(g, 0, 84, w, 1, "#e8e0c8"); F(g, 118, 44, 5, 40, "#d8cdb2");
+  for (let x = 0; x < w; x++) { const e = h - 12 + Math.round(Math.sin(x / 11) * 2); for (let y = e - 4; y < h; y++) F(g, x, y, 1, 1, y < e ? C.sand[1] : y < e + 2 ? "#d4f1f4" : y < e + 5 ? "#55a9c6" : "#3483a8"); }
+  drawKind(g, {kind: "villa"}, 40, 80, "coast"); drawKind(g, {kind: "studio"}, 160, 80, "city"); drawKind(g, {kind: "campus"}, 214, 80, "boston");
+  drawKind(g, {kind: "balloon"}, 90, 64, "town"); roundTree(g, 106, 78, 5); roundTree(g, 136, 76, 4);
+  drawKind(g, {kind: "fitness"}, 46, 124, "town"); drawKind(g, {kind: "picnic"}, 150, 124, "town"); drawKind(g, {kind: "garden"}, 206, 126, "town"); drawKind(g, {kind: "car"}, 100, 128, "city");
+  palm(g, 10, h - 16, 12); palm(g, 232, h - 15, 11); bush(g, 128, 112, 3, "#ef8fa0"); bush(g, 180, 106, 3, "#f6d36b");
+  g.drawImage(avatarSprite("down", 0), 113, 98);
   return c;
 }
 function stPuzzlePieces(scene){
@@ -4666,7 +4614,8 @@ function stPuzzlePieces(scene){
       const s = (Y * w + X) * 4, o = (y * pw + x) * 4, k = edge(X, Y, i) ? dark : 1; im.data[o] = src[s] * k; im.data[o + 1] = src[s + 1] * k; im.data[o + 2] = src[s + 2] * k; im.data[o + 3] = 255; }
     g.putImageData(im, 0, 0); return c; };
   const pieces = [];
-  for (let i = 0; i < cols * rows; i++) { const c = i % cols, r = i / cols | 0, x0 = c * cell - 10, y0 = r * cell - 10; const loose = make(x0, y0, cell + 20, cell + 20, i, .62), shadow = document.createElement("canvas"); shadow.width = shadow.height = cell + 20;
+  for (let i = 0; i < cols * rows; i++) { const c = i % cols, r = i / cols | 0, x0 = c * cell - 10, y0 = r * cell - 10;
+    const loose = make(x0, y0, cell + 20, cell + 20, i, .62), shadow = document.createElement("canvas"); shadow.width = shadow.height = cell + 20;
     const sg = shadow.getContext("2d"); sg.drawImage(loose, 0, 0); sg.globalCompositeOperation = "source-in"; F(sg, 0, 0, cell + 20, cell + 20, "rgba(31,36,32,.28)");
     pieces.push({i, x0, y0, loose, shadow, set: make(x0, y0, cell + 20, cell + 20, i, .9), c, r}); }
   // the empty board: a paper slot with every piece's outline faintly drawn in
@@ -4678,17 +4627,18 @@ function stPuzzle(cvs){
   const k = 3; cvs.width = PZ.W * k; cvs.height = PZ.H * k;
   const g = cvs.getContext("2d"); g.imageSmoothingEnabled = false;
   const {pieces, ghost} = stPuzzle.cache ||= stPuzzlePieces(stPuzzleScene());
-  const STEP = 340, FLY = 520, HOLD = 3200, FADE = 450, total = STEP * (pieces.length - 1) + FLY;
-  const ease = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2; // ease out with a small overshoot, so each piece clicks in
+  const STEP = 190, FLY = 480, HOLD = 3200, FADE = 450, total = STEP * (pieces.length - 1) + FLY;
+  const pop = t => 1 + 2.2 * (t - 1) ** 3 + 1.2 * (t - 1) ** 2; // ease out with a small overshoot, so each piece clicks in
+  let t0;
   const draw = ts => {
     if (!cvs.isConnected) return;
-    const t = (ts - (stPuzzle.t0 ??= ts)) % (total + HOLD + FADE);
+    const t = (ts - (t0 ??= ts)) % (total + HOLD + FADE);
     g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, PZ.W, PZ.H);
     g.drawImage(ghost, PZ.X, PZ.Y);
     const out = t > total + HOLD ? 1 - (t - total - HOLD) / FADE : 1;
     PZ.order.forEach((i, n) => {
       const p = pieces[i], u = Math.min(1, Math.max(0, (t - n * STEP) / FLY)); if (u <= 0) return;
-      const m = reduced ? 0 : 1, dx = m * ((p.c - 1.5) * 18 + (n % 2 ? 6 : -6)), dy = m * ((p.r - 1) * 18 - 14), e = ease(u); // with reduced motion each piece appears in its place instead of sliding in
+      const m = reduced ? 0 : 1, dx = m * ((p.c - 2.5) * 10 + (n % 2 ? 6 : -6)), dy = m * ((p.r - 1.5) * 10 - 14), e = pop(u); // with reduced motion each piece appears in its place instead of sliding in
       const x = Math.round(PZ.X + p.x0 + dx * (1 - e)), y = Math.round(PZ.Y + p.y0 + dy * (1 - e));
       g.globalAlpha = (reduced ? 1 : Math.min(1, u * 3)) * out;
       if (u < 1 && !reduced) g.drawImage(p.shadow, x + 2, y + 3); // lifted off the board until it lands
@@ -4697,56 +4647,135 @@ function stPuzzle(cvs){
     g.globalAlpha = 1;
     obAnim = requestAnimationFrame(draw);
   };
-  stPuzzle.t0 = undefined; obAnim = requestAnimationFrame(draw);
+  obAnim = requestAnimationFrame(draw);
 }
-function obParts(M, Fo){
-  const P = [["villa", "Home by the sea", 2, 42], ["studio", "My podcast", 34, 7], ["fitness", "Run 10k", 66, 45]];
-  M.innerHTML = stFrame({ar: "330/250", env: "coast", parts: P.map(([kind, tag, x, y], i) => ({kind, tag, x, y, w: 32, delay: .2 + i * .6, label: tag}))})
-    + `<h1 class="st-h">Your picture is made of pieces.</h1>
-    <p class="st-p">A home by the sea. A podcast of your own. A body that can run 10k. Each piece is something you're working towards, and right now they're still in the dark.</p>`;
-  stPaint(M);
-  Fo.innerHTML = `<span></span><button class="btn" id="obNext">How do I light one up?</button>`;
+// A piece as a jigsaw piece: its art on a little patch of grass, in the fog, with its star and lock.
+function stPieceThumb(cvs, kind){
+  const N = 60, M = 10, c = document.createElement("canvas"); c.width = c.height = N; const base = document.createElement("canvas"); base.width = base.height = N; grassBand(base.getContext("2d"), N, N, 0);
+  const sc = {w: N, h: N, env: "town", base, pieces: [{kind, x: N / 2, y: N - 12, lit: 0}], fog: 1}; stRender(c, sc);
+  const k = 3, src = c, out = cvs.getContext("2d"); cvs.width = cvs.height = N * k; out.imageSmoothingEnabled = false;
+  // the jigsaw outline: a square with a tab out on the right and the top, a socket on the left
+  const inPiece = (x, y) => { const sq = x >= M && x < N - M && y >= M && y < N - M, tabR = (x - (N - M + 2)) ** 2 + (y - N / 2) ** 2 <= 49, tabT = (x - N / 2) ** 2 + (y - (M - 2)) ** 2 <= 49, sockL = (x - (M + 2)) ** 2 + (y - N / 2) ** 2 <= 49;
+    return (sq && !sockL) || tabR || tabT; };
+  const m = document.createElement("canvas"); m.width = m.height = N; const mg = m.getContext("2d");
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (inPiece(x, y)) F(mg, x, y, 1, 1, "#000");
+  out.drawImage(m, 0, 0, N * k, N * k); out.globalCompositeOperation = "source-in"; out.drawImage(src, 0, 0, N * k, N * k); out.globalCompositeOperation = "destination-over";
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inPiece(x, y) && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => inPiece(x + a, y + b))) F(out, x * k, y * k, k, k, "#2a2730");
+  out.globalCompositeOperation = "source-over";
+}
+
+/* --- moving between steps --- */
+function startOnboarding(step){
+  obStep = Math.max(0, Math.min(OB.length - 1, step ?? S.onboarding.step ?? 0));
+  if (step === 0 && S.onboarding.done) S.onboarding.draft = null; // seeing the introduction again starts a fresh picture; her world stays as it is
+  route = "onboard"; closeMenu(); closeSheet();
+  $("home").hidden = true; $("pages").hidden = true; $("onboard").hidden = false;
+  drawOb();
+}
+function obGo(n){ obStep = Math.max(0, Math.min(OB.length - 1, n)); S.onboarding.step = Math.max(S.onboarding.step || 0, obStep); save(); drawOb(); $("obMain")?.scrollTo?.(0, 0); }
+function finishOnboarding(){
+  S.onboarding.done = true; S.onboarding.step = OB.length - 1; S.onboarded = true; save();
+  $("onboard").hidden = true; cancelAnimationFrame(obAnim);
+  go("home"); sizeScene();
+  hideHint(); setTimeout(tourMaybe, 900);
+  const d = worldDests().find(d => !isLit(d)); if (d) setTimeout(() => travelTo(d.id), 300);
+}
+// One layout for every step: back and progress, the heading with its line, then the step's own picture and controls, then the footer.
+function drawOb(){
+  cancelAnimationFrame(obAnim);
+  const el = $("onboard"), k = OB[obStep], steps = OB.length - 2;
+  el.classList.remove("ob-dark", "st-paper");
+  el.innerHTML = `${k === "frame" || k === "world" ? "" : `<header class="ob-top"><button class="pbtn" id="obBack" aria-label="Back">${ICON.left}</button>
+      <div class="ob-dots" role="img" aria-label="Step ${obStep} of ${steps}">${OB.slice(1, -1).map((_, i) => `<i class="${i < obStep ? "on" : ""}"></i>`).join("")}</div><span style="width:44px"></span></header>`}
+    <main class="ob-main st-main${k === "frame" ? " st-first" : ""}" id="obMain"></main><footer class="ob-foot" id="obFoot"></footer>`;
+  if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
+  ({frame: obFrame, pieces: obPieces, paint: obPaint, weeks: obWeeks, name: obName, pick: obPick, where: obWhere, goal: obGoal, you: obYou, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
+}
+const stHead = (h, sub, id) => `<div class="st-head"><h1 class="st-h">${h}</h1>${sub != null ? `<p class="st-sub"${id ? ` id="${id}" aria-live="polite"` : ""}>${sub}</p>` : ""}</div>`;
+// The footer of a step: a note on the left, then a quiet Skip on the steps that can wait, then Next.
+function stFoot(Fo, note, next, o){
+  o = o || {};
+  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn" id="obNext">${o.label || "Next"}</button></div>`;
+  $("obNext").onclick = next;
+  if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
+}
+
+/* --- Act 1, the idea --- */
+function obFrame(M, Fo){
+  M.innerHTML = stHead("We all have a picture of the future we want!", "A city we want to live in, the house we want, a career based on what we love and a healthy body and a loving family. We enable you to make that picture your reality.")
+    + `<canvas class="st-puzzle" id="stPuzzle" role="img" aria-label="A pixel picture of a future, pieced together one piece at a time: a city, a home, work, study, travel, a healthy body, a car, a garden and family"></canvas>`;
+  Fo.innerHTML = `<div class="st-cta"><button class="btn st-big" id="obBegin">Let's Paint</button></div>`;
+  $("obBegin").onclick = () => obGo(1);
+  stPuzzle($("stPuzzle"));
+}
+function obPieces(M, Fo){
+  const P = [["villa", "Home by the sea"], ["studio", "My podcast"], ["fitness", "Run 10k"]];
+  M.innerHTML = stHead("Your picture is made of pieces.", "A home by the sea. A podcast of your own. A body that can run 10k. Each piece is something you're working towards.")
+    + `<ul class="st-list">${P.map(([kind, t], i) => `<li style="animation-delay:${.15 + i * .35}s"><canvas data-thumb="${kind}" aria-hidden="true"></canvas>
+      <span class="grow"><b>${t}</b><small><span class="dmark" aria-hidden="true">${GI.star}<span class="dlock">${ICON_LOCK}</span></span>Locked · 0 of 2 goals</small></span></li>`).join("")}</ul>`;
+  M.querySelectorAll("canvas[data-thumb]").forEach(c => stPieceThumb(c, c.dataset.thumb));
+  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Continue</button>`;
   $("obNext").onclick = () => obGo(obStep + 1);
 }
+// Milestones finish a goal; two goals light up the house; then the rest of the picture comes to life, piece by piece.
 function obPaint(M, Fo){
-  const list = ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"], on = new Set();
-  M.innerHTML = stFrame({ar: "330/196", env: "coast", bgId: "stBg", parts: [{kind: "studio", x: 34, y: 3, w: 29}, {kind: "fitness", x: 66, y: 48, w: 29}, {kind: "villa", x: 4, y: 45, w: 30, id: "stHouse", label: "The house"}],
-      extra: `<div class="st-ring" id="stRing" aria-hidden="true"></div><span id="stStar" hidden>${ST_STAR}</span>`})
-    + `<div class="st-chain" id="stChain"><span>Milestones</span>${ST_CHEV}<span>Goal</span>${ST_CHEV}<span>Piece of your picture</span></div>
-    <div class="st-goal"><div class="st-gh"><b>Goal: Save the deposit</b><span id="stN">0 of 3</span></div><div class="st-prog"><i id="stProg"></i></div>
-      ${list.map((t, i) => `<button type="button" class="st-ms" data-ms="${i}" aria-pressed="false"><span class="st-cb" aria-hidden="true">${ST_TICK}</span><span class="st-mt">${esc(t)}</span></button>`).join("")}</div>
-    <p class="st-line" id="stLine" aria-live="polite">Tick the milestones and watch the house.</p>`;
-  stPaint(M);
+  const G = [{t: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]}, {t: "Find the right neighbourhood", ms: ["List the areas you love", "Visit three of them", "Pick one"]}];
+  const on = [new Set(), new Set()], sc = {w: 200, h: 104, env: "town", base: stMeadow(200, 104), fog: 1,
+    pieces: [{kind: "villa", env: "coast", x: 44, y: 62, lit: 0}, {kind: "studio", env: "city", x: 150, y: 62, lit: 0}, {kind: "balloon", x: 98, y: 54, lit: 0}, {kind: "fitness", x: 64, y: 94, lit: 0}, {kind: "picnic", x: 172, y: 94, lit: 0}]};
+  let unlockAt = 0;
+  M.innerHTML = stHead("Light up a piece", "Tick the milestones below and watch the picture.", "stSub")
+    + `<canvas class="st-world" id="stWorld" role="img" aria-label="A picture in the fog of the future: a home by the sea, a studio, a hot-air balloon, a running track and a picnic, each with a pink star and a lock"></canvas>
+    <div class="st-piecebar"><span class="dmark" aria-hidden="true">${GI.star}<span class="dlock" id="stLock">${ICON_LOCK}</span></span><b>Home by the sea</b><span class="st-gl" id="stGoals">0 of 2 goals</span></div>
+    <div id="stCards" class="st-cards"></div>`;
+  const cvs = $("stWorld");
+  stLoop(cvs, sc, now => {
+    if (!unlockAt) return;
+    sc.pieces.forEach((p, i) => { const at = unlockAt + (i ? 1400 + (i - 1) * 650 : 0), u = (now - at) / 900; p.lit = stEase(u); p.open = Math.max(0, Math.min(1, (now - at) / 600)); });
+    sc.fog = 1 - stEase((now - unlockAt - 1400 - 4 * 650 - 300) / 1200); // and then the whole picture
+    if (sc.fog <= 0 && !sc.whole) { sc.whole = 1; $("stSub").textContent = "3 milestones make a goal, 2 goals light up a piece. Piece by piece, the whole picture comes to life."; }
+  });
+  const card = (g, i) => { const n = on[i].size, done = n === g.ms.length;
+    return `<div class="st-goal${done ? " done" : ""}">${g.ms.map((t, j) => `<button type="button" class="st-ms" data-g="${i}" data-ms="${j}" aria-pressed="${on[i].has(j)}"><span class="st-cb" aria-hidden="true">${ST_TICK}</span><span class="st-mt">${esc(t)}</span></button>`).join("")}
+      <div class="st-grow${done ? " on" : ""}"><span class="st-radio" aria-hidden="true">${ST_TICK}</span><span class="grow"><small>Goal</small><b>${esc(g.t)}</b></span><span class="st-gn">${done ? "Achieved" : `${n} of ${g.ms.length}`}</span></div></div>`; };
+  const compact = g => `<div class="st-goal done compact"><div class="st-grow on"><span class="st-radio" aria-hidden="true">${ST_TICK}</span><span class="grow"><small>Goal</small><b>${esc(g.t)}</b></span><span class="st-gn">Achieved</span></div></div>`;
+  const draw = () => {
+    const d0 = on[0].size === 3, d1 = on[1].size === 3, goals = d0 + d1;
+    $("stCards").innerHTML = d0 ? compact(G[0]) + card(G[1], 1) : card(G[0], 0);
+    $("stGoals").textContent = goals === 2 ? "Unlocked" : `${goals} of 2 goals`;
+    $("stSub").textContent = goals === 2 ? "Painted! 3 milestones make a goal, 2 goals light up a piece of your picture." : d0 ? "One goal done. This piece needs one more." : on[0].size ? "Each milestone moves the goal along." : "Tick the milestones below and watch the picture.";
+    if (goals === 2 && !unlockAt) { unlockAt = performance.now(); $("stLock").classList.add("going"); $("obNext").classList.remove("st-wait"); }
+    $("stCards").querySelectorAll("[data-ms]").forEach(b => b.onclick = () => { const s = on[+b.dataset.g], j = +b.dataset.ms; s.has(j) ? s.delete(j) : s.add(j); draw(); $("stCards").querySelector(`[data-g="${b.dataset.g}"][data-ms="${j}"]`)?.focus() || $("stCards").querySelector("[data-ms]")?.focus(); });
+  };
   Fo.innerHTML = `<span></span><button class="btn st-wait" id="obNext">Next</button>`;
   $("obNext").onclick = () => obGo(obStep + 1);
-  const upd = () => {
-    const n = on.size, done = n === 3, chips = $("stChain").querySelectorAll("span");
-    stLight($("stHouse"), n); $("stRing").hidden = done; $("stStar").hidden = !done;
-    $("stBg").style.filter = done ? "grayscale(.6) brightness(.75)" : "";
-    chips[0].className = n ? "on" : ""; chips[1].className = done ? "on" : ""; chips[2].className = done ? "lit" : "";
-    $("stN").textContent = `${n} of 3`; $("stProg").style.width = Math.round(n / 3 * 100) + "%";
-    $("stLine").textContent = done ? "Painted. Three milestones made a goal, and the goal lit up a piece of your picture." : n ? "Keep going. Every milestone adds a little colour." : "Tick the milestones and watch the house.";
-    $("obNext").classList.toggle("st-wait", !done);
-  };
-  M.querySelectorAll("[data-ms]").forEach(b => b.onclick = () => { const i = +b.dataset.ms; on.has(i) ? on.delete(i) : on.add(i); b.setAttribute("aria-pressed", on.has(i)); upd(); });
+  draw();
 }
+// Six weeks of real life: she walks to whatever moved that week. A piece lights up when its milestones are done; a moved deadline is progress somewhere else.
 function obWeeks(M, Fo){
-  const P = {home: {t: "Home", kind: "villa", x: 3, y: 49, c: "#2c6a88"}, pod: {t: "Podcast", kind: "studio", x: 36.5, y: 5, c: "#cf3367"}, run: {t: "Run 10k", kind: "fitness", x: 70, y: 50, c: "#8f5c14"}};
+  const P = {pod: {t: "Podcast", kind: "studio", env: "city", x: 46, y: 60, c: "#cf3367"}, run: {t: "Run 10k", kind: "fitness", x: 150, y: 64, c: "#8f5c14"}, home: {t: "Home", kind: "villa", env: "coast", x: 100, y: 92, c: "#2c6a88"}};
   const W = [["pod", "Recorded the pilot episode"], ["run", "Ran 5k without stopping"], ["pod", "Booked three guests"], ["home", "Opened a savings pot"], ["run", "Ran 8k, a week late and proud"], ["pod", "Launched episode one"]];
-  let w = 0;
-  M.innerHTML = `<h1 class="st-h st-md">Life isn't one thing at a time</h1>`
-    + stFrame({ar: "330/170", env: "coast", parts: Object.entries(P).map(([id, p]) => ({kind: p.kind, x: p.x, y: p.y, w: 27, id: "stW-" + id, label: p.t})), extra: `<span id="stStar" class="st-pstar" hidden>${ST_STAR}</span>`})
-    + `<div class="st-legend" id="stLegend"></div><div class="st-weeks" id="stWeeks"></div><div class="st-log" id="stLog" aria-live="polite"></div><p class="st-p st-wline" id="stLine"></p>`;
-  stPaint(M);
+  const ids = Object.keys(P), sc = {w: 200, h: 104, env: "town", base: stMeadow(200, 104), fog: 1, pieces: ids.map(id => ({id, ...P[id], lit: 0})), char: {x: 100, y: 76, dir: "down", frame: 0}};
+  let w = 0, walk = null, litAt = 0;
+  M.innerHTML = stHead("Life isn't one thing at a time", "Watch six weeks of real life. Each week, something different moves.", "stSub")
+    + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your character in a picture with a podcast studio, a running track and a home, each in the fog with a pink star and a lock"></canvas>
+    <div class="st-legend" id="stLegend"></div><div class="st-weeks" id="stWeeks"></div><div id="stWeek" class="st-weekcard" aria-live="polite"></div>`;
+  stLoop($("stWorld"), sc, now => {
+    if (walk) { const u = Math.min(1, (now - walk.t0) / walk.ms), ch = sc.char; ch.x = walk.x0 + (walk.x1 - walk.x0) * u; ch.y = walk.y0 + (walk.y1 - walk.y0) * u;
+      ch.frame = u < 1 ? ((now / 140 | 0) % 2) + 1 : 0; ch.dir = u < 1 ? (Math.abs(walk.x1 - walk.x0) > Math.abs(walk.y1 - walk.y0) ? (walk.x1 > walk.x0 ? "right" : "left") : (walk.y1 > walk.y0 ? "down" : "up")) : "down"; if (u >= 1) walk = null; }
+    const pod = sc.pieces[0]; if (litAt) { pod.lit = stEase((now - litAt) / 900); pod.open = Math.min(1, (now - litAt) / 600); } else { pod.lit = 0; pod.open = 0; }
+  });
   const draw = () => {
-    const k = {home: 0, pod: 0, run: 0}; W.slice(0, w).forEach(([p]) => k[p]++);
-    Object.keys(P).forEach(id => stLight($("stW-" + id), k[id])); $("stStar").hidden = k.pod < 3;
-    $("stLegend").innerHTML = Object.entries(P).map(([id, p]) => `<span style="color:${p.c}">${p.t} · ${k[id]}/3</span>`).join("");
+    const k = {pod: 0, run: 0, home: 0}; W.slice(0, w).forEach(([p]) => k[p]++);
+    if (k.pod >= 3 && !litAt) litAt = performance.now(); if (k.pod < 3) litAt = 0;
+    if (w) { const p = P[W[w - 1][0]], ch = sc.char; walk = {t0: performance.now(), ms: reduced ? 1 : 900, x0: ch.x, y0: ch.y, x1: p.x + (p.x < 100 ? 22 : -22), y1: Math.min(98, p.y + 6)}; }
+    $("stLegend").innerHTML = ids.map(id => `<span><b style="color:${P[id].c}">${P[id].t}</b> <span class="st-dots" aria-label="${k[id]} of 3 milestones">${[0, 1, 2].map(j => `<i class="${j < k[id] ? "on" : ""}" style="${j < k[id] ? `background:${P[id].c}` : ""}"></i>`).join("")}</span></span>`).join("");
     $("stWeeks").innerHTML = W.map(([p], i) => `<span style="${i < w ? `background:${P[p].c};color:#fff` : ""}">W${i + 1}</span>`).join("");
-    $("stLog").innerHTML = (w >= 3 && w < 5 ? `<div class="st-moved"><b>"Run 8k" moved to next week.</b> You were busy with the podcast. That's not falling behind, that's progress somewhere else.</div>` : "")
-      + W.slice(0, w).map(([p, t], i) => `<div class="st-entry"><i style="background:${P[p].c}"></i><span><b>Week ${i + 1}:</b> ${esc(t)}</span></div>`).reverse().slice(0, 3).join("");
-    $("stLine").textContent = w === 0 ? "Watch six weeks of real life. Each week, something different moves." : w >= 6 ? "Six weeks, every piece a little brighter, and the podcast fully painted. Record what moved and watch it add up." : "Some weeks the podcast moves, some weeks your fitness. All of it counts.";
-    Fo.innerHTML = `<button class="btn quiet" id="stPrev"${w ? "" : " disabled"}>Back a week</button>${w < 6 ? `<button class="btn st-dark" id="stNext">${w ? "Next week" : "Play week 1"}</button>` : `<button class="btn" id="obNext">Now paint mine</button>`}`;
+    const moved = w === 3 || w === 4;
+    $("stWeek").className = "st-weekcard" + (moved ? " moved" : "");
+    $("stWeek").innerHTML = !w ? `<span class="muted">Press play to start week 1.</span>` : moved ? `<b>"Run 8k" moved to next week.</b> You were busy with ${w === 3 ? "the podcast" : "your home"}. That's not falling behind, that's progress somewhere else.`
+      : `<b>Week ${w} · ${P[W[w - 1][0]].t}:</b> ${esc(W[w - 1][1])}${w === 6 ? ". The podcast's piece lights up." : ""}`;
+    $("stSub").textContent = w === 0 ? "Watch six weeks of real life. Each week, something different moves." : w >= 6 ? "Six weeks, one piece lit and two on their way. Record what moved and watch it add up." : "Some weeks the podcast moves, some weeks your fitness. All of it counts.";
+    Fo.innerHTML = `<button class="btn quiet" id="stPrev"${w ? "" : " disabled"}>Back a week</button>${w < 6 ? `<button class="btn st-dark" id="stNext">${w ? "Next week" : "Play week 1"}</button>` : `<button class="btn" id="obNext">Continue</button>`}`;
     $("stPrev").onclick = () => { w = Math.max(0, w - 1); draw(); };
     if ($("stNext")) $("stNext").onclick = () => { w = Math.min(6, w + 1); draw(); $("stNext")?.focus(); };
     if ($("obNext")) { $("obNext").onclick = () => obGo(obStep + 1); $("obNext").focus(); }
@@ -4757,16 +4786,13 @@ function obWeeks(M, Fo){
 /* --- Act 2, her picture --- */
 function obName(M, Fo){
   const P = S.profile, more = !!(P.middleName || P.lastName);
-  M.innerHTML = stFrame({ar: "320/170", blank: "Your picture starts here", sig: P.name, sigId: "stSig"})
-    + `<h1 class="st-h">Whose picture is this?</h1><p class="st-p">What shall I call you, honey? Your name goes in the corner, like an artist's.</p>
-    <label class="field"><span>First name</span><input type="text" id="obName" value="${esc(P.name)}" placeholder="First name" autocomplete="given-name" maxlength="30"></label>
+  M.innerHTML = stHead("Whose picture is this?", "What shall I call you, honey?")
+    + `<label class="field"><span>First name</span><input type="text" id="obName" value="${esc(P.name)}" placeholder="First name" autocomplete="given-name" maxlength="30"></label>
     <button type="button" class="btn quiet st-left" id="stMore" aria-expanded="${more}"${more ? " hidden" : ""}>Add your middle and last name</button>
     <div class="st-more" id="stMoreF"${more ? "" : " hidden"}>
       <label class="field"><span>Middle name (optional)</span><input type="text" id="obMiddle" value="${esc(P.middleName || "")}" placeholder="Got a fancy middle name?" autocomplete="additional-name" maxlength="30"></label>
       <label class="field"><span>Last name (optional)</span><input type="text" id="obLast" value="${esc(P.lastName || "")}" placeholder="Last name" autocomplete="family-name" maxlength="40"></label></div>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
-  stPaint(M);
-  $("obName").oninput = () => { $("stSig").textContent = $("obName").value.trim(); };
   $("stMore").onclick = () => { $("stMore").hidden = true; $("stMoreF").hidden = false; $("obMiddle").focus(); };
   stFoot(Fo, "", () => {
     const name = $("obName").value.trim();
@@ -4779,13 +4805,15 @@ function obPick(M, Fo){
   if (stBefore) { S.aspirations.forEach(a => { if (!stBefore.has(a.id) && !d.own.includes(a.id)) d.own.push(a.id); }); stBefore = null; save(); } // one she just described herself
   let drop = null;
   const draw = () => {
+    cancelAnimationFrame(obAnim);
     const parts = stParts(), n = parts.length;
-    M.innerHTML = stFrame({ar: "320/160", env: stEnv(), sig: S.profile.name, parts: stSlots(parts, null, drop)})
-      + `<h1 class="st-h">Pick the pieces of your picture</h1><p class="st-p">Tap the ones that are you. Each becomes a piece of your picture, in the dark until you work towards it.</p>
+    M.innerHTML = stHead("Pick the pieces of your picture", "Tap the ones that are you. Each becomes a piece of your picture, in the dark until you work towards it.")
+      + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your picture so far, in the fog, with a star and a lock on each piece"></canvas>
       <div class="st-tiles">${ST_PARTS.map(p => `<button type="button" class="st-tile" data-part="${p.id}" aria-pressed="${!!stHasPart(p) || d.parts.includes(p.id)}"><img src="${libUrl(p.lib)}" alt=""><span>${esc(p.t)}</span></button>`).join("")}
         ${d.own.map(aspById).filter(Boolean).map(a => `<button type="button" class="st-tile" data-own="${a.id}" aria-pressed="true"><canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas><span>${esc(a.title)}</span></button>`).join("")}</div>
       <button type="button" class="btn quiet st-left" id="stOwn">${plusIcon}Describe your own</button>`;
-    stPaint(M); M.querySelectorAll("canvas[data-kind]").forEach(c => drawKindPreview(c, aspById(c.dataset.kind)));
+    stPicLoop($("stWorld"), stPicture({drop, lit: null}));
+    M.querySelectorAll("canvas[data-kind]").forEach(c => drawKindPreview(c, aspById(c.dataset.kind)));
     $("stNote").textContent = n ? `${n} piece${n === 1 ? "" : "s"} in your picture${n >= 5 ? " (five is plenty to start)" : ""}` : "Pick at least one";
     $("stNote").classList.remove("warn");
     M.querySelectorAll("[data-part]").forEach(b => b.onclick = () => {
@@ -4801,16 +4829,25 @@ function obPick(M, Fo){
   stFoot(Fo, "", () => { if (!stParts().length) { $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
   draw();
 }
+const stThumbs = {};
+async function stFillThumbs(root){ // the place chips show each place's own scenery, made a place at a time
+  for (const im of root.querySelectorAll("img[data-st-thumb]")) {
+    const env = im.dataset.stThumb;
+    if (!stThumbs[env]) { await pause(0); stThumbs[env] = stCrop(env, 60, 60).toDataURL(); }
+    im.src = stThumbs[env];
+  }
+}
 function obWhere(M, Fo){
   const d = stDraft();
   let searching = false;
   const draw = () => {
+    cancelAnimationFrame(obAnim);
     const all = stPlaces(), n = all.length, chips = ST_PLACES.concat(d.places.filter(x => !ST_PLACES.some(pl => pl.key === x.key)));
-    M.innerHTML = stFrame({ar: "320/170", env: stEnv(), sig: S.profile.name, parts: stSlots(stParts())})
-      + `<h1 class="st-h">Where does your picture happen?</h1><p class="st-p">Pick the places in it. A home in one city, a run along another coast. Your world gets built from them.</p>
+    M.innerHTML = stHead("Where does your picture happen?", "Pick the places in it. A home in one city, a run along another coast. Your world gets built from them.")
+      + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your picture in the scenery of the place you picked last"></canvas>
       <div class="st-chips">${chips.map(pl => `<button type="button" class="st-chip" data-place="${esc(pl.key)}" aria-pressed="${!!stHasPlace(pl.p.name) || d.places.some(x => x.key === pl.key)}"><img data-st-thumb="${pl.p.env}" alt="">${esc(pl.t)}</button>`).join("")}</div>
       ${searching ? `<div id="stSearch" style="display:grid;gap:12px"></div>` : `<button type="button" class="btn quiet st-left" id="stFind">Search for another place</button>`}`;
-    stPaint(M); stFillThumbs(M);
+    stLoop($("stWorld"), stPicture({lit: null})); stFillThumbs(M);
     $("stNote").textContent = n ? `${n} place${n === 1 ? "" : "s"}` : "Pick at least one"; $("stNote").classList.remove("warn");
     M.querySelectorAll("[data-place]").forEach(b => b.onclick = () => {
       const pl = chips.find(x => x.key === b.dataset.place), sel = d.places.some(x => x.key === pl.key);
@@ -4830,27 +4867,26 @@ function obWhere(M, Fo){
   stFoot(Fo, "", () => { if (!stPlaces().length) { $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }, {skip: true});
   draw();
 }
+// The goal card reads the way the work goes: its milestones first, then the goal they finish.
 function obGoal(M, Fo){
   const d = stDraft(), parts = stParts();
   let editing = false;
   const fresh = p => ({part: p.key, title: p.goal, ms: p.ms.slice()});
   if (parts.length && (!d.goal || !parts.some(p => p.key === d.goal.part))) d.goal = fresh(parts[0]);
   const draw = () => {
+    cancelAnimationFrame(obAnim);
     const G = d.goal, part = G && parts.find(p => p.key === G.part);
-    M.innerHTML = stFrame({ar: "320/150", env: stEnv(), sig: S.profile.name, parts: stSlots(parts, part?.key)})
-      + `<h1 class="st-h">Start with one piece</h1>`
-      + (!part ? `<p class="st-p">Pick a piece of your picture first, then come back for its first goal. You can also add goals any time from Goals.</p>`
-      : `<p class="st-p">Which piece do you want to work on first? Here's a goal to get you going. You can change it any time.</p>
-      <div class="st-tabs" role="group" aria-label="Which piece first">${parts.map(p => `<button type="button" class="st-tab" data-tab="${esc(p.key)}" aria-pressed="${p.key === G.part}">${esc(p.tab)}</button>`).join("")}</div>
-      <div class="st-chain sm"><span class="on">Milestones</span>${ST_CHEV}<span>Goal</span>${ST_CHEV}<span>${esc(part.t)}</span></div>
+    M.innerHTML = stHead("Start with one piece", part ? "Which piece do you want to work on first? Here's a goal to get you going. You can change it any time." : "Pick a piece of your picture first, then come back for its first goal. You can also add goals any time from Goals.")
+      + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your picture, with the piece you're starting on beginning to clear"></canvas>`
+      + (!part ? "" : `<div class="st-tabs" role="group" aria-label="Which piece first">${parts.map(p => `<button type="button" class="st-tab" data-tab="${esc(p.key)}" aria-pressed="${p.key === G.part}">${esc(p.tab)}</button>`).join("")}</div>
       <div class="st-goal">${editing ? `<label class="field"><span>Goal</span><input type="text" id="stGT" value="${esc(G.title)}" maxlength="120"></label>
           <div class="field"><span>Milestones</span><div class="st-msed"><div class="st-ms done"><span class="st-cb" aria-hidden="true">${ST_TICK}</span><span class="st-mt">Started your picture</span></div>
           ${G.ms.map((t, i) => `<input type="text" data-gm="${i}" value="${esc(t)}" placeholder="Milestone ${i + 2}" aria-label="Milestone ${i + 2}" maxlength="120">`).join("")}</div></div>`
-        : `<div class="st-gh"><b>Goal: ${esc(G.title)}</b><span>1 of ${G.ms.length + 1}</span></div><div class="st-prog"><i style="width:${Math.round(100 / (G.ms.length + 1))}%"></i></div>
-          <div class="st-ms done"><span class="st-cb" aria-hidden="true">${ST_TICK}</span><span class="st-mt">Started your picture</span></div>
-          ${G.ms.map(t => `<div class="st-ms"><span class="st-cb" aria-hidden="true"></span><span class="st-mt">${esc(t)}</span></div>`).join("")}`}
+        : `<div class="st-ms done"><span class="st-cb" aria-hidden="true">${ST_TICK}</span><span class="st-mt">Started your picture</span></div>
+          ${G.ms.map(t => `<div class="st-ms"><span class="st-cb" aria-hidden="true"></span><span class="st-mt">${esc(t)}</span></div>`).join("")}
+          <div class="st-grow"><span class="st-radio" aria-hidden="true">${ST_TICK}</span><span class="grow"><small>Goal for ${esc(part.t)}</small><b>${esc(G.title)}</b></span><span class="st-gn">1 of ${G.ms.length + 1}</span></div>`}
         <button type="button" class="btn quiet st-left" id="stEdit">${editing ? "Done" : "Change it"}</button></div>`);
-    stPaint(M);
+    stLoop($("stWorld"), stPicture());
     M.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { d.goal = fresh(parts.find(p => p.key === b.dataset.tab)); editing = false; save(); draw(); M.querySelector(`[data-tab="${CSS.escape(b.dataset.tab)}"]`)?.focus(); });
     if ($("stGT")) { $("stGT").onchange = () => { d.goal.title = $("stGT").value.trim() || part.goal; save(); }; M.querySelectorAll("[data-gm]").forEach(i => i.onchange = () => { d.goal.ms[+i.dataset.gm] = i.value.trim(); save(); }); }
     if ($("stEdit")) $("stEdit").onclick = () => { if (editing) { if ($("stGT")) d.goal.title = $("stGT").value.trim() || part.goal; M.querySelectorAll("[data-gm]").forEach(i => { d.goal.ms[+i.dataset.gm] = i.value.trim(); }); d.goal.ms = d.goal.ms.filter(Boolean); save(); } editing = !editing; draw(); if (editing) $("stGT")?.focus(); };
@@ -4859,43 +4895,24 @@ function obGoal(M, Fo){
   draw();
 }
 function obYou(M, Fo){
-  M.innerHTML = stFrame({ar: "320/230", env: stEnv(), sig: S.profile.name, parts: stSlots(stParts(), stLitKey()).map(p => ({...p, y: p.y + (p.y > 30 ? 12 : 0)})), char: [41, 40, 19]})
-    + `<h1 class="st-h">Now put yourself in it</h1><p class="st-p">This is you, walking through your picture. You're in full colour already. The rest fills in as you go.</p><div id="obAv" style="display:grid;gap:16px"></div>`;
-  stPaint(M);
-  avatarEditor($("obAv"), () => M.querySelectorAll("canvas[data-st-char]").forEach(stDrawChar), {lookLabel: "You identify as?"});
+  M.innerHTML = stHead("Now put yourself in it", "This is you, walking through your picture. You're in full colour already. The rest fills in as you go.")
+    + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your character standing in your picture"></canvas><div id="obAv" style="display:grid;gap:16px"></div>`;
+  stLoop($("stWorld"), stPicture({char: true, h: 120, dy: 4}));
+  avatarEditor($("obAv"), null, {lookLabel: "You identify as?"}); // the picture redraws every frame, so her new look shows at once
   stFoot(Fo, "Change your look any time", () => obGo(obStep + 1), {skip: true});
 }
 
-/* --- Act 3, sign it --- */
-function obSign(M, Fo){
-  const parts = stParts(), lit = stLitKey();
-  let p = 0;
-  M.innerHTML = `<h1 class="st-h" id="stTitle">Sign your picture</h1><p class="st-p" id="stSub">Press and hold the brush to paint it in. Let go any time and pick up where you left off.</p>`
-    + stFrame({cls: "st-signed", ar: "300/330", env: stEnv(), sig: S.profile.name, sigId: "stSig", parts: parts.slice(0, 5).map((q, i) => ({kind: q.kind, x: [1, 33, 65, 70, 8][i], y: [55, 13, 57, 3, 5][i], w: 33, n: q.key === lit ? 1 : 0, label: q.t})), char: [40, 63, 19], extra: `<div class="st-cover" id="stCover"></div>`})
-    + `<button type="button" class="st-hold" id="stHold" aria-label="Hold to sign your picture"><span>${ST_BRUSH}</span></button><span class="st-hint" id="stHint" aria-live="polite">Press and hold</span>`;
-  stPaint(M);
-  const n = parts.length, done = () => p >= 100;
-  const upd = () => {
-    $("stHold").style.setProperty("--deg", Math.round(p * 3.6) + "deg"); $("stCover").style.height = (100 - p) + "%"; $("stSig").classList.toggle("on", done());
-    $("stHint").textContent = done() ? "Beautiful." : p > 0 ? `${p}% painted, keep holding` : "Press and hold";
-    if (done()) {
-      $("stTitle").textContent = "Signed. It's yours.";
-      $("stSub").textContent = (n ? `${["", "One piece", "Two pieces", "Three pieces", "Four pieces", "Five pieces"][n] || n + " pieces"}${lit ? ", one first goal" : ""} and you in the middle of it.` : "You're in the middle of it.") + " Now go light it up.";
-      $("obNext").disabled = false; $("obNext").classList.remove("st-off");
-    }
-  };
-  const stop = () => clearInterval(stTimer);
-  const start = e => { if (done()) return; e?.preventDefault?.(); stop(); stTimer = setInterval(() => { p = Math.min(100, p + 4); upd(); if (done()) stop(); }, 60); };
-  const hold = $("stHold");
-  hold.onpointerdown = e => { try { hold.setPointerCapture(e.pointerId); } catch (err) {} start(e); };
-  hold.onpointerup = hold.onpointercancel = hold.onlostpointercapture = stop;
-  hold.oncontextmenu = e => e.preventDefault();
-  hold.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); p = 100; upd(); } };
-  Fo.innerHTML = `<span></span><button class="btn st-off" id="obNext" disabled>Make it official</button>`;
-  $("obNext").onclick = () => { if (!done()) return; stCommit(); obGo(obStep + 1); };
-  upd();
+/* --- Act 3, her picture unveiled, then her world is built --- */
+function obReveal(M, Fo){
+  const n = stParts().length, lit = stLitKey();
+  M.innerHTML = stHead("Here's your picture", (n ? `${["", "One piece", "Two pieces", "Three pieces", "Four pieces", "Five pieces"][n] || n + " pieces"}${lit ? ", one first goal" : ""} and you in the middle of it.` : "You're in the middle of it.") + " Light it up, piece by piece.")
+    + `<canvas class="st-world" id="stWorld" role="img" aria-label="Your whole picture, unveiled: your places, your pieces in the fog with their stars and locks, and you"></canvas>`;
+  const sc = stPicture({char: true, h: 150, dy: 12}), t0 = performance.now(); sc.cover = 1;
+  stLoop($("stWorld"), sc, now => { sc.cover = reduced ? 0 : 1 - stEase((now - t0 - 300) / 1600); });
+  Fo.innerHTML = `<span></span><button class="btn" id="obNext">Build my world</button>`;
+  $("obNext").onclick = () => { stCommit(); obGo(obStep + 1); };
 }
-// Her picks become real: places first so her parts have somewhere to stand, then the parts, then the first goal.
+// Her picks become real: places first so her pieces have somewhere to stand, then the pieces, then the first goal.
 function stCommit(){
   const d = stDraft(), dests = [];
   for (const pl of stPlaces()) { const had = stHasPlace(pl.p.name); const x = had || addDestination(pl.p, pl.p.type === "uni" ? "study" : "experience", "future"); if (x) dests.push(x); }
