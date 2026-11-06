@@ -510,10 +510,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-actions{display:flex;gap:8px;align-items:center}
 /* ---------- onboarding, story first. Headings in Playfair Display (chic, and easy to read in whole sentences), the words
    that carry the idea in pink italic. The idea: pages with a pager and one wide button. Her picture: the world on top, a white panel below. ---------- */
-.st-head{display:grid;gap:6px}
+.st-head{display:grid;gap:8px}
 .st-h{font-family:var(--story);font-weight:400;font-size:28px;line-height:1.22;letter-spacing:-.01em;margin:0;text-wrap:balance}
 .st-h em{font-style:italic;color:var(--accent-ink)}
-.st-sub{margin:0;font-size:15px;line-height:1.5;color:var(--muted);text-wrap:pretty}
+.st-sub{margin:0;font-size:15px;line-height:1.5;color:#55564f;text-wrap:pretty}
 .btn.st-left{justify-self:start;padding-left:0}
 .st-note{font-size:13px;font-weight:700;color:var(--muted);min-width:0}.st-note.warn{color:var(--accent-ink)}
 .btn.st-big{min-height:54px;border-radius:99px;font-size:17px;flex:1}
@@ -521,23 +521,27 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .btn.st-wait{background:#c9a3b2}
 .btn.quiet:disabled{opacity:.45}
 /* the idea: pages */
-.ob.st-idea{background:linear-gradient(180deg,#fff 0%,#fbf8f3 100%)}
-.st-ihead{height:calc(var(--safe-top) + 64px);box-sizing:border-box;padding:calc(var(--safe-top) + 12px) 16px 8px;display:flex;align-items:center}
-.st-imain{display:flex;flex-direction:column;gap:20px;padding:4px 20px 12px}
+.ob.st-idea{background:#faf8f4}
+.st-imain{display:flex;flex-direction:column;gap:24px;padding:calc(var(--safe-top) + 44px) 20px 12px}
 .st-visual{flex:1;display:grid;place-items:center;min-height:0}
 .st-ifoot{display:grid;gap:16px;padding:8px 20px calc(20px + env(safe-area-inset-bottom,0px))}
 .st-pager{display:flex;justify-content:center;gap:6px}.st-pager i{width:7px;height:7px;border-radius:99px;background:var(--line-2);transition:width .25s,background .25s}.st-pager i.on{width:22px;background:var(--accent)}
-.st-ibtns{display:flex;gap:8px;align-items:center}
+.st-ibtns{display:flex;gap:12px;align-items:center}
+/* back: a soft round button beside the main one */
+.st-back{all:unset;box-sizing:border-box;cursor:pointer;width:54px;height:54px;flex:none;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;box-shadow:0 1px 2px rgba(31,36,32,.06),0 6px 18px rgba(31,36,32,.10)}
+.st-back .ico{width:20px;height:20px}.st-back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.st-pfoot .st-back{width:44px;height:44px}
+.st-status{margin:-12px 0 -12px;font-size:13px;font-weight:700;color:var(--muted)}
 /* her picture: the world fills the top, the panel holds the choices */
 .ob.st-mine{background:var(--night)}
 .st-stage{position:relative;flex:1 1 auto;min-height:190px;overflow:hidden;background:var(--night)}
 .st-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block}
-.st-stagebar{position:absolute;left:0;right:0;top:0;padding:calc(var(--safe-top) + 12px) 16px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.st-stagebar{position:absolute;left:0;right:0;top:0;padding:calc(var(--safe-top) + 18px) 16px 0;display:flex;align-items:center;justify-content:center}
 .st-mdots i{background:rgba(255,255,255,.3)}.st-mdots i.on{background:var(--accent)}
 .st-panel{flex:none;max-height:70%;display:flex;flex-direction:column;background:#fff;border-radius:24px 24px 0 0;margin-top:-22px;position:relative;box-shadow:0 -12px 30px rgba(0,0,0,.25)}
 .st-pmain{display:grid;gap:16px;padding:22px 16px 12px;overflow:auto;align-content:start}
 .st-pmain .st-head{text-align:center;justify-items:center}.st-pmain .st-h{font-size:24px}
-.st-pfoot{background:#fff;border-top:1px solid var(--line)}
+.st-pfoot{background:#fff;border-top:0;align-items:center;gap:10px}
 .btn.st-wide{flex:1;width:100%}
 .st-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 /* the splash */
@@ -549,7 +553,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-mark span{font-size:15px;font-weight:600;color:rgba(255,255,255,.88)}
 /* the pictures */
 .st-puzzle{width:min(100%,360px);aspect-ratio:280/200;image-rendering:pixelated;display:block}
-.st-world{justify-self:center;width:100%;max-width:400px;height:auto;image-rendering:pixelated;display:block;border-radius:14px}
+.st-world{justify-self:center;width:100%;max-width:400px;height:auto;image-rendering:pixelated;display:block;border-radius:16px;box-shadow:0 6px 18px rgba(31,36,32,.12)}
 /* the pieces, unlocked, as jigsaw pieces */
 .st-list{list-style:none;margin:0;padding:0;display:grid;gap:14px;width:100%}
 .st-list li{display:flex;align-items:center;gap:16px;animation:st-in .5s ease-out both}
@@ -557,17 +561,17 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-list .grow{display:grid;gap:4px}.st-list b{font-size:17px}.st-list small{font-size:13px;color:var(--muted);display:flex;align-items:center}
 /* the map: milestones → goals → piece → picture */
 .st-map{display:flex;align-items:center;justify-content:space-between;gap:2px;margin:-4px 0}
-.st-map>.ico{width:14px;height:14px;flex:none;stroke:var(--line-2)}
-.st-map span{display:grid;justify-items:center;gap:4px;font-size:11px;font-weight:800;color:#8b8b83;transition:color .3s}
-.st-map span i{height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:99px;background:var(--sunk);display:flex;align-items:center;justify-content:center;gap:3px;transition:background .3s}
+.st-map>.ico{width:12px;height:12px;flex:none;stroke:#cfc8b8;margin-top:-18px}
+.st-map span{display:grid;justify-items:center;gap:6px;font-size:12px;font-weight:700;color:#8b8b83;transition:color .3s}
+.st-map span i{height:28px;min-width:28px;padding:0 7px;box-sizing:border-box;border-radius:99px;background:#fff;box-shadow:inset 0 0 0 1.5px #e3ddd1;display:flex;align-items:center;justify-content:center;gap:3px;transition:background .3s,box-shadow .3s}
 .st-map .st-mdots3 b{width:6px;height:6px;border-radius:50%;background:var(--line-2)}
 .st-map span i .ico{width:14px;height:14px;fill:var(--line-2);stroke:none}
 .st-map .st-mpic{width:34px;background:linear-gradient(135deg,#d8cdb2,#cfdcc0)}
-.st-map span.on{color:var(--accent-ink)}.st-map span.on i{background:var(--accent-soft)}.st-map span.on .st-mdots3 b{background:var(--accent)}.st-map span.on i .ico{fill:var(--accent)}
+.st-map span.on{color:var(--accent-ink)}.st-map span.on i{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px #f6c3d4}.st-map span.on .st-mdots3 b{background:var(--accent)}.st-map span.on i .ico{fill:var(--accent)}
 .st-map span[data-n="3"].on .st-mpic{background:linear-gradient(135deg,#f6a65a,#7aaa4f 55%,#3483a8)}
 /* a piece, its goals and their milestones */
 .st-cards{display:grid;gap:12px}
-.st-goal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 16px 12px;display:grid;gap:2px;animation:st-in .35s ease-out both}
+.st-goal{background:#fff;border-radius:16px;padding:8px 16px 12px;display:grid;gap:2px;box-shadow:0 1px 2px rgba(31,36,32,.05),0 6px 20px rgba(31,36,32,.07);animation:st-in .35s ease-out both}
 .st-goal.compact{padding:10px 16px}
 .st-ms{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;min-height:40px;font-size:14px;font-weight:500;color:var(--ink)}
 button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
@@ -587,12 +591,12 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .st-legend{display:flex;justify-content:space-between;gap:6px;font-size:12px;margin:-8px 0}
 .st-legend>span{display:flex;align-items:center;gap:6px}
 .st-dots{display:inline-flex;gap:3px}.st-dots i{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
-.st-weeks{display:flex;gap:6px}.st-weeks span{flex:1 1 0;height:30px;border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:800;background:#ece7dc;color:#5f605a;transition:background .3s,color .3s}
-.st-weekcard{padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:14px;line-height:1.45;min-height:44px;animation:st-in .3s ease-out both}
-.st-weekcard.moved{background:var(--amber-soft);border-color:#ecd9b2;color:#6e4a12}
+.st-weeks{display:flex;gap:6px}.st-weeks span{flex:1 1 0;height:32px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:800;background:#ece7dc;color:#5f605a;transition:background .3s,color .3s}
+.st-weekcard{padding:14px 16px;border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(31,36,32,.05),0 6px 20px rgba(31,36,32,.07);font-size:14px;line-height:1.45;min-height:44px;animation:st-in .3s ease-out both}
+.st-weekcard.moved{background:var(--amber-soft);box-shadow:none;color:#6e4a12}
 /* her pieces, places and the piece to start with */
 .st-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.st-tile,.st-chip,.st-tab{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid #ebe7df;background:#fafaf8;color:var(--ink);transition:border-color .15s,background .15s}
+.st-tile,.st-chip,.st-tab{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid transparent;background:#f5f3ef;color:var(--ink);transition:border-color .15s,background .15s}
 .st-tile:focus-visible,.st-chip:focus-visible,.st-tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 :is(.st-tile,.st-chip,.st-tab)[aria-pressed="true"]{border-color:var(--accent);background:#fef3f6}
 .st-tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px 8px;border-radius:12px;text-align:center;min-width:0}
@@ -4749,32 +4753,33 @@ function drawOb(){
     el.innerHTML = `<main class="ob-main" id="obMain"></main><footer class="ob-foot" id="obFoot" hidden></footer>`;
   } else if (ST_IDEA.includes(k)) {
     el.classList.add("st-idea"); const i = ST_IDEA.indexOf(k);
-    el.innerHTML = `<header class="st-ihead">${i ? `<button class="pbtn" id="obBack" aria-label="Back">${ICON.left}</button>` : ""}</header>
-      <main class="ob-main st-imain" id="obMain"></main>
+    el.innerHTML = `<main class="ob-main st-imain" id="obMain"></main>
       <footer class="st-ifoot" id="obFoot"></footer>`;
   } else {
     el.classList.add("st-mine"); const i = ST_MINE.indexOf(k);
     el.innerHTML = `<div class="st-stage" id="stStage"><canvas class="st-full" id="stWorld" role="img" aria-label="Your picture"></canvas>
-        <div class="st-stagebar"><button class="gbtn" id="obBack" aria-label="Back">${ICON.left}</button>
-        <div class="ob-dots st-mdots" role="img" aria-label="Step ${i + 1} of ${ST_MINE.length}">${ST_MINE.map((_, j) => `<i class="${j <= i ? "on" : ""}"></i>`).join("")}</div><span style="width:44px"></span></div></div>
+        <div class="st-stagebar"><div class="ob-dots st-mdots" role="img" aria-label="Step ${i + 1} of ${ST_MINE.length}">${ST_MINE.map((_, j) => `<i class="${j <= i ? "on" : ""}"></i>`).join("")}</div></div></div>
       <section class="st-panel"><main class="ob-main st-pmain" id="obMain"></main><footer class="ob-foot st-pfoot" id="obFoot"></footer></section>`;
   }
-  if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1);
   ({splash: obSplash, frame: obFrame, pieces: obPieces, paint: obPaint, weeks: obWeeks, name: obName, pick: obPick, where: obWhere, goal: obGoal, you: obYou, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
 }
 // Headings in the sans, with the words that carry the idea in pink. Panel headings sit centred.
 const stHead = (h, sub, id) => `<div class="st-head"><h1 class="st-h">${h}</h1>${sub != null ? `<p class="st-sub"${id ? ` id="${id}" aria-live="polite"` : ""}>${sub}</p>` : ""}</div>`;
-// The idea's footer: where you are in the pages, then one wide button (or a pair, for playing the weeks).
+// Back sits beside the main button on every step, so there's no row for it at the top.
+const stBack = () => `<button class="st-back" id="obBack" aria-label="Back">${ICON.left}</button>`;
+const stWireBack = () => { if ($("obBack")) $("obBack").onclick = () => obGo(obStep - 1); };
+// The idea's footer: where you are in the pages, then back and one wide button (or a pair, for playing the weeks).
 function stIdeaFoot(Fo, buttons){
   const i = ST_IDEA.indexOf(OB[obStep]);
-  Fo.innerHTML = `<div class="st-pager" role="img" aria-label="Page ${i + 1} of ${ST_IDEA.length}">${ST_IDEA.map((_, j) => `<i class="${j === i ? "on" : ""}"></i>`).join("")}</div><div class="st-ibtns">${buttons}</div>`;
+  Fo.innerHTML = `<div class="st-pager" role="img" aria-label="Page ${i + 1} of ${ST_IDEA.length}">${ST_IDEA.map((_, j) => `<i class="${j === i ? "on" : ""}"></i>`).join("")}</div><div class="st-ibtns">${i ? stBack() : ""}${buttons}</div>`;
+  stWireBack();
 }
 const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" id="obNext">${label || "Continue"}</button>`); $("obNext").onclick = () => obGo(obStep + 1); };
-// The panel's footer: a note on the left, then a quiet Skip on the steps that can wait, then Next.
+// The panel's footer: back, a note, then a quiet Skip on the steps that can wait, then Next.
 function stFoot(Fo, note, next, o){
   o = o || {};
-  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn" id="obNext">${o.label || "Next"}</button></div>`;
-  $("obNext").onclick = next;
+  Fo.innerHTML = `${stBack()}<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn" id="obNext">${o.label || "Next"}</button></div>`;
+  $("obNext").onclick = next; stWireBack();
   if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
 }
 // Her picture, sized to fill the stage above the panel.
@@ -4836,9 +4841,9 @@ function obPaint(M, Fo){
   const on = [new Set(), new Set()], sc = {w: 200, h: 96, env: "town", base: stMeadow(200, 96), fog: 1,
     pieces: [{kind: "villa", env: "coast", x: 44, y: 58, lit: 0}, {kind: "studio", env: "city", x: 150, y: 58, lit: 0}, {kind: "balloon", x: 98, y: 50, lit: 0}, {kind: "fitness", x: 64, y: 88, lit: 0}, {kind: "picnic", x: 172, y: 88, lit: 0}]};
   let unlockAt = 0;
-  M.innerHTML = stHead("<em>Milestones</em> finish goals. Goals <em>unlock</em> pieces.", "Tick them off and watch the house.", "stSub")
+  M.innerHTML = stHead("<em>Milestones</em> finish goals. Goals <em>unlock</em> pieces.", "Pieces paint the full picture that makes the future you want your reality.")
     + stMap() + `<canvas class="st-world" id="stWorld" role="img" aria-label="A picture in the fog of the future: a home by the sea, a studio, a hot-air balloon, a running track and a picnic, each with a pink star and a lock"></canvas>
-    <div id="stCards" class="st-cards"></div>`;
+    <p class="st-status" id="stSub" aria-live="polite">Tick them off and watch the house.</p><div id="stCards" class="st-cards"></div>`;
   const map = n => $("stMap").querySelectorAll("[data-n]").forEach(s => s.classList.toggle("on", +s.dataset.n <= n));
   stLoop($("stWorld"), sc, now => {
     if (!unlockAt) return;
@@ -5026,7 +5031,7 @@ function obYou(M, Fo){
 function obReveal(M, Fo){
   const n = stParts().length, lit = stLitKey();
   M.innerHTML = stHead("Here's your picture", (n ? `${["", "One piece", "Two pieces", "Three pieces", "Four pieces", "Five pieces"][n] || n + " pieces"}${lit ? ", one first goal" : ""} and you in the middle of it.` : "You're in the middle of it.") + " Light it up, piece by piece.");
-  Fo.innerHTML = `<button class="btn st-big st-wide" id="obNext">Build my world</button>`;
+  Fo.innerHTML = `${stBack()}<button class="btn st-big st-wide" id="obNext">Build my world</button>`; stWireBack();
   $("obNext").onclick = () => { stCommit(); obGo(obStep + 1); };
   const t0 = performance.now();
   stStage({char: true}, (now, sc) => { sc.cover = reduced ? 0 : 1 - stEase((now - t0 - 300) / 1600); });
