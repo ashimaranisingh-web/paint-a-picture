@@ -4982,7 +4982,20 @@ function stPicture(o){
 const PZ = {W: 280, H: 240, X: 20, Y: 20, w: 240, h: 200, cols: 6, rows: 5, cell: 40};
 // The puzzle is as tall as the page allows: five rows of pieces or more, each extra row a little more of the same meadow.
 const pzOf = rows => ({...PZ, rows, h: rows * PZ.cell, H: rows * PZ.cell + 2 * PZ.Y, order: Array.from({length: PZ.cols * rows}, (_, i) => i).sort((a, b) => hash(a, 7, 3) - hash(b, 7, 3))});
-const ST_PZ_MORE = [[["home", 52, "coast"], ["garden", 128, "town"], ["library", 198, "town"]], [["studio", 46, "city"], ["picnic", 124, "town"], ["home", 194, "boston"]]];
+// The extra rows, each its own scene and none repeating a building: a pond with a jetty, flower beds along a path, an orchard,
+// a lawn with lamps and a bench, a little lake with reeds, then palms towards the beach.
+const ST_PZ_MORE = [
+  (g, y) => { oval(g, 120, y - 10, 34, 10, "#3483a8"); oval(g, 120, y - 11, 32, 8, "#55a9c6"); oval(g, 112, y - 13, 10, 2, "#9fd3ec"); F(g, 150, y - 12, 14, 3, C.wood[1]); F(g, 150, y - 12, 14, 1, C.wood[2] || "#b88a5a");
+    roundTree(g, 52, y, 6); roundTree(g, 70, y - 6, 4); roundTree(g, 196, y - 2, 5); bush(g, 84, y - 2, 3, "#f6d36b"); bush(g, 176, y - 4, 3, "#ffffff"); },
+  (g, y) => { F(g, 0, y - 10, 240, 3, "#d8cdb2"); F(g, 0, y - 10, 240, 1, "#e8e0c8");
+    for (let x = 20; x < 230; x += 12) { bush(g, x, y - 16, 3, pick(["#ef8fa0", "#f6d36b", "#ffffff", "#c6a1e0"], hash(x, 3, 51))); bush(g, x + 6, y + 2, 3, pick(["#f6d36b", "#ef8fa0", "#c6a1e0", "#ffffff"], hash(x, 5, 52))); } },
+  (g, y) => { for (let x = 30; x < 220; x += 26) roundTree(g, x + (hash(x, y, 53) * 6 | 0), y - (x / 26 % 2 ? 6 : 0), 4, null, pick(["#e0503c", "#f2a03a", "#e0503c"], hash(x, 2, 54))); },
+  (g, y) => { F(g, 20, y - 14, 200, 3, "#d8cdb2"); for (const x of [40, 100, 160, 210]) lamp(g, x, y - 13, true); F(g, 124, y - 8, 14, 2, C.wood[1]); F(g, 125, y - 6, 1, 3, C.wood[0]); F(g, 136, y - 6, 1, 3, C.wood[0]);
+    bush(g, 70, y - 2, 4, "#ef8fa0"); bush(g, 186, y - 2, 4, "#f6d36b"); roundTree(g, 20, y, 5); },
+  (g, y) => { oval(g, 70, y - 10, 24, 7, "#3483a8"); oval(g, 70, y - 11, 22, 5, "#55a9c6"); for (let i = 0; i < 7; i++) F(g, 46 + i * 2, y - 16 - (i % 3), 1, 5, "#4f8a3a");
+    roundTree(g, 150, y, 6); roundTree(g, 186, y - 4, 4); bush(g, 214, y - 2, 3, "#c6a1e0"); },
+  (g, y) => { for (const x of [24, 70, 122, 168, 214]) palm(g, x, y - (x % 3 ? 2 : 0), 11 + (x % 4)); }
+];
 function stPuzzleScene(rows){
   const {w, h} = pzOf(rows || 5), c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
   sky(g, w, 48, "#fcd9c4", "#f9b9cc"); oval(g, 196, 16, 7, 7, "#fff1c9"); oval(g, 196, 16, 5, 5, "#fffaf0");
@@ -4994,7 +5007,7 @@ function stPuzzleScene(rows){
   drawKind(g, {kind: "balloon"}, 90, 64, "town"); roundTree(g, 106, 78, 5); roundTree(g, 136, 76, 4);
   drawKind(g, {kind: "fitness"}, 46, 124, "town"); drawKind(g, {kind: "picnic"}, 150, 124, "town"); drawKind(g, {kind: "garden"}, 206, 126, "town"); drawKind(g, {kind: "car"}, 100, 128, "city");
   drawKind(g, {kind: "library"}, 36, 168, "town"); drawKind(g, {kind: "fountain"}, 120, 166, "town"); drawKind(g, {kind: "home"}, 196, 168, "town"); roundTree(g, 76, 166, 4); roundTree(g, 160, 164, 5);
-  for (let y = 208, j = 0; y < h - 22; y += 40, j++) { ST_PZ_MORE[j % 2].forEach(([kind, x, env]) => drawKind(g, {kind}, x, y, env)); roundTree(g, j % 2 ? 88 : 90, y - 2, 4); roundTree(g, j % 2 ? 160 : 166, y - 4, 5); bush(g, j % 2 ? 222 : 16, y - 12, 3, "#ef8fa0"); }
+  for (let y = 208, j = 0; y < h - 22; y += 40, j++) ST_PZ_MORE[Math.min(j, ST_PZ_MORE.length - 1)](g, y);
   palm(g, 10, h - 16, 12); palm(g, 232, h - 15, 11); bush(g, 128, 112, 3, "#ef8fa0"); bush(g, 180, 106, 3, "#f6d36b"); bush(g, 92, 150, 3, "#ffffff"); bush(g, 222, 148, 3, "#ef8fa0");
   g.drawImage(avatarSprite("down", 0), 113, 98);
   return c;
