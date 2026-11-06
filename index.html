@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap">
 </head>
 <body>
 <style>
@@ -21,6 +21,7 @@
   --night:#0f1420; --glass:rgba(16,19,27,.84); --glass-line:rgba(255,255,255,.14);
   --serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --sans:"Manrope", "Helvetica Neue", system-ui, sans-serif;
+  --story:"Playfair Display", "Iowan Old Style", Georgia, serif; /* onboarding headings: an editorial serif that reads well in whole sentences */
   --r-xs:4px; --r-sm:8px; --r:12px; --r-lg:12px; /* corners: 4, 8 or 12px, never more (pills stay round) */
   color-scheme:light;
 }
@@ -507,11 +508,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-dark .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
 .ob-dark .ob-list{color:rgba(255,255,255,.85)}
 .ob-actions{display:flex;gap:8px;align-items:center}
-/* ---------- onboarding, story first. Headings in the sans (whole sentences read better than in the serif), the words that
-   carry the idea in pink. The idea: pages with a pager and one wide button. Her picture: the world on top, a white panel below. ---------- */
+/* ---------- onboarding, story first. Headings in Playfair Display (chic, and easy to read in whole sentences), the words
+   that carry the idea in pink italic. The idea: pages with a pager and one wide button. Her picture: the world on top, a white panel below. ---------- */
 .st-head{display:grid;gap:6px}
-.st-h{font-family:var(--sans);font-weight:800;font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:0;text-wrap:balance}
-.st-h em{font-style:normal;color:var(--accent-ink)}
+.st-h{font-family:var(--story);font-weight:400;font-size:28px;line-height:1.22;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.st-h em{font-style:italic;color:var(--accent-ink)}
 .st-sub{margin:0;font-size:15px;line-height:1.5;color:var(--muted);text-wrap:pretty}
 .btn.st-left{justify-self:start;padding-left:0}
 .st-note{font-size:13px;font-weight:700;color:var(--muted);min-width:0}.st-note.warn{color:var(--accent-ink)}
@@ -535,7 +536,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .st-mdots i{background:rgba(255,255,255,.3)}.st-mdots i.on{background:var(--accent)}
 .st-panel{flex:none;max-height:70%;display:flex;flex-direction:column;background:#fff;border-radius:24px 24px 0 0;margin-top:-22px;position:relative;box-shadow:0 -12px 30px rgba(0,0,0,.25)}
 .st-pmain{display:grid;gap:16px;padding:22px 16px 12px;overflow:auto;align-content:start}
-.st-pmain .st-head{text-align:center;justify-items:center}.st-pmain .st-h{font-size:22px}
+.st-pmain .st-head{text-align:center;justify-items:center}.st-pmain .st-h{font-size:24px}
 .st-pfoot{background:#fff;border-top:1px solid var(--line)}
 .btn.st-wide{flex:1;width:100%}
 .st-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -617,7 +618,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .ld-ready.on .ld-ic{background:var(--accent);border-color:var(--accent)}.ld-ready.on .ld-ic .ico{opacity:1}
 .ld-ready b{display:block;font-size:20px;font-weight:800}.ld-ready small{display:block;margin-top:4px;font-size:14px;font-weight:500;color:var(--muted)}
 @keyframes ld-spin{to{transform:rotate(360deg)}}
-.ld-h{font-family:var(--sans);font-weight:800;font-size:22px;line-height:1.25;letter-spacing:-.02em}
+.ld-h{font-family:var(--story);font-weight:400;font-size:24px;line-height:1.25;letter-spacing:-.01em}
+.ld-ready b{font-family:var(--story);font-weight:400;font-size:22px}
 
 </style>
 
@@ -4608,7 +4610,7 @@ function stRender(cvs, sc){
     const hole = (x, y, r, a0) => { for (const [q, a] of [[1, .35], [.82, .55], [.66, 1]]) { f.globalAlpha = a * a0; oval(f, Math.round(x), Math.round(y), Math.max(1, Math.round(r * q)), Math.max(1, Math.round(r * q)), "#000"); } };
     sc.pieces.forEach(p => { if (p.lit > 0) hole(p.x, p.y - 14, 8 + 26 * p.lit, Math.min(1, .45 + p.lit)); });
     if (sc.char) hole(sc.char.x, sc.char.y - 12, 13, .9);
-    if (sc.lens && sc.lens.r > 1) hole(sc.lens.x, sc.lens.y, sc.lens.r, 1);
+    if (sc.lens && sc.lens.r > 1) hole(sc.lens.x, sc.lens.y, sc.lens.r, sc.lens.a ?? 1);
     f.globalAlpha = 1; f.globalCompositeOperation = "source-over";
     g.globalAlpha = fogAmt; g.drawImage(stFogC, 0, 0); g.globalAlpha = 1;
   }
@@ -4788,20 +4790,20 @@ function obSplash(M){
   const sc = {w, h, env: "town", base: stMeadow(w, h), fog: 1, lens: {x: 100, y: cy, r: 0},
     pieces: [{kind: "villa", env: "coast", x: 62, y: cy + 4, lit: 0, star: false}, {kind: "studio", env: "city", x: 140, y: cy + 2, lit: 0, star: false}, {kind: "balloon", x: 30, y: cy - 40, lit: 0, star: false},
       {kind: "fitness", x: 66, y: cy + 44, lit: 0, star: false}, {kind: "picnic", x: 138, y: cy + 42, lit: 0, star: false}, {kind: "garden", x: 104, y: cy + 74, lit: 0, star: false}]};
-  const cvs = $("stSplash"), night = document.createElement("canvas"), t0 = performance.now(), T = reduced ? 0 : 1;
+  const cvs = $("stSplash"), night = document.createElement("canvas"), t0 = performance.now(), move = !reduced;
+  // with reduced motion nothing zooms: the star fades in, the dark fades away and the colour fades up around the star
   const frame = now => {
     if (!cvs.isConnected) return;
-    const t = T ? now - t0 : 9999, o = cvs.getContext("2d");
-    sc.lens.r = 62 * stEase((t - 1300) / 900); // the colour opens around the star
+    const t = now - t0, o = cvs.getContext("2d"), bloom = stEase((t - 1300) / 900), open = stEase((t - 700) / 1100);
+    sc.lens.r = move ? 62 * bloom : 62; sc.lens.a = move ? 1 : bloom; // the colour opens around the star
     stRender(cvs, sc); const k = cvs.width / w;
-    const R = Math.hypot(w, h) * stEase((t - 700) / 1100); // the dark opens like the lens
     night.width = w; night.height = h; const n = night.getContext("2d"); F(n, 0, 0, w, h, "#0f1420");
-    n.globalCompositeOperation = "destination-out"; for (const [q, a] of [[1, .35], [.86, .6], [.72, 1]]) { n.globalAlpha = a; if (R * q > 1) oval(n, 100, cy, Math.round(R * q), Math.round(R * q), "#000"); }
-    o.imageSmoothingEnabled = false; o.drawImage(night, 0, 0, w * k, h * k);
+    if (move) { const R = Math.hypot(w, h) * open; n.globalCompositeOperation = "destination-out"; for (const [q, a] of [[1, .35], [.86, .6], [.72, 1]]) { n.globalAlpha = a; if (R * q > 1) oval(n, 100, cy, Math.round(R * q), Math.round(R * q), "#000"); } } // the dark opens like the lens
+    o.imageSmoothingEnabled = false; o.globalAlpha = move ? 1 : 1 - open; o.drawImage(night, 0, 0, w * k, h * k); o.globalAlpha = 1;
     const pop = Math.min(1, Math.max(0, (t - 150) / 450)); // first, the star
-    if (pop > 0) { o.save(); o.setTransform(k, 0, 0, k, 0, 0); o.globalAlpha = pop; drawDreamStar(o, 100, cy - 18, true, pop < 1 ? 2 : 3, false); o.restore(); }
+    if (pop > 0) { o.save(); o.setTransform(k, 0, 0, k, 0, 0); o.globalAlpha = pop; drawDreamStar(o, 100, cy - 18, true, move && pop < 1 ? 2 : 3, false); o.restore(); }
     $("stMark")?.classList.toggle("on", t > 1900);
-    if ((T ? t : (now - t0) * 2) > 3600 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; } // with reduced motion: the finished picture, held for a moment
+    if (t > 3600 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
     obAnim = requestAnimationFrame(frame);
   };
   obAnim = requestAnimationFrame(frame);
