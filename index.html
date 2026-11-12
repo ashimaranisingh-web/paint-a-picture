@@ -850,6 +850,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 /* the usage-sharing line on first launch */
 .consent{position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:60;background:#fff;border-radius:16px;padding:14px 16px;display:grid;gap:10px;box-shadow:0 1px 2px rgba(64,44,30,.06),0 16px 36px -14px rgba(64,44,30,.35)}
 .consent p{margin:0;font-size:14px;line-height:1.45;color:var(--ink)}.consent-b{display:flex;justify-content:flex-end;gap:8px}
+/* the sign-in form */
+.st-sign,.st-signstep{display:grid;gap:12px}
 /* the map: no pink fills, a pink ring once a step is reached */
 .st-map span.on i{background:#fff;box-shadow:inset 0 0 0 1.5px #e39ab3}
 /* the loader: a bigger piece with soft edges */
@@ -3826,7 +3828,7 @@ function wireGoalCards(el, redraw){
   redraw = redraw || renderGoals;
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
   on("[data-goal]", b => { openGoal = openGoal === b.dataset.goal ? null : b.dataset.goal; redraw(); });
-  on("[data-ms]", b => { const [gid, mid] = b.dataset.ms.split("|"); commit(s => { const m = s.goals.find(g => g.id === gid).milestones.find(m => m.id === mid); m.doneAt = m.doneAt ? null : today(); }); });
+  on("[data-ms]", b => { if (needAccount()) return; const [gid, mid] = b.dataset.ms.split("|"); commit(s => { const m = s.goals.find(g => g.id === gid).milestones.find(m => m.id === mid); m.doneAt = m.doneAt ? null : today(); }); });
   on("[data-msedit]", b => { const [gid, mid] = b.dataset.msedit.split("|"); editMilestone(gid, mid); });
   el.querySelectorAll("[data-addms]").forEach(f => f.onsubmit = e => { e.preventDefault(); const v = f.querySelector("input").value.trim(); if (!v) return; commit(s => s.goals.find(g => g.id === f.dataset.addms).milestones.push({id: uid(), title: v, desc: "", due: "", doneAt: null})); });
   on("[data-finish]", b => {
@@ -3866,6 +3868,7 @@ function editMilestone(gid, mid){
 const delIcon = id => `<button type="button" class="ibtn sheet-del" id="${id}" aria-label="Delete">${GI.del}</button>`;
 function armDelete(b, label){ if (b.dataset.confirm === "1") return true; b.dataset.confirm = "1"; b.classList.add("armed"); b.innerHTML = GI.del + `<span>${label || "Tap again to delete"}</span>`; b.setAttribute("aria-label", label || "Tap again to delete"); return false; }
 function editGoal(id, preset){
+  if (!id && needAccount(() => editGoal(id, preset))) return; // goals need an account
   const g = id ? goalById(id) : {title: "", desc: "", aspirationIds: preset?.aspirationId ? [preset.aspirationId] : [], start: today(), deadline: addDays(today(), 30), milestones: []};
   let ms = g.milestones.map(m => ({...m})), links = new Set(g.aspirationIds || []);
   const asps = S.aspirations;
@@ -4045,6 +4048,7 @@ function entryRow(e){
 const canLog = ws => ws === weekStart(today()) || ws === addDays(weekStart(today()), -7);
 function weekTitle(ws){ const now = weekStart(today()); return ws === now ? "This week" : ws === addDays(now, -7) ? "Last week" : ws === addDays(now, 7) ? "Next week" : ws === addDays(now, 14) ? "In two weeks" : "Week of " + fmt(ws); }
 function logEntry(editId){
+  if (!editId && needAccount(() => logEntry(editId))) return;
   const ex = editId ? S.entries.find(e => e.id === editId) : null;
   const f = ex ? {...ex, goalIds: ex.goalIds.slice(), tags: (ex.tags || []).slice()} : {text: "", type: "did", date: canLog(weekOf) ? weekOf : weekStart(today()), goalIds: [], size: 2, learned: "", blocked: "", next: "", tags: [], notes: "", image: null};
   let photo = null; // a newly chosen photo, kept until Save
@@ -4354,6 +4358,7 @@ function editAssetCat(id){
     });
 }
 function editAsset(id, catId){
+  if (!id && needAccount(() => editAsset(id, catId))) return;
   const a = id ? S.assets.find(x => x.id === id) : {title: "", note: "", date: "", link: "", image: null, catId};
   let image = a.image ? {...a.image} : null, pending = null;
   const siblings = S.assets.filter(x => x.catId === a.catId).sort((p, q) => p.order - q.order), pos = id ? siblings.findIndex(x => x.id === id) : -1;
@@ -4413,6 +4418,7 @@ function noteRow(n){
     <span class="rtitle">${esc(n.title || "Untitled")}</span>${n.body ? `<span class="note-ex">${esc(n.body.slice(0, 220))}</span>` : ""}</button></li>`;
 }
 function editNote(id){
+  if (!id && needAccount(() => editNote(id))) return;
   const n = id ? S.notes.find(x => x.id === id) : {title: "", body: "", at: nowLocal(), pinned: false, fav: false};
   let pinned = n.pinned, fav = n.fav;
   openSheet(id ? "Note" : "New note", `
@@ -4446,7 +4452,7 @@ function renderTodo(){
     <form class="todo-add" id="todoAdd"><input type="text" id="todoIn" placeholder="Add a to-do" aria-label="New to-do" maxlength="160" autocomplete="off"><button class="btn quiet" type="submit">${ICON.plus}Add</button></form>
     ${open.length ? `<ul class="todos">${open.map(todoRow).join("")}</ul>` : ""}
     ${done.length ? `<section class="todo-done"><div class="sec-h"><div class="eyebrow">Done · ${done.length}</div><button type="button" class="btn quiet sm" id="todoClear">Clear done</button></div><ul class="todos">${done.map(todoRow).join("")}</ul></section>` : ""}`;
-  $("todoAdd").onsubmit = e => { e.preventDefault(); const v = $("todoIn").value.trim(); if (!v) return;
+  $("todoAdd").onsubmit = e => { e.preventDefault(); const v = $("todoIn").value.trim(); if (!v || needAccount()) return;
     commit(s => s.todos.push({id: "t-" + uid(), text: v, done: false, doneAt: null, due: "", createdAt: nowLocal()})); $("todoIn")?.focus(); };
   // a tick rounds into a circle first, then the to-do moves to Done (and back, unticked)
   el.querySelectorAll("[data-todo]").forEach(b => b.onclick = () => { const id = b.dataset.todo, on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on); b.closest("li").classList.toggle("done", on);
@@ -4484,6 +4490,7 @@ function renderGood(){
     <section><div class="eyebrow" style="margin-bottom:8px">Before</div>${past.length ? `<ul class="list good-past">${past.map(g => `<li><b>${esc(fmt(g.date, {weekday: "short", day: "numeric", month: "short"}))}</b>${g.items.filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("")}</li>`).join("")}</ul>` : `<div class="empty">Your good things collect here, day by day.</div>`}</section>`;
   wireJTabs(el);
   // saved as she types, without redrawing the page under her
+  el.querySelectorAll("[data-good]").forEach(inp => inp.onfocus = () => { if (needAccount()) inp.blur(); });
   el.querySelectorAll("[data-good]").forEach(inp => inp.oninput = () => { let g = S.gratitude.find(x => x.date === t); if (!g) { g = {date: t, items: ["", "", ""]}; S.gratitude.push(g); } g.items[+inp.dataset.good] = inp.value.trim(); save(); });
 }
 const AFFIRM_STARTERS = ["I'm building the life I picture, one piece at a time.", "Small steps still move me forward.", "I'm allowed to grow at my own pace.", "Busy with one goal is still progress.", "I trust myself to figure it out.", "What I want is worth working for.", "I'm proud of how far I've come.", "I deserve good things, and I'm making them happen."];
@@ -4499,9 +4506,9 @@ function renderAffirm(){
     ${starters.length ? `<section><div class="eyebrow" style="margin-bottom:8px">Ideas to start from</div><div class="pills">${starters.map((t, i) => `<button type="button" class="pill aff-idea" data-idea="${i}">${plusIcon}${esc(t)}</button>`).join("")}</div></section>` : ""}`;
   wireJTabs(el);
   if ($("affNext")) $("affNext").onclick = () => { affirmShift++; renderAffirm(); };
-  $("affAdd").onclick = () => editAffirm(null);
+  $("affAdd").onclick = () => { if (!needAccount(() => editAffirm(null))) editAffirm(null); };
   el.querySelectorAll("[data-aff]").forEach(b => b.onclick = () => editAffirm(b.dataset.aff));
-  el.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => { const text = starters[+b.dataset.idea]; commit(s => s.affirmations.push({id: "af-" + uid(), text, createdAt: nowLocal()})); toast("Added to your affirmations"); });
+  el.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => { if (needAccount()) return; const text = starters[+b.dataset.idea]; commit(s => s.affirmations.push({id: "af-" + uid(), text, createdAt: nowLocal()})); toast("Added to your affirmations"); });
 }
 function editAffirm(id){
   const a = id ? S.affirmations.find(x => x.id === id) : {text: ""};
@@ -4549,12 +4556,13 @@ function renderAccount(){
     <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div>
       <div class="prof"><button type="button" class="prof-btn" id="profBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Whose data you're viewing"><span>${demoMode ? "Demo Data" : "Your Profile"}</span><svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="prof-menu" id="profMenu" role="menu" hidden></div></div></div>
+    ${accountPanel()}
     <section style="display:grid;gap:14px">
       <label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
-      <small class="muted" style="font-size:11px">${docRef ? "Signed in through Claude: your world already syncs to your Claude account." : "You're using Paint a Picture as a guest. Your world is saved in this browser only. Download a backup below to keep a copy."}</small></section>
+      <small class="muted" style="font-size:11px">${window.claude?.use && docRef ? "Signed in through Claude: your world already syncs to your Claude account." : supaUser ? "Signed in: your world syncs to your account." : "You're a guest: your world is saved on this device only. Sign in below to keep it safe."}</small></section>
     <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Hair, skin, outfit: make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
-    ${accountPanel()}${usagePanel()}
-    <section class="panel"><div class="eyebrow">Data</div>
+    ${usagePanel()}
+    <section class="panel"><div class="eyebrow">Data</div>${(() => { try { return localStorage.getItem("dreamLife.otherWorld") ? `<button class="btn quiet sm" id="otherWorld" type="button" style="justify-self:start">Download the world you didn't keep</button>` : ""; } catch (e) { return ""; } })()}
       <div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>
       <div class="pair"><button class="btn ghost" id="backupBtn" type="button">Download backup</button>
@@ -4567,7 +4575,7 @@ function renderAccount(){
   let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
-  wireAccountPanel(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
+  wireAccountPanel(); if ($("otherWorld")) $("otherWorld").onclick = downloadOtherWorld; el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
   $("backupBtn").onclick = downloadBackup;
   $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
   $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
@@ -4934,7 +4942,7 @@ function avatarEditor(root, onChange, opts){
   const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     const doll = A().style === "doll";
-    root.innerHTML = `${opts.compact ? `<div class="field"><span>Hair</span><div class="st-radios" role="radiogroup" aria-label="Hair length">${[["girl", "Long"], ["boy", "Short"]].map(([k, l]) => `<button type="button" role="radio" aria-checked="${A().look === k}" data-look="${k}"><span class="st-rad" aria-hidden="true"></span>${l}</button>`).join("")}</div></div>
+    root.innerHTML = `${opts.compact ? `<div class="field"><span>You are</span><div class="st-radios" role="radiogroup" aria-label="You are">${[["girl", "A woman"], ["boy", "A man"]].map(([k, l]) => `<button type="button" role="radio" aria-checked="${A().look === k}" data-look="${k}"><span class="st-rad" aria-hidden="true"></span>${l}</button>`).join("")}</div></div>
       <div class="field"><span>Style</span><div class="seg" role="group" style="justify-self:start">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div></div>`
       : `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>`}
       ${opts.compact ? "" : `<div class="field"><span>${opts.lookLabel || "Character"}</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>`}
@@ -4949,7 +4957,7 @@ function avatarEditor(root, onChange, opts){
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
     root.querySelectorAll("[data-cap]").forEach(b => b.onclick = () => set({cap: b.dataset.cap === "1"}));
     root.querySelectorAll("[data-curl]").forEach(b => b.onclick = () => set({curl: b.dataset.curl === "1"}));
-    root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => { set({look: b.dataset.look}); /* only the hair changes; the outfit stays hers */ });
+    root.querySelectorAll("[data-look]").forEach(b => b.onclick = () => { const look = b.dataset.look, swap = opts.compact && A().top === (look === "boy" ? "pink" : "blue"); set(Object.assign({look}, swap ? {top: look === "boy" ? "blue" : "pink"} : {})); });
     root.querySelectorAll("[data-style]").forEach(b => b.onclick = () => set({style: b.dataset.style}));
     root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs, cvs.dataset.prev));
   }
@@ -4980,7 +4988,7 @@ function drawAvatarPreview(cvs, style){
    pieces and goal when she builds her world, so going back and forth never duplicates or removes
    anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["splash", "frame", "name", "look", "where", "pick", "how", "goal", "journal", "reveal", "world"]; // the idea once, on her own pieces, then her first goal and journal
+const OB = ["splash", "frame", "account", "name", "look", "where", "pick", "how", "goal", "journal", "reveal", "you", "world"]; // the idea, then sign in or skip; "you" is only for guests
 // The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [ // the whole picture library, each with a first goal and the milestones that get it going
   {id: "home", t: "Home by the sea", tab: "Home", kind: "villa", lib: "surf", cat: "Home & surroundings", goal: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]},
@@ -5253,9 +5261,9 @@ function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d");
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
-const ST_IDEA = ["frame", "how"], ST_ME = ["name", "look", "where", "pick", "goal", "journal"], ST_STEPS = ["frame", "name", "look", "where", "pick", "how", "goal", "journal"];
+const ST_IDEA = ["frame", "how"], ST_ME = ["account", "you", "name", "look", "where", "pick", "goal", "journal"], ST_STEPS = ["frame", "account", "name", "look", "where", "pick", "how", "goal", "journal"], ST_GUEST = ["frame", "account", "you"];
 // one progress line across every step, so she always knows how far along she is
-const stBar = k => { const i = ST_STEPS.indexOf(k); return `<div class="st-mbar" role="img" aria-label="Step ${i + 1} of ${ST_STEPS.length}"><div class="st-line"><i style="width:${Math.round((i + 1) / ST_STEPS.length * 100)}%"></i></div></div>`; };
+const stBar = k => { const path = S.onboarding.guest ? ST_GUEST : ST_STEPS, i = path.indexOf(k); return `<div class="st-mbar" role="img" aria-label="Step ${i + 1} of ${path.length}"><div class="st-line"><i style="width:${Math.round((i + 1) / path.length * 100)}%"></i></div></div>`; };
 function startOnboarding(step){
   obStep = Math.max(0, Math.min(OB.length - 1, step ?? S.onboarding.step ?? 0));
   if (step === 0 && S.onboarding.done) S.onboarding.draft = null; // seeing the introduction again starts a fresh picture; her world stays as it is
@@ -5263,7 +5271,7 @@ function startOnboarding(step){
   $("home").hidden = true; $("pages").hidden = true; $("onboard").hidden = false;
   drawOb();
 }
-function obGo(n){ obStep = Math.max(0, Math.min(OB.length - 1, n)); track("onboarding_step", {step: OB[obStep]}); S.onboarding.step = Math.max(S.onboarding.step || 0, obStep); save(); drawOb(); $("obMain")?.scrollTo?.(0, 0); }
+function obGo(n){ stObPrev = obStep; obStep = Math.max(0, Math.min(OB.length - 1, n)); track("onboarding_step", {step: OB[obStep]}); S.onboarding.step = Math.max(S.onboarding.step || 0, obStep); save(); drawOb(); $("obMain")?.scrollTo?.(0, 0); }
 function finishOnboarding(){
   S.onboarding.done = true; S.onboarding.step = OB.length - 1; S.onboarded = true; save();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim);
@@ -5292,7 +5300,7 @@ function drawOb(){
     el.innerHTML = `<div class="st-stage" id="stStage"><canvas class="st-full" id="stWorld" role="img" aria-label="Your picture"></canvas></div>
       <section class="st-panel"><main class="ob-main st-pmain" id="obMain"></main><footer class="ob-foot st-pfoot" id="obFoot"></footer></section>`;
   }
-  ({splash: obSplash, frame: obFrame, how: obHow, journal: obJournal, name: obName, look: obLook, pick: obPick, where: obWhere, goal: obGoal, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
+  ({splash: obSplash, frame: obFrame, how: obHow, journal: obJournal, account: obAccount, you: obYou, name: obName, look: obLook, pick: obPick, where: obWhere, goal: obGoal, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
 }
 // Headings in the sans, with the words that carry the idea in pink. Panel headings sit centred.
 const stHead = (h, sub, id) => `<div class="st-head"><h1 class="st-h">${h}</h1>${sub != null ? `<p class="st-sub"${id ? ` id="${id}" aria-live="polite"` : ""}>${sub}</p>` : ""}</div>`;
@@ -5607,6 +5615,26 @@ function obGoal(M, Fo){
   draw();
 }
 
+// Save your world: sign in with an emailed code, or skip and look around as a guest. Already signed in (a replay, or a
+// second device), or accounts not switched on: straight on to setting up.
+async function obAccount(M, Fo){
+  if (!CFG.supabaseUrl) { obGo(obStep + (obStep > stObPrev ? 1 : -1)); return; }
+  M.innerHTML = stHead("Save your world", "Sign in with your email so your picture, goals and journal are kept safe and the same on every device. We'll email you a code; no password.")
+    + `<div id="obSign" class="st-sign"></div>`;
+  Fo.innerHTML = `${stBack()}<span class="st-note"></span><div class="ob-actions"><button class="btn quiet" id="obSkip">Skip for now</button></div>`; stWireBack();
+  $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(OB.indexOf("you")); };
+  signInForm($("obSign"), () => { S.onboarding.guest = false; save(); obGo(OB.indexOf("name")); });
+  await accountsReadyP; if (supaUser && OB[obStep] === "account") { S.onboarding.guest = false; obGo(OB.indexOf("name")); }
+}
+let stObPrev = 0; // which way she was going, so a skipped step is passed in the same direction
+// Guests: who they are, so the character feels like them, then Home.
+function obYou(M, Fo){
+  M.innerHTML = stFigure() + stHead("Who are you?", "So your character feels like you. You can change everything later.") + `<div id="stAv" class="st-av"></div>`;
+  avatarEditor($("stAv"), () => stDrawMe($("stMe")), {compact: true});
+  stFigureDone(M);
+  stFoot(Fo, "", () => { S.onboarding.draft = null; save(); obGo(OB.indexOf("world")); }, {label: "Let's Go"});
+  $("obBack").onclick = () => obGo(OB.indexOf("account"));
+}
 // Her journal: once a week she writes what moved. She can start with a line now.
 function obJournal(M, Fo){
   const d = stDraft();
@@ -5620,7 +5648,7 @@ function obReveal(M, Fo){
   const n = stParts().length, lit = stLitKey();
   M.innerHTML = stHead("Here's your picture", (n ? `${["", "One piece", "Two pieces", "Three pieces", "Four pieces", "Five pieces"][n] || n + " pieces"}${lit ? ", one first goal" : ""}, your places and you, all in one picture.` : "You're in the middle of it.") + " It's all locked until you earn it. Your first piece is glowing: finish its goal to unlock it.");
   Fo.innerHTML = `${stBack()}<button class="btn st-big st-wide" id="obNext">Let's Go</button>`; stWireBack();
-  $("obNext").onclick = () => { stCommit(); obGo(obStep + 1); }; // her picks become her world
+  $("obNext").onclick = () => { stCommit(); obGo(OB.indexOf("world")); }; // her picks become her world
   const t0 = performance.now();
   stStage({char: true, w: 320}, (now, sc) => { sc.cover = reduced ? 0 : 1 - stEase((now - t0 - 300) / 1600); // zoomed out; locked, with her first piece glowing
     const f = sc.pieces.find(p => p.key === lit); if (f) f.lit = .45 + .2 * Math.sin(now / 500); });
@@ -5706,7 +5734,7 @@ function askConsent(){
 // Usage that happens anywhere in the app is counted here, from what changed in one commit.
 function usageCounts(){
   if (!S) return null;
-  return {goals: S.goals.length, ms: S.goals.reduce((n, g) => n + (g.milestones || []).filter(m => m.done).length, 0),
+  return {goals: S.goals.length, ms: S.goals.reduce((n, g) => n + (g.milestones || []).filter(m => m.doneAt).length, 0),
     unlocked: S.aspirations.filter(a => { try { return isUnlocked(a); } catch (e) { return false; } }).length, journal: S.notes.length + S.entries.length + S.gratitude.length};
 }
 function countUsage(b){
@@ -5717,10 +5745,14 @@ function countUsage(b){
   if (a.journal > b.journal) track("journal_entry_saved");
 }
 
-let supa = null, supaUser = null;
+let supa = null, supaUser = null, accountsReadyP = Promise.resolve();
 // The world she didn't keep is never just dropped: it's kept on this device and offered as a file.
 function keepOtherWorld(w){
   try { localStorage.setItem("dreamLife.otherWorld", JSON.stringify(w)); } catch (e) {}
+  keepOtherWorld.last = w;
+}
+function downloadOtherWorld(){
+  const w = keepOtherWorld.last || (() => { try { return JSON.parse(localStorage.getItem("dreamLife.otherWorld") || "null"); } catch (e) { return null; } })(); if (!w) return;
   try { const url = URL.createObjectURL(new Blob([JSON.stringify(w, null, 1)], {type: "application/json"})), a = document.createElement("a"); a.href = url; a.download = `paint-a-picture-other-world-${today()}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) {}
 }
 const SUPA_LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"; // a version that understands publishable keys
@@ -5759,11 +5791,11 @@ async function connectAccount(user){
   else if (pick === "local") { await upload(); start(); }
   else {
     const n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`, sum = w => `${n((w.destinations || []).length, "place")}, ${n((w.aspirations || []).length, "piece")}, ${n((w.goals || []).length, "goal")}`;
-    openSheet("Which world do you want?", `<p style="margin:0">Your account and this device each have a world. Pick the one to keep on both. The other is saved as a backup file first.</p>
+    openSheet("Which world do you want?", `<p style="margin:0">Your account and this device each have a world. Pick the one to keep on both. The other is kept on this device, and you can download it from Account.</p>
       <div class="cklist"><div class="notice"><b>On this device</b><br>${esc(sum(local))}</div><div class="notice"><b>In your account</b><br>${esc(sum(remote))}${row?.updated_at ? ` · last synced ${esc(fmt(row.updated_at.slice(0, 10)))}` : ""}</div></div>`,
       `<button class="btn ghost" id="wKeepRemote">Use my account's</button><button class="btn" id="wKeepLocal">Use this device's</button>`, () => {
         const keep = async which => { const other = which === "local" ? remote : local; keepOtherWorld(other);
-          if (which === "remote") use(remote); else await upload(); start(); closeSheet(); toast("Your world is synced"); };
+          if (which === "remote") use(remote); else await upload(); start(); closeSheet(); toast("Your world is synced. The other one is kept on this device."); };
         $("wKeepRemote").onclick = () => keep("remote"); $("wKeepLocal").onclick = () => keep("local"); });
   }
   track("account_signed_in");
@@ -5779,26 +5811,42 @@ async function worldRow(user, d){
 }
 async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser = null; docRef = null; storageNote = "Saved in this browser."; renderAccount(); toast("Signed out. Your world stays on this device."); }
 // The account panel on the Account page: sign in with a code, or see who's signed in.
+// Email → code → signed in. root gets the form; onDone runs once she's in and her world is connected.
+function signInForm(root, onDone){
+  root.innerHTML = `<div class="st-signstep"><label class="field"><span>Email</span><input type="email" id="signEmail" autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
+    <button class="btn" id="signSend" type="button" style="justify-self:start">Email me a code</button></div><p class="muted" id="signErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
+  const err = t => { $("signErr").textContent = t; $("signErr").hidden = !t; };
+  $("signSend").onclick = async () => {
+    const email = $("signEmail").value.trim(); if (!/^\S+@\S+\.\S+$/.test(email)) { err("Enter your email address."); return; }
+    $("signSend").disabled = true; await accountsReadyP; if (!supa) { $("signSend").disabled = false; err("Signing in isn't available right now. Try again in a moment."); return; }
+    const {error} = await supa.auth.signInWithOtp({email}); $("signSend").disabled = false;
+    if (error) { err("Couldn't send the code. Check the address and try again."); return; } err("");
+    root.querySelector(".st-signstep").innerHTML = `<p style="margin:0">We sent a code to <b>${esc(email)}</b>. It can take a minute, and may land in spam.</p>
+      <label class="field"><span>The code from your email</span><input type="text" id="signCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
+      <button class="btn" id="signVerify" type="button" style="justify-self:start">Sign in</button>`;
+    $("signCode").focus();
+    $("signVerify").onclick = async () => { $("signVerify").disabled = true; const {data, error: e2} = await supa.auth.verifyOtp({email, token: $("signCode").value.trim(), type: "email"}); $("signVerify").disabled = false;
+      if (e2 || !data?.user) { err("That code didn't work. Check it, or send a new one."); return; } await connectAccount(data.user); onDone && onDone(); };
+  };
+}
+// Guests can add places and pieces. Everything else is saved to an account, so it asks them to sign in first.
+const isGuest = () => !!CFG.supabaseUrl && !supaUser && !demoMode && !window.claude?.use;
+function needAccount(then){
+  if (!isGuest()) return false;
+  openSheet("Sign in to save this", `<p style="margin:0">Goals, milestones and your journal are kept in your account, so they're safe and the same on every device. Places and pieces work without one.</p><div id="gateForm" class="st-sign"></div>`,
+    `<button class="btn ghost" id="gateNo">Not now</button>`, () => { $("gateNo").onclick = closeSheet; signInForm($("gateForm"), () => { closeSheet(); toast("Signed in. Your world is saved."); then && setTimeout(then, 250); }); });
+  track("sign_in_asked");
+  return true;
+}
 function accountPanel(){
   if (!supa) return "";
   if (supaUser) return `<section class="panel"><div class="eyebrow">Sync</div><p style="margin:0">Signed in as <b>${esc(supaUser.email || "")}</b>. Your world syncs to your account, so it's the same on every device you sign in on.</p>
     <button class="btn ghost" id="signOut" type="button" style="justify-self:start">Sign out</button></section>`;
-  return `<section class="panel"><div class="eyebrow">Sync</div><p class="muted" style="margin:0;font-size:13px">Sign in to keep your world safe and the same on your phone and the web. We'll email you a code; no password.</p>
-    <div id="signStep"><label class="field"><span>Email</span><input type="email" id="signEmail" autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
-    <button class="btn" id="signSend" type="button" style="justify-self:start;margin-top:10px">Email me a code</button></div><p class="muted" id="signErr" role="alert" style="margin:0;color:var(--danger)" hidden></p></section>`;
+  return `<section class="panel"><div class="eyebrow">Sync</div><p class="muted" style="margin:0;font-size:13px">Sign in to keep your world safe and the same on your phone and the web. We'll email you a code; no password.</p><div id="acctSign" class="st-sign"></div></section>`;
 }
 function wireAccountPanel(){
   if ($("signOut")) $("signOut").onclick = signOutAccount;
-  const err = t => { $("signErr").textContent = t; $("signErr").hidden = !t; };
-  if ($("signSend")) $("signSend").onclick = async () => {
-    const email = $("signEmail").value.trim(); if (!/^\S+@\S+\.\S+$/.test(email)) { err("Enter your email address."); return; }
-    $("signSend").disabled = true; const {error} = await supa.auth.signInWithOtp({email}); $("signSend").disabled = false;
-    if (error) { err("Couldn't send the code. Check the address and try again."); return; } err("");
-    $("signStep").innerHTML = `<label class="field"><span>The code from your email</span><input type="text" id="signCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
-      <button class="btn" id="signVerify" type="button" style="justify-self:start;margin-top:10px">Sign in</button>`;
-    $("signVerify").onclick = async () => { const {data, error: e2} = await supa.auth.verifyOtp({email, token: $("signCode").value.trim(), type: "email"});
-      if (e2 || !data?.user) { err("That code didn't work. Check it, or send a new one."); return; } await connectAccount(data.user); renderAccount(); };
-  };
+  if ($("acctSign")) signInForm($("acctSign"), () => renderAccount());
 }
 function usagePanel(){
   if (!CFG.posthogKey) return "";
@@ -5818,7 +5866,7 @@ if (!S.onboarding.done) startOnboarding();
 // Every page's line sits below its header rule: move it out of the sticky header whenever a page draws.
 new MutationObserver(() => document.querySelectorAll(".page > .phead .sub").forEach(sub => { sub.classList.add("psub"); sub.closest(".phead").after(sub); })).observe($("pmain"), {childList: true, subtree: true});
 
-accountsInit(); askConsent(); track("app_opened", {onboarded: !!S.onboarding.done});
+accountsReadyP = accountsInit(); askConsent(); track("app_opened", {onboarded: !!S.onboarding.done});
 
 (async () => {
   if (!window.claude?.use) return;
