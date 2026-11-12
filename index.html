@@ -5871,7 +5871,9 @@ async function worldRow(user, d){
 async function deleteAccount(){
   const btn = $("popupOk"); if (btn) btn.disabled = true;
   const {data, error} = await supa.functions.invoke("delete-account", {method: "POST"});
-  if (error || !data?.deleted) { if (btn) btn.disabled = false; toast("Couldn't delete your account. Check your connection and try again."); return; }
+  if (error || !data?.deleted) { // say what went wrong, so it can be fixed (the function explains its own failures)
+    let why = ""; try { const b = await error?.context?.json?.(); why = b?.detail || b?.error || ""; } catch (e) {}
+    if (btn) btn.disabled = false; toast(`Couldn't delete your account${why ? `: ${why}` : ". Check your connection and try again."}`); console.warn("delete-account", error, why); return; }
   track("account_deleted");
   try { await supa.auth.signOut(); } catch (e) {}
   supaUser = null; docRef = null; storageNote = "Saved in this browser.";
