@@ -1,39 +1,74 @@
 # Paint a Picture
 
-A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where they want to live, study, work or explore. Describe the life you want in 10–15 years, set goals with deadlines, and log what you actually do each week. Places you've lived and where you live now are fully lit; places you want to get to start dark and come to life as you finish the goals linked to their dreams. Once a day you can see the whole picture for a minute. Miss one and you lose nothing.
+A goal journal wrapped in a pixel-art world that each person builds from their own places: where they're from, where
+they live, and where they want to live, study, work or explore. They describe the life they want as **pieces** of a
+picture, set **goals** with **milestones**, and keep a **journal**. Places they've lived and live now are fully lit;
+places they want to get to start in fog and come to life as the goals linked to their pieces are finished.
+
+Live: https://ashimaranisingh-web.github.io/paint-a-picture/ · iOS: TestFlight (see [docs/RELEASE.md](docs/RELEASE.md))
 
 ## Run it
 Open `index.html` in a browser, or serve the folder:
 
-```
+```bash
 python3 -m http.server 8000
 ```
 
+## Project docs
+- [CLAUDE.md](CLAUDE.md): working rules for anyone (or any AI session) changing this project
+- [docs/DESIGN.md](docs/DESIGN.md): colours, type, motion and voice
+- [docs/QUALITY.md](docs/QUALITY.md): checks before shipping, including the "no AI slop" list
+- [docs/RELEASE.md](docs/RELEASE.md): website, TestFlight, Supabase and PostHog steps
+- [docs/DECISIONS.md](docs/DECISIONS.md): what was decided and why
+- [supabase/README.md](supabase/README.md): accounts, sync, account deletion and usage-count setup
+
+## What's in the app
+- **Onboarding:** a splash on the LA coast, a short intro, then **sign in or skip**.
+  - Signed in: name → character → places → pieces → how it works (shown on their own pieces) → first goal → journal →
+    the locked picture with the first piece glowing → their world.
+  - Skipped (guest): A woman / A man → their world.
+- **Guests** can add places and pieces. Goals, milestones, the journal, notes, to-dos, good things, affirmations and
+  assets ask them to sign in first. Nothing they already have is hidden.
+- **The world:** a light, endless daytime sea with land built from the person's real places (placed by latitude and
+  longitude), filler land between them, roads, boats and dolphins. Fog sits on land only. Night follows local time.
+  Drag or two fingers to pan, pinch / wheel / +− to zoom. A strip shows five places at a time.
+- **Landmarks:** 35 drawn so far (India Gate to the Golden Gate Bridge), matched to the pieces placed there and
+  changeable in Edit place. Places without artwork get none rather than another city's monument.
+- **The clear view:** once a day, the whole picture without fog for one minute.
+- **Journal:** notes with automatic date and time (editable), pins, favourites, filters and search.
+- **My Assets:** a personal archive in sections of cards (create, rename, reorder, edit, delete).
+- **This week:** jump to any week and search everything logged; past weeks are never reset.
+- **Account:** a full-height header with the character, photo and full name; character options (Pixel art or 2D,
+  skin, hair, outfit; sunglasses on by default); Sync; Delete account.
+- **Demo Data:** a separate sample world, kept apart from the person's own, available only to the owner's account.
+
 ## How it's built
-- Onboarding (7 steps, resumable): welcome, name and optional email, destinations, dreams, character, first goal, world. Everything is editable later.
-- The world is a 2D grid of districts, one per destination, placed roughly by latitude and longitude. Delhi, Mumbai, Los Angeles, Boston and Japan have their own art; anywhere else uses a neutral pack (city, coast, mountains & lakes, university town, small town) labelled with the place's name.
-- Navigation: drag or two fingers to pan in any direction, pinch / wheel / +− to zoom, tap to move the lens, drag the lens itself to move it.
-- Dream pictures come from a built-in library matched to the words of the dream, or an uploaded photo. Nothing is picked automatically.
-- My Assets (menu): a personal archive in custom categories (create, rename, reorder, delete), each item with a note, date, status, link, cover and tags.
-- Journal (menu): private notes with automatic date and time (editable), pins, favourites, All / Pinned / Favourites filters and search.
-- This week: jump to any week by date and search everything logged (entries, reflections, goals, steps); past weeks are never reset.
-- Accounts: guests keep everything in the browser. There is no sign-in yet and no email is asked for; the plan is Sign in with Apple plus iCloud in the App Store app. Inside claude.ai the data syncs to the viewer's own Claude account.
-- One self-contained file: HTML, CSS and plain JavaScript. No build step.
-- The world is drawn procedurally on a canvas in three layers: terrain (built once), dream landmarks (rebuilt only when dreams change) and per-frame life (character, traffic, water). Only the visible part is drawn each frame; the fog and lens are composited on a viewport-sized canvas.
-- The player character is a pixel-art translation of the owner's character sheet, with front, back and side views and walk/idle frames.
-- City landmarks: each place can show one recognisable landmark (28 drawn so far, from India Gate to the Golden Gate Bridge), matched to the dreams placed there and changeable in Edit place. Places without artwork get none rather than another city's monument.
-- Character: two styles of the same character. Pixel art (girl or boy, with skin tone, top, cargos, boots, sunglasses and a cap) or Detailed 2D, an illustrated character cut from a sheet in `avatar/` (front, back and both sides): a woman for Female (skin, top, cargos and boots recoloured over its parts) and a man for Male (`male-*`, shirt and trousers recoloured). Set in onboarding, changeable in Account.
-- Data is saved in the browser (`localStorage`). When opened as a claude.ai artifact it also syncs to the owner's private store and can use Claude for goal matching; outside claude.ai it falls back to local keyword matching.
+- One self-contained file, `index.html`: HTML, CSS and plain JavaScript. No build step.
+- The world is drawn on a canvas in layers: terrain (built once), landmarks (rebuilt only when pieces change) and
+  per-frame life (character, boats, water). Only the visible part is drawn each frame.
+- The character has two styles: pixel art, and a 2D figure cut from the sheets in `avatar/` (a woman, and `male-*`
+  for a man), recoloured over its parts.
+- `ios/` wraps the same page in a WKWebView app (`ios/project.yml`, generated with xcodegen).
 
-Live artifact: https://claude.ai/artifact/B4MDarDt35HqJsXJCguokv
+## Data, accounts and privacy
+- Everything is saved on the device first (`localStorage`).
+- **Accounts** use Supabase with email code sign-in (no passwords). A signed-in person's world syncs to their account
+  and across devices. When device and account differ, the side that changed since the last sync wins; if both
+  changed, the app asks. The world not kept is saved on the device, never thrown away.
+- **Account deletion** (Account → Delete account) removes the sign-in and the saved world, through the
+  `supabase/functions/delete-account` Edge Function.
+- **Usage counts** go to PostHog (EU) only if the person says yes. They're anonymous: event names only, never names,
+  emails, goals or journal text. Demo mode is never counted.
 
-## How goals unlock the world
-- Each place has a stage: lived here before, live here now, or want to get to (`d.stage`). Past and current places are fully lit.
-- A dream's progress is the share of its linked goals that are finished. A goal linked to several dreams counts 1/k towards each, so it's never counted twice. Let-go and deleted goals don't count; reopening a goal takes its share back.
-- A future place's progress uses the same weighting over all goals linked to its dreams. The district lifts from dark as it rises, each dream lights by its own goals, and the place's landmark appears from 50% and is complete at 100%.
-- Everything is calculated from the goals data, so the world can't drift out of step with it. The last level you saw is kept in `revealSeen`; when it has gone up, the change plays on the map the next time you open your world.
-- Past places get a one-time review: tick the goals you achieved there and they move to Finished, marked "Achieved in …". Nothing is assumed, and they don't count as on-time finishes.
-- Tapping a dream's card on the map steps inside it: its picture, description and the goals that build it.
-
-## Backup
-Account → Download backup saves everything (dreams, goals, steps, entries, reflections, device-only images) as one JSON file. Account → Restore from file loads it back, after a confirmation.
+## How goals light up the world
+- Each place has a stage: lived here before, live here now, or want to get to (`d.stage`). Past and current places are
+  fully lit.
+- A piece's progress is the share of its linked goals that are finished. A goal linked to several pieces counts 1/k
+  towards each, so it's never counted twice. Let-go and deleted goals don't count; reopening a goal takes its share
+  back.
+- A future place's progress uses the same weighting over all goals linked to its pieces. The place lifts out of the fog
+  as it rises, and its landmark appears from 50% and is complete at 100%.
+- Everything is calculated from the goals, so the world can't drift out of step with them. The last level seen is kept
+  in `revealSeen`; when it has gone up, the change plays on the map the next time the world opens.
+- Past places get a one-time review: goals achieved there move to Finished, marked "Achieved in …". Nothing is assumed,
+  and they don't count as on-time finishes.
