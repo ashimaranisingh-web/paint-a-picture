@@ -868,7 +868,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .av-row{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end}
 .sw{width:34px;height:34px}
 /* Account, like the reference: one header running up under the status bar, no white bar above it */
-.ac-hero{position:relative;margin:-16px -16px 0;min-height:calc(var(--safe-top) + 380px);padding:calc(var(--safe-top) + 46px) 16px 18px;box-sizing:border-box;display:grid;grid-template-rows:1fr auto;justify-items:center;
+.ac-hero{position:relative;margin:calc(-16px - var(--safe-top)) -16px 0;min-height:calc(var(--safe-top) + 380px);padding:calc(var(--safe-top) + 46px) 16px 18px;box-sizing:border-box;display:grid;grid-template-rows:1fr auto;justify-items:center;
   background:linear-gradient(180deg,#fbd5e2 0%,#f4a8c3 48%,#e2779f 100%);overflow:hidden}
 .ac-hero .ac-me{width:150px;height:260px;align-self:end}
 .ac-back{all:unset;cursor:pointer;position:absolute;left:12px;top:calc(var(--safe-top) + 8px);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#3a1a28}
@@ -4602,13 +4602,8 @@ function renderAccount(){
       ${S.profile.photo ? `<button type="button" class="btn quiet sm" id="acPhotoOff" style="justify-self:start">Remove photo</button>` : ""}</section>
     <section class="ac-sec"><div class="eyebrow">Your character</div><div id="acAv" class="ac-av"></div></section>
     ${usagePanel()}
-    <section class="panel"><div class="eyebrow">Data</div>${(() => { try { return localStorage.getItem("dreamLife.otherWorld") ? `<button class="btn quiet sm" id="otherWorld" type="button" style="justify-self:start">Download the world you didn't keep</button>` : ""; } catch (e) { return ""; } })()}
-      ${demoAllowed() || demoMode ? `<div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
-      <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>` : ""}
-      <div class="pair"><button class="btn ghost" id="backupBtn" type="button">Download backup</button>
-        <label class="btn ghost" style="cursor:pointer">Restore from file<input type="file" id="restoreFile" accept="application/json,.json" hidden></label></div>
-      <small class="muted" style="font-size:11px">${S.lastBackup ? `Last backup: ${fmt(S.lastBackup, {day: "numeric", month: "short", year: "numeric"})}.` : "No backup yet."} A backup is one file with all your pieces, goals and entries.</small>
-      <div class="notice" id="restoreConfirm" hidden></div></section>
+    ${demoAllowed() || demoMode ? `<section class="panel"><div class="eyebrow">Demo Data</div><div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
+      <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p></section>` : ""}
     ${accountPanel()}
     <div style="display:grid;justify-items:center;gap:6px;padding:4px 0 8px"><button class="btn quiet sm tertiary" id="wipe">${demoMode ? "Reset demo data" : "Delete account"}</button>
 </div>`;
@@ -4619,9 +4614,7 @@ function renderAccount(){
   stDrawMe($("acMe"));
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
-  wireAccountPanel(); if ($("otherWorld")) $("otherWorld").onclick = downloadOtherWorld; el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
-  $("backupBtn").onclick = downloadBackup;
-  $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
+  wireAccountPanel(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
   $("wipe").onclick = () => { // a pop-up, so the choice is clear and can't be missed
     const what = demoMode ? "This resets the demo to its starting state. Your real goals aren't affected." : supaUser ? "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone." : "This deletes every piece, goal and entry on this device. It can't be undone.";
     popup(demoMode ? "Reset the demo?" : "Delete your account?", what, demoMode ? "Reset" : "Delete", () => wipeNow()); };
