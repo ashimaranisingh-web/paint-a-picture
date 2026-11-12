@@ -868,8 +868,8 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .av-row{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end}
 .sw{width:34px;height:34px}
 /* Account, like the reference: one header running up under the status bar, no white bar above it */
-.ac-hero{position:relative;margin:calc(-16px - var(--safe-top)) -16px 0;min-height:calc(var(--safe-top) + 380px);padding:calc(var(--safe-top) + 46px) 16px 18px;box-sizing:border-box;display:grid;grid-template-rows:1fr auto;justify-items:center;
-  background:linear-gradient(180deg,#fbd5e2 0%,#f4a8c3 48%,#e2779f 100%);overflow:hidden}
+.ac-hero{position:relative;margin:calc(-16px - var(--safe-top)) -16px 0;min-height:calc(var(--safe-top) + 380px);padding:calc(var(--safe-top) + 46px) 16px 26px;box-sizing:border-box;display:grid;grid-template-rows:1fr auto;justify-items:center;
+  background:linear-gradient(180deg,#fbd5e2 0%,#f4a8c3 48%,#e2779f 100%);overflow:visible;margin-bottom:6px} /* room below the photo, so its ring and shadow aren't clipped */
 .ac-hero .ac-me{width:150px;height:260px;align-self:end}
 .ac-back{all:unset;cursor:pointer;position:absolute;left:12px;top:calc(var(--safe-top) + 8px);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#3a1a28}
 .ac-back .ico{width:20px;height:20px}.ac-back:focus-visible{outline:2px solid #fff;outline-offset:2px}
