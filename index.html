@@ -852,6 +852,21 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .consent p{margin:0;font-size:14px;line-height:1.45;color:var(--ink)}.consent-b{display:flex;justify-content:flex-end;gap:8px}
 /* the sign-in form */
 .st-sign,.st-signstep{display:grid;gap:12px}
+/* Account: her character up top, her photo and name under it, then a few numbers */
+.ac-hero{margin:-16px -16px 0;height:250px;display:grid;place-items:end center;padding-bottom:14px;background:radial-gradient(120% 90% at 50% 0%,#fde2ec 0%,#fbeef2 55%,#fbf9f6 100%)}
+.ac-me{width:130px;height:230px}
+.ac-id{display:flex;align-items:center;gap:14px;margin-top:-6px}
+.ac-photo{all:unset;cursor:pointer;flex:none;width:64px;height:64px;border-radius:50%;overflow:hidden;display:grid;place-items:center;align-content:center;background:#fff;box-shadow:0 0 0 3px #fff,0 6px 18px -8px rgba(64,44,30,.35);color:var(--accent-ink)}
+.ac-photo img{width:100%;height:100%;object-fit:cover}.ac-photo .ico{width:20px;height:20px}.ac-photo small{font-size:10px;font-weight:700}
+.ac-photo:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.ac-who h2{margin:0;font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.15}.ac-who small{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8a857c}
+.ac-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ac-stats div{display:grid;gap:2px;padding:12px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px #ece5da}
+.ac-stats b{font-size:22px}.ac-stats span{font-size:12px;color:#8a857c;font-weight:600}
+.ac-names{display:grid;gap:10px}
+.ac-addphoto{display:flex;align-items:center;gap:14px}.ac-addphoto span{display:grid;gap:2px;font-weight:700}.ac-addphoto small{font-weight:400;color:var(--muted);font-size:13px}
+/* the character editor: hair and its colour share a row; smaller swatches */
+.av-row{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end}
+.sw{width:34px;height:34px}
 /* the map: no pink fills, a pink ring once a step is reached */
 .st-map span.on i{background:#fff;box-shadow:inset 0 0 0 1.5px #e39ab3}
 /* the loader: a bigger piece with soft edges */
@@ -964,7 +979,7 @@ const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
-const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", glasses: true, cap: false, capColor: "black"};
+const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", glasses: false, cap: false, capColor: "black"};
 
 let S = null;               // the whole state (one document)
 let docRef = null, sampleFn = null, assetsApi = null, downloadsApi = null;
@@ -1007,7 +1022,8 @@ function normalize(o){
   s.profile = Object.assign(b.profile, o.profile || {});
   const out = s.profile.outfit || {};
   s.profile.avatar = Object.assign({...DEFAULT_AVATAR}, out.top ? {top: out.top, bot: out.bot} : {}, s.profile.avatar || {});
-  const av = s.profile.avatar;
+  const av = s.profile.avatar; av.glasses = false; av.cap = false; // characters show their faces: no sunglasses or caps
+  if (!s.profile.joined) s.profile.joined = [...(s.destinations || []), ...(s.aspirations || [])].map(x => x.createdAt).filter(Boolean).sort()[0] || today();
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
   av.cap = !!av.cap; av.curl = !!av.curl; if (!TOPS[av.capColor]) av.capColor = "black";
   (s.destinations || []).forEach(d => { if (d.purpose === "visit") d.purpose = "experience"; }); // "Visit" folded into Travel
@@ -4551,40 +4567,49 @@ function wireWeekHistory(){
 
 /* --- ACCOUNT --- */
 function renderAccount(){
-  const el = $("p-account");
+  const el = $("p-account"), joined = S.profile.joined ? parseDay(S.profile.joined).toLocaleDateString(undefined, {month: "long", year: "numeric"}) : "";
+  const done = S.goals.filter(g => g.status === "done").length;
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div>
-      <div class="prof"><button type="button" class="prof-btn" id="profBtn" aria-haspopup="menu" aria-expanded="false" aria-label="Whose data you're viewing"><span>${demoMode ? "Demo Data" : "Your Profile"}</span><svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="prof-menu" id="profMenu" role="menu" hidden></div></div></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div></div>
+    <section class="ac-hero" aria-label="Your character"><canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas></section>
+    <section class="ac-id"><button type="button" class="ac-photo" id="acPhoto" aria-label="${S.profile.photo ? "Change your photo" : "Add a photo"}">${photoHTML()}</button>
+      <div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}${joined ? ` · Joined ${esc(joined)}` : ""}</small></div></section>
+    <div class="ac-stats"><div><b>${S.destinations.length}</b><span>Places</span></div><div><b>${S.aspirations.length}</b><span>Pieces</span></div><div><b>${done}</b><span>Goals done</span></div></div>
     ${accountPanel()}
-    <section style="display:grid;gap:14px">
-      <label class="field"><span>Name</span><input type="text" id="acName" value="${esc(S.profile.name)}" placeholder="What should we call you?"></label>
-      <small class="muted" style="font-size:11px">${window.claude?.use && docRef ? "Signed in through Claude: your world already syncs to your Claude account." : supaUser ? "Signed in: your world syncs to your account." : "You're a guest: your world is saved on this device only. Sign in below to keep it safe."}</small></section>
+    <section class="panel"><div class="eyebrow">Your name</div>
+      <div class="ac-names"><label class="field"><span>First name</span><input type="text" id="acName" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
+      <label class="field"><span>Middle name</span><input type="text" id="acMiddle" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
+      <label class="field"><span>Last name</span><input type="text" id="acLast" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
+      ${S.profile.photo ? `<button type="button" class="btn quiet sm" id="acPhotoOff" style="justify-self:start">Remove photo</button>` : ""}</section>
     <section class="panel"><div><div class="eyebrow">Your character</div><p class="muted" style="margin:4px 0 0;font-size:13px">Hair, skin, outfit: make it yours.</p></div><div id="acAv" style="display:grid;gap:14px"></div></section>
     ${usagePanel()}
     <section class="panel"><div class="eyebrow">Data</div>${(() => { try { return localStorage.getItem("dreamLife.otherWorld") ? `<button class="btn quiet sm" id="otherWorld" type="button" style="justify-self:start">Download the world you didn't keep</button>` : ""; } catch (e) { return ""; } })()}
-      <div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
-      <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>
+      ${demoAllowed() || demoMode ? `<div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
+      <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p>` : ""}
       <div class="pair"><button class="btn ghost" id="backupBtn" type="button">Download backup</button>
         <label class="btn ghost" style="cursor:pointer">Restore from file<input type="file" id="restoreFile" accept="application/json,.json" hidden></label></div>
       <small class="muted" style="font-size:11px">${S.lastBackup ? `Last backup: ${fmt(S.lastBackup, {day: "numeric", month: "short", year: "numeric"})}.` : "No backup yet."} A backup is one file with all your pieces, goals and entries.</small>
       <div class="notice" id="restoreConfirm" hidden></div></section>
     <div style="display:grid;justify-items:center;gap:6px;padding:4px 0 8px"><button class="btn quiet sm tertiary" id="wipe">${demoMode ? "Reset demo data" : "Delete account"}</button>
-      <p class="muted" id="wipeConfirm" style="margin:0;font-size:13px;text-align:center" hidden>This deletes every piece, goal and entry on this device. <button class="btn quiet sm" id="wipeYes" style="color:var(--danger)">Yes, delete</button><button class="btn quiet sm" id="wipeNo">Keep it</button></p></div>`;
-  avatarEditor($("acAv"));
-  let nt; $("acName").oninput = e => { clearTimeout(nt); nt = setTimeout(() => { S.profile.name = e.target.value.trim().slice(0, 30); save(); }, 500); };
+</div>`;
+  avatarEditor($("acAv"), () => stDrawMe($("acMe")));
+  let nt; const nameSave = () => { clearTimeout(nt); nt = setTimeout(() => { const f = $("acName").value.trim(); if (f) S.profile.name = f.slice(0, 30); S.profile.middleName = $("acMiddle").value.trim().slice(0, 30); S.profile.lastName = $("acLast").value.trim().slice(0, 40); save(); const h = el.querySelector(".ac-who h2"); if (h) h.textContent = fullName() || "You"; }, 500); };
+  ["acName", "acMiddle", "acLast"].forEach(id => $(id).oninput = nameSave);
+  $("acPhoto").onclick = () => pickPhoto(renderAccount); if ($("acPhotoOff")) $("acPhotoOff").onclick = () => { delete S.profile.photo; save(); renderAccount(); };
+  stDrawMe($("acMe"));
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
   wireAccountPanel(); if ($("otherWorld")) $("otherWorld").onclick = downloadOtherWorld; el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
   $("backupBtn").onclick = downloadBackup;
   $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
-  $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
-  if (supaUser && !demoMode) $("wipeConfirm").firstChild.textContent = "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone. ";
-  $("wipeNo").onclick = () => { $("wipeConfirm").hidden = true; };
-  if (demoMode) $("wipeConfirm").firstChild.textContent = "This resets the demo to its starting state. Your real goals aren't affected. ";
-  $("wipeYes").onclick = () => {
+  $("wipe").onclick = () => { // a pop-up, so the choice is clear and can't be missed
+    const what = demoMode ? "This resets the demo to its starting state. Your real goals aren't affected." : supaUser ? "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone." : "This deletes every piece, goal and entry on this device. It can't be undone.";
+    openSheet(demoMode ? "Reset the demo?" : "Delete your account?", `<p style="margin:0">${what}</p>`, `<button class="btn ghost" id="wipeNo2">Keep it</button><button class="btn" id="wipeYes" style="background:var(--danger)">${demoMode ? "Reset" : "Delete"}</button>`, () => {
+      $("wipeNo2").onclick = closeSheet; $("wipeYes").onclick = () => { if (!supaUser || demoMode) closeSheet(); wipeNow(); }; }); };
+
+  const wipeNow = () => {
     if (demoMode) { const av0 = S.profile.avatar; S = demoState(REAL.profile); S.profile.avatar = av0; layoutKey = ""; landKey = ""; camInit = false; afterChange(); save(); toast("Demo reset"); return; }
-    if (supaUser) return deleteAccount();
+    if (supaUser) return deleteAccount().then(() => { if (!supaUser) closeSheet(); });
     S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
   };
 }
@@ -4949,11 +4974,8 @@ function avatarEditor(root, onChange, opts){
       : `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>`}
       ${opts.compact ? "" : `<div class="field"><span>${opts.lookLabel || "Character"}</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>`}
       ${sw("skin", SKINS, "Skin tone")}
-      ${doll ? "" : `<div class="field"><span>Hair</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!A().curl}" data-curl="0">Straight</button><button type="button" aria-pressed="${!!A().curl}" data-curl="1">Curly</button></div></div>
-      <div class="field"><span>Hair colour</span><div class="swatches">${[["black", "Black"], ["brunette", "Brown"]].map(([k, l]) => `<button type="button" class="sw" style="background:${HAIRS[k][1]}" aria-label="Hair colour: ${l}" aria-pressed="${A().hair === k}" data-k="hair" data-v="${k}"></button>`).join("")}</div></div>
-      <div class="field"><span>Sunglasses</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().glasses}" data-gl="1">On</button><button type="button" aria-pressed="${!A().glasses}" data-gl="0">Off</button></div></div>
-      <div class="field"><span>Cap</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!!A().cap}" data-cap="1">On</button><button type="button" aria-pressed="${!A().cap}" data-cap="0">Off</button></div></div>
-      ${A().cap ? sw("capColor", TOPS, "Cap colour") : ""}`}
+      ${doll ? "" : `<div class="av-row"><div class="field"><span>Hair</span><div class="seg" role="group" style="justify-self:start"><button type="button" aria-pressed="${!A().curl}" data-curl="0">Straight</button><button type="button" aria-pressed="${!!A().curl}" data-curl="1">Curly</button></div></div>
+      <div class="field"><span>Colour</span><div class="swatches">${[["black", "Black"], ["brunette", "Brown"]].map(([k, l]) => `<button type="button" class="sw" style="background:${HAIRS[k][1]}" aria-label="Hair colour: ${l}" aria-pressed="${A().hair === k}" data-k="hair" data-v="${k}"></button>`).join("")}</div></div></div>`}
       ${doll && A().look === "boy" ? sw("top", TOPS, "Shirt") + sw("bot", BOTS, "Trousers") + sw("boots", BOOTS, "Shoes") : sw("top", TOPS, "Top") + sw("bot", BOTS, "Cargos") + sw("boots", BOOTS, "Boots")}`;
     root.querySelectorAll("[data-k]").forEach(b => b.onclick = () => set({[b.dataset.k]: b.dataset.v}));
     root.querySelectorAll("[data-gl]").forEach(b => b.onclick = () => set({glasses: b.dataset.gl === "1"}));
@@ -5511,7 +5533,9 @@ function obName(M, Fo){
     + `<div class="st-fields"><input type="text" id="obName" value="${esc(P.name)}" placeholder="First name" aria-label="First name" autocomplete="given-name" maxlength="30">
     <input type="text" id="obMiddle" value="${esc(P.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
     <label class="field"><span>And well...</span><input type="text" id="obLast" value="${esc(P.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></label></div>
+    <div class="ac-addphoto"><button type="button" class="ac-photo" id="obPhoto" aria-label="Add a photo">${photoHTML()}</button><span>Add a photo<small>Optional. It makes your picture feel like yours.</small></span></div>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
+  $("obPhoto").onclick = () => pickPhoto(() => { $("obPhoto").innerHTML = photoHTML(); });
   stFoot(Fo, "", () => {
     const name = $("obName").value.trim();
     if (!name) { $("obErr").textContent = "Add your first name to continue. A nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
@@ -5765,6 +5789,7 @@ async function accountsInit(){
   supa = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth: {persistSession: true, storageKey: "dreamLife.auth"}});
   const {data} = await supa.auth.getSession();
   if (data?.session?.user) { supaUser = data.session.user; await syncWithAccount(supaUser); }
+  if (demoMode && !demoAllowed()) await setDemoMode(false); // Demo Data is only for accounts given access
   if (route === "account") renderAccount();
 }
 // Which world to keep when she signs in: the one on this device, the one in her account, or ask her.
@@ -5795,6 +5820,8 @@ let syncing = false;
 async function syncWithAccount(user){
   if (syncing || !supa) return; syncing = true;
   try {
+    try { const {data: fresh} = await supa.auth.getUser(); if (fresh?.user) { user = fresh.user; supaUser = fresh.user; } } catch (e) {} // fresh, so access changes show up
+    if (demoMode && !demoAllowed()) await setDemoMode(false);
     const {data: row, error} = await supa.from("worlds").select("data, updated_at").eq("user_id", user.id).maybeSingle();
     if (error) return; // offline: keep working on this device; it catches up next time
     const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
@@ -5860,6 +5887,19 @@ function signInForm(root, onDone){
       if (e2 || !data?.user) { err("That code didn't work. Check it, or send a new one."); return; } await connectAccount(data.user); onDone && onDone(); };
   };
 }
+// Her photo: picked from her phone, cropped square and kept small (it's saved with her world).
+function pickPhoto(done){
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
+  inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; const url = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { const c = document.createElement("canvas"), n = 320, k = Math.min(im.width, im.height); c.width = c.height = n;
+      c.getContext("2d").drawImage(im, (im.width - k) / 2, (im.height - k) / 2, k, k, 0, 0, n, n); URL.revokeObjectURL(url);
+      S.profile.photo = c.toDataURL("image/jpeg", .82); save(); done && done(); track("photo_added"); };
+    im.onerror = () => { URL.revokeObjectURL(url); toast("That photo couldn't be opened. Try another one."); }; im.src = url; };
+  inp.click();
+}
+const photoHTML = () => S.profile.photo ? `<img src="${esc(S.profile.photo)}" alt="Your photo">` : `<span aria-hidden="true">${ICON.plus}</span><small>Photo</small>`;
+const fullName = () => [S.profile.name, S.profile.middleName, S.profile.lastName].map(x => (x || "").trim()).filter(Boolean).join(" ");
+const demoAllowed = () => !!supaUser?.app_metadata?.demo_access || !CFG.supabaseUrl;
 // Guests can add places and pieces. Everything else is saved to an account, so it asks them to sign in first.
 const isGuest = () => !!CFG.supabaseUrl && !supaUser && !demoMode && !window.claude?.use;
 function needAccount(then){
