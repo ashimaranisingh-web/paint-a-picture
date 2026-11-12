@@ -43,3 +43,20 @@ the Account page. Events never include names, place names, goals, notes or anyth
 | `account_signed_in` | someone signs in |
 
 Remember to update the App Store privacy details for the iPhone app once these are switched on.
+
+## Account deletion (Edge Function)
+
+Apple requires apps that offer sign-up to let people delete their account in the app. **Account → Delete account**
+calls the `delete-account` function, which deletes the person's saved world and their sign-in. It only ever deletes
+the caller: it works out who they are from their own sign-in token.
+
+Deploy it once, from the dashboard: **Edge Functions → Deploy a new function → Via Editor**, name it
+`delete-account`, paste `functions/delete-account/index.ts`, and click **Deploy function**. Keep **Verify JWT** on.
+(Or with the Supabase CLI: `supabase functions deploy delete-account`.)
+
+## How sync decides
+
+The device remembers the last moment it and the account agreed (when the account copy was saved, and a fingerprint of
+the world then). When the app opens, or comes back to the front, it compares both sides with that moment: only the
+device changed → upload; only the account changed → download; nothing changed → carry on; both changed → ask. Edits
+made offline upload the next time it can reach the account.

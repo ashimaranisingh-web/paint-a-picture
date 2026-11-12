@@ -4579,10 +4579,12 @@ function renderAccount(){
   $("backupBtn").onclick = downloadBackup;
   $("restoreFile").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) restoreBackup(f); };
   $("wipe").onclick = () => { $("wipeConfirm").hidden = false; };
+  if (supaUser && !demoMode) $("wipeConfirm").firstChild.textContent = "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone. ";
   $("wipeNo").onclick = () => { $("wipeConfirm").hidden = true; };
   if (demoMode) $("wipeConfirm").firstChild.textContent = "This resets the demo to its starting state. Your real goals aren't affected. ";
   $("wipeYes").onclick = () => {
     if (demoMode) { const av0 = S.profile.avatar; S = demoState(REAL.profile); S.profile.avatar = av0; layoutKey = ""; landKey = ""; camInit = false; afterChange(); save(); toast("Demo reset"); return; }
+    if (supaUser) return deleteAccount();
     S = blankState(); afterChange(); save(); toast("Everything deleted"); startOnboarding(0);
   };
 }
@@ -5762,54 +5764,83 @@ async function accountsInit(){
   try { await loadScript(SUPA_LIB); } catch (e) { return; }
   supa = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth: {persistSession: true, storageKey: "dreamLife.auth"}});
   const {data} = await supa.auth.getSession();
-  if (data?.session?.user) await connectAccount(data.session.user);
+  if (data?.session?.user) { supaUser = data.session.user; await syncWithAccount(supaUser); }
   if (route === "account") renderAccount();
 }
 // Which world to keep when she signs in: the one on this device, the one in her account, or ask her.
 function isEmptyWorld(w){ return !w || (!w.onboarding?.done && !(w.destinations || []).length && !(w.aspirations || []).length && !(w.goals || []).length && !(w.notes || []).length); }
-function chooseWorld(local, remote){
-  // TODO(human): decide which world wins when she signs in on a device.
-  //   return "local"  -> keep this device's world and upload it to her account
-  //   return "remote" -> replace this device's world with the one in her account
-  //   return "ask"    -> show both and let her pick (nothing is lost either way)
-  // local and remote are whole worlds (S). A sensible default: an empty side always gives way; otherwise ask.
+// Where this device and her account last agreed: when the account's copy was saved, and a fingerprint of the world then.
+// Comparing both sides with that tells which one changed since, so the right one wins without asking.
+const SYNC_KEY = "dreamLife.sync";
+function fingerprint(w){ const t = JSON.stringify(w); let a = 0xdeadbeef, b = 0x41c6ce57;
+  for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i); a = Math.imul(a ^ c, 2654435761); b = Math.imul(b ^ c, 1597334677); }
+  a = Math.imul(a ^ (a >>> 16), 2246822507) ^ Math.imul(b ^ (b >>> 13), 3266489909); b = Math.imul(b ^ (b >>> 16), 2246822507) ^ Math.imul(a ^ (a >>> 13), 3266489909);
+  return (b >>> 0).toString(36) + (a >>> 0).toString(36); }
+const syncMark = () => { try { return JSON.parse(localStorage.getItem(SYNC_KEY) || "null"); } catch (e) { return null; } };
+function setSyncMark(user, at, w){ try { localStorage.setItem(SYNC_KEY, JSON.stringify({user: user.id, at, fp: fingerprint(w)})); } catch (e) {} }
+// "same": nothing to do; "local": send this device's world up; "remote": bring the account's down; "ask": both changed.
+function chooseWorld(local, remote, updatedAt, user){
   if (!remote) return "local";
+  if (fingerprint(local) === fingerprint(remote)) return "same";
+  const m = syncMark(), known = m && m.user === user.id;
+  if (known && m.at === updatedAt) return "local";                // only this device changed since they last agreed
+  if (known && m.fp === fingerprint(local)) return "remote";      // only the account changed (another device)
   if (isEmptyWorld(local)) return "remote";
   if (isEmptyWorld(remote)) return "local";
-  return "ask";
+  return "ask";                                                   // both changed, or a new device with its own world
 }
-async function connectAccount(user){
-  supaUser = user;
-  const {data: row} = await supa.from("worlds").select("data, updated_at").eq("user_id", user.id).maybeSingle();
-  const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
-  const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} afterChange(); if (S.onboarding.done && route === "onboard") go("home"); } };
-  const upload = async () => worldRow(user, JSON.parse(JSON.stringify(demoMode ? REAL : S)));
-  const start = () => { docRef = {set: async d => { const {error} = await worldRow(user, d); if (error) throw error; },
-    savedNote: "Synced to your account. Only you can see it.", afterSave: () => { lastSynced = new Date().toISOString(); }}; storageNote = docRef.savedNote; if (route === "account") renderAccount(); };
-  const pick = chooseWorld(local, remote);
-  if (pick === "remote") { use(remote); start(); }
-  else if (pick === "local") { await upload(); start(); }
-  else {
-    const n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`, sum = w => `${n((w.destinations || []).length, "place")}, ${n((w.aspirations || []).length, "piece")}, ${n((w.goals || []).length, "goal")}`;
-    openSheet("Which world do you want?", `<p style="margin:0">Your account and this device each have a world. Pick the one to keep on both. The other is kept on this device, and you can download it from Account.</p>
-      <div class="cklist"><div class="notice"><b>On this device</b><br>${esc(sum(local))}</div><div class="notice"><b>In your account</b><br>${esc(sum(remote))}${row?.updated_at ? ` · last synced ${esc(fmt(row.updated_at.slice(0, 10)))}` : ""}</div></div>`,
-      `<button class="btn ghost" id="wKeepRemote">Use my account's</button><button class="btn" id="wKeepLocal">Use this device's</button>`, () => {
-        const keep = async which => { const other = which === "local" ? remote : local; keepOtherWorld(other);
-          if (which === "remote") use(remote); else await upload(); start(); closeSheet(); toast("Your world is synced. The other one is kept on this device."); };
-        $("wKeepRemote").onclick = () => keep("remote"); $("wKeepLocal").onclick = () => keep("local"); });
-  }
-  track("account_signed_in");
+async function connectAccount(user){ supaUser = user; await syncWithAccount(user); track("account_signed_in"); }
+// Run when she signs in, when the app opens signed in, and whenever she comes back to it.
+let syncing = false;
+async function syncWithAccount(user){
+  if (syncing || !supa) return; syncing = true;
+  try {
+    const {data: row, error} = await supa.from("worlds").select("data, updated_at").eq("user_id", user.id).maybeSingle();
+    if (error) return; // offline: keep working on this device; it catches up next time
+    const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
+    const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} if (typingInPage()) pendingRender = true; else afterChange(); if (S.onboarding.done && route === "onboard") go("home"); } };
+    const upload = async () => { const w = JSON.parse(JSON.stringify(demoMode ? REAL : S)), r = await worldRow(user, w); if (!r.error) setSyncMark(user, r.at, w); };
+    const start = () => { docRef = {set: async d => { const r = await worldRow(user, d); if (r.error) throw r.error; setSyncMark(user, r.at, d); },
+      savedNote: "Synced to your account. Only you can see it.", afterSave: () => { lastSynced = new Date().toISOString(); }}; storageNote = docRef.savedNote; if (route === "account") renderAccount(); };
+    const pick = chooseWorld(local, remote, row?.updated_at, user);
+    if (pick === "same") { setSyncMark(user, row.updated_at, local); start(); }
+    else if (pick === "remote") { use(remote); setSyncMark(user, row.updated_at, remote); start(); }
+    else if (pick === "local") { await upload(); start(); }
+    else {
+      const n = (k, one) => `${k} ${one}${k === 1 ? "" : "s"}`, sum = w => `${n((w.destinations || []).length, "place")}, ${n((w.aspirations || []).length, "piece")}, ${n((w.goals || []).length, "goal")}`;
+      openSheet("Which world do you want?", `<p style="margin:0">Your account and this device each have changes. Pick the one to keep on both. The other is kept on this device, and you can download it from Account.</p>
+        <div class="cklist"><div class="notice"><b>On this device</b><br>${esc(sum(local))}</div><div class="notice"><b>In your account</b><br>${esc(sum(remote))}${row?.updated_at ? ` · saved ${esc(fmt(row.updated_at.slice(0, 10)))}` : ""}</div></div>`,
+        `<button class="btn ghost" id="wKeepRemote">Use my account's</button><button class="btn" id="wKeepLocal">Use this device's</button>`, () => {
+          const keep = async which => { keepOtherWorld(which === "local" ? remote : local);
+            if (which === "remote") { use(remote); setSyncMark(user, row.updated_at, remote); } else await upload(); start(); closeSheet(); toast("Your world is synced. The other one is kept on this device."); };
+          $("wKeepRemote").onclick = () => keep("remote"); $("wKeepLocal").onclick = () => keep("local"); });
+    }
+  } finally { syncing = false; }
 }
+// Coming back to the app picks up anything saved from another device in the meantime.
+document.addEventListener("visibilitychange", () => { if (!document.hidden && supaUser && !saving && $("sheet").hidden) syncWithAccount(supaUser); });
 // Save her world as one row, labelled with her name and email so it's easy to find in the dashboard. If those two columns
 // haven't been added yet (supabase/schema.sql), it saves without them rather than failing.
 let rowLabels = true;
 async function worldRow(user, d){
-  const row = {user_id: user.id, data: d, updated_at: new Date().toISOString()};
+  const at = new Date().toISOString(), row = {user_id: user.id, data: d, updated_at: at};
   if (rowLabels) { const r = await supa.from("worlds").upsert({...row, name: (d.profile?.name || "").slice(0, 80) || null, email: user.email || null});
-    if (!r.error || !/column/i.test(r.error.message || "")) return r; rowLabels = false; }
-  return supa.from("worlds").upsert(row);
+    if (!r.error || !/column/i.test(r.error.message || "")) return {error: r.error, at}; rowLabels = false; }
+  const r = await supa.from("worlds").upsert(row); return {error: r.error, at};
 }
-async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser = null; docRef = null; storageNote = "Saved in this browser."; renderAccount(); toast("Signed out. Your world stays on this device."); }
+// Deletes her account in Supabase (her saved world and her sign-in), then this device's copy. Nothing on the device is
+// touched unless the account is gone first, so a failed request never leaves her half-deleted.
+async function deleteAccount(){
+  const btn = $("wipeYes"); if (btn) btn.disabled = true;
+  const {data, error} = await supa.functions.invoke("delete-account", {method: "POST"});
+  if (error || !data?.deleted) { if (btn) btn.disabled = false; toast("Couldn't delete your account. Check your connection and try again."); return; }
+  track("account_deleted");
+  try { await supa.auth.signOut(); } catch (e) {}
+  supaUser = null; docRef = null; storageNote = "Saved in this browser.";
+  try { localStorage.removeItem(SYNC_KEY); localStorage.removeItem("dreamLife.otherWorld"); } catch (e) {}
+  S = blankState(); afterChange(); save(); toast("Your account and everything in it is deleted"); startOnboarding(0);
+}
+async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser = null; docRef = null; try { localStorage.removeItem(SYNC_KEY); } catch (e) {} storageNote = "Saved in this browser."; renderAccount(); toast("Signed out. Your world stays on this device."); }
 // The account panel on the Account page: sign in with a code, or see who's signed in.
 // Email → code → signed in. root gets the form; onDone runs once she's in and her world is connected.
 function signInForm(root, onDone){
