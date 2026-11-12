@@ -23,12 +23,11 @@ python3 -m http.server 8000
 - [supabase/README.md](supabase/README.md): accounts, sync, account deletion and usage-count setup
 
 ## What's in the app
-- **Onboarding:** a splash on the LA coast, the idea, how it works (milestones → goals → pieces → picture), what else
-  is in the app, then **email or skip**, then the character.
-  - Signed in: **Build my picture** (name → places → pieces → first goal → the locked picture with the first piece
-    glowing) or **Skip to Home**.
-  - Skipped email (guest): straight to Home.
-  - Home starts with a short tour: drag, zoom, tap, walk, then where pieces, Goals and Journal live.
+- **Onboarding:** a short splash on the LA coast, one idea screen (milestones → goals → pieces → picture), then the
+  person: name and character, their pieces (plus where they live now, guessed from the time zone), and a first goal
+  whose first milestone they tick themselves. Then **Save your picture** with an email code, or **Not now**. People
+  with an account can sign in from the first screen.
+  - Home starts with two hints: drag and zoom, then where Goals live. The usage question comes after them.
 - **Guests** can add places and pieces. Goals, milestones, the journal, notes, to-dos, good things, affirmations and
   assets ask them to sign in first. Nothing they already have is hidden.
 - **The world:** a light, endless daytime sea with land built from the person's real places (placed by latitude and

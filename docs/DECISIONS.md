@@ -4,6 +4,17 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Onboarding rebuilt: value before asks (13 Nov):** splash (shorter) → one idea screen ("Paint the future you want,
+  piece by piece." with the chain, button **Start my picture**, and "I already have an account") → **Who's in your
+  picture?** (name, optional full name and photo, character on one page) → **Pick your pieces** with one line for
+  where you live now, guessed from the time zone → **first goal**, where she ticks the first milestone ("Set my first
+  goal") herself and its piece starts to come to life → **Save your picture** (email code, or Not now) → reveal →
+  Home. Everyone, guests too, builds a picture first; the email ask comes once there's something to lose. Replaces
+  "Onboarding reordered (12 Nov)": the separate intro screen, the features carousel and the "Where does it happen?"
+  page are gone (pages explain themselves when empty; other places are added on the map). A guest who says Not now
+  keeps the goal made during onboarding on the device.
+- **Home hints cut from seven to two (13 Nov):** drag/zoom, then where Goals lives. The usage question waits until
+  the hints are done, and never shows over onboarding.
 - **Gallery palette and pixel-true pieces (12 Nov):** neutral off-white page (#f3f3f1), white cards, true black text,
   a deeper rose accent (#c4365f) instead of hot pink; all brown-tinted shadows made neutral. Pieces lose their fades and
   feathering: crisp edges, dark outline, hard shadow. Chosen from a side-by-side of four palettes and four piece styles.
