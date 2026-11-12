@@ -4,6 +4,9 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Gallery palette and pixel-true pieces (12 Nov):** neutral off-white page (#f3f3f1), white cards, true black text,
+  a deeper rose accent (#c4365f) instead of hot pink; all brown-tinted shadows made neutral. Pieces lose their fades and
+  feathering: crisp edges, dark outline, hard shadow. Chosen from a side-by-side of four palettes and four piece styles.
 - **Premium design pass (12 Nov):** one card, one tab and one chip style; pink only for the main action and
   progress; quieter labels and a short type scale; serif for titles only; 8-point spacing; shadows instead of outlines;
   no looping animations; calmer copy ("What should we call you?"). Details in docs/DESIGN.md.

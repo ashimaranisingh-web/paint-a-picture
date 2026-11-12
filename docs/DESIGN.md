@@ -4,8 +4,8 @@ How Paint a Picture looks and sounds. When a screen doesn't match this, fix the 
 Never both drift.
 
 ## Feel
-Warm, calm, a little playful. A sunny coast in the afternoon, not a dashboard. Honey and paper tones, pixel art for the
-world, clean type for everything around it.
+Calm, premium, a little playful. A gallery wall for a pixel-art world: neutral off-white around it, true black type, one
+deep rose for what matters. The world brings the colour; the interface stays quiet.
 
 ## The design system (Nov 2026)
 The last block of the stylesheet, "DESIGN SYSTEM", is the source of truth; older rules above it are layers it
@@ -29,11 +29,12 @@ overrides. New components use these, never new one-off styles.
 ## Colour (tokens in `:root`, top of `index.html`)
 | Token | Value | Use |
 |---|---|---|
-| `--paper` | `#f7f4ee` | page background |
-| `--surface` | `#fffdf9` | cards and panels |
-| `--ink` / `--ink-2` / `--muted` | `#1f2420` / `#474c46` / `#686961` | text, strongest to softest |
-| `--line` / `--line-2` | `#e6e0d4` / `#d6cfbf` | borders and dividers |
-| `--accent` | `#f04f85` | the one primary action on a screen, and the person's picks |
+| `--paper` | `#f3f3f1` | page background: a neutral off-white, so the pixel art carries the colour |
+| `--surface` / `--card` | `#ffffff` | cards and panels |
+| `--ink` / `--ink-2` / `--muted` | `#141414` / `#424242` / `#6f6f6f` | text, strongest to softest (true neutrals, no tint) |
+| `--line` / `--line-2` | `#e4e4e1` / `#d4d4d0` | borders and dividers |
+| `--accent` / `--accent-strong` | `#d94a7a` / `#c4365f` | a deep rose: the main action and progress |
+| `--accent-soft` | `#f9e6ec` | the rare pale-pink fill |
 | `--amber` / `--amber-soft` | `#8f5c14` / `#f5ead6` | the honey tone: progress, warmth |
 | `--sea` / `--sea-soft` | `#2c6a88` / `#e2edf2` | water, maps |
 | `--danger` | `#9b3b2a` | delete and reset only |
@@ -62,6 +63,9 @@ Rules:
 - The character wears solid black sunglasses by default. No caps.
 
 ## Pieces (jigsaw)
+- Pieces are pixel art: crisp edges, a thin dark outline, and hard shadows with no blur (`drop-shadow(0 3px 0 …)`).
+  Never fade, feather or mask their edges.
+- Shadows elsewhere are neutral (`rgba(20,20,20,…)`), never brown-tinted.
 - Every piece is a real jigsaw shape; no two neighbours repeat a shape.
 - Pieces join into the finished picture; the reveal stays locked until earned, with the next piece glowing.
 
