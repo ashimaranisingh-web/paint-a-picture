@@ -86,3 +86,4 @@ Rules:
 - Permission-style questions (usage sharing) are a centred pop-up over a dimmed screen, never a banner. The rest of the app keeps the Gallery palette.
 - How-it-works jigsaw: each piece is its cell plus a tab's width (a sixth) each side, so pieces sit inside the frame
   and lock together exactly.
+- The welcome screen has no progress line; it isn't a step. Progress counts only the steps of making the picture.
