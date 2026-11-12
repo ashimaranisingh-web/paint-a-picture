@@ -1,3 +1,4 @@
+import PostHog
 import UIKit
 import WebKit
 
@@ -51,6 +52,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if action.shouldPerformDownload { decisionHandler(.download); return }
         if let url = action.request.url, let s = url.scheme, !["paintapicture", "about", "blob", "data"].contains(s) {
+            PostHogSDK.shared.capture("external_link_opened")
+            PostHogSDK.shared.logger?.info("external_link_handoff_started", attributes: ["destination": "safari"])
             UIApplication.shared.open(url); decisionHandler(.cancel); return
         }
         decisionHandler(.allow)
@@ -69,6 +72,8 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     }
     func downloadDidFinish(_ download: WKDownload) {
         guard let url = downloadURL else { return }
+        PostHogSDK.shared.capture("backup_download_completed")
+        PostHogSDK.shared.logger?.info("backup_download_ready_for_sharing", attributes: ["share_sheet": "presented"])
         let share = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         share.popoverPresentationController?.sourceView = view
         present(share, animated: true)

@@ -5,10 +5,19 @@ options:
   bundleIdPrefix: com.ashimasingh
   deploymentTarget:
     iOS: "16.0"
+packages:
+  PostHog:
+    url: https://github.com/PostHog/posthog-ios.git
+    from: "3.59.3"
 targets:
   PaintAPicture:
     type: application
     platform: iOS
+    configFiles:
+      Debug: .env
+      Release: .env
+    dependencies:
+      - package: PostHog
     sources:
       - path: PaintAPicture
       - path: Fonts
@@ -25,6 +34,8 @@ targets:
         CFBundleDisplayName: Paint a Picture
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        POSTHOG_PROJECT_TOKEN: $(POSTHOG_PROJECT_TOKEN)
+        POSTHOG_HOST: $(POSTHOG_HOST)
         LSRequiresIPhoneOS: true
         UILaunchScreen:
           UIColorName: LaunchBackground
