@@ -7,6 +7,25 @@ Never both drift.
 Warm, calm, a little playful. A sunny coast in the afternoon, not a dashboard. Honey and paper tones, pixel art for the
 world, clean type for everything around it.
 
+## The design system (Nov 2026)
+The last block of the stylesheet, "DESIGN SYSTEM", is the source of truth; older rules above it are layers it
+overrides. New components use these, never new one-off styles.
+
+- **One card:** white (`--card`), 16px corners (`--card-r`), no outline, one soft shadow (`--card-sh`).
+- **One tab:** the segmented control (`.seg`): a light tray, the chosen tab white with a small lift.
+- **One chip:** white with a hairline ring (`--ring`); chosen is **ink** with white text.
+- **Pink is rare:** the main button on a screen, ticks, progress bars, unlocked pieces and the star. Links, quiet
+  buttons, chosen chips, the tab bar and labels are ink or grey.
+- **Type scale:** 28 page titles (serif), 22 sheet and pop-up titles (serif), 17 section and card titles (sans, bold),
+  15 body, 13 small. Labels are 13px, normal case, grey: no all-capitals eyebrows.
+- **Serif only** for page titles and big moments (onboarding headings, the weekly review line, good things,
+  affirmations, the loader). Everything inside a page is the sans.
+- **Spacing:** 8-point rhythm (8 / 12 / 16 / 24 / 32). 20px side margins everywhere. 24px between sections, 12px
+  between cards, 16px inside cards.
+- **Surfaces, not outlines:** a card has a shadow or a hairline, never both.
+- **Motion:** one signature moment (a piece unlocking). Nothing loops; no wiggling icons or pulsing rings.
+- **Copy:** at most one playful line per flow; no exclamation marks.
+
 ## Colour (tokens in `:root`, top of `index.html`)
 | Token | Value | Use |
 |---|---|---|
@@ -20,13 +39,13 @@ world, clean type for everything around it.
 | `--danger` | `#9b3b2a` | delete and reset only |
 
 Rules:
-- **Pink is rare.** One pink button per screen at most, plus things the person picked. No pink backgrounds on pages.
+- **Pink is rare.** One pink button per screen at most, plus progress (ticks, bars, unlocked pieces). No pink backgrounds on pages.
 - Titles and labels are near-black (`--ink`), not grey and not pink.
 - Use the tokens. A new hex value in the code needs a reason.
 
 ## Type
 - Headings: **Instrument Serif**, regular weight, no italics. Body and UI: **Manrope**.
-- Sizes: page titles 24px, body 14px. Labels in Title Case.
+- Sizes: see the type scale above. Onboarding headings stay 24px with 14px body.
 - Left-aligned text, except centred pop-ups.
 
 ## Shape and depth

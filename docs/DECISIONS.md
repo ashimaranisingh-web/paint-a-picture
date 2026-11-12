@@ -4,6 +4,9 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Premium design pass (12 Nov):** one card, one tab and one chip style; pink only for the main action and
+  progress; quieter labels and a short type scale; serif for titles only; 8-point spacing; shadows instead of outlines;
+  no looping animations; calmer copy ("What should we call you?"). Details in docs/DESIGN.md.
 - **Onboarding copy and layout (12 Nov, later):** intro is one line, "We all have a picture of the future we want,
   painted piece by piece." How it works: "A picture isn't painted in a day." with the chain as the visual's heading,
   and it must fit on one screen. The features screen is a carousel of little screens. The photo sits at the top of
