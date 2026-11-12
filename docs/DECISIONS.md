@@ -4,6 +4,11 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Onboarding copy and layout (12 Nov, later):** intro is one line, "We all have a picture of the future we want,
+  painted piece by piece." How it works: "A picture isn't painted in a day." with the chain as the visual's heading,
+  and it must fit on one screen. The features screen is a carousel of little screens. The photo sits at the top of
+  the name step with Replace and Remove. Pieces beside the character are 62px. The first-goal page shows: the piece
+  to start with → the goal (and what it unlocks) → numbered milestones to tick later, with no checkboxes.
 - **Onboarding reordered (12 Nov):** intro → how it works (on a sample picture) → what else is in the app (weekly
   log, journal, assets) → "Let's start painting your picture" with email → character. Guests go Home from the
   character. Signed-in people choose **Build my picture** (name → places → pieces → first goal → reveal) or **Skip to
