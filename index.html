@@ -5751,8 +5751,8 @@ async function connectAccount(user){
   const {data: row} = await supa.from("worlds").select("data, updated_at").eq("user_id", user.id).maybeSingle();
   const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
   const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} afterChange(); if (S.onboarding.done && route === "onboard") go("home"); } };
-  const upload = async () => supa.from("worlds").upsert({user_id: user.id, data: JSON.parse(JSON.stringify(demoMode ? REAL : S)), updated_at: new Date().toISOString()});
-  const start = () => { docRef = {set: async d => { const {error} = await supa.from("worlds").upsert({user_id: user.id, data: d, updated_at: new Date().toISOString()}); if (error) throw error; },
+  const upload = async () => worldRow(user, JSON.parse(JSON.stringify(demoMode ? REAL : S)));
+  const start = () => { docRef = {set: async d => { const {error} = await worldRow(user, d); if (error) throw error; },
     savedNote: "Synced to your account. Only you can see it.", afterSave: () => { lastSynced = new Date().toISOString(); }}; storageNote = docRef.savedNote; if (route === "account") renderAccount(); };
   const pick = chooseWorld(local, remote);
   if (pick === "remote") { use(remote); start(); }
@@ -5767,6 +5767,15 @@ async function connectAccount(user){
         $("wKeepRemote").onclick = () => keep("remote"); $("wKeepLocal").onclick = () => keep("local"); });
   }
   track("account_signed_in");
+}
+// Save her world as one row, labelled with her name and email so it's easy to find in the dashboard. If those two columns
+// haven't been added yet (supabase/schema.sql), it saves without them rather than failing.
+let rowLabels = true;
+async function worldRow(user, d){
+  const row = {user_id: user.id, data: d, updated_at: new Date().toISOString()};
+  if (rowLabels) { const r = await supa.from("worlds").upsert({...row, name: (d.profile?.name || "").slice(0, 80) || null, email: user.email || null});
+    if (!r.error || !/column/i.test(r.error.message || "")) return r; rowLabels = false; }
+  return supa.from("worlds").upsert(row);
 }
 async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser = null; docRef = null; storageNote = "Saved in this browser."; renderAccount(); toast("Signed out. Your world stays on this device."); }
 // The account panel on the Account page: sign in with a code, or see who's signed in.
