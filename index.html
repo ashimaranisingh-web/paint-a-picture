@@ -5680,8 +5680,8 @@ function obWorld(M, Fo){
 const CFG = {
   posthogKey: "",                          // PostHog project API key (starts with phc_)
   posthogHost: "https://eu.i.posthog.com", // EU hosting; use https://us.i.posthog.com for US
-  supabaseUrl: "",                         // https://<your project>.supabase.co
-  supabaseAnonKey: ""                      // the project's anon (public) key; your data is protected by its row rules
+  supabaseUrl: "https://pvovntkudeielzikntso.supabase.co",
+  supabaseAnonKey: "sb_publishable_aAZFdhVfuAvKmmiZFAGQPA_HEWTYyD_" // publishable: safe in the app; each world is protected by the row rules in supabase/schema.sql
 };
 const CONSENT_KEY = "dreamLife.consent", ANON_KEY = "dreamLife.anon";
 const consent = () => { try { return localStorage.getItem(CONSENT_KEY) || ""; } catch (e) { return ""; } };
@@ -5723,7 +5723,7 @@ function keepOtherWorld(w){
   try { localStorage.setItem("dreamLife.otherWorld", JSON.stringify(w)); } catch (e) {}
   try { const url = URL.createObjectURL(new Blob([JSON.stringify(w, null, 1)], {type: "application/json"})), a = document.createElement("a"); a.href = url; a.download = `paint-a-picture-other-world-${today()}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); } catch (e) {}
 }
-const SUPA_LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+const SUPA_LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"; // a version that understands publishable keys
 function loadScript(src){ return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
 async function accountsInit(){
   if (!CFG.supabaseUrl || !CFG.supabaseAnonKey || window.claude?.use) return; // inside claude.ai the Claude account already syncs
