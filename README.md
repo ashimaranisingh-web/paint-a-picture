@@ -23,10 +23,12 @@ python3 -m http.server 8000
 - [supabase/README.md](supabase/README.md): accounts, sync, account deletion and usage-count setup
 
 ## What's in the app
-- **Onboarding:** a splash on the LA coast, a short intro, then **sign in or skip**.
-  - Signed in: name → character → places → pieces → how it works (shown on their own pieces) → first goal → journal →
-    the locked picture with the first piece glowing → their world.
-  - Skipped (guest): A woman / A man → their world.
+- **Onboarding:** a splash on the LA coast, the idea, how it works (milestones → goals → pieces → picture), what else
+  is in the app, then **email or skip**, then the character.
+  - Signed in: **Build my picture** (name → places → pieces → first goal → the locked picture with the first piece
+    glowing) or **Skip to Home**.
+  - Skipped email (guest): straight to Home.
+  - Home starts with a short tour: drag, zoom, tap, walk, then where pieces, Goals and Journal live.
 - **Guests** can add places and pieces. Goals, milestones, the journal, notes, to-dos, good things, affirmations and
   assets ask them to sign in first. Nothing they already have is hidden.
 - **The world:** a light, endless daytime sea with land built from the person's real places (placed by latitude and
@@ -35,9 +37,10 @@ python3 -m http.server 8000
 - **Landmarks:** 35 drawn so far (India Gate to the Golden Gate Bridge), matched to the pieces placed there and
   changeable in Edit place. Places without artwork get none rather than another city's monument.
 - **The clear view:** once a day, the whole picture without fog for one minute.
-- **Journal:** notes with automatic date and time (editable), pins, favourites, filters and search.
+- **Journal:** one page, two tabs. **Weekly**: log what moved each week, a weekly review, jump to any week and search
+  everything logged (past weeks are never reset). **Journal**: notes (pins, favourites, filters, search), three good
+  things a day, and affirmations.
 - **My Assets:** a personal archive in sections of cards (create, rename, reorder, edit, delete).
-- **This week:** jump to any week and search everything logged; past weeks are never reset.
 - **Account:** a full-height header with the character, photo and full name; character options (Pixel art or 2D,
   skin, hair, outfit; sunglasses on by default); Sync; Delete account.
 - **Demo Data:** a separate sample world, kept apart from the person's own, available only to the owner's account.

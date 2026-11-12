@@ -4,6 +4,15 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Onboarding reordered (12 Nov):** intro → how it works (on a sample picture) → what else is in the app (weekly
+  log, journal, assets) → "Let's start painting your picture" with email → character. Guests go Home from the
+  character. Signed-in people choose **Build my picture** (name → places → pieces → first goal → reveal) or **Skip to
+  Home**. This replaces "explain it on her own picks": the explanation now comes before any picks. The onboarding
+  journal step was dropped.
+- **Home tour** gained three pointers after the gestures: adding pieces (menu), Goals and Journal.
+- **Journal and Weekly Journal are one page** called Journal, with Weekly and Journal tabs. The Journal tab keeps
+  Notes, Good things and Affirmations.
+- **Intro line:** "The city or career we want. We paint that future piece by piece through milestones." (not "dream").
 - **Project docs added** (CLAUDE.md, docs/). Rules live in the repo so every session follows them.
 - **Account deletion** runs in a Supabase Edge Function (`delete-account`). It deletes the sign-in first; the saved
   world goes with it (cascade). Only the caller can be deleted, identified by their own token. Required by Apple.

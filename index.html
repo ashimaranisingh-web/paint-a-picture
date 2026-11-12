@@ -509,6 +509,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .todo-t:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
 .jtabs{justify-self:start}
+.jp-tabs{display:grid;grid-template-columns:1fr 1fr;justify-self:stretch}
+/* onboarding: what lives alongside the picture */
+.st-feats{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:12px}
+.st-feats li{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border-radius:14px;padding:16px;box-shadow:0 0 0 1px #ece5da,0 10px 24px -18px rgba(31,36,32,.35);font-size:14px;line-height:1.45;color:var(--ink-2)}
+.st-feats b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.st-fic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-ink)}
+.st-fic .ico{width:20px;height:20px}
+@media (prefers-reduced-motion:no-preference){.st-feats li{animation:st-rise .7s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--i) * 260ms + 200ms)}}
+@keyframes st-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* the home tour points at what it's talking about */
+.tour-next{justify-self:end}
+@media (prefers-reduced-motion:no-preference){.tour-spot{animation:tourSpot 1.8s ease-in-out infinite}}
+.tour-spot{box-shadow:0 0 0 3px rgba(240,79,133,.55)!important}
+@keyframes tourSpot{50%{box-shadow:0 0 0 7px rgba(240,79,133,.18)}}
 .good-today{background:#fff;border-radius:16px;padding:16px;display:grid;gap:10px;box-shadow:0 1px 2px rgba(31,36,32,.05),0 6px 20px rgba(31,36,32,.07)}
 .good-h{font-family:var(--serif);font-weight:400;font-size:30px;margin:0}
 .good-row{display:flex;align-items:center;gap:12px}.good-row input{flex:1;min-width:0}
@@ -916,7 +930,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
     <div class="tour" id="tour" role="status" aria-live="polite" hidden></div>
     <nav class="home-tabs" aria-label="Primary">
       <button class="htab" data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-      <button class="htab" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Weekly Journal</button>
+      <button class="htab" data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
     </nav>
   </section>
 
@@ -935,7 +949,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
     <div class="demo-strip" id="demoStrip" hidden><span>Viewing <b>Demo Data</b></span><button type="button" data-profile="real">Switch to Your Profile</button></div>
     <nav class="pnav" aria-label="Primary">
       <button data-go="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-      <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Weekly Journal</button>
+      <button data-go="week"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
     </nav>
   </section>
 
@@ -3107,7 +3121,10 @@ const TOUR = [
   {k: "drag", t: "Drag to explore your world.", ic: '<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10m0-1.5a1.5 1.5 0 0 1 3 0V11m0-1a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-.5a6 6 0 0 1-4.6-2.2L4.6 15a1.5 1.5 0 0 1 2.3-1.9L9 15"/>'},
   {k: "zoom", t: FINE ? "Scroll, or pinch the trackpad, to move closer and discover the details." : "Pinch to move closer and discover the details.", ic: '<path d="M4 4l6 6M20 20l-6-6M4 4h5M4 4v5M20 20h-5M20 20v-5"/>'},
   {k: "place", t: "Tap a city or an object to explore what's there.", ic: '<path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/>'},
-  {k: "walk", t: "Tap anywhere on the ground and you'll walk there.", ic: '<circle cx="12" cy="5" r="2"/><path d="M10 21l2-6 3 3v3M9 12l3-4 3 2 2 2M12 8l-1 5"/>'}
+  {k: "walk", t: "Tap anywhere on the ground and you'll walk there.", ic: '<circle cx="12" cy="5" r="2"/><path d="M10 21l2-6 3 3v3M9 12l3-4 3 2 2 2M12 8l-1 5"/>'},
+  {k: "f-pieces", t: "Add pieces to your picture from the menu, under Paint a Picture.", spot: "[data-menu]", btn: true, ic: '<path d="M4 7h16M4 12h16M4 17h10"/>'},
+  {k: "f-goals", t: "Goals: tick their milestones and your pieces light up.", spot: '.htab[data-go="goals"]', btn: true, ic: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>'},
+  {k: "f-journal", t: "Journal: what moved each week, plus notes, good things and affirmations.", spot: '.htab[data-go="week"]', btn: true, ic: '<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'}
 ];
 let tourAt = -1;
 const tourSeen = () => { try { return localStorage.getItem(TOUR_KEY) === "done"; } catch (e) { return true; } };
@@ -3118,19 +3135,23 @@ function tourShow(i){
   el.innerHTML = `<div class="tour-top"><span class="eyebrow">Explore your world · ${i + 1} of ${TOUR.length}</span><button type="button" id="tourSkip">Skip</button></div>
     ${i === 0 ? `<p class="tour-hi">This is your world. Learn it by doing, one move at a time.</p>` : ""}
     <p class="tour-t"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${st.ic}</svg><span>${st.t}</span></p>
+    ${st.btn ? `<button type="button" class="btn sm tour-next" id="tourNext">${i === TOUR.length - 1 ? "Done" : "Next"}</button>` : ""}
 `;
   el.hidden = false; el.classList.remove("fade");
   $("tourSkip").onclick = tourEnd;
+  tourSpot(st.spot); if (st.btn) $("tourNext").onclick = () => tourDid(st.k);
 }
 function tourDid(k){
   if (tourAt < 0 || TOUR[tourAt].k !== k) return;
   const next = tourAt + 1; try { localStorage.setItem(TOUR_KEY + ".at", String(next)); } catch (e) {}
   const el = $("tour"); el.classList.add("fade");
   if (next < TOUR.length) { tourAt = next; setTimeout(() => tourShow(next), reduced ? 0 : 260); return; }
-  tourAt = -1; try { localStorage.setItem(TOUR_KEY, "done"); } catch (e) {}
+  tourAt = -1; tourSpot(); try { localStorage.setItem(TOUR_KEY, "done"); } catch (e) {}
   setTimeout(() => { el.innerHTML = `<p class="tour-t" style="font-size:20px">You've got it. Enjoy your world.</p>`; el.classList.remove("fade"); setTimeout(() => { el.classList.add("fade"); setTimeout(() => { if (tourAt < 0) el.hidden = true; }, 260); }, 2200); }, reduced ? 0 : 260);
 }
-function tourEnd(){ tourAt = -1; $("tour").hidden = true; try { localStorage.setItem(TOUR_KEY, "done"); } catch (e) {} }
+// the thing a feature step talks about gets a soft ring, so it's easy to find
+function tourSpot(sel){ document.querySelectorAll(".tour-spot").forEach(x => x.classList.remove("tour-spot")); if (sel) document.querySelector("#home " + sel)?.classList.add("tour-spot"); }
+function tourEnd(){ tourSpot(); tourAt = -1; $("tour").hidden = true; try { localStorage.setItem(TOUR_KEY, "done"); } catch (e) {} }
 function tourRestart(){ try { localStorage.removeItem(TOUR_KEY); localStorage.setItem(TOUR_KEY + ".at", "0"); } catch (e) {} if (route !== "home") go("home"); tourAt = -1; setTimeout(() => tourShow(0), 300); }
 function edgeNudge(e){
   const r = cv.getBoundingClientRect(), m = 28, k = 8 / scale;
@@ -3648,12 +3669,12 @@ let weekFrom = "home";
 function go(r){
   if (!ROUTES.includes(r)) r = "home";
   if (r === "goals" && route !== "goals") openGoal = null; // cards start collapsed each time you come back
-  if (r === "week" && route !== "week" && route !== "entry") weekFrom = route; // the journal's back arrow returns where she came from
+  if ((r === "week" || r === "journal") && !["week", "journal", "entry"].includes(route)) weekFrom = route; // the journal's back arrow returns where she came from
   route = r; closeMenu(); closeSheet();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
   for (const k of ["goals", "week", "dreams", "account", "assets", "journal", "todo", "entry"]) $("p-" + k).hidden = k !== r;
-  document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === (r === "entry" ? "week" : r) ? "page" : "false"));
+  document.querySelectorAll(".pnav button").forEach(b => b.setAttribute("aria-current", b.dataset.go === (r === "entry" || r === "journal" ? "week" : r) ? "page" : "false"));
   if (r === "home") { requestAnimationFrame(sizeScene); renderHomeChips(); celebrateNew(); setTimeout(tourMaybe, 700); }
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
@@ -3968,7 +3989,8 @@ function renderWeek(){
   const offPlan = entries.filter(e => !e.goalIds.length);
   const rv = weeklyReview(ws, entries, goalsMoved, steps, metW, passed, offPlan);
   el.innerHTML = `
-    <div class="phead" style="align-items:center"><div class="ph-left"><button class="iconbtn" data-go="${weekFrom}" aria-label="${weekFrom === "home" ? "Back to your world" : "Back"}">${ICON_BACK}</button><h1>Weekly Journal</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
+    <div class="phead" style="align-items:center"><div class="ph-left">${jBack()}<h1>Journal</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
+    ${jpTabs("week")}
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section class="panel review"><div class="eyebrow">Weekly review</div>
@@ -4439,7 +4461,7 @@ function renderJournal(){
   const list = S.notes.filter(n => noteFilter === "pinned" ? n.pinned : noteFilter === "fav" ? n.fav : true)
     .filter(n => !q || (n.title + " " + n.body).toLowerCase().includes(q)).sort((a, b) => b.at.localeCompare(a.at));
   el.innerHTML = `
-    <div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Journal</h1></div><div class="sub">Notes, good things and affirmations, just for you</div></div><button class="btn quiet" id="newNote">${ICON.plus}New note</button></div>${jTabs()}
+    <div class="phead"><div><div class="ph-left">${jBack()}<h1>Journal</h1></div></div><button class="btn quiet" id="newNote">${ICON.plus}New note</button></div>${jpTabs("journal")}${J_SUB}${jTabs()}
     <input type="search" id="noteQ" value="${esc(noteQuery)}" placeholder="Search notes" aria-label="Search notes by title or text">
     <div class="seg" role="group" aria-label="Filter notes" style="justify-self:start">${[["all", `All ${S.notes.length}`], ["pinned", `Pinned ${S.notes.filter(n => n.pinned).length}`], ["fav", `Favourites ${S.notes.filter(n => n.fav).length}`]].map(([k, l]) => `<button aria-pressed="${noteFilter === k}" data-nf="${k}">${l}</button>`).join("")}</div>
     <div id="noteList">${list.length ? `<ul class="list">${list.map(noteRow).join("")}</ul>` : !q && noteFilter === "all" ? "" : `<div class="empty"><b>${q ? "No notes match" : noteFilter === "all" ? "A page of your own" : noteFilter === "pinned" ? "Nothing pinned" : "No favourites yet"}</b>${q ? "Try another word." : noteFilter === "all" ? "Write a thought, a reminder, or a letter to your future self. It doesn't need to be tied to a goal." : "Open a note and pin it or mark it as a favourite."}</div>`}</div>`;
@@ -4513,7 +4535,11 @@ function editTodo(id){
 /* --- JOURNAL: notes, three good things a day, and affirmations --- */
 let journalTab = "notes";
 const jTabs = () => `<div class="seg jtabs" role="group" aria-label="Journal">${[["notes", "Notes"], ["good", "Good things"], ["affirm", "Affirmations"]].map(([k, l]) => `<button type="button" aria-pressed="${journalTab === k}" data-jt="${k}">${l}</button>`).join("")}</div>`;
-const jHead = () => `<div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Journal</h1></div><div class="sub">Notes, good things and affirmations, just for you</div></div></div>`;
+const jHead = () => `<div class="phead"><div><div class="ph-left">${jBack()}<h1>Journal</h1></div></div></div>${jpTabs("journal")}${J_SUB}`;
+// the two halves of the journal: the weekly log and the everyday journal
+const J_SUB = `<p class="muted" style="margin:0;font-size:14px">Notes, good things and affirmations, just for you</p>`;
+const jpTabs = on => `<div class="seg jp-tabs" role="group" aria-label="Journal sections">${[["week", "Weekly"], ["journal", "Journal"]].map(([k, l]) => `<button type="button" data-go="${k}" aria-pressed="${on === k}">${l}</button>`).join("")}</div>`;
+const jBack = () => `<button class="iconbtn" data-go="${weekFrom}" aria-label="${weekFrom === "home" ? "Back to your world" : "Back"}">${ICON_BACK}</button>`;
 const wireJTabs = el => el.querySelectorAll("[data-jt]").forEach(b => b.onclick = () => { journalTab = b.dataset.jt; renderJournal(); });
 const GOOD_HINTS = ["Something that went well", "Someone you're glad about", "Something you did for yourself"];
 function renderGood(){
@@ -5023,7 +5049,7 @@ function drawAvatarPreview(cvs, style){
    pieces and goal when she builds her world, so going back and forth never duplicates or removes
    anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["splash", "frame", "account", "name", "look", "where", "pick", "how", "goal", "journal", "reveal", "you", "world"]; // the idea, then sign in or skip; "you" is only for guests
+const OB = ["splash", "frame", "how", "feats", "account", "look", "name", "where", "pick", "goal", "reveal", "world"]; /* the idea and the app, then email (or skip), then the character; guests go Home from there, members build their picture or skip to Home */
 // The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [ // the whole picture library, each with a first goal and the milestones that get it going
   {id: "home", t: "Home by the sea", tab: "Home", kind: "villa", lib: "surf", cat: "Home & surroundings", goal: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]},
@@ -5151,7 +5177,7 @@ function stLoop(cvs, sc, tick){
 const stEase = u => u < 0 ? 0 : u > 1 ? 1 : 1 - (1 - u) ** 3;
 // Her picture in Act 2: her place's scenery (by the sea, the open coast), her pieces in the slots, the first goal's piece a little lit.
 function stPicture(o){
-  o = o || {}; const parts = stParts(), lit = o.lit === undefined ? stLitKey() : o.lit, env = stEnv(), w = o.w || 200, h = o.h || 104, oy = Math.max(0, Math.round((h - 104) / 2)), ox = Math.round((w - 200) / 2);
+  o = o || {}; const parts = o.parts || stParts(), lit = o.lit === undefined ? stLitKey() : o.lit, env = stEnv(), w = o.w || 200, h = o.h || 104, oy = Math.max(0, Math.round((h - 104) / 2)), ox = Math.round((w - 200) / 2);
   return {w, h, env, base: env === "coast" ? stMeadow(w, h) : stCrop(env, w, h), fog: 1,
     pieces: parts.slice(0, ST_SLOTS.length).map((p, i) => ({key: p.key, kind: p.kind, x: ST_SLOTS[i][0] + ox, y: ST_SLOTS[i][1] + oy, lit: p.key === lit ? .35 : 0, drop: p.key === o.drop ? 1 : 0})),
     char: o.char ? {x: 102 + ox, y: oy + 80, dir: "down", frame: 0} : null};
@@ -5296,7 +5322,7 @@ function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d");
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
-const ST_IDEA = ["frame", "how"], ST_ME = ["account", "you", "name", "look", "where", "pick", "goal", "journal"], ST_STEPS = ["frame", "account", "name", "look", "where", "pick", "how", "goal", "journal"], ST_GUEST = ["frame", "account", "you"];
+const ST_IDEA = ["frame", "how", "feats"], ST_ME = ["account", "name", "look", "where", "pick", "goal"], ST_STEPS = ["frame", "how", "feats", "account", "look", "name", "where", "pick", "goal"], ST_GUEST = ["frame", "how", "feats", "account", "look"];
 // one progress line across every step, so she always knows how far along she is
 const stBar = k => { const path = S.onboarding.guest ? ST_GUEST : ST_STEPS, i = path.indexOf(k); return `<div class="st-mbar" role="img" aria-label="Step ${i + 1} of ${path.length}"><div class="st-line"><i style="width:${Math.round((i + 1) / path.length * 100)}%"></i></div></div>`; };
 function startOnboarding(step){
@@ -5335,7 +5361,7 @@ function drawOb(){
     el.innerHTML = `<div class="st-stage" id="stStage"><canvas class="st-full" id="stWorld" role="img" aria-label="Your picture"></canvas></div>
       <section class="st-panel"><main class="ob-main st-pmain" id="obMain"></main><footer class="ob-foot st-pfoot" id="obFoot"></footer></section>`;
   }
-  ({splash: obSplash, frame: obFrame, how: obHow, journal: obJournal, account: obAccount, you: obYou, name: obName, look: obLook, pick: obPick, where: obWhere, goal: obGoal, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
+  ({splash: obSplash, frame: obFrame, how: obHow, feats: obFeats, account: obAccount, name: obName, look: obLook, pick: obPick, where: obWhere, goal: obGoal, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
 }
 // Headings in the sans, with the words that carry the idea in pink. Panel headings sit centred.
 const stHead = (h, sub, id) => `<div class="st-head"><h1 class="st-h">${h}</h1>${sub != null ? `<p class="st-sub"${id ? ` id="${id}" aria-live="polite"` : ""}>${sub}</p>` : ""}</div>`;
@@ -5352,7 +5378,7 @@ const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" i
 // The panel's footer: back, a note, then a quiet Skip on the steps that can wait, then Next.
 function stFoot(Fo, note, next, o){
   o = o || {};
-  Fo.innerHTML = `${stBack()}<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">Skip</button>` : ""}<button class="btn" id="obNext">${o.label || "Next"}</button></div>`;
+  Fo.innerHTML = `${stBack()}<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><div class="ob-actions">${o.skip ? `<button class="btn quiet" id="obSkip">${o.skipLabel || "Skip"}</button>` : ""}<button class="btn" id="obNext">${o.label || "Next"}</button></div>`;
   $("obNext").onclick = next; stWireBack();
   if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
 }
@@ -5400,24 +5426,26 @@ function obSplash(M){
 
 /* --- Act 1, the idea --- */
 function obFrame(M, Fo){
-  M.innerHTML = stHead("We all have a <em>picture</em> of the future we want.", "A city we want to live in, a career that fulfils us and a healthy body and happy family. But Rome wasn't built in a day. It comes together piece by piece.")
+  M.innerHTML = stHead("We all have a <em>picture</em> of the future we want.", "The city or career we want. We paint that future piece by piece through milestones.")
     + `<div class="st-visual"><canvas class="st-puzzle" id="stPuzzle" role="img" aria-label="A pixel picture of a future, pieced together one piece at a time: a city, a home, work, study, travel, a healthy body, a car, a garden and family"></canvas></div>`;
-  stNextIdea(Fo, "Let's Paint");
+  stNextIdea(Fo);
   stPuzzle($("stPuzzle"));
 }
 // How it works, told once and on her own picks: her milestones finish her goals, her goals unlock her pieces, and the
 // pieces, cut from her own picture, come together into it.
 const ST_DOWN = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10l6 6 6-6"/></svg>';
 function stFirstPart(){ const d = stDraft(), parts = stParts(); return parts.find(p => p.key === d.first) || parts[0] || null; }
+const ST_SAMPLE = ["home", "pod", "run", "study", "family", "car"]; // a picture to explain with, before she has picked her own
+const stSample = () => ST_PARTS.filter(p => ST_SAMPLE.includes(p.id)).map(p => ({key: p.id, t: p.t, tab: p.tab, kind: p.kind, goal: p.goal, ms: p.ms}));
 function obHow(M, Fo){
-  const parts = stParts(), first = stFirstPart(), goals = [first, parts.find(p => p !== first)].filter(Boolean).map(p => p.goal).concat(["Make a start", "Keep going"]).slice(0, 2);
+  const mine = stParts(), parts = mine.length ? mine : stSample(), first = mine.length ? stFirstPart() : parts[0], goals = [first, parts.find(p => p !== first)].filter(Boolean).map(p => p.goal).concat(["Make a start", "Keep going"]).slice(0, 2);
   M.innerHTML = stHead("Milestones → Goals → Pieces → <em>Picture</em>", "Finish milestones to achieve a goal; unlock your pieces and paint the picture you worked hard towards.")
     + `<div class="st-chainv" aria-hidden="true">
       <div class="st-lvl" data-l="0"><span>Milestones</span><div class="st-ticks">${[0, 1, 2, 3, 4, 5].map(() => `<i class="cb" aria-checked="false"></i>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="1"><span>Goals</span><div class="st-pills">${goals.map(g => `<b><canvas data-tro></canvas>${esc(g)}</b>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="2"><span id="stPzLbl">Your pieces</span><div class="st-pz3" id="stPz3"><canvas id="stHowPic"></canvas><div class="st-jp" id="stJp">${[0, 1, 2, 3, 4, 5].map(i => `<canvas data-jp="${i}" style="left:${(i % 3) * 100 / 3 - 100 / 6}%;top:${(i / 3 | 0) * 50 - 25}%;--r:${[-5, 4, -3, 6, -6, 3][i]}deg"></canvas>`).join("")}</div></div></div></div>`;
   // her picture, every piece lit: what she's working towards
-  const sc = stPicture({w: 240, h: 160, char: true}); sc.fog = 0; sc.pieces.forEach(p => { p.lit = 1; p.open = 1; });
+  const sc = stPicture({w: 240, h: 160, char: true, parts}); sc.fog = 0; sc.pieces.forEach(p => { p.lit = 1; p.open = 1; });
   const big = document.createElement("canvas"); stRender(big, sc);
   const src = document.createElement("canvas"); src.width = 240; src.height = 160; const sg = src.getContext("2d"); sg.imageSmoothingEnabled = false; sg.drawImage(big, 0, 0, 240, 160);
   const pic = $("stHowPic"); pic.width = 480; pic.height = 320; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(src, 0, 0, 480, 320);
@@ -5433,7 +5461,18 @@ function obHow(M, Fo){
   at(3800, () => $("stPz3").classList.add("join")); // then they come together into her picture
   at(4700, () => $("stPz3").classList.add("done"));
   at(4500, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
-  stNextIdea(Fo, "Set it up");
+  stNextIdea(Fo);
+}
+// What else lives beside her picture: the weekly log, the journal and her assets.
+const ST_FEATS = [
+  ["Weekly log", "Each week, note what moved, big or small, and see your week reviewed.", '<path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/>'],
+  ["Journal", "Notes, three good things a day, and affirmations, just for you.", '<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/>'],
+  ["My Assets", "Keep what you've made and built along the way, in sections of your own.", '<path d="M3 7h7l2 2h9v10H3z"/>']
+];
+function obFeats(M, Fo){
+  M.innerHTML = stHead("Alongside your <em>picture</em>", "The everyday tools that move it forward.")
+    + `<ul class="st-feats">${ST_FEATS.map(([t, d, ic], i) => `<li style="--i:${i}"><span class="st-fic"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></span><span><b>${t}</b>${d}</span></li>`).join("")}</ul>`;
+  stNextIdea(Fo);
 }
 
 /* --- Act 2, her picture. She names herself and steps in; she stands in the middle of the page, and every piece, place
@@ -5558,7 +5597,9 @@ function obLook(M, Fo){
   M.innerHTML = stFigure() + stHead("Dress yourself up", "This is you in your picture. Change it any time.") + `<div id="stAv" class="st-av"></div>`; // she says who she is here too
   avatarEditor($("stAv"), () => stDrawMe($("stMe")), {compact: true});
   stFigureDone(M);
-  stFoot(Fo, "", () => obGo(obStep + 1), {skip: true});
+  const home = () => { S.onboarding.draft = null; save(); obGo(OB.indexOf("world")); };
+  if (S.onboarding.guest || isGuest()) stFoot(Fo, "", home, {label: "Let's Go"});
+  else stFoot(Fo, "", () => obGo(obStep + 1), {label: "Build my picture", skip: () => { track("onboarding_skipped_build"); home(); }, skipLabel: "Skip to Home"});
 }
 function obPick(M, Fo){
   const d = stDraft();
@@ -5656,30 +5697,14 @@ function obGoal(M, Fo){
 // second device), or accounts not switched on: straight on to setting up.
 async function obAccount(M, Fo){
   if (!CFG.supabaseUrl) { obGo(obStep + (obStep > stObPrev ? 1 : -1)); return; }
-  M.innerHTML = stHead("Save your world", "Sign in with your email so your picture, goals and journal are kept safe and the same on every device. We'll email you a code; no password.")
+  M.innerHTML = stHead("Let's start painting your picture", "We need your email to save the picture you paint. We'll email you a code; no password.")
     + `<div id="obSign" class="st-sign"></div>`;
   Fo.innerHTML = `${stBack()}<span class="st-note"></span><div class="ob-actions"><button class="btn quiet" id="obSkip">Skip for now</button></div>`; stWireBack();
-  $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(OB.indexOf("you")); };
-  signInForm($("obSign"), () => { S.onboarding.guest = false; save(); obGo(OB.indexOf("name")); });
-  await accountsReadyP; if (supaUser && OB[obStep] === "account") { S.onboarding.guest = false; obGo(OB.indexOf("name")); }
+  $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(OB.indexOf("look")); };
+  signInForm($("obSign"), () => { S.onboarding.guest = false; save(); obGo(OB.indexOf("look")); });
+  await accountsReadyP; if (supaUser && OB[obStep] === "account") { S.onboarding.guest = false; obGo(stObPrev > obStep ? obStep - 1 : OB.indexOf("look")); } /* going back passes it too */
 }
 let stObPrev = 0; // which way she was going, so a skipped step is passed in the same direction
-// Guests: who they are, so the character feels like them, then Home.
-function obYou(M, Fo){
-  M.innerHTML = stFigure() + stHead("Who are you?", "So your character feels like you. You can change everything later.") + `<div id="stAv" class="st-av"></div>`;
-  avatarEditor($("stAv"), () => stDrawMe($("stMe")), {compact: true});
-  stFigureDone(M);
-  stFoot(Fo, "", () => { S.onboarding.draft = null; save(); obGo(OB.indexOf("world")); }, {label: "Let's Go"});
-  $("obBack").onclick = () => obGo(OB.indexOf("account"));
-}
-// Her journal: once a week she writes what moved. She can start with a line now.
-function obJournal(M, Fo){
-  const d = stDraft();
-  M.innerHTML = stHead("Your journal", "Each week, write down what moved, big or small. It's in Weekly Journal on Home. Start with one line about today.")
-    + `<label class="field st-jl"><span>Today</span><textarea id="stJ" rows="4" maxlength="600" placeholder="e.g. Started my picture. First up: ${esc(stFirstPart()?.t || "my first piece")}.">${esc(d.journal || "")}</textarea></label>`;
-  $("stJ").oninput = e => { d.journal = e.target.value; save(); };
-  stFoot(Fo, "", () => obGo(obStep + 1), {skip: true});
-}
 /* --- Act 3: everything goes into her picture; then how it lights up, and she starts building --- */
 function obReveal(M, Fo){
   const n = stParts().length, lit = stLitKey();
