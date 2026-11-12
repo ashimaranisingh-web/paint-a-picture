@@ -4,6 +4,12 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Onboarding refinements (13 Nov, later):** footer is iOS-style: back top left beside the progress line, one
+  full-width Continue at the bottom, "Not now" / "Skip" as quiet text under it. The character's scene runs to the top
+  and both edges. "A woman / A man" sits above the name. Where you live is never assumed: the row asks, and the time
+  zone only suggests a city inside the search. The first goal is written by the person: choose the piece, edit the
+  goal, add/remove/edit milestones (the self-tick "Set my first goal" milestone is gone). The usage question is a
+  centred pop-up with what's counted and what never is.
 - **Onboarding rebuilt: value before asks (13 Nov):** splash (shorter) → one idea screen ("Paint the future you want,
   piece by piece." with the chain, button **Start my picture**, and "I already have an account") → **Who's in your
   picture?** (name, optional full name and photo, character on one page) → **Pick your pieces** with one line for

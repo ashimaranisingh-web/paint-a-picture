@@ -80,7 +80,9 @@ Rules:
 - Error and empty states say what happened and what to do next, in one line.
 
 ## Onboarding character screens (13 Nov 2026)
-- The page is white. The character stands on a small pixel scene from the world (grass, a path, the sea) in a
-  rounded card, never on a blank page. The rest of the app keeps the Gallery palette.
+- The page is white. The character stands on a pixel scene from the world (grass, a path, the sea) that runs to the
+  top and both edges, never on a blank page. Back and the progress line float over it.
+- Onboarding footers: one full-width primary button (52px, 14px corners); any second choice is quiet text under it.
+- Permission-style questions (usage sharing) are a centred pop-up over a dimmed screen, never a banner. The rest of the app keeps the Gallery palette.
 - How-it-works jigsaw: each piece is its cell plus a tab's width (a sixth) each side, so pieces sit inside the frame
   and lock together exactly.
