@@ -78,3 +78,9 @@ Rules:
 - Words we use: **picture, pieces, goals, milestones, places, journal**. Goals bring pieces; milestones are steps.
 - Never "dream" in visible copy. No exclamation-mark cheerleading, no "unlock your potential", no emoji in UI copy.
 - Error and empty states say what happened and what to do next, in one line.
+
+## Onboarding character screens (13 Nov 2026)
+- The page is white. The character stands on a small pixel scene from the world (grass, a path, the sea) in a
+  rounded card, never on a blank page. The rest of the app keeps the Gallery palette.
+- How-it-works jigsaw: each piece is its cell plus a tab's width (a sixth) each side, so pieces sit inside the frame
+  and lock together exactly.
