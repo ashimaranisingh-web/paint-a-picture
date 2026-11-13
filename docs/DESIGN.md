@@ -4,15 +4,26 @@ How Paint a Picture looks and sounds. When a screen doesn't match this, fix the 
 Never both drift.
 
 ## Feel
-Calm, premium, a little playful. A gallery wall for a pixel-art world: neutral off-white around it, true black type, one
-deep rose for what matters. The world brings the colour; the interface stays quiet.
+Calm, premium, a little playful. A gallery wall for a pixel-art world: a white page, true black type, one deep rose
+for what matters. The world brings the colour; the interface stays quiet.
 
 ## The design system (Nov 2026)
 The last block of the stylesheet, "DESIGN SYSTEM", is the source of truth; older rules above it are layers it
 overrides. New components use these, never new one-off styles.
 
-- **One card:** white (`--card`), 16px corners (`--card-r`), no outline, one soft shadow (`--card-sh`).
+- **One card:** white on the white page (`--card`), 12px corners at most (`--card-r`), 12px padding inside and 12px
+  between cards, set apart by a faint ring and a wide,
+  very soft shadow (`--card-sh`), never a visible border. (Lists without cards were tried on 13 Nov and reversed.)
 - **One tab:** the segmented control (`.seg`): a light tray, the chosen tab white with a small lift.
+- **One text field:** a soft grey fill (#f3f3f2), 12px corners, no underline or border. Typing turns it white with a
+  thin ink ring, never pink. Text 16px (smaller makes iPhone zoom in). Big onboarding moments (the name) may differ.
+- **Navigation: a tab bar on the bottom edge** (a straight full-width band with a hairline on top, glass; dark glass over the world at
+  night) with five tabs: **My Picture**, **Pieces**, **Goals**, **Journal** (Weekly | Journal), **More** (To-do list, My
+  Assets, Good things, Affirmations as a plain list). The current tab is in the rose accent. Tab pages have no back
+  arrow; pages opened from More do. **Account** is your photo at the top right of Home (My Picture) only; Help lives in Account. Journal reopens
+  on the tab last used.
+- **The menu** never touches the screen edges (at most 320px wide). Order: make (Paint a Picture) → keep (Journal,
+  To-do list, My Assets) → you (Account) → help, with a divider between groups.
 - **One chip:** white with a hairline ring (`--ring`); chosen is **ink** with white text.
 - **Pink is rare:** the main button on a screen, ticks, progress bars, unlocked pieces and the star. Links, quiet
   buttons, chosen chips, the tab bar and labels are ink or grey.
@@ -29,7 +40,7 @@ overrides. New components use these, never new one-off styles.
 ## Colour (tokens in `:root`, top of `index.html`)
 | Token | Value | Use |
 |---|---|---|
-| `--paper` | `#f3f3f1` | page background: a neutral off-white, so the pixel art carries the colour |
+| `--paper` | `#ffffff` | page background: white, so the pixel art carries the colour (was `#f3f3f1` until 13 Nov) |
 | `--surface` / `--card` | `#ffffff` | cards and panels |
 | `--ink` / `--ink-2` / `--muted` | `#141414` / `#424242` / `#6f6f6f` | text, strongest to softest (true neutrals, no tint) |
 | `--line` / `--line-2` | `#e4e4e1` / `#d4d4d0` | borders and dividers |
@@ -59,7 +70,15 @@ Rules:
 - Pixel art. More detail, not more complexity.
 - The sea is light, daytime and endless. Fog sits on land only, never on the sea.
 - Land is continuous; roads stay on land. Boats and dolphins on the water, nothing floating.
-- Night comes from the person's local time (7pm to 6am).
+- The light follows the person's phone clock and changes gradually: night (about 8pm–5am), a blue hour and peach
+  dawn (5–7am), clear morning, a warm sunny afternoon, golden hour (around 5pm), a pink sunset (6pm), a violet dusk, then
+  night. Colours live in `LIGHT_KEYS`; `LIGHT_H` previews an hour.
+- Revealed places stay lit after dark: they take only part of the night's darkness plus a warm streetlight glow, so at
+  night they never look like the fog over future places.
+- The water always reads as water: the land takes the full colour of the hour, the sea only a little. Light shows on
+  the sea as reflection: a soft path towards the sun (rising right, setting left) broken into shimmering streaks, white
+  at midday, gold at golden hour, orange-pink at sunrise and sunset, a few silver glints under the moon (`SEA_KEYS`).
+- A place's drawing always sits on land: a pack can mark ground it needs (`keep`), so a random shore never cuts it.
 - The character wears solid black sunglasses by default. No caps.
 
 ## Pieces (jigsaw)

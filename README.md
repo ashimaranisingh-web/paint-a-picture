@@ -28,6 +28,8 @@ python3 -m http.server 8000
   whose first milestone they tick themselves. Then **Save your picture** with an email code, or **Not now**. People
   with an account can sign in from the first screen.
   - Home starts with two hints: drag and zoom, then where Goals live. The usage question comes after them.
+- **Navigation:** a tab bar on every screen: My Picture, Pieces, Goals, Journal, and More (To-do list, My Assets, Good
+  things, Affirmations). Account is your photo at the top right of Home.
 - **Guests** can add places and pieces. Goals, milestones, the journal, notes, to-dos, good things, affirmations and
   assets ask them to sign in first. Nothing they already have is hidden.
 - **The world:** a light, endless daytime sea with land built from the person's real places (placed by latitude and
@@ -56,7 +58,7 @@ python3 -m http.server 8000
 - Everything is saved on the device first (`localStorage`).
 - **Accounts** use Supabase with email code sign-in (no passwords). A signed-in person's world syncs to their account
   and across devices. When device and account differ, the side that changed since the last sync wins; if both
-  changed, the app asks. The world not kept is saved on the device, never thrown away.
+  changed, the account wins without asking. The world not kept is saved on the device, never thrown away.
 - **Account deletion** (Account → Delete account) removes the sign-in and the saved world, through the
   `supabase/functions/delete-account` Edge Function.
 - **Usage counts** go to PostHog (EU) only if the person says yes. They're anonymous: event names only, never names,

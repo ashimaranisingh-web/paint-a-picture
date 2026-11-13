@@ -4,6 +4,56 @@ Product decisions and why. Newest first. Don't reverse one without the owner say
 line rather than editing the old one.
 
 ## 2026-11
+- **Account header and name step (13 Nov, later):** the Account header is a pixel scene with the character, like
+  onboarding (no pink); photo, name, email and place chips sit below it on white. When the header sticks at a quarter of
+  the screen, the character stays (scaled to fit) so edits to it show live. The onboarding name step is headed
+  "Let's Paint You!" with no sub-line (an owner-approved exception to "no exclamation marks"), and the name fields use
+  the playful prompts again as placeholders: "What should we call you?", "Got a fancy middle name?", "Last name duh."
+- **Account header collapses (13 Nov, later):** scrolling slides the pink header up until a quarter of the screen is
+  left, then it stays; the character fades, the back button, photo, name, email and places stay. Places show as glass
+  chips you can drag sideways; tapping one opens that place on My Picture.
+- **Your Places (13 Nov, later):** "Places in your world (n)" is now "Your Places (n)", and Account lists your places
+  under your name and email. Drop-downs keep room for their arrow so labels never run under it.
+- **Card sizing (13 Nov, later):** card corners 12px at most, 12px padding inside, 12px between cards.
+- **Your own photos on pieces (13 Nov, later):** a piece can hold up to 6 of the person's own photos (optional), added
+  in the piece sheet above the picture library and shown as a strip when the piece is opened; tap one to see it large.
+  Each is shrunk to 480px and saved with the world (`photos` on the piece), so it syncs like the rest.
+- **First tab renamed My Picture (13 Nov, later):** the map tab is "My Picture" (was "My World").
+- **Sync never asks (13 Nov, later):** when the device and the account both changed, the account (the email you
+  sign in with) always wins, with no pop-up. The device's version is still kept on the device (`dreamLife.otherWorld`)
+  and can be downloaded from Account. Replaces "ask only if both changed" in the sync rule below.
+- **Account, simplified (13 Nov, later):** no joined date and no places/pieces/goals counts under the name; sections
+  sit on the page with dividers (no cards); order is name, character, usage sharing, Sync, Help, then Delete account.
+- **Cards back (13 Nov, later):** the lists-instead-of-boxes trial is reversed; content sits in the soft white cards
+  again (faint ring, wide soft shadow, 20px corners) on the white page. The More list stays plain rows with dividers, no card.
+- **Tab bar as a straight band (13 Nov, later):** square corners and a hairline along the top, still glass.
+- **Tab bar, revised (13 Nov, later):** the bar sits on the bottom edge (rounded top corners, glass) instead of
+  floating; the current tab is rose. Tabs renamed My World, Pieces, Goals, Journal, plus a fifth, **More**, that lists
+  To-do, My Assets, Good things and Affirmations, so none is hidden inside another tab. Goals and Journal lose the
+  To-do / Assets sub-tabs added earlier the same day.
+- **Floating tab bar, four tabs (13 Nov):** World, Picture, Goals, Journal, the same on every screen. To-do sits
+  inside Goals (milestones and to-dos are both things to do), Assets inside Journal (records of what you've built). The
+  menu is no longer opened: Account is your photo at the top right, Help moved into Account. Every "Journal" now opens
+  the same page, on the tab last used. Replaces the Home Goals/Journal buttons and the two-item bar on pages.
+- **Sunlight on the water (13 Nov):** the sea keeps its blue through the day; the time of day shows as the sun's
+  reflection (a path of glints that moves from right to left and changes colour), not as a tint over the water.
+- **Time of day on Home (13 Nov):** replaces the 7pm on/off night switch with gradual light: dawn, morning, sunny
+  afternoon, golden hour, sunset, dusk and night, blended minute by minute from the phone's clock.
+- **Drift circuit always on land (13 Nov):** the Japan island's random shore was cutting the track. The circuit now
+  sits a little further inland and keeps a rounded shore of its own.
+- **Goal dates (13 Nov):** "By when" offers the same ranges as pieces (Within 2 years, 2–5, 5–10, 10–15 years) or an
+  exact date. Nothing is assumed for a new goal (it used to default to a month away). A range sets the deadline to the
+  end of that range from today; `timeframe` is saved on the goal.
+- **One text field style (13 Nov):** filled grey with rounded corners instead of an underline, because underlines
+  doubled up with the row hairlines.
+- **Menu order (13 Nov):** Paint a Picture, Journal, To-do list, My Assets | Account | How to explore, See the
+  introduction again. It no longer touches the left edge.
+- **Lists instead of boxes, on every screen (13 Nov, trial):** items sit on the white page with a hairline between
+  them and space between groups, as in Apple's Photos and Music. Sheets, pop-ups, the menu and map controls keep their
+  surface. Undo by removing the "lists, not boxes" block at the end of the stylesheet.
+- **White page, soft cards (13 Nov):** the grey page (#f3f3f1) read as dull, with grey page, grey header and white
+  cards too close in tone. The page is now white across the app; cards stay white with a faint ring, a wide soft shadow
+  and 20px corners, after references from Fuse and Cal AI. Replaces the page colour from the Gallery palette (12 Nov).
 - **Onboarding refinements (13 Nov, later):** footer is iOS-style: back top left beside the progress line, one
   full-width Continue at the bottom, "Not now" / "Skip" as quiet text under it. The character's scene runs to the top
   and both edges. "A woman / A man" sits above the name. Where you live is never assumed: the row asks, and the time
