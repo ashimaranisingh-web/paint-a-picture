@@ -23,7 +23,8 @@ Always ask the owner before each of these.
 6. "Upload succeeded" means App Store Connect has it; it shows in TestFlight after processing (10–30 min).
 7. Commit the build-number bump and note it in [DECISIONS.md](DECISIONS.md) if it shipped something notable.
 
-Build history: 3, 4, 5 uploaded (5 on 13 Nov 2026: Gallery palette, pixel pieces, rebuilt onboarding). Next is 6.
+Build history: 3, 4, 5, 6 uploaded (5 on 13 Nov 2026: Gallery palette, pixel pieces, rebuilt onboarding; 6 on 13 Nov
+2026: five-tab bar, time-of-day light, white cards, Account and onboarding refresh, piece photos). Next is 7.
 
 ## Supabase (accounts and sync)
 - Project URL and publishable key live in `CFG` in `index.html`. Schema: `supabase/schema.sql`. Setup notes:
