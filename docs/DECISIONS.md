@@ -160,3 +160,4 @@ line rather than editing the old one.
 - **Year pill as glass, one date format (14 Nov):** the Journal year pill gets the frosted-glass look with grey arrows at the far ends; the M T W T F S S row above the year is removed. Dates everywhere read "Sat, Nov 1", including the date pill on a tapped day.
 - **Apple-style glass (14 Nov):** the tinted pink glass pill read as heavy; the year pill is now clear Apple-style glass (near-white, hairline edges, soft shadow).
 - **Year pill in the title row (14 Nov):** the year pill moves up beside "Journal", far right, and stays visible while scrolling. Tapping it lists this year back to the first year with an entry (at least last year); the arrows are gone.
+- **iOS build 8 (14 Nov):** uploaded to TestFlight with the glass year pill in the title row and the "Sat, Nov 1" dates.

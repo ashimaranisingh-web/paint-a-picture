@@ -25,7 +25,8 @@ Always ask the owner before each of these.
 
 Build history: 3, 4, 5, 6 uploaded (5 on 13 Nov 2026: Gallery palette, pixel pieces, rebuilt onboarding; 6 on 13 Nov
 2026: five-tab bar, time-of-day light, white cards, Account and onboarding refresh, piece photos; 7 on 14 Nov 2026:
-daily faces journal, This week tab, places laid out like the world map, pink accent). Next is 8.
+daily faces journal, This week tab, places laid out like the world map, pink accent; 8 on 14 Nov 2026: glass year pill
+in the Journal title row with a year list, "Sat, Nov 1" dates). Next is 9.
 
 ## Supabase (accounts and sync)
 - Project URL and publishable key live in `CFG` in `index.html`. Schema: `supabase/schema.sql`. Setup notes:
