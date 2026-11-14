@@ -45,6 +45,8 @@ shipping), [docs/RELEASE.md](docs/RELEASE.md) (web, TestFlight, Supabase, PostHo
 - No top-level `const` that reads another `const` declared further down (the `LD_V` startup crash). Make it lazy.
 - State changes go through `commit(fn)` so they save, sync and count usage. Don't write `S` and call `save()` by hand.
 - New "create" actions for guests go behind `needAccount(then)`. Places and pieces stay open to guests.
+- Anything `position:sticky` inside the page scroller needs `top:calc(-1 * var(--safe-top))` and that much extra top padding, or content shows through the notch strip above it (seen in the desktop frame and on iPhone).
+- On the map canvas, set `globalCompositeOperation` right before every `drawImage`. A mode left on from an earlier layer ("screen" from the streetlight glow) turned the evening sea white.
 - Respect Reduce Motion (`prefers-reduced-motion`) for every new animation.
 - Usage events: add to `track()` calls only with the consent check already inside it; never send names, emails, goal
   text or journal text. Demo mode is never tracked.

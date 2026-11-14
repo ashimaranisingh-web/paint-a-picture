@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap">
 </head>
 <body>
 <style>
@@ -16,7 +16,7 @@
   --safe-top:env(safe-area-inset-top,0px); /* the notch / Dynamic Island; the desktop iPhone 14 frame uses 47px */
   --paper:#f3f3f1; --surface:#ffffff; --sunk:#e9e9e6;
   --ink:#141414; --ink-2:#424242; --muted:#6f6f6f; --line:#e4e4e1; --line-2:#d4d4d0;
-  --accent:#d94a7a; --accent-strong:#c4365f; --accent-2:#a92c51; --accent-ink:#b02f57; --accent-soft:#f9e6ec;
+  --accent:#ea4c8e; --accent-strong:#d0326f; --accent-2:#a81d52; --accent-ink:#c4286a; --accent-soft:#fde4ef; /* bubblegum pink sampled from the cat-toy reference (hue 336); lilac #7f35d4 and raspberry #d6005a were tried on 14 Nov */
   --amber:#8f5c14; --amber-soft:#f5ead6; --sea:#2c6a88; --sea-soft:#e2edf2; --danger:#9b3b2a;
   --night:#0f1420; --glass:rgba(16,19,27,.84); --glass-line:rgba(255,255,255,.14);
   --serif:"Instrument Serif", "Iowan Old Style", Georgia, serif;
@@ -738,7 +738,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .ld-h{font-size:24px;line-height:1.2}
 .st-head{gap:6px}
 .st-status{font-size:14px;color:#8a8a87}
-.btn.st-big{background:var(--accent-strong);box-shadow:0 12px 26px -12px rgba(207,51,103,.6)}
+.btn.st-big{background:var(--accent-strong);box-shadow:0 12px 26px -12px rgba(208,50,111,.5)}
 .st-back{box-shadow:0 0 0 1px #e6e6e3,0 8px 20px -10px rgba(20,20,20,.25)}
 .st-pager i{background:#e3dccf}
 .st-line{background:#e6e6e3}
@@ -985,7 +985,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 .ac-stats .ico{color:var(--ink-2)}
 .tour-top button{color:var(--ink-2)}.tour-t .ico{color:var(--ink)}
 .st-dots button[aria-current="true"]{background:var(--ink)}
-.btn.st-big{box-shadow:0 10px 22px -12px rgba(207,51,103,.5)}
+.btn.st-big{box-shadow:0 10px 22px -12px rgba(208,50,111,.45)}
 /* 3. labels: quiet, normal case */
 :is(.eyebrow,.loccard .meta,.jc-week,.jp-notes dt,.st-glbl,.st-gms small,.st-grow small,.st-lvl>span,.st-grp h2,.ac-who small){
   text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--muted)}
@@ -1152,6 +1152,18 @@ body.demo-on .me-btn{box-shadow:0 0 0 2px var(--accent)}
 .ac-help .ac-row small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
 .ac-help .ac-row + .ac-row{border-top:1px solid var(--hair)}
 .jp-tabs{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr} /* two or three tabs, always one row */
+/* Pieces page: the intro sits in the header, above its line; Your World | Your Pieces tabs */
+#p-dreams .phead{flex-wrap:wrap;row-gap:4px}#p-dreams .phead .pp-intro{flex-basis:100%;margin:0}
+/* categories sheet: every row the same width, the name padded like other fields, the bin lined up */
+.cat-row input[type=text]{padding:12px 14px}.list .cat-row{padding:6px 0}.cat-row .iconbtn{margin:0;flex:none}
+/* photo slideshow, full screen */
+.ph-show{position:absolute;inset:0;z-index:90;background:#0d0d0f;color:#fff;display:grid;grid-template-rows:auto 1fr auto;touch-action:none;overflow:hidden}
+.ph-top{display:flex;align-items:center;gap:12px;padding:calc(var(--safe-top) + 10px) 16px 10px;font-size:14px;font-weight:600}.ph-top span:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph-x{all:unset;cursor:pointer;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:24px;line-height:1}
+.ph-stage{display:grid;place-items:center;min-height:0;padding:0 8px;touch-action:pan-y}.ph-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;user-select:none;-webkit-user-drag:none}
+.ph-nav{all:unset;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:28px}
+.ph-nav.prev{left:10px}.ph-nav.next{right:10px}
+.ph-dots{display:flex;justify-content:center;gap:6px;padding:14px 0 calc(18px + env(safe-area-inset-bottom,0px))}.ph-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.ph-dots i.on{background:#fff}
 /* cards: corners at most 12px, 12px inside, 12px between (13 Nov, later) */
 :root{--card-r:12px}
 :is(.panel,.gcard,.jcard,.todo,.pl-card,.as-item,.good-today,.st-goal,.st-gcard,.wk-hit,.aff-card,.ac-av>.field,.ac-av>.av-row,.sugg-item){border-radius:12px;padding:12px}
@@ -1197,6 +1209,184 @@ body.on-home.world-night .tabbar button[aria-current="page"]{color:#ff8db3}
 .more-list li:last-child .more-row{border-bottom:0}
 .more-row span{flex:1;font-weight:700;font-size:16px}.more-row small{display:block;font-weight:500;font-size:13px;color:var(--muted)}
 .more-row .chev{width:18px;height:18px;color:var(--muted)}
+/* Journal: today's entry and its reply */
+.jr-in{min-height:96px;resize:vertical;font:inherit;line-height:1.5}
+.jr-foot{display:flex;justify-content:flex-end}
+.jr-reply{border-radius:12px;padding:12px;display:grid;gap:4px;background:#f6f5f2}
+.jr-reply p{margin:0;font-size:15px;line-height:1.45}
+.jr-reply.good{background:#fdeef3}.jr-reply.good .eyebrow{color:var(--accent-strong)}
+.jr-reply.hard{background:#eef3f8}
+.jr-reply:not(.in-sheet){animation:jrIn .45s ease-out both}
+@keyframes jrIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.jr-reply{animation:none!important}}
+.jr-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.jr-top .eyebrow{white-space:nowrap;flex:none}
+.empty .empty-log{display:flex;margin-top:12px;padding-left:0}
+.ob-main{overflow-x:hidden;overflow-x:clip} /* the intro's jigsaw pieces poke 7px past the edge on tall phones */
+.pp-world,.pp-pieces{display:grid;gap:12px}
+/* intro: the button waits for the picture; the row labels read as a sequence */
+#obFoot.st-wait>*{opacity:0;pointer-events:none}
+#obFoot>*{transition:opacity .5s ease}
+.st-chainv .st-lvl>span{font-size:15px;font-weight:700;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){#obFoot>*{transition:none}}
+.jr-mixh{display:flex;justify-content:space-between;align-items:center}
+.linkbtn{border:0;background:none;padding:4px 0;font:inherit;font-size:13px;font-weight:700;color:var(--accent-ink);cursor:pointer}
+.mix{display:flex;align-items:center;gap:14px}
+.mix-sw{width:44px;height:44px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.mix-sw.empty{background:transparent;box-shadow:inset 0 0 0 2px var(--accent);opacity:.5}
+.mix-rows{flex:1;display:grid;gap:6px}
+.mix input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;border-radius:2px;margin:0;background:none;padding:0;border:0}
+.mix input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:var(--track)}
+.mix input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:var(--track)}
+.mix input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-8.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.25)}
+.mix input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.25)}
+.mix-hue{--track:linear-gradient(90deg,hsl(0 65% 50%),hsl(60 65% 50%),hsl(120 65% 50%),hsl(180 65% 50%),hsl(240 65% 50%),hsl(300 65% 50%),hsl(359 65% 50%))}
+.mix-shade{--track:linear-gradient(90deg,hsl(var(--h) 65% 92%),hsl(var(--h) 65% 50%),hsl(var(--h) 65% 8%))}
+.yr{display:grid;gap:14px}
+.yr-nav{display:flex;align-items:center;justify-content:space-between}.yr-nav h2{font-size:17px;margin:0;color:var(--accent-ink)}
+.yr-nav .iconbtn{font-size:22px;line-height:1;color:var(--accent-ink)}.yr-nav .iconbtn:disabled{opacity:.25}
+.ym{display:grid;grid-template-columns:repeat(7,1fr);gap:4px 6px}
+.ym-h{text-align:center;font-size:11px;font-weight:700;color:var(--accent-ink);opacity:.6;padding-bottom:4px}
+.yd{border:0;padding:0;background:transparent;cursor:pointer;display:grid;place-items:center;position:relative;width:100%;aspect-ratio:1}
+.yd::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.7;grid-area:1/1;transition:width .25s ease,height .25s ease,opacity .25s ease}
+.yd.fut::before{opacity:.22;width:4px;height:4px}.yd.fut{cursor:default}
+.yd.now::after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;box-shadow:0 0 0 1.5px var(--accent)}
+.yd.on::before{width:82%;height:82%;opacity:1;background:var(--c);border-radius:var(--blob);transform:rotate(var(--tilt))}
+.yd.on.now::after{width:92%;height:92%}
+@media (prefers-reduced-motion:reduce){.yd::before{transition:none}}
+/* the sticky page title also covers the notch strip above it, so nothing scrolls through behind the status bar */
+.page>.phead{top:calc(-1 * var(--safe-top));margin-top:calc(-16px - var(--safe-top));padding-top:calc(16px + var(--safe-top))}
+.home-left{display:flex;align-items:center;gap:10px}
+.home-top .me-btn{width:40px;height:40px;background:var(--accent);color:#fff;font-size:14px;font-weight:800;letter-spacing:.02em;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.home-clock{font-family:"DM Mono",ui-monospace,monospace;font-size:13px;font-weight:500;letter-spacing:.04em;color:rgba(20,20,20,.55);padding-top:6px;font-variant-numeric:tabular-nums}
+.home.night .home-clock{color:rgba(255,255,255,.7)}
+.clock-wrap{position:relative;display:grid;justify-items:end}
+button.home-clock{all:unset;cursor:pointer;font-family:"DM Mono",ui-monospace,monospace;font-size:13px;font-weight:500;letter-spacing:.04em;padding:6px 2px;font-variant-numeric:tabular-nums;color:rgba(20,20,20,.55)}
+.home.night button.home-clock{color:rgba(255,255,255,.7)}
+button.home-clock.preview{color:var(--accent);font-weight:700}
+.home.night button.home-clock.preview{color:#ff7fb0}
+.clock-pop{position:absolute;top:100%;right:0;width:220px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 4px 18px rgba(0,0,0,.18)}
+.clock-pop[hidden]{display:none}
+.clock-pop input{flex:1;accent-color:var(--accent);margin:0}
+.clock-now{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--accent-ink);padding:4px 2px}
+/* Account: the character stands in a small piece of her world inside "Your character", next to the choices that change her */
+.ac-scene{position:relative;height:240px;border-radius:12px;overflow:hidden;display:grid;justify-items:center;align-items:end;padding-bottom:8px;margin-bottom:12px}
+.ac-scene .ac-me{position:relative;z-index:1;width:124px;height:216px}
+/* Quiet text buttons (+ New, Add goal...): accent text on a pale accent tint when hovered. Hover-capable screens only, so a tap on iPhone doesn't leave it stuck. */
+@media (hover:hover){.btn.quiet:not(:disabled):hover{color:var(--accent-ink);background:var(--accent-soft)}.ob-dark .btn.quiet:not(:disabled):hover{color:#ff8db3;background:rgba(255,255,255,.08)}}
+/* Daily faces: empty days are outlined circles, filled days are their colour with the face drawn in */
+.yr{gap:12px}
+.yr-nav h2{text-align:center}.yr-nav h2 small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
+.yr-hint{margin:-4px 0 0;font-size:13px;text-align:center}
+.ym-head{position:static}
+.ym-month{display:grid;gap:8px;scroll-margin-top:calc(var(--safe-top) + 76px)}
+.ym-month h3{margin:10px 0 0;font-size:15px;font-weight:700}
+.ym{gap:6px}
+.yd>*{grid-area:1/1}
+.yd::before{width:80%;height:80%;border-radius:50%;background:transparent;opacity:1;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent);transform:none;transition:background-color .25s ease}
+.yd.fut::before{width:80%;height:80%;opacity:1;box-shadow:inset 0 0 0 1px rgba(20,20,20,.1)}
+.yd.on::before{width:80%;height:80%;border-radius:50%;background:var(--c);box-shadow:none;transform:none}
+.yd.now::after,.yd.on.now::after{width:96%;height:96%;box-shadow:0 0 0 2px var(--accent)}
+.yd .face{width:80%;height:80%;pointer-events:none}
+.yd-link{position:absolute;top:-2px;right:-2px;width:17px;height:17px;border-radius:50%;background:var(--accent-strong);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+.yd-link .ico{width:11px;height:11px;stroke-width:2.4}
+.fc-wrap{display:grid;justify-items:center;gap:10px}
+.fc{width:min(220px,60vw);aspect-ratio:1;border-radius:50%;position:relative;touch-action:none;cursor:crosshair;background:var(--c,transparent);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 50%,transparent);transition:background-color .2s ease}
+.fc.on{box-shadow:none}
+.fc-ink,.fc-ink svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.fc-tools{display:flex;gap:20px}.fc-tools .linkbtn:disabled{opacity:.35;cursor:default}
+#fcMix .mix-sw{display:none}
+.fc-need{margin:0;font-size:13px;min-height:1.2em}
+.fc-links{display:grid;gap:8px;justify-items:start}
+.fc-chosen{list-style:none;margin:0;padding:0;display:grid;gap:8px;width:100%}
+.fc-chosen li{display:flex;align-items:center;gap:10px;font-size:15px}
+.fc-chosen small{display:block;font-size:12px;color:var(--muted)}
+.fc-lk{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.fc-lk .ico{width:14px;height:14px}
+.fc-pick{display:grid;gap:2px;width:100%;max-height:280px;overflow:auto}
+.fc-pick .eyebrow{margin:8px 0 2px}
+.fc-opt{text-align:left;border:0;background:transparent;padding:10px 12px;border-radius:10px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer}
+.fc-opt.ms{padding-left:28px;font-size:14px;color:var(--ink-2)}
+.fc-opt[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.wk-faces{display:grid;gap:12px}
+@media (prefers-reduced-motion:reduce){.fc,.yd::before{transition:none}}
+/* faces are line drawings: the day's colour is the outline of the circle and the lines of the face, on white */
+.yd.on::before{background:transparent;box-shadow:none}
+.fc.on{background:transparent;box-shadow:none}
+/* Journal sheet: feeling first, then the face, then a long page; empty days are grey hand-drawn rings, today sits on a pale pink disc */
+.yd::before{display:none} /* the rings are drawn in the svg now */
+.yd.now::after,.yd.on.now::after{width:100%;height:100%;box-shadow:none;background:var(--accent-soft);z-index:0}
+.yd .face{position:relative;z-index:1}
+#fcMix .mix-shade{display:none}
+.fc-jr>span{display:flex;justify-content:space-between;align-items:baseline}
+.fc-jr em{font-style:normal;font-weight:500;color:var(--muted)}
+.fc-jr textarea{min-height:240px;resize:vertical;line-height:1.55}
+/* colour sliders: no focus line under the track; keyboard focus shows as a soft pink halo on the thumb instead */
+.mix input[type=range]:focus,.mix input[type=range]:focus-visible{outline:none;box-shadow:none;border-bottom-color:transparent} /* the pink underline is for text boxes, not sliders */
+.mix input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.25),0 0 0 5px var(--accent-soft)}
+.mix input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.25),0 0 0 5px var(--accent-soft)}
+/* reading a day */
+.sheet-h .fc-edit{margin-left:auto;margin-right:-4px}
+.fc-read{white-space:pre-wrap;font-size:17px;line-height:1.6;color:var(--ink);margin-top:8px}
+.fc-read-empty{margin:8px 0 0;text-align:center}
+/* year: date pill on tap; quiet month names */
+.yr{position:relative}
+.yd{touch-action:manipulation}
+.yr-pill{position:absolute;left:0;top:0;z-index:5;padding:7px 16px;border-radius:999px;background:var(--accent-strong);color:#fff;font:500 14px/1.2 "DM Mono",ui-monospace,monospace;white-space:nowrap;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease;box-shadow:0 6px 16px -8px rgba(0,0,0,.35)}
+.yr-pill.show{opacity:1;transform:none}
+.ym-month{gap:2px}
+.ym-month h3{margin:14px 0 0;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);opacity:.75}
+@media (prefers-reduced-motion:reduce){.yr-pill{transition:none;transform:none}}
+/* the year as a soft pill, like the reference */
+.yr-nav{justify-content:center;gap:14px}
+.yr-nav .iconbtn{opacity:.55}
+.yr-nav .iconbtn:disabled{opacity:.15}
+.yr-year{margin:0;padding:9px 26px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font:500 20px/1 "DM Mono",ui-monospace,monospace;letter-spacing:.02em;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 22%,transparent),inset 0 1px 0 rgba(255,255,255,.7),0 4px 12px -6px rgba(0,0,0,.18)}
+/* Weekly: done this week */
+.wk-auto{display:grid;gap:10px}
+.wk-done{list-style:none;margin:0;padding:0;display:grid}
+.wk-done li{display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.wk-done li:last-child{border-bottom:0}
+.wk-done small{display:block;font-size:12px;color:var(--muted)}
+.wk-dk{width:34px;flex:none;font:500 13px "DM Mono",ui-monospace,monospace;color:var(--accent-ink)}
+.wk-none,.wk-sum{margin:0;font-size:13px}
+/* Home: the puzzle button to Pieces sits at the top right, the clock just left of it */
+.clock-wrap{display:flex;flex-direction:row-reverse;align-items:center;gap:10px}
+.home-pieces{all:unset;cursor:pointer;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink);box-shadow:0 0 0 1px rgba(20,20,20,.08),0 4px 12px -6px rgba(0,0,0,.25)}
+.home-pieces .ico{width:20px;height:20px}
+.home-pieces:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
+@media (hover:hover){.home-pieces:hover{color:var(--accent-ink);background:#fff}}
+/* To-do by the day */
+.td-range{border:0;cursor:pointer;font-size:17px;padding:8px 22px}
+.td-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.td-day{border:0;background:transparent;display:grid;justify-items:center;gap:4px;padding:4px 0;cursor:pointer;font:inherit;color:var(--ink);touch-action:manipulation}
+.td-wd{font-size:11px;font-weight:600;color:var(--muted)}
+.td-n{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:500 15px "DM Mono",ui-monospace,monospace;transition:background-color .15s ease}
+.td-day.now .td-n{color:var(--accent-ink)}
+.td-day.on .td-n{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.td-day:focus-visible{outline:none}.td-day:focus-visible .td-n{outline:2px solid var(--accent-strong);outline-offset:1px}
+.td-mark{width:5px;height:5px;border-radius:50%}
+.td-mark.open{background:#a8a8a8}.td-mark.done{background:var(--accent)}
+.td-head{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
+.td-head .muted{font-size:13px}
+.td-empty{margin:0;font-size:14px}
+@media (prefers-reduced-motion:reduce){.td-n{transition:none}}
+/* puzzle button: just the icon, no circle behind it */
+.home-pieces{background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color:rgba(20,20,20,.8)}
+.home-pieces .ico{width:24px;height:24px;stroke-width:2}
+body.world-night .home-pieces{color:rgba(255,255,255,.9)}
+@media (hover:hover){.home-pieces:hover{background:none;color:var(--accent-ink)}}
+/* the eye sits in the Home header, left of the puzzle piece: just the icon, gold when you can look or are looking */
+.home-eye{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;color:rgba(20,20,20,.8)}
+.home-eye .ico{width:24px;height:24px;stroke-width:2}
+.home-eye.off{color:rgba(20,20,20,.3)}
+.home-eye.ready,.home-eye.open{color:#b8860b}
+body.world-night .home-eye{color:rgba(255,255,255,.9)}
+body.world-night .home-eye.off{color:rgba(255,255,255,.35)}
+body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
+.home-eye:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;border-radius:50%}
+.clock-wrap{gap:4px}
+/* the place card floats at the same height as the places strip: same soft, tight shadow, so it no longer greys the strip below */
+.loccard{box-shadow:0 1px 2px rgba(20,20,20,.06),0 8px 22px -10px rgba(20,20,20,.28)}
 </style>
 
 <div id="app">
@@ -1204,12 +1394,13 @@ body.on-home.world-night .tabbar button[aria-current="page"]{color:#ff8db3}
   <section class="screen home" id="home">
     <div id="stage"><canvas id="scene" tabindex="0" aria-label="Your world. Drag to move around, pinch or scroll to zoom, tap to move the lens. Arrow keys pan, plus and minus zoom."></canvas><canvas id="hud" aria-hidden="true"></canvas></div>
     <header class="home-top">
-      <div class="mark"><span class="mark-name" id="worldTitle">Paint a Picture</span><span class="mark-sub" id="greet"></span></div>
-      <button class="gbtn me-btn" id="homeMe" data-go="account" aria-label="Account"></button>
+      <div class="home-left"><button class="me-btn" id="homeMe" data-go="account" aria-label="Account"></button>
+        <div class="mark"><span class="mark-name" id="worldTitle">Paint a Picture</span><span class="mark-sub" id="greet"></span></div></div>
+      <div class="clock-wrap"><button type="button" class="home-pieces" data-go="dreams" aria-label="Your pieces"><svg class="ico" viewBox="0 0 24 24"><path d="M7 7H11.6A2.6 2.6 0 1 1 16.4 7H21V11.6A2.6 2.6 0 1 0 21 16.4V21H16.4A2.6 2.6 0 1 0 11.6 21H7V16.4A2.6 2.6 0 1 1 7 11.6Z"/></svg></button><button type="button" id="useVision" class="eye home-eye"><svg class="ico" viewBox="0 0 24 24"><g class="eye-open"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="eye-shut"><path d="M2 11s4 6 10 6 10-6 10-6"/><path d="M5 14.5l-1.6 2M9.3 16.6l-.6 2.4M14.7 16.6l.6 2.4M19 14.5l1.6 2"/></g></svg></button><button type="button" class="home-clock" id="homeClock" aria-label="Time of day. Tap to preview another hour" aria-expanded="false"></button>
+        <div class="clock-pop" id="clockPop" hidden><input type="range" id="clockH" min="0" max="23.75" step="0.25" aria-label="Preview an hour"><button type="button" class="clock-now" id="clockNow">Now</button></div></div>
     </header>
     <div class="home-chips" id="homeChips"></div>
-    <div class="mapctl" role="group" aria-label="Map controls">
-      <button id="useVision" class="eye"><svg class="ico" viewBox="0 0 24 24"><g class="eye-open"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g><g class="eye-shut"><path d="M2 11s4 6 10 6 10-6 10-6"/><path d="M5 14.5l-1.6 2M9.3 16.6l-.6 2.4M14.7 16.6l.6 2.4M19 14.5l1.6 2"/></g></svg></button>
+    <div class="mapctl" role="group" aria-label="Map controls" hidden> <!-- bird's-eye and "show me" taken out on 14 Nov; kept so their code still finds them -->
       <button id="birdseye" aria-label="Bird's-eye view of your whole world" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></button>
       <button id="recenter" aria-label="Show me"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
     </div>
@@ -1241,10 +1432,10 @@ body.on-home.world-night .tabbar button[aria-current="page"]{color:#ff8db3}
   <!-- the floating tab bar: the four places of the app, the same on every screen -->
   <nav class="tabbar" id="tabbar" aria-label="Primary">
     <button data-go="home" data-tab="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 18h18M6 21h12"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 5v3M5.2 9.2l2.1 2.1M18.8 9.2l-2.1 2.1M2.5 14.5h2.5M19 14.5h2.5"/></svg>My Picture</button>
-    <button data-go="dreams" data-tab="dreams"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg>Pieces</button>
     <button data-go="goals" data-tab="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-    <button data-go="week" data-tab="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
-    <button data-go="more" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>More</button>
+    <button data-go="week" data-tab="week"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>This week</button>
+    <button data-go="journal" data-tab="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
+    <button data-go="more" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7.3" r="1.2"/><circle cx="14.5" cy="7.3" r="1.2"/><circle cx="17" cy="11" r="1.2"/></svg>My stuff</button>
   </nav>
 
   <section class="screen ob" id="onboard" hidden></section>
@@ -1252,7 +1443,6 @@ body.on-home.world-night .tabbar button[aria-current="page"]{color:#ff8db3}
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint a Picture<small>Describe the life you're building</small></span></button>
     <button role="menuitem" data-go="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg><span>Journal<small>Notes, good things, affirmations</small></span></button>
-    <button role="menuitem" data-go="todo"><svg class="ico" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 6l1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17"/></svg><span>To-do list<small>The little things to get done</small></span></button>
     <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
     <hr>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
@@ -1325,11 +1515,24 @@ const fmt = (s, o) => parseDay(s).toLocaleDateString(undefined, o || {day: "nume
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 const $ = id => document.getElementById(id);
 
+/* One day's entry, cleaned so a bad or old save still loads: a colour string becomes {c}; strokes are kept as whole numbers 0-100. */
+function normDays(o){
+  const out = {}; if (!o || typeof o !== "object" || Array.isArray(o)) return out;
+  for (const [k, v] of Object.entries(o)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) continue;
+    const d = typeof v === "string" ? {c: v} : v && typeof v === "object" ? v : null;
+    if (!d || typeof d.c !== "string" || !/^#[0-9a-f]{6}$/i.test(d.c)) continue;
+    const face = Array.isArray(d.face) ? d.face.filter(Array.isArray).map(st => st.filter(n => typeof n === "number" && isFinite(n)).map(n => Math.max(0, Math.min(100, Math.round(n))))).filter(st => st.length >= 2) : [];
+    const links = Array.isArray(d.links) ? d.links.filter(l => l && ["goal", "ms", "piece"].includes(l.t) && l.id) : [];
+    out[k] = {c: d.c, face, note: typeof d.note === "string" ? d.note.slice(0, 4000) : "", links, at: d.at || ""};
+  }
+  return out;
+}
 function blankState(){
   return {v: 3, onboarded: false, onboarding: {step: 0, done: false}, demo: false,
     profile: {id: uid(), name: "", email: "", horizon: 10, avatar: {...DEFAULT_AVATAR}},
     categories: DEFAULT_CATEGORIES.slice(), destinations: [],
-    aspirations: [], goals: [], entries: [], reflections: {}, assetCats: STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name})), assets: [], notes: [], todos: [], affirmations: [], gratitude: [],
+    aspirations: [], goals: [], entries: [], reflections: {}, assetCats: STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name})), assets: [], notes: [], days: {}, todos: [], affirmations: [], gratitude: [],
     rewards: {clearViewsUsed: 0}, seenBuilt: []};
 }
 function migrate(o){
@@ -1362,6 +1565,7 @@ function normalize(o){
   s.onboarding = Object.assign({step: 0, done: false}, o.onboarding || {});
   s.rewards = Object.assign({clearViewsUsed: 0}, o.rewards || {});
   s.destinations = (s.destinations || []).filter(d => d && d.id);
+  if ((o.layoutV || 0) < 2) s.destinations.forEach(d => { d.col = null; d.row = null; }); s.layoutV = 2; /* 14 Nov: places re-laid out once like a world map (west to east, the Americas on the left) */
   // the original five keep their order (Mumbai, Delhi, Boston, LA, Japan) and LA is called LA
   const ORDER = ["d-mumbai", "d-delhi", "d-boston", "d-la", "d-japan"], rank = d => { const i = ORDER.indexOf(d.id); return i < 0 ? 99 : i; };
   if (ORDER.every(id => s.destinations.some(d => d.id === id))) s.destinations = s.destinations.map((d, i) => [d, i]).sort((a, b) => (rank(a[0]) - rank(b[0])) || (a[1] - b[1])).map(x => x[0]);
@@ -1377,6 +1581,7 @@ function normalize(o){
   s.entries.forEach(e => { e.goalIds ||= []; });
   if (!Array.isArray(o.assetCats)) s.assetCats = STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name}));
   s.assets = Array.isArray(o.assets) ? o.assets : []; s.notes = Array.isArray(o.notes) ? o.notes : [];
+  s.days = normDays(o.days); /* daily faces: {"2026-11-14": {c, face, note, links, at}}; old saves held just a colour string */
   for (const k of ["todos", "affirmations", "gratitude"]) s[k] = Array.isArray(o[k]) ? o[k] : [];
   s.assets.forEach((a, i) => { a.tags ||= []; if (a.order == null) a.order = i; if (!ASSET_STATUS[a.status]) a.status = "done"; });
   return s;
@@ -1644,8 +1849,8 @@ function newDestination(p, purpose){
 /* ---------------- placing districts on the grid ----------------
    Each destination keeps its own cell (col, row), chosen once when it's added, so adding a place
    never shuffles the rest of the map. */
-const lonE = lon => lon < -25 ? lon + 360 : lon; // the Americas sit east of Asia, across the Pacific
-const geoCell = (lat, lon) => ({c: (lonE(lon) - 60) / 60, r: (50 - lat) / 10});
+const lonE = lon => lon; /* laid out like the world map people know: the Americas on the left, Asia on the right */
+const geoCell = (lat, lon) => ({c: lon / 30, r: (50 - lat) / 8}); /* about 30 degrees of longitude and 8 of latitude per place, so nearby cities (Delhi, Mumbai) get their own islands */
 function placeDestination(d, all){
   const others = all.filter(x => x !== d && x.col != null), taken = new Set(others.map(x => x.col + "," + x.row));
   let p;
@@ -2741,10 +2946,7 @@ let LANDS = [], FILL = [];
 function landShapes(ds){
   LANDS = []; const ctr = d => { const D = DIST.get(d.id); return [D.ox + CW / 2, D.oy + CH / 2]; };
   ds.forEach(d => LANDS.push({box: ctr(d)}));
-  for (let i = 0; i < ds.length; i++) for (let j = i + 1; j < ds.length; j++) {
-    const a = ds[i], b = ds[j], near = a.country && a.country === b.country || (a.lat != null && b.lat != null && Math.hypot(a.lat - b.lat, lonE(a.lon) - lonE(b.lon)) < 28);
-    if (near && Math.max(Math.abs(a.col - b.col), Math.abs(a.row - b.row)) <= 2) { const [x0, y0] = ctr(a), [x1, y1] = ctr(b); LANDS.push({seg: [x0, y0, x1, y1]}); }
-  }
+  /* no land bridges between places any more (14 Nov): every place is its own island, even in the same country */
 }
 function landAt(x, y){
   let v = -1;
@@ -3157,8 +3359,12 @@ function seaLightOf(h){
   return {glint: mix(g0, g1), path: mix(p0, p1), pa: a0 + (a1 - a0) * u, chance: c0 + (c1 - c0) * u, sx};
 }
 const lightC = document.createElement("canvas");
+/* draw just the part of the land mask that's in view (clipped to the mask's own edges, which Safari needs) */
+function landInView(g, cx, cy, W, H){ const x0 = Math.max(0, cx), y0 = Math.max(0, cy), x1 = Math.min(landC.width, cx + W), y1 = Math.min(landC.height, cy + H);
+  if (x1 > x0 && y1 > y0) g.drawImage(landC, x0, y0, x1 - x0, y1 - y0, x0 - cx, y0 - cy, x1 - x0, y1 - y0); }
 function applyLight(g, now){
-  const L = currentLight(), h = LIGHT_H ?? (new Date().getHours() + new Date().getMinutes() / 60), W = lightC.width = VW, H = lightC.height = VH;
+  const L = currentLight(), h = LIGHT_H ?? (new Date().getHours() + new Date().getMinutes() / 60), W = VW, H = VH;
+  if (lightC.width !== W || lightC.height !== H) { lightC.width = W; lightC.height = H; } /* resizing a canvas every frame clears and reallocates it, which made panning stutter */
   const cx = Math.round(camX), cy = Math.round(camY), l = lightC.getContext("2d"), seaMul = L.night ? .78 : .3;
   /* the land: the full colour of the hour */
   if (L.mul !== "rgb(255,255,255)") {
@@ -3167,23 +3373,23 @@ function applyLight(g, now){
     const mc = L.mul.match(/\d+/g).map(Number), dark = Math.max(0, 1 - (mc[0] + mc[1] + mc[2]) / 765), lit = [];
     if (dark > .05) for (const D of DIST.values()) { const k = districtLit(D, now ?? performance.now()); if (k > .05) lit.push([D, k]); }
     l.globalCompositeOperation = "source-over"; /* paint each lit place over the tint, not instead of it */
-    for (const [D, k] of lit) { const keep = .3 * k; l.fillStyle = `rgb(${mc.map(v => Math.round(v + (255 - v) * keep)).join(",")})`; l.fillRect(D.ox - cx, D.oy - cy, CW, CH); }
-    l.globalCompositeOperation = "destination-in"; l.drawImage(landC, -cx, -cy);
+    for (const [D, k] of lit) { const keep = .14 * k; l.fillStyle = `rgb(${mc.map(v => Math.round(v + (255 - v) * keep)).join(",")})`; l.fillRect(D.ox - cx, D.oy - cy, CW, CH); }
+    l.globalCompositeOperation = "destination-in"; landInView(l, cx, cy, W, H);
     g.globalCompositeOperation = "multiply"; g.drawImage(lightC, 0, 0);
     if (lit.length) { /* and a warm glow of streetlights and windows over them */
       l.globalCompositeOperation = "copy"; l.clearRect(0, 0, W, H); l.globalCompositeOperation = "source-over";
-      for (const [D, k] of lit) { l.fillStyle = `rgba(255,180,100,${(.24 * dark * k).toFixed(3)})`; l.fillRect(D.ox - cx, D.oy - cy, CW, CH); }
-      l.globalCompositeOperation = "destination-in"; l.drawImage(landC, -cx, -cy);
+      for (const [D, k] of lit) { l.fillStyle = `rgba(255,170,90,${(.2 * dark * k).toFixed(3)})`; l.fillRect(D.ox - cx, D.oy - cy, CW, CH); }
+      l.globalCompositeOperation = "destination-in"; landInView(l, cx, cy, W, H);
       g.globalCompositeOperation = "screen"; g.drawImage(lightC, 0, 0); }
     /* the sea: a lighter share of it, so it still reads as water */
     const m = L.mul.match(/\d+/g).map(Number).map(v => Math.round(255 - (255 - v) * seaMul));
     l.globalCompositeOperation = "copy"; l.fillStyle = `rgb(${m.join(",")})`; l.fillRect(0, 0, W, H);
-    l.globalCompositeOperation = "destination-out"; l.drawImage(landC, -cx, -cy);
-    g.drawImage(lightC, 0, 0);
+    l.globalCompositeOperation = "destination-out"; landInView(l, cx, cy, W, H);
+    g.globalCompositeOperation = "multiply"; g.drawImage(lightC, 0, 0); /* always darken: the streetlight glow above leaves "screen" on, which turned the evening sea white */
   }
   if (L.ga > .005) { /* the warm glow of the hour sits on the land; on the water the light shows as its path and glints instead */
     l.globalCompositeOperation = "copy"; l.globalAlpha = L.ga; l.fillStyle = L.glow; l.fillRect(0, 0, W, H); l.globalAlpha = 1;
-    l.globalCompositeOperation = "destination-in"; l.drawImage(landC, -cx, -cy);
+    l.globalCompositeOperation = "destination-in"; landInView(l, cx, cy, W, H);
     g.globalCompositeOperation = "screen"; g.drawImage(lightC, 0, 0); }
   /* the sun's path on the water: a faint soft band towards the sun, broken into short ripples of light (streaks that sit on
      the water and shimmer), densest in the path and sparse elsewhere; white at midday, gold or pink when the sun is low */
@@ -3199,7 +3405,7 @@ function applyLight(g, now){
     if (hash(wx, wy + tick * 7, 93) > 1 - p) { l.globalAlpha = .4 + .6 * near; l.fillRect(x + (hash(wx, wy, 95) * 4 | 0), y + (hash(wx, wy, 96) * 2 | 0), 1 + (hash(wx, wy + tick, 94) * (1 + near * 6) | 0), 1); }
   }
   l.globalAlpha = 1;
-  l.globalCompositeOperation = "destination-out"; l.drawImage(landC, -cx, -cy); /* water only */
+  l.globalCompositeOperation = "destination-out"; landInView(l, cx, cy, W, H); /* water only */
   g.globalCompositeOperation = "screen"; g.drawImage(lightC, 0, 0);
   g.globalCompositeOperation = "source-over";
 }
@@ -3409,7 +3615,7 @@ function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { 
 
 /* --- the places strip: every destination in your world, tap to travel --- */
 function renderPlacesNav(){
-  const ds = worldDests().filter(d => !d.placeholder);
+  const ds = worldDests().filter(d => !d.placeholder).sort((a, b) => (a.col ?? 0) - (b.col ?? 0) || (a.row ?? 0) - (b.row ?? 0)); /* west to east, like the map */
   const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
   el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}"><span>${esc(d.name)}</span></button>`).join(`<i class="link" aria-hidden="true"></i>`) : `<button data-go="dreams">Add places</button>`);
   markPlaces();
@@ -3428,7 +3634,8 @@ function travelTo(id){
   const D = DIST.get(id); if (!D) return;
   const l = locs.filter(l => l.D === D).sort((a, b) => locClarity(b).c - locClarity(a).c)[0], x = l ? l.x : D.ox + CW / 2, y = l ? l.y - 14 : D.oy + CH / 2;
   const d = travelTime(Math.hypot(x - (camX + VW / 2), y - (camY + VH / 2)));
-  glideTo(x, y, d); lens = {x, y, moved: true}; $("loccard").hidden = true; lensHover = null; holdStart = 0;
+  tweenCam(x, y, Math.max(zoom, 1), d); /* picking a place also zooms in on it */
+  lens = {x, y, moved: true}; $("loccard").hidden = true; lensHover = null; holdStart = 0;
   travelAvatar(D, d); showRegion(D);
 }
 function travelAvatar(D, d){
@@ -3443,8 +3650,12 @@ function moveTraveller(ts){
   const T = av.travel; if (!T) return;
   const k = Math.min(1, (ts - T.s) / T.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
-  if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0; }
+  if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0;
+    if (T.stay && !onLandAt(av.x, av.y)) setTimeout(() => say(SEA_LINES[Math.floor(Math.random() * SEA_LINES.length)], av.x, av.y - 30), reduced ? 0 : 250); }
 }
+/* she can be sent into the water; when she ends up there she says something silly */
+const SEA_LINES = ["Ahhh, I'm drowning!", "Look, a shark!", "Where is my yacht?", "Should've packed a towel.", "Is this the way to Santorini?", "The water's lovely, actually."];
+function onLandAt(x, y){ const D = districtAt(x, y, true); return D ? !!(D.mask && D.mask[(y - D.oy | 0) * CW + (x - D.ox | 0)]) : !!landAt(x, y); }
 function showRegion(D){ const you = $("journey").querySelector(".you"); if (you) you.style.transitionDuration = (camAnim ? Math.max(350, camAnim.d) : 500) + "ms"; regionShown = D.d.id; markPlaces(); }
 $("journey").addEventListener("click", e => { const b = e.target.closest("[data-dest]"); if (!b) return; tourDid("place"); if (overviewOn) { closeOverview(); setTimeout(() => travelTo(b.dataset.dest), 60); } else travelTo(b.dataset.dest); });
 
@@ -3563,7 +3774,12 @@ cv.addEventListener("keydown", e => {
 $("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av.y - 40, moved: true}; };
 
 function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
+let lastTap = null;
+function closeUpOnMe(){ av.travel = null; av.path = []; /* stop the walk the first tap started, so the camera lands on her */ setZoom(ZMAX, null, null, true); setTimeout(() => glideTo(av.x, av.y - 14, reduced ? 0 : 500), reduced ? 0 : 240); lens = {x: av.x, y: av.y - 40, moved: true}; }
 function tapAt({x, y}){
+  const now = performance.now(); /* a double tap closes in on her */
+  if (lastTap && now - lastTap.t < 320 && Math.hypot(x - lastTap.x, y - lastTap.y) < 24 / Math.sqrt(zoom)) { lastTap = null; closeUpOnMe(); return; }
+  lastTap = {t: now, x, y};
   const ak = avatarLook().style === "doll" ? dollWorldH() / 28 : 1;
   if (Math.abs(x - av.x) < 9 * ak && y > av.y - 29 * ak && y < av.y + 3) { avatarSays(); return; }
   const l = locAt(x, y);
@@ -3662,9 +3878,12 @@ function famousLine(a){
 function showLoc(l){
   const card = $("loccard");
   if (l.fixed) { // a city's own landmark: a plain info card, nothing to open
-    card.innerHTML = `<div class="row"><div class="lc-info"><h3>${esc(l.a.title)}</h3>${(t => t ? `<p class="lc-desc">${esc(t)}</p>` : "")(famousLine(l.a))}</div>
+    card.innerHTML = `<div class="row"><div class="lc-pic"><canvas id="lcPic" width="64" height="64" aria-hidden="true"></canvas></div><div class="lc-info"><h3>${esc(l.a.title)}</h3>${(t => t ? `<p class="lc-desc">${esc(t)}</p>` : "")(famousLine(l.a))}</div>
       <button class="iconbtn x" id="locX" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
     card.hidden = false;
+    { const D = l.D, T = D && (D.terrain || buildDistrictTerrain(D)), c = $("lcPic"); if (T && c) { /* the landmark as it's drawn on your map, framed */
+      const tx = D.pack.tx || 0, ty = D.pack.ty || 0, sz = Math.max(48, Math.min(120, (l.h || 30) + 34)), sx = Math.round(l.x - D.ox - sz / 2), sy = Math.round(l.y - D.oy - sz + 10), g = c.getContext("2d");
+      g.imageSmoothingEnabled = false; g.fillStyle = "#cfe6ef"; g.fillRect(0, 0, 64, 64); g.drawImage(T, sx, sy, sz, sz, 0, 0, 64, 64); } }
     $("locX").onclick = () => { card.hidden = true; if (preview) endPreview(); };
     return;
   }
@@ -3700,7 +3919,7 @@ function renderHomeChips(){
   el.innerHTML = parts.join("");
   // The eye in the map controls: shut and gold when there's a view to spend, shut and dimmed when not, open while one runs.
   const v = $("useVision"), st = vision ? "open" : n ? "ready" : "off";
-  v.className = "eye " + st; v.setAttribute("aria-pressed", !!vision);
+  v.className = "eye home-eye " + st; v.setAttribute("aria-pressed", !!vision);
   v.setAttribute("aria-label", vision ? "Clear view running" : n ? "See your whole world for a minute" : "Clear view: used today");
   v.onclick = () => { if (!vision) clearViewSheet(); };
 }
@@ -4037,12 +4256,14 @@ addEventListener("keydown", e => { if (e.key === "Escape" && overviewOn) closeOv
    5. SCREENS
    ===================================================================== */
 let route = "home";
-const ROUTES = ["home", "goals", "week", "dreams", "account", "assets", "journal", "todo", "entry", "more"];
+const ROUTES = ["home", "goals", "week", "dreams", "account", "assets", "journal", "entry", "more"]; /* "todo" is no longer a place you can go */
 let weekFrom = "home";
 function go(r){
   if (!ROUTES.includes(r)) r = "home";
   if (r === "goals" && route !== "goals") openGoal = null; // cards start collapsed each time you come back
   if ((r === "week" || r === "journal") && !["week", "journal", "entry"].includes(route)) weekFrom = route; // the journal's back arrow returns where she came from
+  if (r === "journal" || r === "week") journalTab = "notes";
+  if (r === "journal") yrScrolled = false; /* land on this month each time Journal opens */ /* Good things and Affirmations open from More */
   route = r; closeMenu(); closeSheet();
   $("onboard").hidden = true; cancelAnimationFrame(obAnim); if (r !== "home") closeOverview();
   $("home").hidden = r !== "home"; $("pages").hidden = r === "home";
@@ -4052,19 +4273,30 @@ function go(r){
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
 /* the four tabs: World, Picture, Goals (with To-do), Journal (Weekly, Journal, Assets). Journal reopens on the tab last used. */
-const TAB_OF = {home: "home", dreams: "dreams", goals: "goals", week: "journal", journal: "journal", entry: "journal", more: "more", todo: "more", assets: "more"};
+const TAB_OF = {home: "home", dreams: "home", /* Pieces opens from the puzzle button on Home, so Home stays lit */ goals: "goals", week: "week", journal: "journal", entry: "week", more: "more", todo: "more", assets: "more"};
 const TAB_ROOTS = ["dreams", "goals", "week", "journal", "more"];
 function lastJournalTab(){ try { const v = localStorage.getItem("pap.journalTab"); return ["week", "journal"].includes(v) ? v : "week"; } catch (e) { return "week"; } }
 function syncTabbar(r){
   if (["week", "journal"].includes(r)) { try { localStorage.setItem("pap.journalTab", r); } catch (e) {} }
   const tb = $("tabbar"); if (!tb) return;
-  tb.querySelector('[data-tab="journal"]').dataset.go = lastJournalTab();
   tb.querySelectorAll("button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === TAB_OF[r] ? "page" : "false"));
   document.body.classList.toggle("on-home", r === "home");
   if ($("homeMe")) $("homeMe").innerHTML = meHTML();
 }
 /* your photo (or initial) at the top right: the way to Account */
-const meHTML = () => S.profile.photo ? `<img src="${esc(S.profile.photo)}" alt="">` : (S.profile.name || "").trim() ? `<span>${esc(S.profile.name.trim()[0].toUpperCase())}</span>` : `<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>`;
+const meHTML = () => { const a = (S.profile.name || "").trim()[0] || "", b = (S.profile.lastName || "").trim()[0] || "", t = (a + b).toUpperCase();
+  return t ? `<span>${esc(t)}</span>` : `<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>`; }; /* initials: the way to Account */
+/* the time the world's light follows, in 24-hour form, top right of Home */
+function tickClock(){ const c = $("homeClock"); if (!c) return; const d = new Date(), h = LIGHT_H ?? d.getHours() + d.getMinutes() / 60, hh = Math.floor(h) % 24, mm = Math.round((h - Math.floor(h)) * 60) % 60;
+  c.textContent = String(hh).padStart(2, "0") + ":" + String(mm).padStart(2, "0"); }
+setInterval(tickClock, 15000); setTimeout(tickClock, 0);
+/* for now: tap the clock to preview the world at another hour (not saved; "Now" goes back to the real time) */
+function setPreviewHour(h){ LIGHT_H = h; lightAt = 0; tickClock(); $("homeClock")?.classList.toggle("preview", h != null); }
+setTimeout(() => { const c = $("homeClock"), pop = $("clockPop"), r = $("clockH"); if (!c) return;
+  c.onclick = () => { pop.hidden = !pop.hidden; c.setAttribute("aria-expanded", !pop.hidden); const d = new Date(); r.value = LIGHT_H ?? d.getHours() + d.getMinutes() / 60; };
+  r.oninput = () => setPreviewHour(+r.value);
+  $("clockNow").onclick = () => { setPreviewHour(null); pop.hidden = true; c.setAttribute("aria-expanded", "false"); };
+}, 0);
 function addMe(r){
   const head = TAB_ROOTS.includes(r) && $("p-" + r)?.querySelector(":scope > .phead"); if (!head || head.querySelector(".me-btn")) return;
   const right = document.createElement("div"); right.className = "ph-right";
@@ -4074,14 +4306,11 @@ function addMe(r){
 }
 function renderPage(r){ renderPageOnly(r); } /* your photo (the way to Account) lives on Home only */
 /* More: the things that live a level down, listed so they're never hidden */
-const MORE_ITEMS = [["todo", "To-do list", "The little things to get done", '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 6l1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17"/>'],
-  ["assets", "My Assets", "What you've made and built", '<path d="M3 7h7l2 2h9v10H3z"/>'],
-  ["good", "Good things", "Three good things a day", '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'],
-  ["affirm", "Affirmations", "Words to come back to", '<path d="M5 5h14v10H9l-4 4z"/>']];
+const MORE_ITEMS = [["assets", "My Assets", "What you've made and built", '<path d="M3 7h7l2 2h9v10H3z"/>']]; /* Good things, To-do and Affirmations were taken out on 14 Nov; what was saved for them is kept */
 function renderMore(){
-  $("p-more").innerHTML = `<div class="phead"><div class="ph-left"><h1>More</h1></div></div>
+  $("p-more").innerHTML = `<div class="phead"><div class="ph-left"><h1>My stuff</h1></div></div>
     <ul class="more-list">${MORE_ITEMS.map(([k, t, d, ic]) => `<li><button type="button" class="more-row" data-more="${k}"><svg class="ico" viewBox="0 0 24 24">${ic}</svg><span>${t}<small>${d}</small></span><svg class="ico chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></li>`).join("")}</ul>`;
-  $("p-more").querySelectorAll("[data-more]").forEach(b => b.onclick = () => { const k = b.dataset.more; if (k === "good" || k === "affirm") { journalTab = k; go("journal"); } else go(k); });
+  $("p-more").querySelectorAll("[data-more]").forEach(b => b.onclick = () => { const k = b.dataset.more; if (k === "good" || k === "affirm") { go("journal"); journalTab = k; renderJournal(); } else go(k); });
 }
 function renderPageOnly(r){ ({goals: renderGoals, week: renderWeek, dreams: renderDreams, account: renderAccount, assets: renderAssets, journal: renderJournal, todo: renderTodo, entry: renderEntry, more: renderMore})[r]?.(); }
 function afterChange(){ modelVer++; viewDirty = true; updateTitle(); if (route === "home") { refreshWorld(); renderHomeChips(); if (overviewOn) drawOverview(); } else renderPage(route); }
@@ -4113,7 +4342,7 @@ document.addEventListener("click", e => {
   const g = e.target.closest("[data-go]"); if (g) { go(g.dataset.go); return; }
   if (e.target.closest("[data-replay]")) { startOnboarding(0); return; }
   if (e.target.closest("[data-tour]")) { closeMenu(); tourRestart(); return; }
-  const vp = e.target.closest("[data-viewph]"); if (vp) { const [aid, i] = vp.dataset.viewph.split(":"), a = aspById(aid); if (a?.photos?.[+i]) viewPhoto(a.photos[+i], a.title); return; }
+  const vp = e.target.closest("[data-viewph]"); if (vp) { const [aid, i] = vp.dataset.viewph.split(":"), a = aspById(aid); if (a?.photos?.[+i]) viewPhotos(a.photos, +i, a.title); return; }
   const oa = e.target.closest("[data-open-asp]"); if (oa) { go("dreams"); editAspiration(oa.dataset.openAsp); return; }
   if (!e.target.closest("#menu")) closeMenu();
 });
@@ -4237,17 +4466,17 @@ const GI = {
 function renderGoals(){
   const el = $("p-goals"), active = S.goals.filter(g => g.status === "active" || g.status === "paused"), done = S.goals.filter(g => g.status === "done"), gone = S.goals.filter(g => g.status === "cancelled");
   const byEnd = (a, b) => (b.doneAt || b.closedAt || "").localeCompare(a.doneAt || a.closedAt || "");
-  const list = goalTab === "active" ? active.sort((a, b) => a.deadline.localeCompare(b.deadline)) : done.sort(byEnd);
+  const list = active.sort((a, b) => a.deadline.localeCompare(b.deadline)); /* one list: active first, finished below */
   el.innerHTML = `
     <div class="phead"><div class="ph-left"><h1>Goals</h1></div><button class="btn quiet" id="newGoal">${ICON.plus}Add Goal</button></div>
     ${pastReviewHTML()}
-    <div class="seg seg-full" role="tablist" aria-label="Goals">${[["active", `Active (${active.length})`], ["finished", `Finished (${done.length})`]].map(([k, l]) => `<button role="tab" aria-selected="${goalTab === k}" aria-pressed="${goalTab === k}" data-gt="${k}">${l}</button>`).join("")}</div>
-    ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>${goalTab === "active" ? "Nothing in motion yet" : "Nothing finished yet"}</b>${goalTab === "active" ? "Add a goal and connect it to the pieces it moves you towards." : "Goals you finish will be kept here."}</div>`}
-    ${goalTab === "finished" && gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
+    ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>Nothing in motion yet</b>Add a goal and connect it to the pieces it moves you towards.</div>`}
+    ${done.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Finished · ${done.length}</div><ul class="gcards">${done.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}
+    ${gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
   $("newGoal").onclick = () => editGoal(null);
   el.querySelectorAll("[data-review]").forEach(b => b.onclick = () => reviewPastCity(b.dataset.review));
-  el.querySelectorAll("[data-gt]").forEach(b => b.onclick = () => { goalTab = b.dataset.gt; openGoal = null; renderGoals(); });
   wireGoalCards(el);
+  el.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
 }
 // Places you've lived: once, you can confirm which of the goals linked to their dreams you achieved there. Only what you tick
 // moves to Finished (marked as achieved in that place); nothing is assumed, and those don't count as on-time finishes.
@@ -4270,7 +4499,7 @@ function reviewPastCity(id){
 function goalCard(g){
   const p = goalProgress(g), pct = Math.round((p.ratio || 0) * 100), open = openGoal === g.id, asps = goalAsps(g), closed = g.status === "done" || g.status === "cancelled";
   return `<li class="gcard${g.status === "cancelled" ? " gone" : ""}">
-    <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="gc-title">${esc(g.title)}</span><span class="acc-chev">${ICON_DOWN}</span>
+    <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="dc-title">${asps[0] ? `<span class="dc-thumb">${asps[0].image ? `<img src="${esc(imgUrl(asps[0].image))}" alt="">` : `<canvas width="48" height="48" data-kind="${asps[0].id}" aria-hidden="true"></canvas>`}</span>` : ""}<span class="gc-title">${esc(g.title)}</span></span><span class="acc-chev">${ICON_DOWN}</span>
       ${g.desc ? `<span class="gc-desc">${esc(g.desc)}</span>` : ""}</button>
     ${g.pastCity ? `<div class="gc-past">Achieved in ${esc(S.destinations.find(d => d.id === g.pastCity)?.name || "a past city")}</div>` : ""}
     ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${dreamMark(a)}${esc(a.title)}</span>`).join("")}</div>` : ""}
@@ -4280,7 +4509,6 @@ function goalCard(g){
       ${g.milestones.length ? `<ul class="steps ms-list">${g.milestones.map(m => `<li class="${m.doneAt ? "done" : ""}"><button class="cb" role="checkbox" aria-checked="${!!m.doneAt}" aria-label="${esc(m.title)}" data-ms="${g.id}|${m.id}"></button>
           <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Linked to “${esc(goalById(m.linkGoal).title)}”</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No milestones yet. Small steps make a goal easier to start.</p>`}
-      <form class="ms-add" data-addms="${g.id}"><input type="text" placeholder="Add a milestone" aria-label="New milestone"><button class="ibtn add-ic" type="submit" aria-label="Add milestone">${ICON.plus}</button></form>
       <div class="gc-actions">
         <button class="gc-act" data-editgoal="${g.id}">${GI.edit}Edit</button>
         ${closed ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Reopen</button>` : `${g.status === "paused" ? `<button class="gc-act" data-reopen="${g.id}">${GI.undo}Resume</button>` : `<button class="gc-act" data-finish="${g.id}">${GI.done}Mark Finished</button>`}<button class="gc-act" data-cancel="${g.id}">${GI.letgo}Let It Go</button>`}
@@ -4399,22 +4627,19 @@ function renderWeek(){
   const metW = due.filter(g => g.status === "done" && g.doneAt <= g.deadline && g.deadline >= ws && g.deadline <= we);
   const passed = due.filter(g => !(g.status === "done" && g.doneAt <= (g.deadlineHistory.find(h => h.from >= ws && h.from <= we)?.from || g.deadline)) && (g.deadlineHistory.some(h => h.from >= ws && h.from <= we) || (g.deadline <= (isNow ? today() : we) && g.status !== "done")));
   const offPlan = entries.filter(e => !e.goalIds.length);
-  const rv = weeklyReview(ws, entries, goalsMoved, steps, metW, passed, offPlan);
   el.innerHTML = `
-    <div class="phead" style="align-items:center"><div class="ph-left">${jBack()}<h1>Journal</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
-    ${jpTabs("week")}
+    <div class="phead" style="align-items:center"><div class="ph-left">${jBack()}<h1>This week</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) && entries.length ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
+    ${weekFacesHtml(ws)}
+    ${weekDoneHtml(ws)}
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
-    <section class="panel review"><div class="eyebrow">Weekly review</div>
-      <p class="rv-cheer">${rv.cheer}</p>
-      ${rv.lines.length ? `<div class="insight">${rv.lines.map(i => `<div>${i}</div>`).join("")}</div>` : ""}
-      ${rv.nudge ? `<p class="rv-nudge">${rv.nudge}</p>` : ""}
-</section>
     <section style="display:grid;gap:12px"><h2 class="sec">Logged</h2>
-      ${entries.length ? `<ul class="jcards">${entries.map(journalCard).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.</div>`}</section>`;
+      ${entries.length ? `<ul class="jcards">${entries.map(journalCard).join("")}</ul>` : `<div class="empty">Entries you log will appear here, linked to the goals they moved.${canLog(ws) ? `<button class="btn quiet empty-log" id="logEmpty">${ICON.plus}Log progress</button>` : ""}</div>`}</section>`;
   if ($("wToday")) $("wToday").onclick = () => { weekOf = weekStart(today()); renderWeek(); };
   if ($("logBtn")) $("logBtn").onclick = () => logEntry();
+  if ($("logEmpty")) $("logEmpty").onclick = () => logEntry();
   wireWeekHistory();
+  el.querySelectorAll("[data-yday]").forEach(b => b.onclick = () => openDay(b.dataset.yday));
   el.querySelectorAll("[data-entry]").forEach(b => b.onclick = () => openEntry(b.dataset.entry));
 }
 // A week, as a journal knows it: "OCTOBER — WEEK 2" and "(12 OCTOBER – 18 OCTOBER)", from the Monday of the entry's week.
@@ -4595,29 +4820,25 @@ function logEntry(editId){
 /* --- DREAM LIFE --- */
 let placesOpen = false;
 function renderDreams(){
-  const el = $("p-dreams"), yr = new Date().getFullYear() + Number(S.profile.horizon);
+  const el = $("p-dreams");
   const byCat = S.categories.map(c => [c, S.aspirations.filter(a => a.category === c)]);
   const orphan = S.aspirations.filter(a => !S.categories.includes(a.category));
   if (orphan.length) byCat.push(["Other", orphan]);
   const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => destOf(a)?.id === d.id).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><h1>Paint a Picture</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button></div>
-    <p class="pp-intro">Everything you add here is a piece of the bigger picture you're painting. The life you're building.</p>
+    <div class="phead"><div class="ph-left"><h1>Your pieces</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button>
+      <p class="pp-intro">Everything you add here is a piece of the bigger picture you're painting. The life you're building.</p></div>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} piece${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
-    <div class="actions"><label class="field" style="grid-auto-flow:column;align-items:center;gap:8px"><span>Horizon</span><select id="horizon" class="sel-box">${[5, 10, 15].map(n => `<option value="${n}" ${S.profile.horizon == n ? "selected" : ""}>${n} years</option>`).join("")}</select></label>
-      <button class="btn quiet sm" id="editCats" style="margin-left:auto;margin-right:-12px">Edit categories</button></div>
-    <section class="panel" style="padding:12px"><button class="pl-head" id="placesToggle" aria-expanded="${placesOpen}"><span class="eyebrow">Your Places (${S.destinations.length})</span><span class="acc-chev">${ICON_DOWN}</span></button>
-      ${placesOpen ? `
+    <section class="pp-world"><div class="sec-h"><h2 class="sec">Your world</h2><span class="muted" style="font-size:14px">${S.destinations.length} place${S.destinations.length === 1 ? "" : "s"}</span></div>
       ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
-      <button class="btn quiet sm" id="addPlace" style="justify-self:start">${ICON.plus}Add a place</button>` : ""}</section>
+      <button class="btn quiet sm" id="addPlace" style="justify-self:start;margin-left:-8px">${ICON.plus}Add a place</button></section>
+    <section class="pp-pieces"><div class="sec-h"><h2 class="sec">Your pieces</h2><button class="btn quiet sm" id="editCats" style="margin-right:-8px">Edit categories</button></div>
     ${S.aspirations.length ? byCat.filter(([, l]) => l.length).map(([c, l]) => `<section><div class="eyebrow" style="margin-bottom:8px">${esc(c)}</div><ul class="gcards">${l.map(dreamCard).join("")}</ul></section>`).join("")
-      : ""}`;
+      : `<div class="empty">Tap New to add the first piece of your picture.</div>`}</section>`;
   $("newAsp").onclick = () => editAspiration(null);
-  $("placesToggle").onclick = () => { placesOpen = !placesOpen; renderDreams(); };
   if ($("addPlace")) $("addPlace").onclick = () => addPlaceSheet();
   wireDestRows(el, renderDreams);
-  $("horizon").onchange = e => commit(s => { s.profile.horizon = +e.target.value; });
-  $("editCats").onclick = editCategories;
+  if ($("editCats")) $("editCats").onclick = editCategories;
   wireDreamCards(el);
   el.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
 }
@@ -4775,7 +4996,7 @@ function editAspiration(id, preset){
 }
 function editCategories(){
   const draw = () => {
-    $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name">${n ? `<span class="cat-n">${n} piece${n === 1 ? "" : "s"}</span>` : ""}<button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
+    $("sheetB").innerHTML = `<ul class="list">${S.categories.map((c, i) => (n => `<li class="cat-row"><input type="text" value="${esc(c)}" data-cat="${i}" aria-label="Category name"><button type="button" class="iconbtn${n ? " is-off" : ""}" data-rmcat="${i}" aria-label="Remove ${esc(c)}" ${n ? `aria-disabled="true" data-inuse="${n}"` : ""}>${GI.del}</button></li>`)(S.aspirations.filter(a => a.category === c).length)).join("")}</ul>
       <div class="cat-row"><input type="text" id="catNew" placeholder="New category" aria-label="New category"><button type="button" class="ibtn add-ic" id="catAdd" aria-label="Add category">${ICON.plus}</button></div>`;
     $("sheetB").querySelectorAll("[data-cat]").forEach(inp => inp.onchange = () => { const i = +inp.dataset.cat, old = S.categories[i], v = inp.value.trim(); if (!v || v === old) return; commit(s => { s.categories[i] = v; s.aspirations.forEach(a => { if (a.category === old) a.category = v; }); }); });
     $("sheetB").querySelectorAll("[data-rmcat]").forEach(b => b.onclick = () => { if (b.dataset.inuse) { toast(`Move its ${b.dataset.inuse} piece${b.dataset.inuse === "1" ? "" : "s"} to another category first.`); return; } commit(s => s.categories.splice(+b.dataset.rmcat, 1)); draw(); });
@@ -4872,6 +5093,164 @@ function editAsset(id, catId){
 }
 
 /* --- JOURNAL: private notes, reminders and letters to yourself. Not tied to any goal. --- */
+/* Today's entry gets a reply: congratulations for a good day, encouragement for a hard one.
+   Read with a small word list on the device, so nothing she writes is sent anywhere. */
+let jrLast = null;
+const MOOD_GOOD = "happy glad proud great good amazing awesome excited grateful thankful love loved loving won win wins finished finally achieved passed promoted hired launched celebrated celebrate best fun calm peaceful productive progress nailed accomplished success successful yay smiled laughed joy joyful relieved accepted wonderful lovely fantastic brilliant energised energized strong confident better enjoyed beautiful".split(" ");
+const MOOD_HARD = "sad tired exhausted stressed stressful anxious anxiety worried worry failed fail failure lost rejected rejection bad awful terrible difficult tough angry upset alone lonely overwhelmed stuck sick ill hurt cried crying cry disappointed disappointing frustrated frustrating scared afraid nervous behind missed procrastinated lazy worst hate hated burnt burnout drained ugh unmotivated hopeless heartbroken struggling struggled rough".split(" ");
+const NOT_WORDS = /^(not|no|never|didn't|didnt|don't|dont|wasn't|wasnt|isn't|isnt|couldn't|couldnt|can't|cant|won't|wont|hardly|without)$/;
+function readMood(text){
+  const w = text.toLowerCase().replace(/\u2019/g, "'").match(/[a-z']+/g) || [];
+  let score = 0;
+  w.forEach((x, i) => { const v = MOOD_GOOD.includes(x) ? 1 : MOOD_HARD.includes(x) ? -1 : 0; if (!v) return;
+    score += [w[i - 1], w[i - 2]].some(p => p && NOT_WORDS.test(p)) ? -v : v; }); /* "not bad" reads as good */
+  return score > 0 ? "good" : score < 0 ? "hard" : "even";
+}
+const JR_REPLIES = {
+  good: ["That's a win. Well done, and remember how this feels.", "Look at you. Today counts, so celebrate it.", "Proud of you. This is what progress looks like.", "Yes! One more piece of the picture, earned."],
+  hard: ["Hard days are part of it. You showed up and wrote it down, and that counts.", "Be gentle with yourself tonight. Tomorrow is a fresh page.", "One rough day doesn't undo the work. You're still moving.", "It's okay to not be okay. Rest, then take one small step."],
+  even: ["Saved. Every day you write adds to the picture.", "Noted. Steady days build the life too."]
+};
+const jrReplyHtml = (n, inSheet) => `<div class="jr-reply ${n.mood}${inSheet ? " in-sheet" : ""}" role="status"><div class="eyebrow">${n.mood === "good" ? "Well done" : n.mood === "hard" ? "Keep going" : "Saved"}</div><p>${esc(n.reply)}</p></div>`;
+/* Daily faces: every day of the year is an empty circle. To fill one you pick its colour (two sliders: colour, then light
+   to dark) and draw a quick face in it with your finger. A note and links to what moved (a goal, a milestone or a piece)
+   are optional. Saved per date as {c, face, note, links, at}; see normDays(). */
+const hslHex = (h, l) => { const s = .65, a = s * Math.min(l, 1 - l), f = n => { const k = (n + h / 30) % 12, c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(c * 255).toString(16).padStart(2, "0"); }; return "#" + f(0) + f(8) + f(4); };
+function hexHL(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || ""); if (!m) return {h: 330, v: 50};
+  const n = parseInt(m[1], 16), r = (n >> 16) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, l = (mx + mn) / 2;
+  let h = 0; if (d) h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return {h: Math.round(h * 60), v: Math.round((0.92 - l) / 0.0084)};
+}
+const shadeHex = (h, v) => hslHex(h, 0.92 - v * 0.0084); /* v 0 = near white, 50 = full colour, 100 = near black */
+const dayOf = k => S.days[k] || null;
+const dayHex = k => dayOf(k)?.c || null;
+let yrAt = null; var yrScrolled = false; /* var, not let: go() resets it and may run before this line does */
+const ICON_LINK = `<svg class="ico" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>`;
+/* dark lines on light colours, white lines on dark ones */
+const faceInk = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * 299 + (n >> 8 & 255) * 587 + (n & 255) * 114) / 1000 > 150 ? "#141414" : "#ffffff"; };
+/* a face is a list of strokes, each a flat list of x,y points from 0 to 100; a single tap is a dot */
+/* the circle itself, drawn like a pen stroke: not quite round, and the end runs a little past the start; each day wobbles its own way */
+const ringPts = seed => { const pts = [], a0 = seed * .7 % 6.28; for (let i = 0; i <= 44; i++) { const a = a0 + i / 44 * (Math.PI * 2 + .35), r = 44 + 1.5 * Math.sin(a * 2 + seed) + .8 * Math.sin(a * 3 + seed * 1.7) - i * .03; pts.push((50 + r * Math.cos(a)).toFixed(1), (50 + r * Math.sin(a)).toFixed(1)); } return pts.join(" "); };
+const daySeed = k => +k.slice(8) + +k.slice(5, 7) * 31;
+/* an empty day is a tiny pen dot, nudged off-centre a little as if dotted by hand; the whole button is still the tap area */
+const dotSvg = (k, ink) => { const n = daySeed(k); return `<svg class="face" viewBox="0 0 100 100" aria-hidden="true"><circle cx="${50 + (n * 37 % 11 - 5) * 1.6}" cy="${50 + (n * 53 % 11 - 5) * 1.6}" r="4.5" fill="${ink}"/></svg>`; };
+const faceSvg = (face, ink, w, seed) => `<svg class="face" viewBox="0 0 100 100" aria-hidden="true">${seed == null ? "" : `<polyline points="${ringPts(seed)}" fill="none" stroke="${ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`}${(face || []).map(st => st.length === 2
+  ? `<circle cx="${st[0]}" cy="${st[1]}" r="${w * .6}" fill="${ink}"/>`
+  : `<polyline points="${st.join(" ")}" fill="none" stroke="${ink}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`).join("")}</svg>`;
+function linkInfo(l){
+  if (!l) return null;
+  if (l.t === "piece") { const a = aspById(l.id); return a ? {kind: "Piece", title: a.title} : null; }
+  const g = goalById(l.t === "goal" ? l.id : l.g); if (!g) return null;
+  if (l.t === "goal") return {kind: "Goal", title: g.title};
+  const m = g.milestones.find(x => x.id === l.id); return m ? {kind: "Milestone", title: m.title, sub: g.title} : null;
+}
+function mixerHtml(id, hex){
+  const {h, v} = hexHL(hex);
+  return `<div class="mix" id="${id}" style="--h:${h}">
+    <span class="mix-sw${hex ? "" : " empty"}" style="${hex ? `background:${hex}` : ""}"></span>
+    <div class="mix-rows"><input type="range" class="mix-hue" min="0" max="359" value="${h}" aria-label="Colour">
+      <input type="range" class="mix-shade" min="0" max="100" value="${v}" aria-label="Light to dark"></div></div>`;
+}
+function wireMixer(root, onSet){
+  const hue = root.querySelector(".mix-hue"), sh = root.querySelector(".mix-shade"), sw = root.querySelector(".mix-sw");
+  const now = () => shadeHex(+hue.value, +sh.value);
+  const show = () => { root.style.setProperty("--h", hue.value); sw.classList.remove("empty"); sw.style.background = now(); };
+  [hue, sh].forEach(i => { i.oninput = show; i.onchange = () => { show(); onSet(now()); }; });
+}
+const dayDot = (k, t) => { const d = dayOf(k), label = esc(fmt(k, {weekday: "short", day: "numeric", month: "long"}));
+  if (k > t) return `<span class="yd fut" aria-hidden="true">${dotSvg(k, "#dcdcdc")}</span>`;
+  const linked = !!d && d.links.some(linkInfo);
+  return `<button type="button" class="yd${d ? " on" : ""}${k === t ? " now" : ""}" data-yday="${k}"${d ? ` style="--c:${d.c}"` : ""} aria-label="${label}${d ? "" : ", empty"}${linked ? ", linked" : ""}">${d ? faceSvg(d.face, d.c, 5.5, daySeed(k)) : dotSvg(k, "#a8a8a8")}${linked ? `<span class="yd-link">${ICON_LINK}</span>` : ""}</button>`; };
+function yearHtml(){
+  const t = today(), ty = +t.slice(0, 4), y = yrAt || ty, filled = Object.keys(S.days).filter(k => k.startsWith(y + "-")).length;
+  const months = MONTH_NAMES.map((name, m) => { const n = new Date(y, m + 1, 0).getDate(), lead = (new Date(y, m, 1).getDay() + 6) % 7;
+    return `<div class="ym-month" data-ym="${y}-${String(m + 1).padStart(2, "0")}"><h3>${name}</h3><div class="ym">${"<span></span>".repeat(lead)}${[...Array(n)].map((_, i) => dayDot(ymd(new Date(y, m, i + 1)), t)).join("")}</div></div>`; }).join("");
+  return `<section class="yr"><div class="yr-nav"><button type="button" class="iconbtn" id="yrPrev" aria-label="Previous year">‹</button><h2 class="yr-year" aria-label="${y}, ${filled} ${filled === 1 ? "day" : "days"} filled">${y}</h2><button type="button" class="iconbtn" id="yrNext" aria-label="Next year"${y >= ty ? " disabled" : ""}>›</button></div>
+    <div class="ym ym-head" aria-hidden="true">${"MTWTFSS".split("").map(x => `<span class="ym-h">${x}</span>`).join("")}</div>${months}</section>`;
+}
+function moveYear(dir){ const ty = +today().slice(0, 4), y = (yrAt || ty) + dir; yrAt = y >= ty ? null : y; yrScrolled = false; renderJournal(); }
+/* the week's faces, at the top of Weekly, with whatever those days were linked to */
+/* What got done this week, gathered on its own from what you ticked off: milestones, finished goals and to-dos, plus days
+   you linked to something. Nothing to fill in. */
+function weekDoneHtml(ws){
+  const we = addDays(ws, 6), inW = d => !!d && d.slice(0, 10) >= ws && d.slice(0, 10) <= we, items = [];
+  S.goals.forEach(g => { if (g.status === "done" && inW(g.doneAt)) items.push([g.doneAt, "Goal finished", g.title]);
+    g.milestones.forEach(m => { if (inW(m.doneAt)) items.push([m.doneAt, "Milestone", m.title, g.title]); }); });
+  [...Array(7)].map((_, i) => addDays(ws, i)).forEach(k => (dayOf(k)?.links || []).forEach(l => { const i = linkInfo(l); if (i) items.push([k, `Linked · ${i.kind}`, i.title, i.sub]); }));
+  items.sort((a, b) => a[0].localeCompare(b[0]));
+  const filled = [...Array(7)].filter((_, i) => dayOf(addDays(ws, i))).length;
+  return `<section class="wk-auto"><h2 class="sec">Done this week</h2>
+    ${items.length ? `<ul class="wk-done">${items.map(([d, kind, title, sub]) => `<li><span class="wk-dk">${esc(fmt(d.slice(0, 10), {weekday: "short"}))}</span><span class="grow"><small>${esc(kind)}${sub ? ` · ${esc(sub)}` : ""}</small>${esc(title)}</span></li>`).join("")}</ul>`
+      : `<p class="muted wk-none">Nothing ticked off yet. This fills in on its own as you finish milestones and goals.</p>`}
+    <p class="muted wk-sum">${filled} of 7 days have a face${items.length ? ` · ${items.length} ${items.length === 1 ? "thing" : "things"} done` : ""}</p></section>`;
+}
+function weekFacesHtml(ws){
+  const t = today(), days = [...Array(7)].map((_, i) => addDays(ws, i));
+  return `<section class="wk-faces"><h2 class="sec">Your days</h2><div class="ym">${"MTWTFSS".split("").map(x => `<span class="ym-h" aria-hidden="true">${x}</span>`).join("")}${days.map(k => dayDot(k, t)).join("")}</div></section>`;
+}
+/* On the year: one tap shows the day's date in a little pill above it, a second tap on the same day opens it.
+   Keyboard (Enter or Space) opens straight away, since there is no double-tap there. */
+let yrTap = {k: null, at: 0}, yrPillT = 0;
+function dayTap(b, e){
+  const k = b.dataset.yday, now = Date.now(), yr = b.closest(".yr");
+  if (e.detail === 0 || (yrTap.k === k && now - yrTap.at < 450)) { yrTap = {k: null, at: 0}; yr?.querySelector(".yr-pill")?.classList.remove("show"); openDay(k); return; }
+  yrTap = {k, at: now};
+  let p = yr.querySelector(".yr-pill"); if (!p) { p = document.createElement("div"); p.className = "yr-pill"; p.setAttribute("role", "status"); yr.appendChild(p); }
+  const d = parseDay(k), two = n => String(n).padStart(2, "0");
+  p.textContent = `${d.toLocaleDateString(undefined, {weekday: "long"})}, ${two(d.getDate())}.${two(d.getMonth() + 1)}`;
+  const yb = yr.getBoundingClientRect(), bb = b.getBoundingClientRect(), w = p.offsetWidth, h = p.offsetHeight;
+  p.style.left = Math.max(0, Math.min(yb.width - w, bb.left - yb.left + bb.width / 2 - w / 2)) + "px";
+  p.style.top = (bb.top - yb.top - h - 4) + "px";
+  p.classList.remove("show"); void p.offsetWidth; p.classList.add("show");
+  clearTimeout(yrPillT); yrPillT = setTimeout(() => p.classList.remove("show"), 2400);
+}
+/* "Thurs, Nov 5": the day's title in the sheet, said once */
+const DAY_SHORT = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"], MON_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const dayTitle = k => { const d = parseDay(k); return `${DAY_SHORT[d.getDay()]}, ${MON_SHORT[d.getMonth()]} ${d.getDate()}`; };
+/* A filled day opens to read: its face and what was written, with Edit at the top. An empty day opens straight to edit. */
+function openDay(k, edit){
+  if (needAccount(() => openDay(k, edit))) return;
+  const was = dayOf(k);
+  if (was && !edit) {
+    openSheet(dayTitle(k), `<div class="fc-wrap"><div class="fc on" style="--c:${was.c}" role="img" aria-label="Your face for the day"><div class="fc-ink">${faceSvg(was.face, was.c, 2.4, daySeed(k))}</div></div></div>
+      ${was.note ? `<div class="fc-read">${esc(was.note)}</div>` : `<p class="muted fc-read-empty">Nothing written this day.</p>`}`, "", sh => {
+        sh.classList.add("tall");
+        $("sheetX").insertAdjacentHTML("beforebegin", `<button type="button" class="btn quiet fc-edit" id="fcEdit">Edit</button>`);
+        $("fcEdit").onclick = () => openDay(k, true);
+      });
+    return;
+  }
+  let c = was?.c || null, cur = null;
+  const face = (was?.face || []).map(st => st.slice()), links = (was?.links || []).filter(linkInfo).map(l => ({...l}));
+  openSheet(dayTitle(k), `
+    <div class="field fc-feel"><span>How are you feeling today?</span>${mixerHtml("fcMix", c)}</div>
+    <div class="fc-wrap"><div class="fc${c ? " on" : ""}" id="fcCircle" style="${c ? `--c:${c}` : ""}" role="img" aria-label="Your face for the day. Draw it with your finger."><div class="fc-ink" id="fcInk"></div></div>
+      <div class="fc-tools"><button type="button" class="linkbtn" id="fcUndo">Undo</button><button type="button" class="linkbtn" id="fcWipe">Clear face</button></div></div>
+    <label class="field fc-jr"><textarea id="fcNote" aria-label="Journal" rows="10" maxlength="8000" placeholder="Write as much as you like. The good, the hard, all of it.">${esc(was?.note || "")}</textarea></label>`,
+    `${was ? delIcon("fcDel") : ""}<button class="btn ghost" id="fcCancel">Cancel</button><button class="btn" id="fcSave">Save</button>`, sh => {
+      sh.classList.add("tall");
+      const circle = $("fcCircle"), mix = $("fcMix");
+      const drawFace = () => { $("fcInk").innerHTML = faceSvg(face, c || "#141414", 2.4, c ? daySeed(k) : null); };
+      const check = () => { $("fcSave").disabled = !(c && face.length); $("fcUndo").disabled = $("fcWipe").disabled = !face.length; };
+      const paint = () => { circle.classList.toggle("on", !!c); circle.style.setProperty("--c", c || "transparent"); drawFace(); check(); };
+      wireMixer(mix, x => { c = x; paint(); });
+      mix.querySelector(".mix-shade").value = 50; /* one slider only now: colours are always at full strength */
+      mix.querySelectorAll("input").forEach(i => i.addEventListener("input", () => { c = shadeHex(+mix.querySelector(".mix-hue").value, 50); paint(); }));
+      const pt = e => { const r = circle.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height].map(n => Math.max(0, Math.min(100, Math.round(n * 100)))); };
+      circle.onpointerdown = e => { if (face.length >= 60) return; e.preventDefault(); circle.setPointerCapture(e.pointerId); cur = pt(e); face.push(cur); drawFace(); check(); };
+      circle.onpointermove = e => { if (!cur || cur.length > 800) return; const [x, y] = pt(e), n = cur.length; if (Math.abs(x - cur[n - 2]) + Math.abs(y - cur[n - 1]) < 2) return; cur.push(x, y); drawFace(); };
+      circle.onpointerup = circle.onpointercancel = () => { cur = null; };
+      $("fcUndo").onclick = () => { face.pop(); drawFace(); check(); };
+      $("fcWipe").onclick = () => { face.length = 0; drawFace(); check(); };
+      paint();
+      $("fcCancel").onclick = () => was ? openDay(k) : closeSheet(); /* cancelling an edit goes back to reading the day */
+      const del = $("fcDel"); if (del) del.onclick = () => { if (!armDelete(del)) return; commit(st => { delete st.days[k]; }); closeSheet(); toast("Day cleared"); };
+      $("fcSave").onclick = () => { if (!c || !face.length) return;
+        const note = $("fcNote").value.replace(/\s+$/, "");
+        commit(st => { st.days[k] = {c, face, note, links, at: was?.at || nowLocal()}; }); closeSheet(); toast(was ? "Day updated" : "Day saved"); };
+    });
+}
 let noteFilter = "all", noteQuery = "";
 const nowLocal = () => { const d = new Date(); d.setSeconds(0, 0); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
 const fmtWhen = at => new Date(at).toLocaleString(undefined, {weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit"});
@@ -4882,18 +5261,17 @@ function renderJournal(){
   const list = S.notes.filter(n => noteFilter === "pinned" ? n.pinned : noteFilter === "fav" ? n.fav : true)
     .filter(n => !q || (n.title + " " + n.body).toLowerCase().includes(q)).sort((a, b) => b.at.localeCompare(a.at));
   el.innerHTML = `
-    <div class="phead"><div><div class="ph-left">${jBack()}<h1>Journal</h1></div></div><button class="btn quiet" id="newNote">${ICON.plus}New note</button></div>${jpTabs("journal")}${J_SUB}${jTabs()}
-    <input type="search" id="noteQ" value="${esc(noteQuery)}" placeholder="Search notes" aria-label="Search notes by title or text">
-    <div class="seg" role="group" aria-label="Filter notes" style="justify-self:start">${[["all", `All ${S.notes.length}`], ["pinned", `Pinned ${S.notes.filter(n => n.pinned).length}`], ["fav", `Favourites ${S.notes.filter(n => n.fav).length}`]].map(([k, l]) => `<button aria-pressed="${noteFilter === k}" data-nf="${k}">${l}</button>`).join("")}</div>
-    <div id="noteList">${list.length ? `<ul class="list">${list.map(noteRow).join("")}</ul>` : !q && noteFilter === "all" ? "" : `<div class="empty"><b>${q ? "No notes match" : noteFilter === "all" ? "A page of your own" : noteFilter === "pinned" ? "Nothing pinned" : "No favourites yet"}</b>${q ? "Try another word." : noteFilter === "all" ? "Write a thought, a reminder, or a letter to your future self. It doesn't need to be tied to a goal." : "Open a note and pin it or mark it as a favourite."}</div>`}</div>`;
-  $("newNote").onclick = () => editNote(null); wireJTabs(el);
-  $("noteQ").oninput = e => { noteQuery = e.target.value; const pos = e.target.selectionStart; renderJournal(); const i = $("noteQ"); i.focus(); i.setSelectionRange(pos, pos); };
-  el.querySelectorAll("[data-nf]").forEach(b => b.onclick = () => { noteFilter = b.dataset.nf; renderJournal(); });
-  el.querySelectorAll("[data-note]").forEach(b => b.onclick = () => editNote(b.dataset.note));
+    <div class="phead"><div><div class="ph-left">${jBack()}<h1>Journal</h1></div></div></div>
+    ${yearHtml()}
+`;
+  wireJTabs(el);
+  el.querySelectorAll("[data-yday]").forEach(b => b.onclick = e => dayTap(b, e));
+  $("yrPrev").onclick = () => moveYear(-1); $("yrNext").onclick = () => moveYear(1);
+  if (!yrScrolled) { yrScrolled = true; const m = el.querySelector(`[data-ym="${(yrAt ? yrAt + "-01" : today().slice(0, 7))}"]`); if (m && !yrAt) requestAnimationFrame(() => m.scrollIntoView({block: "start"})); }
 }
 function noteRow(n){
-  return `<li><button class="rowbtn" data-note="${n.id}"><span class="rmeta"><span>${esc(fmtWhen(n.at))}</span>${n.pinned ? `<span class="tag sea">Pinned</span>` : ""}${n.fav ? `<span class="tag green">Favourite</span>` : ""}</span>
-    <span class="rtitle">${esc(n.title || "Untitled")}</span>${n.body ? `<span class="note-ex">${esc(n.body.slice(0, 220))}</span>` : ""}</button></li>`;
+  return `<li><button class="rowbtn" data-note="${n.id}"><span class="rmeta"><span>${esc(fmtWhen(n.at))}</span>${n.pinned ? `<span class="tag sea">Pinned</span>` : ""}${n.fav ? `<span class="tag green">Favourite</span>` : ""}${n.mood === "good" ? `<span class="tag green">A win</span>` : n.mood === "hard" ? `<span class="tag sea">Hard day</span>` : ""}</span>
+    ${n.title || !n.body ? `<span class="rtitle">${esc(n.title || "Untitled")}</span>` : ""}${n.body ? `<span class="note-ex">${esc(n.body.slice(0, 220))}</span>` : ""}</button></li>`;
 }
 function editNote(id){
   if (!id && needAccount(() => editNote(id))) return;
@@ -4904,6 +5282,7 @@ function editNote(id){
     <div class="note-meta"><label class="field" style="flex:1"><span>Date and time</span><input type="datetime-local" id="nAt" value="${esc(n.at)}"></label>
       <div class="actions" style="align-self:end"><button type="button" class="pill" id="nPin" aria-pressed="${pinned}">Pin</button><button type="button" class="pill" id="nFav" aria-pressed="${fav}">Favourite</button></div></div>
     <textarea id="nBody" class="note-body" placeholder="Write freely…" aria-label="Note">${esc(n.body)}</textarea>
+    ${n.reply ? jrReplyHtml(n, true) : ""}
     ${id && n.updatedAt && n.updatedAt !== n.at ? `<small class="muted">Last edited ${esc(fmtWhen(n.updatedAt))}</small>` : ""}`,
     `${id ? delIcon("nDel") : ""}<button class="btn ghost" id="nCancel">Cancel</button><button class="btn" id="nSave">Save</button>`, sh => {
       sh.classList.add("tall");
@@ -4923,29 +5302,52 @@ function editNote(id){
 }
 
 /* --- TO-DO: the little things, ticked off as she goes --- */
+/* To-do by the day: a week of days at the top (like Journal's), the chosen day's list below. A to-do belongs to its day
+   (its "due" date). Undated ones and unfinished ones from earlier days roll on to today, so nothing gets lost. */
+let todoDay = null; /* the day being looked at; null means today */
+function todosFor(k){
+  const td = today();
+  return S.todos.filter(t => {
+    if (t.done) return (t.due || (t.doneAt || "").slice(0, 10)) === k;
+    if (t.due) return t.due === k || (k === td && t.due < td);
+    return k === td;
+  });
+}
 function renderTodo(){
-  const el = $("p-todo"), open = S.todos.filter(t => !t.done), done = S.todos.filter(t => t.done).sort((a, b) => (b.doneAt || "").localeCompare(a.doneAt || ""));
+  const el = $("p-todo"), td = today(), k = todoDay || td, ws = weekStart(k), days = [...Array(7)].map((_, i) => addDays(ws, i));
+  const list = todosFor(k), open = list.filter(t => !t.done), done = list.filter(t => t.done).sort((a, b) => (b.doneAt || "").localeCompare(a.doneAt || ""));
+  const a = parseDay(ws), b = parseDay(addDays(ws, 6));
+  const range = a.getMonth() === b.getMonth() ? `${MON_SHORT[a.getMonth()]} ${a.getDate()} \u2013 ${b.getDate()}` : `${MON_SHORT[a.getMonth()]} ${a.getDate()} \u2013 ${MON_SHORT[b.getMonth()]} ${b.getDate()}`;
+  const dayBtn = d => { const L = todosFor(d), o = L.filter(t => !t.done).length, dn = L.length - o, dt = parseDay(d);
+    return `<button type="button" class="td-day${d === k ? " on" : ""}${d === td ? " now" : ""}" data-tday="${d}" aria-pressed="${d === k}" aria-label="${esc(fmt(d, {weekday: "long", day: "numeric", month: "long"}))}${o ? `, ${o} to do` : dn ? ", all done" : ""}"><span class="td-wd" aria-hidden="true">${"SMTWTFS"[dt.getDay()]}</span><span class="td-n">${dt.getDate()}</span><span class="td-mark${o ? " open" : dn ? " done" : ""}" aria-hidden="true"></span></button>`; };
   el.innerHTML = `
     <div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="more" aria-label="Back to More">${ICON_BACK}</button><h1>To-do</h1></div><div class="sub">The little things. Tick them off as you go.</div></div></div>
-    <form class="todo-add" id="todoAdd"><input type="text" id="todoIn" placeholder="Add a to-do" aria-label="New to-do" maxlength="160" autocomplete="off"><button class="btn quiet" type="submit">${ICON.plus}Add</button></form>
-    ${open.length ? `<ul class="todos">${open.map(todoRow).join("")}</ul>` : ""}
-    ${done.length ? `<section class="todo-done"><div class="sec-h"><div class="eyebrow">Done · ${done.length}</div><button type="button" class="btn quiet sm" id="todoClear">Clear done</button></div><ul class="todos">${done.map(todoRow).join("")}</ul></section>` : ""}`;
+    <div class="yr-nav td-nav"><button type="button" class="iconbtn" id="tdPrev" aria-label="Previous week">\u2039</button><button type="button" class="yr-year td-range" id="tdNow" aria-label="${esc(range)}. Back to today">${range}</button><button type="button" class="iconbtn" id="tdNext" aria-label="Next week">\u203a</button></div>
+    <div class="td-week" role="group" aria-label="Days of the week">${days.map(dayBtn).join("")}</div>
+    <div class="td-head"><h2 class="sec">${k === td ? "Today" : esc(dayTitle(k))}</h2><span class="muted">${open.length} to do${done.length ? ` \u00b7 ${done.length} done` : ""}</span></div>
+    <form class="todo-add" id="todoAdd"><input type="text" id="todoIn" placeholder="${k === td ? "Add a to-do for today" : `Add a to-do for ${esc(dayTitle(k))}`}" aria-label="New to-do" maxlength="160" autocomplete="off"><button class="btn quiet" type="submit">${ICON.plus}Add</button></form>
+    ${open.length ? `<ul class="todos">${open.map(t => todoRow(t, k)).join("")}</ul>` : `<p class="muted td-empty">${done.length ? "All done. Nice." : k < td ? "Nothing on this day." : "Nothing planned yet."}</p>`}
+    ${done.length ? `<section class="todo-done"><div class="sec-h"><div class="eyebrow">Done \u00b7 ${done.length}</div><button type="button" class="btn quiet sm" id="todoClear">Clear done</button></div><ul class="todos">${done.map(t => todoRow(t, k)).join("")}</ul></section>` : ""}`;
+  el.querySelectorAll("[data-tday]").forEach(b => b.onclick = () => { todoDay = b.dataset.tday === td ? null : b.dataset.tday; renderTodo(); el.querySelector(`[data-tday="${b.dataset.tday}"]`)?.focus(); });
+  const moveWeek = n => { const d = addDays(k, n * 7); todoDay = d === td ? null : d; renderTodo(); };
+  $("tdPrev").onclick = () => moveWeek(-1); $("tdNext").onclick = () => moveWeek(1); $("tdNow").onclick = () => { todoDay = null; renderTodo(); };
   $("todoAdd").onsubmit = e => { e.preventDefault(); const v = $("todoIn").value.trim(); if (!v || needAccount()) return;
-    commit(s => s.todos.push({id: "t-" + uid(), text: v, done: false, doneAt: null, due: "", createdAt: nowLocal()})); $("todoIn")?.focus(); };
-  // a tick rounds into a circle first, then the to-do moves to Done (and back, unticked)
+    commit(s => s.todos.push({id: "t-" + uid(), text: v, done: false, doneAt: null, due: k, createdAt: nowLocal()})); $("todoIn")?.focus(); };
+  /* a tick rounds into a circle first, then the to-do moves to Done (and back, unticked) */
   el.querySelectorAll("[data-todo]").forEach(b => b.onclick = () => { const id = b.dataset.todo, on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on); b.closest("li").classList.toggle("done", on);
     setTimeout(() => commit(s => { const t = s.todos.find(x => x.id === id); if (t) { t.done = on; t.doneAt = on ? nowLocal() : null; } }), reduced ? 0 : 380); });
   el.querySelectorAll("[data-todoedit]").forEach(b => b.onclick = () => editTodo(b.dataset.todoedit));
-  const c = $("todoClear"); if (c) c.onclick = () => { if (!armDelete(c, `Clear ${done.length}?`)) return; commit(s => { s.todos = s.todos.filter(t => !t.done); }); toast("Cleared"); };
+  const c = $("todoClear"); if (c) c.onclick = () => { if (!armDelete(c, `Clear ${done.length}?`)) return; const ids = new Set(done.map(t => t.id)); commit(s => { s.todos = s.todos.filter(t => !ids.has(t.id)); }); toast("Cleared"); };
 }
-function todoRow(t){
+function todoRow(t, k){
+  const from = k && t.due && t.due < k && !t.done; /* rolled on from an earlier day */
   return `<li class="todo${t.done ? " done" : ""}"><button type="button" class="cb" role="checkbox" aria-checked="${!!t.done}" aria-label="${esc(t.text)}" data-todo="${t.id}"></button>
-    <button type="button" class="todo-t" data-todoedit="${t.id}"><span>${esc(t.text)}</span>${t.due ? `<small>${esc(fmt(t.due))}</small>` : ""}</button></li>`;
+    <button type="button" class="todo-t" data-todoedit="${t.id}"><span>${esc(t.text)}</span>${from ? `<small>From ${esc(dayTitle(t.due))}</small>` : !k && t.due ? `<small>${esc(fmt(t.due))}</small>` : ""}</button></li>`;
 }
 function editTodo(id){
   const t = S.todos.find(x => x.id === id); if (!t) return;
   openSheet("To-do", `<label class="field"><span>What</span><input type="text" id="tdText" value="${esc(t.text)}" maxlength="160"></label>
-    <label class="field"><span>By when (optional)</span><input type="date" id="tdDue" value="${esc(t.due || "")}"></label>`,
+    <label class="field"><span>Day</span><input type="date" id="tdDue" value="${esc(t.due || "")}"></label>`,
     `${delIcon("tdDel")}<button class="btn ghost" id="tdCancel">Cancel</button><button class="btn" id="tdSave">Save</button>`, () => {
       $("tdCancel").onclick = closeSheet;
       $("tdDel").onclick = () => { if (!armDelete($("tdDel"))) return; commit(s => { s.todos = s.todos.filter(x => x.id !== id); }); closeSheet(); toast("To-do deleted"); };
@@ -4956,7 +5358,7 @@ function editTodo(id){
 /* --- JOURNAL: notes, three good things a day, and affirmations --- */
 let journalTab = "notes";
 const jTabs = () => `<div class="seg jtabs" role="group" aria-label="Journal">${[["notes", "Notes"], ["good", "Good things"], ["affirm", "Affirmations"]].map(([k, l]) => `<button type="button" aria-pressed="${journalTab === k}" data-jt="${k}">${l}</button>`).join("")}</div>`;
-const jHead = () => `<div class="phead"><div><div class="ph-left">${jBack()}<h1>Journal</h1></div></div></div>${jpTabs("journal")}${J_SUB}`;
+const jHead = () => `<div class="phead"><div><div class="ph-left"><button class="iconbtn" data-go="more" aria-label="Back to More">${ICON_BACK}</button><h1>${journalTab === "affirm" ? "Affirmations" : "Good things"}</h1></div></div></div>`;
 // the two halves of the journal: the weekly log and the everyday journal
 const J_SUB = `<p class="muted" style="margin:0;font-size:14px">Notes, good things and affirmations, just for you</p>`;
 const jpTabs = on => `<div class="seg jp-tabs" role="group" aria-label="Journal sections">${[["week", "Weekly"], ["journal", "Journal"]].map(([k, l]) => `<button type="button" data-go="${k}" aria-pressed="${on === k}">${l}</button>`).join("")}</div>`;
@@ -4966,7 +5368,7 @@ const GOOD_HINTS = ["Something that went well", "Someone you're glad about", "So
 function renderGood(){
   const el = $("p-journal"), t = today(), day = S.gratitude.find(g => g.date === t) || {items: ["", "", ""]};
   const past = S.gratitude.filter(g => g.date !== t && g.items.some(Boolean)).sort((a, b) => b.date.localeCompare(a.date));
-  el.innerHTML = `${jHead()}${jTabs()}
+  el.innerHTML = `${jHead()}
     <section class="good-today"><div class="eyebrow">${esc(fmt(t, {weekday: "long", day: "numeric", month: "long"}))}</div><h2 class="good-h">Three good things</h2><p class="muted" style="margin:0">Small is fine. A good coffee counts.</p>
       ${[0, 1, 2].map(i => `<label class="good-row"><span class="good-n" aria-hidden="true">${i + 1}</span><input type="text" data-good="${i}" value="${esc(day.items[i] || "")}" placeholder="${GOOD_HINTS[i]}" aria-label="Good thing ${i + 1}" maxlength="160"></label>`).join("")}</section>
     <section><div class="eyebrow" style="margin-bottom:8px">Before</div>${past.length ? `<ul class="list good-past">${past.map(g => `<li><b>${esc(fmt(g.date, {weekday: "short", day: "numeric", month: "short"}))}</b>${g.items.filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("")}</li>`).join("")}</ul>` : `<div class="empty">Your good things collect here, day by day.</div>`}</section>`;
@@ -4981,7 +5383,7 @@ function renderAffirm(){
   const el = $("p-journal"), mine = S.affirmations, pool = mine.length ? mine.map(a => a.text) : AFFIRM_STARTERS;
   const day = Math.floor(parseDay(today()) / 86400000), now = pool[(day + affirmShift) % pool.length];
   const starters = AFFIRM_STARTERS.filter(t => !mine.some(a => a.text === t));
-  el.innerHTML = `${jHead()}${jTabs()}
+  el.innerHTML = `${jHead()}
     <section class="aff-card" aria-live="polite"><span class="aff-star" aria-hidden="true">${GI.star}</span><div class="eyebrow">Today's affirmation</div><p class="aff-text">${esc(now)}</p>${pool.length > 1 ? `<button type="button" class="btn quiet sm" id="affNext">Another one</button>` : ""}</section>
     <section><div class="sec-h"><div class="eyebrow">Your affirmations · ${mine.length}</div><button type="button" class="btn quiet sm" id="affAdd">${ICON.plus}Add your own</button></div>
       ${mine.length ? `<ul class="list">${mine.map(a => `<li><button class="rowbtn aff-row" data-aff="${a.id}"><span class="rtitle">${esc(a.text)}</span></button></li>`).join("")}</ul>` : `<div class="empty">Write the words you want to hear, or start from one below.</div>`}</section>
@@ -5048,17 +5450,16 @@ function renderAccount(){
   const el = $("p-account"), joined = S.profile.joined ? parseDay(S.profile.joined).toLocaleDateString(undefined, {month: "long", year: "numeric"}) : "";
   const done = S.goals.filter(g => g.status === "done").length;
   el.innerHTML = `
-    <section class="ac-hero" aria-label="Your account"><canvas class="ac-bg" id="acBg" aria-hidden="true"></canvas><button class="ac-back" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1 class="sr-only">Account</h1>
-      <canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas>
-</section>
-    <div class="ac-id"><button type="button" class="ac-photo" id="acPhoto" aria-label="${S.profile.photo ? "Change your photo" : "Add a photo"}">${photoHTML()}</button>
-      <div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small>${S.destinations.length ? `<div class="ac-chips" aria-label="Your places">${S.destinations.map(d => `<button type="button" class="ac-chip" data-acplace="${d.id}">${esc(d.name)}</button>`).join("")}</div>` : ""}</div></div>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div></div>
+    <div class="ac-id"><div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small></div></div>
     <section class="panel"><div class="eyebrow">Your name</div>
-      <div class="ac-names"><label class="field"><span>First name</span><input type="text" id="acName" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
-      <label class="field"><span>Middle name</span><input type="text" id="acMiddle" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
-      <label class="field"><span>Last name</span><input type="text" id="acLast" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
-      ${S.profile.photo ? `<button type="button" class="btn quiet sm" id="acPhotoOff" style="justify-self:start">Remove photo</button>` : ""}</section>
-    <section class="ac-sec"><div class="eyebrow">Your character</div><div id="acAv" class="ac-av"></div></section>
+      <div class="ac-names"><label class="field"><input type="text" id="acName" placeholder="What shall I call you, honey? Honey?" aria-label="First name" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
+      <label class="field"><input type="text" id="acMiddle" placeholder="Got a fancy middle name?" aria-label="Middle name" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
+      <label class="field"><input type="text" id="acLast" placeholder="Last name" aria-label="Last name" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
+</section>
+    <section class="ac-sec"><div class="eyebrow">Your character</div>
+      <div class="ac-scene"><canvas class="ac-bg" id="acBg" aria-hidden="true"></canvas><canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas></div>
+      <div id="acAv" class="ac-av"></div></section>
     ${usagePanel()}
     ${demoAllowed() || demoMode ? `<section class="panel"><div class="eyebrow">Demo Data</div><div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p></section>` : ""}
@@ -5075,7 +5476,7 @@ function renderAccount(){
   acHeroFit();
   let nt; const nameSave = () => { clearTimeout(nt); nt = setTimeout(() => { const f = $("acName").value.trim(); if (f) S.profile.name = f.slice(0, 30); S.profile.middleName = $("acMiddle").value.trim().slice(0, 30); S.profile.lastName = $("acLast").value.trim().slice(0, 40); save(); const h = el.querySelector(".ac-who h2"); if (h) h.textContent = fullName() || "You"; }, 500); };
   ["acName", "acMiddle", "acLast"].forEach(id => $(id).oninput = nameSave);
-  $("acPhoto").onclick = () => pickPhoto(renderAccount); if ($("acPhotoOff")) $("acPhotoOff").onclick = () => { delete S.profile.photo; save(); renderAccount(); };
+  if ($("acPhotoOff")) $("acPhotoOff").onclick = () => { delete S.profile.photo; save(); renderAccount(); };
   stDrawMe($("acMe"));
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
@@ -5447,9 +5848,9 @@ function avatarEditor(root, onChange, opts){
   function draw(){
     const doll = A().style === "doll";
     const lookHTML = opts.compact ? `<div class="field"><span>You are</span><div class="st-radios" role="radiogroup" aria-label="You are">${[["girl", "A woman"], ["boy", "A man"]].map(([k, l]) => `<button type="button" role="radio" aria-checked="${A().look === k}" data-look="${k}"><span class="st-rad" aria-hidden="true"></span>${l}</button>`).join("")}</div></div>` : "";
-    if (opts.lookRoot) opts.lookRoot.innerHTML = lookHTML;
-    root.innerHTML = `${opts.compact ? `${opts.lookRoot ? "" : lookHTML}
-      <div class="field"><span>Style</span><div class="seg" role="group" style="justify-self:start">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div></div>`
+    const styleHTML = `<div class="field"><span>Style</span><div class="seg" role="group" style="justify-self:start">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div></div>`;
+    if (opts.lookRoot) opts.lookRoot.innerHTML = styleHTML + lookHTML; /* style first, then "You are" */
+    root.innerHTML = `${opts.compact ? `${opts.lookRoot ? "" : lookHTML + styleHTML}`
       : `<div class="av-styles" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" class="av-card" aria-pressed="${A().style === k}" data-style="${k}"><canvas data-prev="${k}" width="120" height="150" aria-hidden="true"></canvas><b>${l}</b></button>`).join("")}</div>`}
       ${opts.compact ? "" : `<div class="field"><span>${opts.lookLabel || "Character"}</span><div class="seg" role="group" style="justify-self:start">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>`}
       ${sw("skin", SKINS, "Skin tone")}
@@ -5461,7 +5862,7 @@ function avatarEditor(root, onChange, opts){
     root.querySelectorAll("[data-cap]").forEach(b => b.onclick = () => set({cap: b.dataset.cap === "1"}));
     root.querySelectorAll("[data-curl]").forEach(b => b.onclick = () => set({curl: b.dataset.curl === "1"}));
     [...root.querySelectorAll("[data-look]"), ...(opts.lookRoot ? opts.lookRoot.querySelectorAll("[data-look]") : [])].forEach(b => b.onclick = () => { const look = b.dataset.look, swap = opts.compact && A().top === (look === "boy" ? "pink" : "blue"); set(Object.assign({look}, swap ? {top: look === "boy" ? "blue" : "pink"} : {})); });
-    root.querySelectorAll("[data-style]").forEach(b => b.onclick = () => set({style: b.dataset.style}));
+    [...root.querySelectorAll("[data-style]"), ...(opts.lookRoot ? opts.lookRoot.querySelectorAll("[data-style]") : [])].forEach(b => b.onclick = () => set({style: b.dataset.style}));
     root.querySelectorAll("[data-prev]").forEach(cvs => drawAvatarPreview(cvs, cvs.dataset.prev));
   }
   draw();
@@ -5789,6 +6190,7 @@ function drawOb(){
   cancelAnimationFrame(obAnim);
   const el = $("onboard"), k = OB[obStep];
   el.classList.remove("ob-dark", "st-paper", "st-splash", "st-idea", "st-mine", "st-me");
+  $("obFoot")?.classList.remove("st-wait");
   if (k === "splash" || k === "world") {
     el.classList.toggle("st-splash", k === "splash");
     el.innerHTML = `<main class="ob-main" id="obMain"></main><footer class="ob-foot" id="obFoot" hidden></footer>`;
@@ -5819,11 +6221,11 @@ function stIdeaFoot(Fo, buttons){
   Fo.innerHTML = `<div class="st-ibtns">${k !== ST_IDEA[0] ? stBack() : ""}${buttons}</div>`;
   stWireBack();
 }
-const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" id="obNext">${label || "Continue"}</button>`); $("obNext").onclick = () => obGo(obStep + 1); };
+const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" id="obNext">${label || "Next"}</button>`); $("obNext").onclick = () => obGo(obStep + 1); };
 // The panel's footer: back, a note, then a quiet Skip on the steps that can wait, then Next.
 function stFoot(Fo, note, next, o){
   o = o || {};
-  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><button class="btn st-cta" id="obNext">${o.label || "Continue"}</button>${o.skip ? `<button type="button" class="st-have" id="obSkip">${o.skipLabel || "Skip"}</button>` : ""}`;
+  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><button class="btn st-cta" id="obNext">${o.label || "Next"}</button>${o.skip ? `<button type="button" class="st-have" id="obSkip">${o.skipLabel || "Skip"}</button>` : ""}`;
   $("obNext").onclick = next; stTopBack();
   if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
 }
@@ -5879,8 +6281,8 @@ const ST_SAMPLE = ["home", "pod", "run", "study", "family", "car"]; // a picture
 const stSample = () => ST_PARTS.filter(p => ST_SAMPLE.includes(p.id)).map(p => ({key: p.id, t: p.t, tab: p.tab, kind: p.kind, goal: p.goal, ms: p.ms}));
 function obHow(M, Fo){
   const mine = stParts(), parts = mine.length ? mine : stSample(), first = mine.length ? stFirstPart() : parts[0], goals = [...new Set([first, ...parts.filter(p => p !== first)].filter(Boolean).map(p => p.goal).concat(["Make a start", "Keep going"]))].slice(0, 2); /* two different goals */
-  M.innerHTML = stHead("Paint the future you want, <em>piece by piece</em>.", "Set goals and reach them milestone by milestone. Each goal earns a piece of your picture.")
-    + `<p class="st-chainh">Milestones → Goals → Pieces → <em>Picture</em></p><div class="st-chainv" aria-hidden="true">
+  M.innerHTML = stHead("Paint the future you want, <em>piece by piece</em>.")
+    + `<div class="st-chainv" aria-hidden="true">
       <div class="st-lvl" data-l="0"><span>Milestones</span><div class="st-ticks">${[0, 1, 2, 3, 4, 5].map(() => `<i class="cb" aria-checked="false"></i>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="1"><span>Goals</span><div class="st-pills">${goals.map(g => `<b><canvas data-tro></canvas>${esc(g)}</b>`).join("")}</div></div>${ST_DOWN}
       <div class="st-lvl" data-l="2"><span id="stPzLbl">Your pieces</span><div class="st-pz3" id="stPz3"><canvas id="stHowPic"></canvas><div class="st-jp" id="stJp">${[0, 1, 2, 3, 4, 5].map(i => `<canvas data-jp="${i}" style="left:${(i % 3) * 100 / 3 - 100 / 12}%;top:${(i / 3 | 0) * 50 - 12.5}%;--r:${[-2, 1.5, -1, 2, -1.5, 1][i]}deg;--dx:${(i % 3 - 1) * 9}px;--dy:${(i / 3 | 0) ? 7 : -7}px"></canvas>`).join("")}</div></div></div></div>`;
@@ -5903,6 +6305,8 @@ function obHow(M, Fo){
   at(4500, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
   stNextIdea(Fo, "Start my picture");
   if (CFG.supabaseUrl && !supaUser) { Fo.insertAdjacentHTML("beforeend", `<button type="button" class="st-have" id="obHave">I already have an account</button>`); $("obHave").onclick = stSignInSheet; }
+  /* the button arrives once the picture has come together (straight away with Reduce Motion, or when coming back) */
+  if (!reduced && !(stObPrev > obStep)) { Fo.classList.add("st-wait"); at(4900, () => Fo.classList.remove("st-wait")); }
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
@@ -5916,6 +6320,7 @@ function stSignInSheet(){
 // Her character, drawn big: the pixel sprite at a whole-number scale so it stays crisp, or the 2D illustration.
 function stDrawMe(cvs, look){
   const r = cvs.getBoundingClientRect(), d = Math.min(3, Math.max(1, devicePixelRatio || 1)), W = Math.round(r.width * d), H = Math.round(r.height * d);
+  if (H < 24 || W < 8) return; /* not laid out yet: drawing at zero size crashes the 2D character */
   if (cvs.width !== W || cvs.height !== H) { cvs.width = W; cvs.height = H; }
   const g = cvs.getContext("2d"), A = S.profile.avatar, keep = A.look, top = A.top; if (look) { A.look = look; if (look === "boy" && top === "pink") A.top = "blue"; if (look === "girl" && top === "blue") A.top = "pink"; } // previews in their usual colours
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
@@ -6025,14 +6430,13 @@ function obYou(M, Fo){
     <input type="text" id="obLast" value="${esc(P.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></div>
     ${full ? "" : `<button type="button" class="st-have" id="obFullBtn" style="justify-self:start">Add your full name</button>`}</div>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>
-    <div class="st-photo" id="obPhotoBox"></div><div id="stAv" class="st-av"></div>`;
+    <div id="stAv" class="st-av"></div>`;
   if ($("obFullBtn")) $("obFullBtn").onclick = () => { $("obFull").hidden = false; $("obFullBtn").remove(); $("obMiddle").focus(); };
   const photo = () => { const has = !!S.profile.photo;
     $("obPhotoBox").innerHTML = `<button type="button" class="ac-photo" id="obPhoto" aria-label="${has ? "Replace your photo" : "Add a photo"}">${photoHTML()}</button>
       <div class="st-phb">${has ? `<b>Your photo</b><span><button type="button" class="btn quiet sm" id="obPhotoNew">Replace</button><button type="button" class="btn quiet sm" id="obPhotoDel">Remove</button></span>` : `<b>Add a photo</b><small>Optional. It makes your picture feel like yours.</small>`}</div>`;
     $("obPhoto").onclick = () => pickPhoto(photo);
     if (has) { $("obPhotoNew").onclick = () => pickPhoto(photo); $("obPhotoDel").onclick = () => { delete S.profile.photo; save(); photo(); }; } };
-  photo();
   avatarEditor($("stAv"), () => stDrawMe($("stMe")), {compact: true, lookRoot: $("stLook")});
   stFigureDone(M);
   stFoot(Fo, "", () => {
@@ -6109,18 +6513,17 @@ function stHomeWire(M){
 // place. Suggestions fill it to start; once she changes anything, switching piece keeps her words.
 function obGoal(M, Fo){
   const d = stDraft(), parts = stParts();
-  const fresh = p => ({part: p.key, title: p.goal, ms: p.ms.slice()});
+  const fresh = p => ({part: p.key, title: p.goal, ms: p.ms.slice(0, 1)}); /* one first step; more can be added in Goals */
   if (parts.length && (!d.goal || !parts.some(p => p.key === d.goal.part))) d.goal = d.goal?.edited ? {...d.goal, part: stFirstPart().key} : fresh(stFirstPart()); d.noGoal = false;
   const X = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const draw = (focus) => {
     const G = d.goal, part = G && parts.find(p => p.key === G.part), y = M.scrollTop;
-    M.innerHTML = stHead("Set your first goal", part ? "Choose the piece it's for, then write the goal and the milestones that get you there." : "Pick a piece first, then come back for its first goal. You can also add goals any time from Goals.")
+    M.innerHTML = stHead("Set your first goal", part ? null : "Pick a piece first, then come back for its first goal. You can also add goals any time from Goals.")
       + (!part ? "" : `<section class="st-gsec"><h2 class="st-glbl">For which piece?</h2><div class="st-tabs st-ptabs" role="group" aria-label="Which piece this goal is for">${parts.map(p => `<button type="button" class="st-tab" data-tab="${esc(p.key)}" aria-pressed="${p.key === G.part}"><canvas data-gthumb="${esc(p.key)}" aria-hidden="true"></canvas>${esc(p.tab)}</button>`).join("")}</div></section>
       <section class="st-gsec"><label class="st-glbl" for="stGT">Goal</label><div class="st-gcard"><div class="st-gtop"><span class="st-gpc"><canvas id="stGPc" aria-hidden="true"></canvas></span>
         <span class="grow"><input type="text" id="stGT" class="st-gin" value="${esc(G.title)}" maxlength="120" placeholder="What do you want to reach?"><small>Unlocks ${esc(part.t)}</small></span></div></div></section>
-      <section class="st-gsec"><h2 class="st-glbl">Milestones</h2><ol class="st-msl">${G.ms.map((t, i) => `<li><span class="st-msn" aria-hidden="true">${i + 1}</span><input type="text" data-gm="${i}" value="${esc(t)}" maxlength="120" placeholder="A step towards it" aria-label="Milestone ${i + 1}"><button type="button" class="st-msx" data-gx="${i}" aria-label="Remove milestone ${i + 1}">${X}</button></li>`).join("")}</ol>
-        ${G.ms.length < 8 ? `<button type="button" class="btn quiet st-mid" id="stMsAdd">${plusIcon}Add a milestone</button>` : ""}
-        <p class="st-gnote">You'll tick these off in Goals as you go. Finish them all and ${esc(part.t)} is yours.</p></section>`);
+      <section class="st-gsec"><label class="st-glbl" for="stGM">First step</label><input type="text" id="stGM" data-gm="0" value="${esc(G.ms[0] || "")}" maxlength="120" placeholder="One small step towards it">
+        <p class="st-gnote">Add more steps any time in Goals.</p></section>`);
     M.scrollTop = y;
     if (!part) return;
     const lib = ST_PARTS.find(x => x.id === part.key)?.lib, own = aspById(part.key), pc = $("stGPc");
@@ -6131,8 +6534,6 @@ function obGoal(M, Fo){
     M.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { const p = parts.find(x => x.key === b.dataset.tab); d.goal = G.edited ? {...G, part: p.key} : fresh(p); save(); draw(`[data-tab="${CSS.escape(p.key)}"]`); });
     $("stGT").oninput = e => { G.title = e.target.value; edited(); };
     M.querySelectorAll("[data-gm]").forEach(inp => inp.oninput = () => { G.ms[+inp.dataset.gm] = inp.value; edited(); });
-    M.querySelectorAll("[data-gx]").forEach(b => b.onclick = () => { G.ms.splice(+b.dataset.gx, 1); edited(); draw(G.ms.length ? `[data-gm="${Math.min(+b.dataset.gx, G.ms.length - 1)}"]` : "#stMsAdd"); });
-    if ($("stMsAdd")) $("stMsAdd").onclick = () => { G.ms.push(""); edited(); draw(`[data-gm="${G.ms.length - 1}"]`); };
     if (focus) M.querySelector(focus)?.focus({preventScroll: true});
   };
   stFoot(Fo, "", () => {
@@ -6390,7 +6791,33 @@ function pickPhotos(max, done){
     if (out.length) done(out); };
   inp.click();
 }
-function viewPhoto(src, title){ openSheet(title || "Photo", `<img src="${esc(src)}" alt="" style="width:100%;border-radius:12px;display:block">`, `<button class="btn" id="phDone">Done</button>`, () => { $("phDone").onclick = closeSheet; }); }
+function viewPhotos(list, start, title){ /* full screen, swipe or use the arrows to move between a piece's photos */
+  let i = start || 0; document.getElementById("phShow")?.remove();
+  const el = document.createElement("div"); el.className = "ph-show"; el.id = "phShow"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", title || "Photos");
+  const draw = () => { el.innerHTML = `<div class="ph-top"><span>${esc(title || "")}</span><span>${i + 1} / ${list.length}</span><button type="button" class="ph-x" aria-label="Close">×</button></div>
+      <div class="ph-stage"><img src="${esc(list[i])}" alt="Photo ${i + 1} of ${list.length}"></div>
+      ${list.length > 1 ? `<button type="button" class="ph-nav prev" aria-label="Previous photo">‹</button><button type="button" class="ph-nav next" aria-label="Next photo">›</button>
+      <div class="ph-dots">${list.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("")}</div>` : ""}`;
+    el.querySelector(".ph-x").onclick = close; el.querySelector(".prev")?.addEventListener("click", () => go(-1)); el.querySelector(".next")?.addEventListener("click", () => go(1)); };
+  const go = d => { i = (i + d + list.length) % list.length; draw(); };
+  const close = () => { el.remove(); document.removeEventListener("keydown", key); };
+  const key = e => { if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") go(-1); else if (e.key === "ArrowRight") go(1); };
+  /* the photo follows your finger; let go past a third of the way (or flick) and it slides to the next one */
+  let sx = null, st = 0, dx = 0;
+  const img = () => el.querySelector(".ph-stage img");
+  el.addEventListener("pointerdown", e => { if (list.length < 2 || e.target.closest("button")) return; sx = e.clientX; st = performance.now(); dx = 0; el.setPointerCapture?.(e.pointerId); const m = img(); if (m) m.style.transition = "none"; });
+  el.addEventListener("pointermove", e => { if (sx == null) return; dx = e.clientX - sx; const m = img(); if (m) m.style.transform = `translateX(${dx}px)`; });
+  const release = () => { if (sx == null) return; sx = null; const m = img(), w = el.clientWidth, fast = Math.abs(dx) / Math.max(1, performance.now() - st) > .5;
+    if (Math.abs(dx) < 8) { if (m) m.style.transform = ""; return; }
+    if (Math.abs(dx) > w / 3 || (fast && Math.abs(dx) > 30)) { const d = dx < 0 ? 1 : -1;
+      if (reduced || !m) { go(d); return; }
+      m.style.transition = "transform .2s ease-out"; m.style.transform = `translateX(${-d * w}px)`;
+      setTimeout(() => { go(d); const n = img(); if (!n) return; n.style.transition = "none"; n.style.transform = `translateX(${d * w}px)`; n.getBoundingClientRect(); n.style.transition = "transform .22s ease-out"; n.style.transform = ""; }, 190);
+    } else if (m) { m.style.transition = reduced ? "none" : "transform .2s ease-out"; m.style.transform = ""; } };
+  el.addEventListener("pointerup", release); el.addEventListener("pointercancel", release);
+  document.addEventListener("keydown", key); draw(); $("app").append(el);
+}
+function viewPhoto(src, title){ viewPhotos([src], 0, title); }
 function pickPhoto(done){
   const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
   inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; const url = URL.createObjectURL(f), im = new Image();

@@ -18,15 +18,16 @@ overrides. New components use these, never new one-off styles.
 - **One text field:** a soft grey fill (#f3f3f2), 12px corners, no underline or border. Typing turns it white with a
   thin ink ring, never pink. Text 16px (smaller makes iPhone zoom in). Big onboarding moments (the name) may differ.
 - **Navigation: a tab bar on the bottom edge** (a straight full-width band with a hairline on top, glass; dark glass over the world at
-  night) with five tabs: **My Picture**, **Pieces**, **Goals**, **Journal** (Weekly | Journal), **More** (To-do list, My
+  night) with five tabs: **My Picture**, **Goals**, **This week**, **Journal**, **My stuff** (My Assets); **Pieces** opens from a plain jigsaw-piece icon (no background) at the top right of Home, beside the clock (To-do list, My
   Assets, Good things, Affirmations as a plain list). The current tab is in the rose accent. Tab pages have no back
-  arrow; pages opened from More do. **Account** is your photo at the top right of Home (My Picture) only; Help lives in Account. Journal reopens
+  arrow; pages opened from More do. **Account** is a pink circle with your initials at the top left of Home (My Picture) only, beside the greeting; the top right shows the time in 24-hour form (the time the world's light follows); Help lives in Account. Journal reopens
   on the tab last used.
 - **The menu** never touches the screen edges (at most 320px wide). Order: make (Paint a Picture) → keep (Journal,
   To-do list, My Assets) → you (Account) → help, with a divider between groups.
 - **One chip:** white with a hairline ring (`--ring`); chosen is **ink** with white text.
 - **Pink is rare:** the main button on a screen, ticks, progress bars, unlocked pieces and the star. Links, quiet
   buttons, chosen chips, the tab bar and labels are ink or grey.
+- **Quiet buttons on hover** ("+ New", "Add goal" and other text-only buttons): accent text on the pale accent tint. Only on screens with a pointer; on iPhone they stay ink.
 - **Type scale:** 28 page titles (serif), 22 sheet and pop-up titles (serif), 17 section and card titles (sans, bold),
   15 body, 13 small. Labels are 13px, normal case, grey: no all-capitals eyebrows.
 - **Serif only** for page titles and big moments (onboarding headings, the weekly review line, good things,
@@ -37,6 +38,16 @@ overrides. New components use these, never new one-off styles.
 - **Motion:** one signature moment (a piece unlocking). Nothing loops; no wiggling icons or pulsing rings.
 - **Copy:** at most one playful line per flow; no exclamation marks.
 
+## New direction (14 Nov, being rolled out)
+Playful, whimsical, editorial: hand-drawn children's-book illustration meets modern graphic design. Slightly imperfect
+and expressive, never corporate-polished. **No** pastels, gradients, beige, muted earth tones or "wellness app" pink-and-
+purple. One electric pink (`--accent`) is the dominant UI colour, the way cobalt leads the references. Bright raspberry,
+orange, grass green and sky blue appear only in illustrations, painted days and celebrations, never across UI parts.
+- A Journal trial of the full look (paper-grey page, all-pink text, hand-lettered Gaegu titles, DM Mono writing) was
+  tried on 14 Nov and reverted the same day. Only the new pink stays.
+- Where this conflicts with older rules below ("pink is rare", serif titles), the new direction wins on pages that
+  have moved to it.
+
 ## Colour (tokens in `:root`, top of `index.html`)
 | Token | Value | Use |
 |---|---|---|
@@ -44,8 +55,9 @@ overrides. New components use these, never new one-off styles.
 | `--surface` / `--card` | `#ffffff` | cards and panels |
 | `--ink` / `--ink-2` / `--muted` | `#141414` / `#424242` / `#6f6f6f` | text, strongest to softest (true neutrals, no tint) |
 | `--line` / `--line-2` | `#e4e4e1` / `#d4d4d0` | borders and dividers |
-| `--accent` / `--accent-strong` | `#d94a7a` / `#c4365f` | a deep rose: the main action and progress |
-| `--accent-soft` | `#f9e6ec` | the rare pale-pink fill |
+| `--accent` / `--accent-strong` | `#ea4c8e` / `#d0326f` | bubblegum pink from the cat-toy reference (hue 336); deeper one behind white text (lilac and electric raspberry were tried on 14 Nov, rose `#d94a7a` before that) |
+| `--accent-ink` | `#c4286a` | accent-coloured text |
+| `--accent-soft` | `#fde4ef` | the rare pale-pink fill |
 | `--amber` / `--amber-soft` | `#8f5c14` / `#f5ead6` | the honey tone: progress, warmth |
 | `--sea` / `--sea-soft` | `#2c6a88` / `#e2edf2` | water, maps |
 | `--danger` | `#9b3b2a` | delete and reset only |
@@ -63,7 +75,7 @@ Rules:
 ## Shape and depth
 - Corners 4, 8 or 12px (pills and round buttons stay round; the Account boxes and pop-up use 14 and 20).
 - Shadows are soft and low: a 1px ring plus a gentle drop. No heavy glows.
-- Map controls are light glass (blurred white), small and quiet.
+- Home's top right holds, right to left: the puzzle piece (Pieces), the eye (clear view), the clock. Plain icons, no circles. There are no other map buttons.
 - Padding: 24px around content in onboarding, 16px page gutter in the app.
 
 ## The world (canvas)
@@ -94,6 +106,8 @@ Rules:
 
 ## Voice
 - Short, warm, plain. Talk to the person ("your picture", "your places").
+- **Journal year, how it's used:** one tap on a day shows its date in a pink pill above it ("Thursday, 05.11", DM Mono); a double-tap opens the day. Month names are small, grey capitals so the dots lead.
+- **Journal is a year of circles.** Empty days are tiny grey pen dots, nudged off-centre as if dotted by hand (the full 45px square is still the tap area); future days are fainter dots; and today sits on a pale pink disc (`--accent-soft`). A filled day is a doodle in its colour, like felt pen on paper: a slightly wobbly hand-drawn ring and the face's lines, thin, on white (no fill). A day linked to a goal, milestone or piece wears a small pink link badge at its top right, like the star on the map.
 - Words we use: **picture, pieces, goals, milestones, places, journal**. Goals bring pieces; milestones are steps.
 - Never "dream" in visible copy. No exclamation-mark cheerleading, no "unlock your potential", no emoji in UI copy.
 - Error and empty states say what happened and what to do next, in one line.
@@ -106,3 +120,4 @@ Rules:
 - How-it-works jigsaw: each piece is its cell plus a tab's width (a sixth) each side, so pieces sit inside the frame
   and lock together exactly.
 - The welcome screen has no progress line; it isn't a step. Progress counts only the steps of making the picture.
+- **One shadow for things that float over the map** (place card, places strip, chips): `0 1px 2px rgba(20,20,20,.06), 0 8px 22px -10px rgba(20,20,20,.28)`. A bigger shadow spills onto whatever sits just below it.
