@@ -121,3 +121,5 @@ Rules:
   and lock together exactly.
 - The welcome screen has no progress line; it isn't a step. Progress counts only the steps of making the picture.
 - **One shadow for things that float over the map** (place card, places strip, chips): `0 1px 2px rgba(20,20,20,.06), 0 8px 22px -10px rgba(20,20,20,.28)`. A bigger shadow spills onto whatever sits just below it.
+- **Dates:** a single day always reads "Sat, Nov 1" (short weekday, short month, day; "Tues" and "Thurs" spelled that way), with ", 2026" only where the year is needed. One helper (`fmt`) does it for the whole app.
+- **Glass pill** (the Journal year), Apple style: mostly clear white with a whisper of pink, strong blur behind, a hairline bright edge with a brighter top rim, and a soft wide shadow. Never a solid coloured fill. It sits at the far right of the Journal title row (and stays there while scrolling); tapping it opens a small glass list of years. No arrows.
