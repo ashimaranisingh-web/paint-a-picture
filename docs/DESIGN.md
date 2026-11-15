@@ -18,7 +18,7 @@ overrides. New components use these, never new one-off styles.
 - **One text field:** a soft grey fill (#f3f3f2), 12px corners, no underline or border. Typing turns it white with a
   thin ink ring, never pink. Text 16px (smaller makes iPhone zoom in). Big onboarding moments (the name) may differ.
 - **Navigation: a tab bar on the bottom edge** (a straight full-width band with a hairline on top, glass; dark glass over the world at
-  night) with five tabs: **My Picture**, **Goals**, **This week**, **Journal**, **My stuff** (My Assets); **Pieces** opens from a plain jigsaw-piece icon (no background) at the top right of Home, beside the clock (To-do list, My
+  night) with five tabs: **My Picture**, **Goals**, **This week**, **Journal**, **My studio** (a gallery-building icon; opens your assets directly); **Pieces** opens from a plain jigsaw-piece icon (no background) at the top right of Home, beside the clock (To-do list, My
   Assets, Good things, Affirmations as a plain list). The current tab is in the rose accent. Tab pages have no back
   arrow; pages opened from More do. **Account** is a pink circle with your initials at the top left of Home (My Picture) only, beside the greeting; the top right shows the time in 24-hour form (the time the world's light follows); Help lives in Account. Journal reopens
   on the tab last used.
@@ -123,3 +123,5 @@ Rules:
 - **One shadow for things that float over the map** (place card, places strip, chips): `0 1px 2px rgba(20,20,20,.06), 0 8px 22px -10px rgba(20,20,20,.28)`. A bigger shadow spills onto whatever sits just below it.
 - **Dates:** a single day always reads "Sat, Nov 1" (short weekday, short month, day; "Tues" and "Thurs" spelled that way), with ", 2026" only where the year is needed. One helper (`fmt`) does it for the whole app.
 - **Glass pill** (the Journal year), Apple style: mostly clear white with a whisper of pink, strong blur behind, a hairline bright edge with a brighter top rim, and a soft wide shadow. Never a solid coloured fill. It sits at the far right of the Journal title row (and stays there while scrolling); tapping it opens a small glass list of years. No arrows.
+- **Photos:** a small copy (480px) lives in the saved world and syncs; the full-quality copy (up to 2560px) stays on the device and the full-screen viewer shows it, with pinch, double-tap and trackpad zoom.
+- Leave room for the iPhone home bar with `var(--safe-bottom)` on anything that sits at the bottom of the screen.

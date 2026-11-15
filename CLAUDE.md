@@ -47,6 +47,9 @@ shipping), [docs/RELEASE.md](docs/RELEASE.md) (web, TestFlight, Supabase, PostHo
 - New "create" actions for guests go behind `needAccount(then)`. Places and pieces stay open to guests.
 - Anything `position:sticky` inside the page scroller needs `top:calc(-1 * var(--safe-top))` and that much extra top padding, or content shows through the notch strip above it (seen in the desktop frame and on iPhone).
 - On the map canvas, set `globalCompositeOperation` right before every `drawImage`. A mode left on from an earlier layer ("screen" from the streetlight glow) turned the evening sea white.
+- The 8776 test tab is signed in to the owner's account, so test edits sync to her real world. Snapshot before testing and undo every change after.
+- Anything that applies a synced world must not change the screen you're on unless the incoming data truly calls for it (a blanket "onboarding done → go Home" kept throwing people out of a replayed introduction).
+- The owner's Mac has Reduce Motion on: a gentle version of an animation (fade, small scale) should still play, or she never sees it.
 - Respect Reduce Motion (`prefers-reduced-motion`) for every new animation.
 - Usage events: add to `track()` calls only with the consent check already inside it; never send names, emails, goal
   text or journal text. Demo mode is never tracked.

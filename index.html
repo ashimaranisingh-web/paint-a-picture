@@ -13,7 +13,8 @@
 /* Layout: phone-shaped app. Home = a dark, immersive pixel world with glass controls (mark top-left, menu top-right, Goals / This week at the bottom).
    Product screens = warm light paper, editorial serif titles, compact ruled lists, bottom sheets for editing. */
 :root{
-  --safe-top:env(safe-area-inset-top,0px); /* the notch / Dynamic Island; the desktop iPhone 14 frame uses 47px */
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px); /* the home bar; the desktop iPhone frame uses 34px */ /* the notch / Dynamic Island; the desktop iPhone 14 frame uses 47px */
   --paper:#f3f3f1; --surface:#ffffff; --sunk:#e9e9e6;
   --ink:#141414; --ink-2:#424242; --muted:#6f6f6f; --line:#e4e4e1; --line-2:#d4d4d0;
   --accent:#ea4c8e; --accent-strong:#d0326f; --accent-2:#a81d52; --accent-ink:#c4286a; --accent-soft:#fde4ef; /* bubblegum pink sampled from the cat-toy reference (hue 336); lilac #7f35d4 and raspberry #d6005a were tried on 14 Nov */
@@ -34,7 +35,7 @@ button{cursor:pointer}
 #app{height:100%;max-width:390px;margin:0 auto;position:relative;overflow:hidden;background:var(--paper)}
 /* On a computer the app is shown at iPhone 14 size (390 × 844), centred; on a phone it fills the screen. */
 @media (min-width:560px){#app{box-shadow:0 0 0 1px var(--line),0 30px 80px rgba(20,20,20,.14)}}
-@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:12px;--safe-top:47px}}
+@media (min-width:560px) and (min-height:880px){body{display:grid;place-items:center}#app{width:390px;height:844px;border-radius:12px;--safe-top:47px;--safe-bottom:34px}}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column}
 .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
@@ -51,7 +52,7 @@ body.demo-on .prof-btn{border-color:var(--accent);color:var(--accent-ink)}
 .prof-menu .tick{width:20px;height:20px;flex:none;color:var(--accent-ink);visibility:hidden}.prof-menu [aria-checked="true"] .tick{visibility:visible}
 .prof-menu [aria-checked="true"] b{color:var(--accent-ink)}
 .demo-strip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:var(--accent-soft);border-top:1px solid #f6d3df;font-size:13px;color:var(--accent-ink)}
-body.demo-on .toast:not(.top){bottom:calc(136px + env(safe-area-inset-bottom,0px))} /* clear of the Demo Data strip */
+body.demo-on .toast:not(.top){bottom:calc(136px + var(--safe-bottom))} /* clear of the Demo Data strip */
 .demo-strip button{all:unset;cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:32px;display:flex;align-items:center}
 /* ---------- the loader: one screen for the bigger jobs ---------- */
 .swiping{box-shadow:-10px 0 30px rgba(20,20,20,.18)}
@@ -66,7 +67,7 @@ body.demo-on .toast:not(.top){bottom:calc(136px + env(safe-area-inset-bottom,0px
 .ob:not(.ob-dark) .pill{background:#f3f3f1;border-color:#f3f3f1;color:var(--ink)}
 .ob:not(.ob-dark) .pill[aria-pressed="true"]{background:#fff;border-color:var(--accent);color:var(--ink)}
 .ob-hint{margin:-2px 0 8px;font-size:13px;color:var(--muted)}
-.loader{position:absolute;inset:0;z-index:50;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(var(--safe-top) + 60px) 32px calc(56px + env(safe-area-inset-bottom,0px));transition:opacity .25s}
+.loader{position:absolute;inset:0;z-index:50;background:#fff;color:var(--ink);display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(var(--safe-top) + 60px) 32px calc(56px + var(--safe-bottom));transition:opacity .25s}
 .loader.out{opacity:0}
 .ld-art canvas{width:240px;height:180px;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:12px;display:block}
 .ld-h{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.15;margin:36px 0 0;max-width:300px}
@@ -109,12 +110,12 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .eye .eye-open{transform:scaleY(.08);opacity:0}.eye.open .eye-open{transform:none;opacity:1}.eye.open .eye-shut{opacity:0;transform:scaleY(.4)}
 @media (prefers-reduced-motion:reduce){.eye-open,.eye-shut{transition:none}}
 .home-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + var(--safe-bottom)) max(16px,env(safe-area-inset-left,0px))}
 .htab{display:flex;align-items:center;justify-content:center;gap:9px;height:54px;border-radius:12px;border:1px solid var(--glass-line);background:var(--glass);color:#fff;
   font-weight:700;font-size:15px;letter-spacing:.01em;}
 .htab:hover{background:rgba(30,36,48,.8)}
 .htab.main{background:rgba(243,243,241,.95);color:var(--ink);border-color:transparent}
-.loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:6;
+.loccard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(132px + var(--safe-bottom));z-index:6;
   background:rgba(243,243,241,.97);color:var(--ink);border-radius:var(--r-lg);padding:14px 14px 12px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
 .loccard .row{display:flex;gap:12px;align-items:flex-start}
 .lc-info{flex:1;min-width:0;display:grid;gap:4px;padding:4px 0}.lc-desc{margin:0;font-size:13px;line-height:1.4;color:var(--ink-2)}
@@ -137,9 +138,9 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .bubble{position:absolute;z-index:6;transform:translate(-50%,-100%);background:rgba(243,243,241,.97);color:var(--ink);border-radius:12px;padding:7px 11px;
   font-size:13px;font-weight:600;max-width:220px;text-align:center;pointer-events:none;box-shadow:0 8px 20px rgba(0,0,0,.3)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(243,243,241,.97);border-bottom:0}
-.hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--glass);border:1px solid var(--glass-line);
+.hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(132px + var(--safe-bottom));z-index:5;background:var(--glass);border:1px solid var(--glass-line);
   color:rgba(255,255,255,.9);font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;white-space:nowrap;pointer-events:none;}
-.journey{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;
+.journey{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(80px + var(--safe-bottom));z-index:5;
   display:grid;grid-template-columns:repeat(5,1fr);align-items:center;height:30px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line);padding:0 6px}
 .journey::before{content:"";position:absolute;left:18px;right:18px;top:50%;height:1px;background:rgba(255,255,255,.22)}
 .journey button{all:unset;cursor:pointer;position:relative;z-index:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.62);padding:6px 0}
@@ -161,7 +162,7 @@ body.demo-on [data-menu]::after{content:"";position:absolute;top:7px;right:7px;w
 .pbtn:hover{background:var(--sunk)}
 .pmain{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
 .page{padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:grid;gap:20px;align-content:start}
-.pnav{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
+.pnav{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line);background:var(--surface);padding-bottom:var(--safe-bottom)}
 .pnav button{all:unset;cursor:pointer;display:grid;justify-items:center;gap:3px;padding:9px 0 10px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em}
 .pnav button[aria-current="page"]{color:var(--accent-ink)}
 .pnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
@@ -281,7 +282,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 #sheetX{border:0;background:transparent;margin-right:-10px}#sheetX:hover{background:var(--sunk)}
 .sheet-h h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.05}
 .sheet-b{overflow:auto;padding:4px max(18px,env(safe-area-inset-right,0px)) 16px max(18px,env(safe-area-inset-left,0px));display:grid;gap:16px}
-.sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
+.sheet-f{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + var(--safe-bottom)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#fff}
 .progress-dots{display:flex;gap:5px}
 .progress-dots i{width:22px;height:4px;border-radius:8px;background:var(--line)}
 .progress-dots i.on{background:var(--accent)}
@@ -318,7 +319,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--a
 .menu button:hover,.menu button:focus-visible{background:var(--sunk)}
 .menu small{display:block;font-weight:600;font-size:13px;color:var(--muted)}
 .menu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
-.toast{position:absolute;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;z-index:40;background:var(--ink);color:var(--paper);
+.toast{position:absolute;left:50%;bottom:calc(92px + var(--safe-bottom));transform:translate(-50%,16px);opacity:0;z-index:40;background:var(--ink);color:var(--paper);
   font-weight:700;font-size:13px;padding:10px 15px;border-radius:12px;transition:transform .25s,opacity .25s;max-width:calc(100% - 32px);text-align:center;pointer-events:none}
 .toast.show{transform:translate(-50%,0);opacity:1}
 .toast.top{bottom:auto;top:calc(118px + var(--safe-top))}
@@ -437,13 +438,13 @@ select.sel-box:focus{border-color:var(--accent-strong);box-shadow:0 0 0 1px var(
 
 /* ---------- world HUD, places strip, tips ---------- */
 #hud{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.journey{display:flex;justify-content:space-between;height:44px;padding:0 6px;bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+.journey{display:flex;justify-content:space-between;height:44px;padding:0 6px;bottom:calc(78px + var(--safe-bottom))}
 .journey::before{display:none}
 .journey .link{flex:1 1 8px;min-width:8px;height:1px;background:rgba(255,255,255,.28);align-self:center}
 .journey button{flex:0 1 auto;min-width:44px;height:44px;padding:0 8px;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s;box-sizing:border-box}
 .journey button[aria-current="true"]{color:#fff}
 /* the tour card: a white card in the Goals card style, floating over the map */
-.tour{position:absolute;left:50%;transform:translateX(-50%);width:min(358px,calc(100% - 32px));bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:7;
+.tour{position:absolute;left:50%;transform:translateX(-50%);width:min(358px,calc(100% - 32px));bottom:calc(132px + var(--safe-bottom));z-index:7;
   background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:var(--r-lg);padding:16px;display:grid;gap:8px;box-shadow:0 18px 40px rgba(0,0,0,.35);transition:opacity .25s}
 .tour.fade{opacity:0}
 .tour-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -576,7 +577,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob-brand{font-family:var(--serif);font-size:20px}
 .ob-dots{display:flex;gap:5px}.ob-dots i{width:18px;height:4px;border-radius:8px;background:var(--line-2)}.ob-dots i.on{background:var(--accent)}
 .ob-main{flex:1;min-height:0;overflow:auto;padding:10px max(20px,env(safe-area-inset-right,0px)) 24px max(20px,env(safe-area-inset-left,0px));display:grid;gap:16px;align-content:start}
-.ob-foot{display:flex;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
+.ob-foot{display:flex;justify-content:space-between;gap:10px;padding:12px max(18px,env(safe-area-inset-right,0px)) calc(14px + var(--safe-bottom)) max(18px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--surface)}
 .ob-h{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.1;margin:6px 0 0;letter-spacing:-.005em}
 .ob-p{font-size:17px;margin:0;color:rgba(255,255,255,.82)}
 .ob-sub{margin:-6px 0 0;color:var(--muted);font-size:15px}
@@ -605,7 +606,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 .ob.st-idea{background:#faf8f4}
 .st-imain{display:flex;flex-direction:column;gap:24px;padding:calc(var(--safe-top) + 44px) 20px 12px}
 .st-visual{flex:1;display:grid;place-items:center;min-height:0}
-.st-ifoot{display:grid;gap:16px;padding:8px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+.st-ifoot{display:grid;gap:16px;padding:8px 20px calc(20px + var(--safe-bottom))}
 .st-pager{display:flex;justify-content:center;gap:6px}.st-pager i{width:7px;height:7px;border-radius:99px;background:var(--line-2);transition:width .25s,background .25s}.st-pager i.on{width:22px;background:var(--accent)}
 .st-ibtns{display:flex;gap:12px;align-items:center}
 /* back: a soft round button beside the main one */
@@ -628,7 +629,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 /* the splash */
 .ob.st-splash{background:var(--night)}
 .ob.st-splash .ob-main{position:relative;padding:0;overflow:hidden;cursor:pointer}
-.st-mark{position:absolute;left:0;right:0;bottom:calc(16% + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:6px;color:#fff;text-align:center;opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s;text-shadow:0 2px 12px rgba(10,14,24,.7)}
+.st-mark{position:absolute;left:0;right:0;bottom:calc(16% + var(--safe-bottom));display:grid;justify-items:center;gap:6px;color:#fff;text-align:center;opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s;text-shadow:0 2px 12px rgba(10,14,24,.7)}
 .st-mark.on{opacity:1;transform:none}
 .st-mark b{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1}
 .st-mark span{font-size:15px;font-weight:600;color:rgba(255,255,255,.88)}
@@ -900,7 +901,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 /* the explainer has the same progress line as the other steps */
 .ob.st-idea .st-mbar{flex:none}.st-idea .st-imain{padding-top:22px}
 /* the usage-sharing line on first launch */
-.consent{position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:60;background:#fff;border-radius:16px;padding:14px 16px;display:grid;gap:10px;box-shadow:0 1px 2px rgba(20,20,20,.06),0 16px 36px -14px rgba(20,20,20,.35)}
+.consent{position:absolute;left:12px;right:12px;bottom:calc(12px + var(--safe-bottom));z-index:60;background:#fff;border-radius:16px;padding:14px 16px;display:grid;gap:10px;box-shadow:0 1px 2px rgba(20,20,20,.06),0 16px 36px -14px rgba(20,20,20,.35)}
 .consent p{margin:0;font-size:14px;line-height:1.45;color:var(--ink)}.consent-b{display:flex;justify-content:flex-end;gap:8px}
 /* the sign-in form */
 .st-sign,.st-signstep{display:grid;gap:12px}
@@ -1064,7 +1065,7 @@ button.st-ms{cursor:pointer;min-height:44px;font-size:15px}button.st-ms:focus-vi
 /* her scene runs to the top and both edges */
 .st-figbg{position:absolute;top:calc(-1 * (var(--safe-top) + 72px));left:-20px;right:-20px;bottom:0;width:calc(100% + 40px);height:calc(100% + var(--safe-top) + 72px);image-rendering:pixelated;z-index:0;pointer-events:none}
 /* the footer: one full-width button, a quiet text button under it when there's another way on */
-.ob.st-me .ob-foot.st-mfoot{display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;justify-items:stretch;gap:2px;padding:10px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:0}
+.ob.st-me .ob-foot.st-mfoot{display:grid;grid-template-columns:minmax(0,1fr);justify-content:stretch;justify-items:stretch;gap:2px;padding:10px 20px calc(12px + var(--safe-bottom));border-top:0}
 .st-mfoot .st-cta{width:100%;height:52px;border-radius:14px;font-size:17px;justify-content:center}
 .st-mfoot .st-note{text-align:center;padding-bottom:6px}.st-mfoot .st-note:empty{display:none}
 /* the usage question: a centred pop-up over a dimmed screen */
@@ -1127,7 +1128,7 @@ select:not([multiple]){padding-right:38px;background-position:right 12px center}
 
 /* the floating tab bar (13 Nov): World, Picture, Goals, Journal. Light glass over everything, dark glass on the world at night;
    the current tab in ink, never pink. Pages scroll underneath it. */
-.tabbar{position:absolute;z-index:10;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));
+.tabbar{position:absolute;z-index:10;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(12px + var(--safe-bottom));
   height:62px;display:grid;grid-template-columns:repeat(4,1fr);padding:0 6px;border-radius:24px;background:rgba(255,255,255,.86);
   -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 0 0 1px rgba(20,20,20,.06),0 10px 30px -10px rgba(20,20,20,.28)}
 .tabbar button{all:unset;cursor:pointer;display:grid;justify-items:center;align-content:center;gap:3px;font-size:11px;font-weight:600;color:#7a7a78;border-radius:18px}
@@ -1136,11 +1137,11 @@ select:not([multiple]){padding-right:38px;background-position:right 12px center}
 .tabbar button:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
 body.on-home.world-night .tabbar{background:rgba(16,19,27,.78);box-shadow:0 0 0 1px rgba(255,255,255,.12),0 10px 30px -10px rgba(0,0,0,.5)}
 body.on-home.world-night .tabbar button{color:rgba(255,255,255,.6)}body.on-home.world-night .tabbar button[aria-current="page"]{color:#fff}
-.pmain{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
-.demo-strip{position:absolute;left:0;right:0;z-index:9;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.journey{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
-:is(.loccard,.hint,.tour){bottom:calc(140px + env(safe-area-inset-bottom,0px))}
-.toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.pmain{padding-bottom:calc(96px + var(--safe-bottom))}
+.demo-strip{position:absolute;left:0;right:0;z-index:9;bottom:calc(84px + var(--safe-bottom))}
+.journey{bottom:calc(86px + var(--safe-bottom))}
+:is(.loccard,.hint,.tour){bottom:calc(140px + var(--safe-bottom))}
+.toast{bottom:calc(96px + var(--safe-bottom))}
 /* your photo, top right: Account */
 .me-btn{all:unset;cursor:pointer;box-sizing:border-box;width:36px;height:36px;border-radius:50%;overflow:hidden;display:grid;place-items:center;flex:none;
   background:#ececea;color:var(--ink);font-weight:800;font-size:15px}
@@ -1163,7 +1164,7 @@ body.demo-on .me-btn{box-shadow:0 0 0 2px var(--accent)}
 .ph-stage{display:grid;place-items:center;min-height:0;padding:0 8px;touch-action:pan-y}.ph-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;user-select:none;-webkit-user-drag:none}
 .ph-nav{all:unset;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:28px}
 .ph-nav.prev{left:10px}.ph-nav.next{right:10px}
-.ph-dots{display:flex;justify-content:center;gap:6px;padding:14px 0 calc(18px + env(safe-area-inset-bottom,0px))}.ph-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.ph-dots i.on{background:#fff}
+.ph-dots{display:flex;justify-content:center;gap:6px;padding:14px 0 calc(18px + var(--safe-bottom))}.ph-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}.ph-dots i.on{background:#fff}
 /* cards: corners at most 12px, 12px inside, 12px between (13 Nov, later) */
 :root{--card-r:12px}
 :is(.panel,.gcard,.jcard,.todo,.pl-card,.as-item,.good-today,.st-goal,.st-gcard,.wk-hit,.aff-card,.ac-av>.field,.ac-av>.av-row,.sugg-item){border-radius:12px;padding:12px}
@@ -1184,7 +1185,7 @@ body.demo-on .me-btn{box-shadow:0 0 0 2px var(--accent)}
 
 /* the tab bar sits on the bottom edge (13 Nov, later): full width, rounded top corners, still glass; five tabs; the current
    one in the rose accent */
-.tabbar{left:0;right:0;bottom:0;height:auto;grid-template-columns:repeat(5,1fr);padding:8px 4px calc(6px + env(safe-area-inset-bottom,0px));
+.tabbar{left:0;right:0;bottom:0;height:auto;grid-template-columns:repeat(5,1fr);padding:8px 4px calc(6px + var(--safe-bottom));
   border-radius:22px 22px 0 0;box-shadow:0 0 0 1px rgba(20,20,20,.06),0 -8px 24px -14px rgba(20,20,20,.25)}
 .tabbar button{min-height:50px;font-size:10.5px}
 /* a straight band: square corners, a hairline along the top, still glass (13 Nov, later) */
@@ -1198,11 +1199,11 @@ body.on-home.world-night .tabbar{background:linear-gradient(180deg,rgba(22,26,38
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
 .tabbar button[aria-current="page"]{color:var(--accent-strong)}
 body.on-home.world-night .tabbar button[aria-current="page"]{color:#ff8db3}
-.pmain{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.demo-strip{bottom:calc(64px + env(safe-area-inset-bottom,0px))}
-.journey{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
-:is(.loccard,.hint,.tour){bottom:calc(132px + env(safe-area-inset-bottom,0px))}
-.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.pmain{padding-bottom:calc(84px + var(--safe-bottom))}
+.demo-strip{bottom:calc(64px + var(--safe-bottom))}
+.journey{bottom:calc(78px + var(--safe-bottom))}
+:is(.loccard,.hint,.tour){bottom:calc(132px + var(--safe-bottom))}
+.toast{bottom:calc(84px + var(--safe-bottom))}
 /* More: a plain list of rows */
 .more-list{list-style:none;margin:0;padding:0} /* rows on the page with dividers, no card */
 .more-row{all:unset;cursor:pointer;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--hair)}
@@ -1411,6 +1412,76 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .yr-menu button{border:0;background:transparent;padding:9px 14px;border-radius:8px;font:500 15px "DM Mono",ui-monospace,monospace;color:var(--ink);cursor:pointer;text-align:center}
 .yr-menu button[aria-checked="true"]{color:var(--accent-ink);background:var(--accent-soft)}
 @media (hover:hover){.yr-menu button:hover{background:rgba(20,20,20,.05)}}
+/* Pieces: Your world folds open and closed */
+.pw-head{width:100%}
+.pw-title{display:flex;align-items:baseline;gap:10px}
+.pw-title .sec{font-size:17px;font-weight:700;color:var(--ink)}
+.pw-title .muted{font-size:14px;font-weight:500}
+@media (prefers-reduced-motion:reduce){.acc-chev{transition:none}}
+/* photo viewer zoom */
+.ph-stage img{transform-origin:center center;will-change:transform}
+.ph-show.zoomed .ph-nav,.ph-show.zoomed .ph-dots{opacity:0;pointer-events:none}
+.ph-show.zoomed .ph-stage{cursor:grab}
+.ph-show .ph-stage{touch-action:none} /* our own pinch and pan, not the browser's */
+.gc-where{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.gc-where .linkbtn{font-size:13px}
+/* onboarding: Ashima's story, a line at a time */
+.st-story{display:grid;gap:8px;margin-top:18px;text-align:center}
+.st-story p{margin:0;font-size:14px;line-height:1.45;color:var(--ink-2);opacity:0;transform:translateY(4px);transition:opacity .45s ease,transform .45s ease}
+.st-story p.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.st-story p{transition:opacity .3s ease;transform:none}}
+/* Account: the character hero runs edge to edge and up under the status bar again; name and email sit below with an edit pencil */
+#p-account .ac-hero{margin-left:-20px;margin-right:-20px}
+#p-account .ac-id{justify-content:space-between}
+.ac-edit{flex:none;margin-right:-10px;color:var(--ink-2)}
+/* Home clock hidden for now (15 Nov); the hour preview goes with it */
+#homeClock,#clockPop{display:none!important}
+/* My studio: what you're building right now */
+.sb-hero{display:grid;gap:10px;padding:16px;border-radius:12px;background:var(--accent-soft)}
+.sb-hero h2{margin:0;font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.2;color:var(--ink)}
+.sb-hero form{display:flex;gap:8px}.sb-hero input{flex:1;min-width:0;background:#fff}
+.sb-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.sb-list li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#fff}
+.sb-list .grow{flex:1;min-width:0}.sb-list small{display:block;font-size:12px;color:var(--muted)}
+/* onboarding: the story types itself out under the heading, one line at a time */
+.st-type{margin:10px auto 0;max-width:330px;min-height:42px;font-size:14px;line-height:1.5;color:var(--ink-2);text-align:center}
+.st-caret{display:inline-block;width:1.5px;height:1em;margin-left:2px;vertical-align:-2px;background:var(--accent-ink);animation:stBlink 1s steps(1) infinite}
+@keyframes stBlink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.st-caret{animation:none}}
+.st-flabel{font-size:13px;font-weight:700;color:var(--ink-2)}
+
+/* onboarding progress over her scene: white track, pink fill, a glowing dot where it ends */
+.ob.st-me .st-mbar.over .st-line{background:#fff;height:4px}
+.ob.st-me .st-mbar .st-line{overflow:visible}
+.ob.st-me .st-mbar .st-line i{position:relative}
+.ob.st-me .st-mbar .st-line i::after{content:"";position:absolute;right:-5px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(234,76,142,.25),0 0 10px 3px rgba(234,76,142,.55);animation:st-glow 1.8s ease-in-out infinite}
+@keyframes st-glow{50%{box-shadow:0 0 0 5px rgba(234,76,142,.18),0 0 16px 6px rgba(234,76,142,.4)}}
+/* her line when the first piece shows up */
+.st-say{position:absolute;z-index:7;width:150px;padding:8px 12px;border-radius:14px 14px 14px 4px;background:#fff;color:var(--ink);font-size:13px;font-weight:600;line-height:1.3;box-shadow:0 6px 16px rgba(20,20,20,.16);pointer-events:none;animation:st-sayin .35s cubic-bezier(.3,1.4,.5,1) both;transition:opacity .35s}
+.st-say.out{opacity:0}
+@keyframes st-sayin{from{opacity:0;transform:translateY(6px) scale(.9)}}
+/* Reduce Motion: the hand still slides, just shorter and slower; the dot glows without pulsing */
+@media (prefers-reduced-motion:reduce){
+  .st-hand{animation:st-hand 2.2s ease-in-out 1 both!important}
+  .st-orb.nudge{animation:st-nudge 2.2s ease-in-out 1!important}
+  .ob.st-me .st-mbar .st-line i::after{animation:none}
+  .st-say{animation:st-fade .4s ease both}
+}
+
+/* dropped pieces sit in front of her, so one put on her stays visible */
+.st-figure .st-orb.jig{z-index:3}.st-figure .st-orb.drag{z-index:5}
+.st-wsearch{flex:none;margin:4px 0 -4px}
+/* places step: the ideas sit on one line, words only; more scroll sideways */
+.st-wchips{flex:none;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:-3px -20px;padding:3px 20px}.st-wchips::-webkit-scrollbar{display:none}
+.st-wchips .st-chip{flex:none;padding:10px 16px}
+/* account step: Email me a code, then Skip, stacked full width */
+#obSign .btn{justify-self:stretch!important;width:100%}
+.st-skipwrap{display:grid;gap:8px;margin-top:10px;flex:none}.st-skipbtn{width:100%}.st-skipwrap .st-gnote{margin:0;text-align:center}
+/* the tour card sits flat, so the places bar under it stays clear */
+.tour{box-shadow:none}
+/* Account: the user-testing banner, first thing under the hero */
+.ac-test{display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:14px 16px;border-radius:14px;background:var(--accent-soft);color:var(--accent-2);text-decoration:none}
+.ac-test b{display:block;font-size:15px;color:var(--accent-2)}.ac-test small{display:block;font-size:13px;color:var(--accent-ink)}
+.ac-test .ico{width:18px;height:18px;flex:none}.ac-test:hover{background:#fbd3e4}
 </style>
 
 <div id="app">
@@ -1459,7 +1530,7 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
     <button data-go="goals" data-tab="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
     <button data-go="week" data-tab="week"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>This week</button>
     <button data-go="journal" data-tab="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
-    <button data-go="more" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7.3" r="1.2"/><circle cx="14.5" cy="7.3" r="1.2"/><circle cx="17" cy="11" r="1.2"/></svg>My stuff</button>
+    <button data-go="assets" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M4.5 9.5h15M6.5 10v7M10 10v7M14 10v7M17.5 10v7M4.5 17.5h15M3 20.5h18"/></svg>My studio</button>
   </nav>
 
   <section class="screen ob" id="onboard" hidden></section>
@@ -1467,7 +1538,7 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
   <div class="menu" id="menu" role="menu" hidden>
     <button role="menuitem" data-go="dreams"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg><span>Paint a Picture<small>Describe the life you're building</small></span></button>
     <button role="menuitem" data-go="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg><span>Journal<small>Notes, good things, affirmations</small></span></button>
-    <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My Assets<small>What you've made and built</small></span></button>
+    <button role="menuitem" data-go="assets"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3z"/></svg><span>My studio<small>What you've made and built</small></span></button>
     <hr>
     <button role="menuitem" data-go="account"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Account<small id="menuAcct">Profile, character, data</small></span></button>
     <hr>
@@ -1604,11 +1675,13 @@ function normalize(o){
   s.destinations.forEach(d => { if (!STATUS[d.status]) d.status = statusFrom(d); if (d.status === "current") { if (home) d.status = "loved"; home = true; } d.stage = statusStage(d.status); });
   s.revealSeen = o.revealSeen && typeof o.revealSeen === "object" ? o.revealSeen : null;
   s.destinations.forEach(d => { if (d.landmark === undefined || (d.landmark !== "none" && !landmarkOptions(d).includes(d.landmark))) d.landmark = defaultLandmark(d, s.aspirations || []); });
-  s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; if (typeof g.timeframe !== "string") g.timeframe = ""; g.status ||= "active"; if (!Array.isArray(g.aspirationIds)) g.aspirationIds = g.aspirationId ? [g.aspirationId] : []; g.aspirationId = g.aspirationIds[0] || null; });
+  s.goals.forEach(g => { g.milestones ||= []; g.deadlineHistory ||= []; if (typeof g.timeframe !== "string") g.timeframe = ""; g.status ||= "active"; if (!Array.isArray(g.aspirationIds)) g.aspirationIds = g.aspirationId ? [g.aspirationId] : []; g.aspirationId = g.aspirationIds[0] || null; if (!Array.isArray(g.photos)) g.photos = []; if (typeof g.kind !== "string") g.kind = ""; if (g.unlockedIn != null && !Array.isArray(g.unlockedIn)) delete g.unlockedIn; }); /* a goal can have its own photos and pixel art (15 Nov); unlockedIn: the places it came true in, when its pieces span several */
+  s.aspirations.forEach(a => { if (!Array.isArray(a.destinationIds)) a.destinationIds = a.destinationId ? [a.destinationId] : []; a.destinationIds = a.destinationIds.filter((x, i, l) => x && l.indexOf(x) === i); a.destinationId = a.destinationIds[0] || null; }); /* a piece can live in several places (15 Nov); destinationId stays as the first, for older code */
   s.entries.forEach(e => { e.goalIds ||= []; });
   if (!Array.isArray(o.assetCats)) s.assetCats = STARTER_ASSET_CATS.map((name, i) => ({id: "ac-" + i, name}));
   s.assets = Array.isArray(o.assets) ? o.assets : []; s.notes = Array.isArray(o.notes) ? o.notes : [];
-  s.days = normDays(o.days); /* daily faces: {"2026-11-14": {c, face, note, links, at}}; old saves held just a colour string */
+  s.days = normDays(o.days);
+  s.building = Array.isArray(o.building) ? o.building.filter(b => b && b.id && typeof b.text === "string") : []; /* My studio: what you're building right now, maybe tied to a goal or milestone (15 Nov) */ /* daily faces: {"2026-11-14": {c, face, note, links, at}}; old saves held just a colour string */
   for (const k of ["todos", "affirmations", "gratitude"]) s[k] = Array.isArray(o[k]) ? o[k] : [];
   s.assets.forEach((a, i) => { a.tags ||= []; if (a.order == null) a.order = i; if (!ASSET_STATUS[a.status]) a.status = "done"; });
   return s;
@@ -1671,16 +1744,22 @@ const originalDeadline = g => g.deadlineHistory.length ? g.deadlineHistory[0].fr
 const isOverdue = g => g.status === "active" && dayDiff(g.deadline, today()) < 0;
 const metDeadline = g => g.status === "done" && !g.pastCity && g.doneAt <= g.deadline;
 function goalActivity(g){ return S.entries.filter(e => e.goalIds.includes(g.id)); }
+/* the places a piece is in, and the places a goal reaches through its pieces */
+const placesOf = a => a ? (Array.isArray(a.destinationIds) && a.destinationIds.length ? a.destinationIds : a.destinationId ? [a.destinationId] : []) : [];
+const inPlace = (a, id) => placesOf(a).length ? placesOf(a).includes(id) : destOf(a)?.id === id;
+function goalPlaces(g){ const out = []; for (const a of (g.aspirationIds || []).map(aspById).filter(Boolean)) for (const p of placesOf(a)) if (!out.includes(p) && S.destinations.some(d => d.id === p)) out.push(p); return out; }
+/* a finished goal counts in a place unless you said it came true somewhere else */
+const goalCountsIn = (g, placeId) => g.status === "done" && (!placeId || !Array.isArray(g.unlockedIn) || !g.unlockedIn.length || g.unlockedIn.includes(placeId));
 function goalProgress(g){
   const ms = g.milestones, done = ms.filter(m => m.doneAt).length;
   return {steps: ms.length, done, ratio: g.status === "done" ? 1 : ms.length ? done / ms.length : null, entries: goalActivity(g).length};
 }
 // How clearly an aspiration shows in the world. Comes only from logged work on goals linked to it.
 let modelVer = 0, clarVer = -1, discVal = 0; const clarCache = new Map();
-function clarityOf(a){
+function clarityOf(a, placeId){
   if (clarVer !== modelVer) { clarCache.clear(); clarVer = modelVer; discVal = -1; }
-  if (clarCache.has(a.id)) return clarCache.get(a.id);
-  const r = clarityRaw(a); clarCache.set(a.id, r); return r;
+  const ck = a.id + "@" + (placeId || ""); if (clarCache.has(ck)) return clarCache.get(ck);
+  const r = clarityRaw(a, placeId); clarCache.set(ck, r); return r;
 }
 // A dream unlocks only through finished goals. A goal linked to k dreams counts 1/k towards each, so it's never
 // counted twice; let-go and deleted goals don't count. Reopening a goal takes its share back.
@@ -1697,11 +1776,11 @@ function dreamMark(a, starOnly){
   const going = open && now - (unlockedAt.get(a.id) ?? -1e9) < 1600;
   return `<span class="dmark" role="img" aria-label="${open ? "Piece, unlocked" : "Piece, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
 }
-function clarityRaw(a){
+function clarityRaw(a, placeId){
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
   let total = 0, got = 0, entries = 0, steps = 0, done = 0;
   for (const e of S.entries) if (e.goalIds.some(id => ids.has(id))) entries++;
-  for (const g of gs) { const w = 1 / g.aspirationIds.length; total += w; steps += g.milestones.filter(m => m.doneAt).length; if (g.status === "done") { got += w; done++; } }
+  for (const g of gs) { const w = 1 / g.aspirationIds.length; total += w; steps += g.milestones.filter(m => m.doneAt).length; if (goalCountsIn(g, placeId)) { got += w; done++; } }
   return {c: a.achievedAt ? 1 : total ? got / total : 0, entries, steps, done, goals: gs.length};
 }
 // A place you want to get to: the share of its linked goals that are finished, by the same weighting.
@@ -1709,11 +1788,11 @@ function cityProgress(d){
   let total = 0, got = 0;
   for (const g of S.goals) {
     if (g.status === "cancelled" || !(g.aspirationIds || []).length) continue;
-    const here = g.aspirationIds.map(aspById).filter(a => a && destOf(a)?.id === d.id); if (!here.length) continue;
-    const w = here.length / g.aspirationIds.length; total += w; got += g.status === "done" ? w : here.filter(a => a.achievedAt).length / g.aspirationIds.length;
+    const here = g.aspirationIds.map(aspById).filter(a => a && inPlace(a, d.id)); if (!here.length) continue;
+    const w = here.length / g.aspirationIds.length; total += w; got += goalCountsIn(g, d.id) ? w : here.filter(a => a.achievedAt).length / g.aspirationIds.length;
   }
   // a dream you've marked achieved counts as complete for its place, goals or not
-  for (const a of S.aspirations) if (a.achievedAt && destOf(a)?.id === d.id && !S.goals.some(g => g.status !== "cancelled" && (g.aspirationIds || []).includes(a.id))) { total += 1; got += 1; }
+  for (const a of S.aspirations) if (a.achievedAt && inPlace(a, d.id) && !S.goals.some(g => g.status !== "cancelled" && (g.aspirationIds || []).includes(a.id))) { total += 1; got += 1; }
   return total ? got / total : 0;
 }
 const isLit = d => d.stage === "past" || d.stage === "current";
@@ -2898,7 +2977,7 @@ function landmarkOptions(d){
 }
 function defaultLandmark(d, aspirations){
   const opts = landmarkOptions(d); if (!opts.length) return "none";
-  const text = (aspirations || []).filter(a => a.destinationId === d.id).map(a => (a.title + " " + (a.desc || "")).toLowerCase()).join(" ");
+  const text = (aspirations || []).filter(a => placesOf(a).includes(d.id)).map(a => (a.title + " " + (a.desc || "")).toLowerCase()).join(" ");
   return opts.find(id => (LM_WORDS[id] || []).some(w => text.includes(w))) || opts[0];
 }
 // The landmark to draw for a place, or null when there's nothing extra to draw.
@@ -3036,7 +3115,7 @@ function buildDistrictTerrain(D){
 // Which dreams sit where. Dreams go to their own destination's slots, nearest zone first.
 function assignSlots(D){
   const used = new Set(), out = [], first = worldDests().find(d => !isLit(d)) || worldDests()[0];
-  const mine = S.aspirations.filter(a => (DIST.has(a.destinationId) ? a.destinationId : first.id) === D.d.id);
+  const mine = S.aspirations.filter(a => { const ps = placesOf(a).filter(p => DIST.has(p)); return ps.length ? ps.includes(D.d.id) : first.id === D.d.id; });
   for (const pass of [0, 1, 2]) for (const a of mine) {
     if (out.some(o => o.a === a)) continue;
     const want = ZONE[a.kind] || "any";
@@ -3103,7 +3182,7 @@ function prebuildIdle(){
 }
 // A place's own landmarks and scenery begin to appear once it's past halfway, and are complete at 100%.
 function locClarity(l){
-  if (!l.fixed) return clarityOf(l.a);
+  if (!l.fixed) return clarityOf(l.a, l.D.d.id);
   return {c: Math.max(0, Math.min(1, (cityProgress(l.D.d) - .5) / .5)), entries: 0, steps: 0, done: 0, goals: 0};
 }
 /* --- how lit each part of the world is ---
@@ -3111,7 +3190,7 @@ function locClarity(l){
    its own goals, its landmark from halfway. All of it comes from the goals data, so it stays in step with it. When the numbers
    go up, the change plays once on the map (reveal), from what you saw last time (S.revealSeen) to now. */
 let reveal = null;
-const litKey = l => (l.fixed ? "f:" : "a:") + l.a.id;
+const litKey = l => l.fixed ? "f:" + l.a.id : "a:" + l.a.id + (placesOf(l.a).length > 1 && l.D.d.id !== placesOf(l.a)[0] ? "@" + l.D.d.id : ""); /* a piece in its second place gets its own key */
 function litNow(){ const out = {}; for (const D of DIST.values()) out["d:" + D.d.id] = isLit(D.d) ? 1 : cityProgress(D.d); for (const l of locs) out[litKey(l)] = isLit(l.D.d) ? 1 : locClarity(l).c; return out; }
 function litShown(key, now){
   if (!reveal || !(key in reveal.to)) return null;
@@ -3573,7 +3652,7 @@ function sizeScene(){
   renderView(performance.now()); markPlaces();
 }
 const homeDistrict = () => DIST.get((worldDests().find(d => d.status === "current") || worldDests().find(d => isLit(d)) || worldDests()[0]).id) || [...DIST.values()][0];
-const aspKey = () => JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", a.destinationId || ""]));
+const aspKey = () => JSON.stringify(S.aspirations.map(a => [a.id, a.kind, a.tint || "", placesOf(a).join("+")]));
 function refreshWorld(){
   const lk = JSON.stringify(worldDests().map(d => [d.id, d.col, d.row, d.env, d.country, d.purpose, d.name, d.landmark || "", d.stage || ""]));
   const ak = aspKey();
@@ -4369,6 +4448,7 @@ document.addEventListener("click", e => {
   const g = e.target.closest("[data-go]"); if (g) { go(g.dataset.go); return; }
   if (e.target.closest("[data-replay]")) { startOnboarding(0); return; }
   if (e.target.closest("[data-tour]")) { closeMenu(); tourRestart(); return; }
+  const vg = e.target.closest("[data-viewgph]"); if (vg) { const [gid, i] = vg.dataset.viewgph.split(":"), g = goalById(gid); if (g?.photos?.[+i]) viewPhotos(g.photos, +i, g.title); return; }
   const vp = e.target.closest("[data-viewph]"); if (vp) { const [aid, i] = vp.dataset.viewph.split(":"), a = aspById(aid); if (a?.photos?.[+i]) viewPhotos(a.photos, +i, a.title); return; }
   const oa = e.target.closest("[data-open-asp]"); if (oa) { go("dreams"); editAspiration(oa.dataset.openAsp); return; }
   if (!e.target.closest("#menu")) closeMenu();
@@ -4504,10 +4584,11 @@ function renderGoals(){
   el.querySelectorAll("[data-review]").forEach(b => b.onclick = () => reviewPastCity(b.dataset.review));
   wireGoalCards(el);
   el.querySelectorAll("canvas[data-kind]").forEach(cvs => drawKindPreview(cvs, aspById(cvs.dataset.kind)));
+  el.querySelectorAll("canvas[data-gkind]").forEach(cvs => drawKindPreview(cvs, {kind: cvs.dataset.gkind}));
 }
 // Places you've lived: once, you can confirm which of the goals linked to their dreams you achieved there. Only what you tick
 // moves to Finished (marked as achieved in that place); nothing is assumed, and those don't count as on-time finishes.
-const pastCandidates = d => S.goals.filter(g => (g.status === "active" || g.status === "paused") && goalAsps(g).some(a => destOf(a)?.id === d.id));
+const pastCandidates = d => S.goals.filter(g => (g.status === "active" || g.status === "paused") && goalAsps(g).some(a => inPlace(a, d.id)));
 function pastReviewHTML(){
   const d = S.destinations.find(d => d.stage === "past" && !d.reviewed && pastCandidates(d).length); if (!d) return "";
   return `<section class="panel past-review"><div class="eyebrow">Your time in ${esc(d.name)}</div><p style="margin:0;font-size:15px">Did you achieve any of your goals while you lived there? Confirm them once and they move to Finished.</p><button class="btn quiet sm" data-review="${d.id}" style="justify-self:start">Review ${esc(d.name)}</button></section>`;
@@ -4523,16 +4604,31 @@ function reviewPastCity(id){
       $("prSave").onclick = finish;
     });
 }
+/* A goal whose pieces are in several places: where did it come true? Only those places light up. All ticked to start. */
+function askWhereTrue(g, places, done, current){
+  const pick = new Set(current && current.length ? current : places), name = id => S.destinations.find(d => d.id === id)?.name || "";
+  openSheet("Where did it come true?", `<p class="muted" style="margin:0">${esc(g.title)} is part of pieces in ${esc(places.map(name).join(" and "))}. Pick where it came true; only those places light up.</p>
+    <div class="cklist">${places.map(id => `<button type="button" class="ck" aria-pressed="${pick.has(id)}" data-wt="${id}"><span class="cb" aria-hidden="true" ${pick.has(id) ? 'aria-checked="true"' : ""}></span>${esc(name(id))}</button>`).join("")}</div>
+    <p class="muted" id="wtErr" role="alert" style="margin:0;color:var(--danger)" hidden>Pick at least one place.</p>`,
+    `<button class="btn ghost" id="wtCancel">Cancel</button><button class="btn" id="wtSave">${current ? "Save" : "Finish goal"}</button>`, () => {
+      $("sheetB").querySelectorAll("[data-wt]").forEach(b => b.onclick = () => { const k = b.dataset.wt, on = !pick.has(k); on ? pick.add(k) : pick.delete(k); b.setAttribute("aria-pressed", on); b.querySelector(".cb").setAttribute("aria-checked", on); $("wtErr").hidden = true; });
+      $("wtCancel").onclick = closeSheet;
+      $("wtSave").onclick = () => { if (!pick.size) { $("wtErr").hidden = false; return; } closeSheet(); done(pick.size === places.length ? null : places.filter(p => pick.has(p))); };
+    });
+}
+const placeNames = ids => ids.map(id => S.destinations.find(d => d.id === id)?.name).filter(Boolean).join(" · ");
 function goalCard(g){
   const p = goalProgress(g), pct = Math.round((p.ratio || 0) * 100), open = openGoal === g.id, asps = goalAsps(g), closed = g.status === "done" || g.status === "cancelled";
   return `<li class="gcard${g.status === "cancelled" ? " gone" : ""}">
-    <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="dc-title">${asps[0] ? `<span class="dc-thumb">${asps[0].image ? `<img src="${esc(imgUrl(asps[0].image))}" alt="">` : `<canvas width="48" height="48" data-kind="${asps[0].id}" aria-hidden="true"></canvas>`}</span>` : ""}<span class="gc-title">${esc(g.title)}</span></span><span class="acc-chev">${ICON_DOWN}</span>
+    <button class="gc-head" data-goal="${g.id}" aria-expanded="${open}"><span class="dc-title">${g.kind ? `<span class="dc-thumb"><canvas width="48" height="48" data-gkind="${esc(g.kind)}" aria-hidden="true"></canvas></span>` : asps[0] ? `<span class="dc-thumb">${asps[0].image ? `<img src="${esc(imgUrl(asps[0].image))}" alt="">` : `<canvas width="48" height="48" data-kind="${asps[0].id}" aria-hidden="true"></canvas>`}</span>` : ""}<span class="gc-title">${esc(g.title)}</span></span><span class="acc-chev">${ICON_DOWN}</span>
       ${g.desc ? `<span class="gc-desc">${esc(g.desc)}</span>` : ""}</button>
     ${g.pastCity ? `<div class="gc-past">Achieved in ${esc(S.destinations.find(d => d.id === g.pastCity)?.name || "a past city")}</div>` : ""}
+    ${!g.pastCity && goalPlaces(g).length > 1 ? (g.status === "done" ? `<div class="gc-past gc-where">Came true in ${esc(placeNames(Array.isArray(g.unlockedIn) && g.unlockedIn.length ? g.unlockedIn : goalPlaces(g)))} <button type="button" class="linkbtn" data-where="${g.id}">Change</button></div>` : `<div class="gc-past gc-where">In ${esc(placeNames(goalPlaces(g)))}</div>`) : ""}
     ${asps.length ? `<div class="gc-links" aria-label="Paint a Picture">${asps.map(a => `<span class="gc-link">${dreamMark(a)}${esc(a.title)}</span>`).join("")}</div>` : ""}
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% of milestones done" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
       <div class="gc-dates"><span>${monthYear(g.start)}</span><span>${p.steps ? `${p.done} of ${p.steps}` : g.status === "paused" ? "Paused" : ""}${g.status === "cancelled" ? "Let go" : ""}</span><span>${monthYear(closed && g.doneAt ? g.doneAt : g.deadline)}</span></div></div>
     ${open ? `<div class="gc-body">
+      ${(g.photos || []).length ? `<div class="pc-strip">${g.photos.map((src, i) => `<button type="button" class="pc-ph" data-viewgph="${g.id}:${i}" aria-label="Open photo ${i + 1}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
       ${g.milestones.length ? `<ul class="steps ms-list">${g.milestones.map(m => `<li class="${m.doneAt ? "done" : ""}"><button class="cb" role="checkbox" aria-checked="${!!m.doneAt}" aria-label="${esc(m.title)}" data-ms="${g.id}|${m.id}"></button>
           <button class="ms-text" data-msedit="${g.id}|${m.id}"><span>${esc(m.title)}</span>${m.desc ? `<small>${esc(m.desc)}</small>` : ""}${m.linkGoal && goalById(m.linkGoal) ? `<small class="ms-linked">Linked to “${esc(goalById(m.linkGoal).title)}”</small>` : ""}</button>${m.due || m.doneAt ? `<span class="ms-date">${fmt(m.doneAt || m.due)}</span>` : ""}</li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No milestones yet. Small steps make a goal easier to start.</p>`}
@@ -4552,15 +4648,19 @@ function wireGoalCards(el, redraw){
     const g = goalById(b.dataset.finish), onTime = today() <= g.deadline;
     // the card gets a tick and folds away, then the goal moves to Finished
     const card = b.closest(".gcard"); if (card) card.classList.add("just-done");
-    setTimeout(() => {
+    const finish = where => {
       const before = new Map(S.destinations.map(d => [d.id, cityProgress(d)]));
-      commit(s => { const x = s.goals.find(x => x.id === g.id); x.status = "done"; x.doneAt = today(); });
+      commit(s => { const x = s.goals.find(x => x.id === g.id); x.status = "done"; x.doneAt = today(); if (where) x.unlockedIn = where; else delete x.unlockedIn; });
       const lit = S.destinations.filter(d => !isLit(d) && cityProgress(d) > (before.get(d.id) || 0)).map(d => d.name);
       openGoal = null; renderGoals(); toast(lit.length ? `Finished. ${lit.join(" and ")} just got brighter. Open your world to see it.` : onTime ? "Finished on time." : "Finished. It took longer, and it still counts.");
-    }, reduced ? 0 : 700);
+    };
+    const places = goalPlaces(g);
+    if (places.length > 1) { if (card) card.classList.remove("just-done"); askWhereTrue(g, places, finish); return; } /* its pieces are in several places: ask where it came true */
+    setTimeout(() => finish(null), reduced ? 0 : 700);
   });
   on("[data-cancel]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.cancel); g.status = "cancelled"; g.closedAt = today(); }); openGoal = null; toast("Let go. It's kept under Finished, in Let go."); });
-  on("[data-reopen]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.reopen); g.status = "active"; g.doneAt = null; g.closedAt = null; delete g.pastCity; }); openGoal = null; goalTab = "active"; renderGoals(); });
+  on("[data-where]", b => { const g = goalById(b.dataset.where), places = goalPlaces(g); askWhereTrue(g, places, where => commit(s => { const x = s.goals.find(x => x.id === g.id); if (where) x.unlockedIn = where; else delete x.unlockedIn; }), Array.isArray(g.unlockedIn) && g.unlockedIn.length ? g.unlockedIn : places); });
+  on("[data-reopen]", b => { commit(s => { const g = s.goals.find(g => g.id === b.dataset.reopen); g.status = "active"; g.doneAt = null; g.closedAt = null; delete g.pastCity; delete g.unlockedIn; }); openGoal = null; goalTab = "active"; renderGoals(); });
   on("[data-editgoal]", b => editGoal(b.dataset.editgoal));
   on("[data-delgoal]", b => {
     if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.innerHTML = GI.del + "Tap again to delete"; return; }
@@ -4586,13 +4686,16 @@ const delIcon = id => `<button type="button" class="ibtn sheet-del" id="${id}" a
 function armDelete(b, label){ if (b.dataset.confirm === "1") return true; b.dataset.confirm = "1"; b.classList.add("armed"); b.innerHTML = GI.del + `<span>${label || "Tap again to delete"}</span>`; b.setAttribute("aria-label", label || "Tap again to delete"); return false; }
 function editGoal(id, preset){
   if (!id && needAccount(() => editGoal(id, preset))) return; // goals need an account
-  const g = id ? goalById(id) : {title: "", desc: "", aspirationIds: preset?.aspirationId ? [preset.aspirationId] : [], start: today(), deadline: "", timeframe: "", milestones: []};
-  let ms = g.milestones.map(m => ({...m})), links = new Set(g.aspirationIds || []);
+  const g = id ? goalById(id) : {title: preset?.title || "", desc: "", aspirationIds: preset?.aspirationId ? [preset.aspirationId] : [], start: today(), deadline: "", timeframe: "", milestones: []};
+  let ms = g.milestones.map(m => ({...m})), links = new Set(g.aspirationIds || []), gPhotos = [...(g.photos || [])], gKind = g.kind || "";
   let when = g.timeframe || (id ? "Exact date" : ""); /* a range (as on pieces) or an exact date; nothing is assumed for a new goal */
   const asps = S.aspirations;
   openSheet(id ? "Edit Goal" : "Adding a Goal", `
     <label class="field"><span>Name</span><input type="text" id="gTitle" value="${esc(g.title)}" placeholder="e.g. Build and launch my own product" maxlength="120"></label>
     <label class="field"><span>Description</span><textarea id="gDesc" class="fit" rows="1" placeholder="What do you want to achieve, and why?">${esc(g.desc)}</textarea></label>
+    <div class="field"><span>Pixel art</span><div class="imgdrop"><canvas class="kindprev" id="gPrev" width="48" height="44"></canvas>
+      <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="gKind"><option value="">Same as its piece</option>${Object.entries(KINDS).map(([k, v]) => `<option value="${k}"${k === g.kind ? " selected" : ""}>${v}</option>`).join("")}</select><small>The little drawing shown with this goal.</small></div></div></div>
+    <div class="field"><span>Your photos <small class="muted" style="font-weight:500">optional</small></span><div class="pc-photos" id="gPhotos"></div></div>
     <div class="pl-card" id="gPics"></div>
     <div class="field"><span>By when do you want to achieve this?</span><div class="pills" id="gWhen" role="group" aria-label="By when">${[...TIMEFRAMES, "Exact date"].map(t => `<button type="button" class="pill" data-when="${t}" aria-pressed="${t === when}">${t}</button>`).join("")}</div>
       <input type="date" id="gDeadline" aria-label="Exact date" value="${g.deadline || ""}" min="${g.start}" ${when === "Exact date" ? "" : "hidden"}></div>
@@ -4606,6 +4709,15 @@ function editGoal(id, preset){
         $("gMs").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { read(); ms.splice(+b.dataset.rm, 1); drawMs(); });
       };
       drawMs();
+      /* the goal's own pixel art (or its piece's) and photos */
+      const gPrev = () => { const cvs = $("gPrev"); cvs.getContext("2d").clearRect(0, 0, 48, 44); const a0 = aspById([...links][0]); drawKindPreview(cvs, gKind ? {kind: gKind} : a0 ? {...a0, image: null} : {kind: "fountain"}); };
+      $("gKind").onchange = () => { gKind = $("gKind").value; gPrev(); }; gPrev();
+      const drawGPhotos = () => { const el = $("gPhotos"); if (!el) return;
+        el.innerHTML = gPhotos.map((src, i) => `<span class="pc-ph"><img src="${esc(src)}" alt="Photo ${i + 1}"><button type="button" class="pc-x" data-rmgph="${i}" aria-label="Remove photo ${i + 1}">×</button></span>`).join("")
+          + (gPhotos.length < PIECE_PHOTOS ? `<button type="button" class="pc-add" id="gPhAdd">${ICON.plus}<small>Add photos</small></button>` : "");
+        el.querySelectorAll("[data-rmgph]").forEach(b => b.onclick = () => { gPhotos.splice(+b.dataset.rmgph, 1); drawGPhotos(); });
+        const add = $("gPhAdd"); if (add) add.onclick = () => pickPhotos(PIECE_PHOTOS - gPhotos.length, list => { gPhotos.push(...list); drawGPhotos(); }); };
+      drawGPhotos();
       $("gMsAdd").onclick = () => { read(); ms.push({id: uid(), title: "", desc: "", due: "", doneAt: null}); drawMs(); $("gMs").lastElementChild.querySelector("input").focus(); };
       // the pictures this goal paints: a card that opens to pick from your dreams
       let picsOpen = false;
@@ -4632,12 +4744,12 @@ function editGoal(id, preset){
         if (!deadline) { err.textContent = when ? "Pick a date. You can change it later." : "Choose roughly when, or an exact date. You can change it later."; err.hidden = false; return; }
         if (deadline < start) { err.textContent = `Pick a date on or after ${fmt(start)}.`; err.hidden = false; return; }
         const aspirationIds = [...links].filter(aspById), milestones = ms.map(m => ({...m, title: m.title.trim()})).filter(m => m.title);
-        const data = {title, desc: $("gDesc").value.trim(), aspirationIds, aspirationId: aspirationIds[0] || null, start, deadline, timeframe, milestones};
+        const data = {title, desc: $("gDesc").value.trim(), aspirationIds, aspirationId: aspirationIds[0] || null, start, deadline, timeframe, milestones, photos: gPhotos, kind: gKind}, newId = uid();
         commit(s => {
           if (id) { const x = s.goals.find(x => x.id === id); if (deadline !== x.deadline) x.deadlineHistory.push({from: x.deadline, to: deadline, on: today(), note: ""}); Object.assign(x, data); }
-          else s.goals.push({id: uid(), ...data, category: "", destinationId: null, priority: "", status: "active", doneAt: null, deadlineHistory: [], createdAt: today()});
+          else s.goals.push({id: newId, ...data, category: "", destinationId: null, priority: "", status: "active", doneAt: null, deadlineHistory: [], createdAt: today()});
         });
-        closeSheet(); toast(id ? "Goal updated" : "Goal added");
+        closeSheet(); toast(id ? "Goal updated" : "Goal added"); if (!id) preset?.onSaved?.(newId);
         if (!id) { goalTab = "active"; if (route === "goals") renderGoals(); }
       };
     });
@@ -4657,7 +4769,6 @@ function renderWeek(){
   el.innerHTML = `
     <div class="phead" style="align-items:center"><div class="ph-left">${jBack()}<h1>This week</h1></div><div style="display:flex;gap:4px">${isNow ? "" : `<button class="btn quiet" id="wToday">This week</button>`}${canLog(ws) && entries.length ? `<button class="btn quiet" id="logBtn">${ICON.plus}Log progress</button>` : ""}</div></div>
     ${weekFacesHtml(ws)}
-    ${weekDoneHtml(ws)}
     ${weekHistoryHTML()}
     ${!canLog(ws) && ws > weekStart(today()) ? `<p class="muted" style="margin:0;font-size:13px">This week hasn't started yet. You can log progress for this week and last week.</p>` : ""}
     <section style="display:grid;gap:12px"><h2 class="sec">Logged</h2>
@@ -4851,19 +4962,20 @@ function renderDreams(){
   const byCat = S.categories.map(c => [c, S.aspirations.filter(a => a.category === c)]);
   const orphan = S.aspirations.filter(a => !S.categories.includes(a.category));
   if (orphan.length) byCat.push(["Other", orphan]);
-  const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => destOf(a)?.id === d.id).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
+  const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => inPlace(a, d.id)).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
     <div class="phead"><div class="ph-left"><h1>Your pieces</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button>
       <p class="pp-intro">Everything you add here is a piece of the bigger picture you're painting. The life you're building.</p></div>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} piece${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
-    <section class="pp-world"><div class="sec-h"><h2 class="sec">Your world</h2><span class="muted" style="font-size:14px">${S.destinations.length} place${S.destinations.length === 1 ? "" : "s"}</span></div>
-      ${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
-      <button class="btn quiet sm" id="addPlace" style="justify-self:start;margin-left:-8px">${ICON.plus}Add a place</button></section>
+    <section class="pp-world"><button type="button" class="pl-head pw-head" id="placesToggle" aria-expanded="${placesOpen}"><span class="pw-title"><span class="sec">Your world</span><span class="muted">${S.destinations.length} place${S.destinations.length === 1 ? "" : "s"}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
+      ${placesOpen ? `${destRows(S.destinations, {edit: true}) || `<p class="muted" style="margin:0;font-size:15px">No places yet. Add the cities you'd love to live in, universities, places to visit, and where you're from.</p>`}
+      <button class="btn quiet sm" id="addPlace" style="justify-self:start;margin-left:-8px">${ICON.plus}Add a place</button>` : ""}</section>
     <section class="pp-pieces"><div class="sec-h"><h2 class="sec">Your pieces</h2><button class="btn quiet sm" id="editCats" style="margin-right:-8px">Edit categories</button></div>
     ${S.aspirations.length ? byCat.filter(([, l]) => l.length).map(([c, l]) => `<section><div class="eyebrow" style="margin-bottom:8px">${esc(c)}</div><ul class="gcards">${l.map(dreamCard).join("")}</ul></section>`).join("")
       : `<div class="empty">Tap New to add the first piece of your picture.</div>`}</section>`;
   $("newAsp").onclick = () => editAspiration(null);
   if ($("addPlace")) $("addPlace").onclick = () => addPlaceSheet();
+  $("placesToggle").onclick = () => { placesOpen = !placesOpen; renderDreams(); $("placesToggle")?.focus(); }; /* Your world opens and closes; closed by default */
   wireDestRows(el, renderDreams);
   if ($("editCats")) $("editCats").onclick = editCategories;
   wireDreamCards(el);
@@ -4880,7 +4992,7 @@ function dreamCard(a){
   return `<li class="gcard">
     <button class="gc-head" data-dream="${a.id}" aria-expanded="${open}"><span class="dc-title"><span class="dc-thumb">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</span><span class="dc-text"><span class="gc-title">${dreamMark(a)}${esc(a.title)}</span>${a.desc ? `<span class="gc-desc">${esc(a.desc)}</span>` : ""}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
     <div class="gc-prog"><div class="bar" role="progressbar" aria-label="${pct}% unlocked" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
-      <div class="gc-dates"><span>${d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
+      <div class="gc-dates"><span>${placesOf(a).length ? esc(placesOf(a).map(id => S.destinations.find(x => x.id === id)?.name).filter(Boolean).join(" · ")) : d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
     ${open ? `<div class="gc-body">
       ${(a.photos || []).length ? `<div class="pc-strip">${a.photos.map((src, i) => `<button type="button" class="pc-ph" data-viewph="${a.id}:${i}" aria-label="Open photo ${i + 1}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
       ${gs.length ? `<ul class="steps ms-list dc-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
@@ -4953,11 +5065,13 @@ function editAspiration(id, preset){
   let kind = a.kind || "", kindTouched = !!id, image = a.image ? {...a.image} : null, tint = a.tint || null, pending = null;
   let photos = [...(a.photos || [])]; /* your own photos for this piece (optional, up to PIECE_PHOTOS) */
   const goals = id ? S.goals.filter(g => (g.aspirationIds || []).includes(id)) : [];
-  const dests = S.destinations, cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
+  /* during onboarding her new places aren't saved yet: offer them too, as "st:" + key, and link them when she finishes */
+  const stDr = route === "onboard" ? stPlaces().filter(pl => !stHasPlace(pl.p.name)).map(pl => ({id: "st:" + pl.key, name: pl.t, env: pl.p.env})) : [];
+  const dests = S.destinations.concat(stDr), cats = S.categories.includes(a.category) ? S.categories : S.categories.concat(a.category);
   openSheet(id ? "Paint a Picture" : "Picture it first", `${id ? "" : `<p class="muted" style="margin:-8px 0 0;font-size:13px">Where do you live? What do you do all day? What does a Saturday look like? Start with one.</p>`}
     <label class="field"><span>Your piece</span><input type="text" id="aTitle" value="${esc(a.title)}" placeholder="e.g. Live by the beach in LA"></label>
     <label class="field"><span>Describe it</span><textarea id="aDesc" class="fit" rows="1" placeholder="What does a normal day there look like? What can you see, hear, do?">${esc(a.desc)}</textarea></label>
-    <label class="field"><span>Where in your world</span><select id="aDest">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in this place." : "Add places in Paint a Picture to give your pieces a home on the map."}</small></label>
+    <div class="field"><span>Where in your world <small class="muted" style="font-weight:500">pick one or more</small></span><div class="pills" id="aPlaces" role="group" aria-label="Places this piece is in">${dests.map(d => `<button type="button" class="pill" data-place="${d.id}" aria-pressed="false">${esc(d.name)}</button>`).join("")}</div><select id="aDest" hidden aria-hidden="true">${dests.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("") || `<option value="">Your world</option>`}</select><small>${dests.length ? "It becomes a landmark in each place you pick." : "Add places in Paint a Picture to give your pieces a home on the map."}</small></div>
     <div class="field"><span>Landmark in your world</span><div class="imgdrop"><canvas class="kindprev" id="aPrev" width="48" height="44"></canvas>
       <div style="display:grid;gap:6px;flex:1;min-width:0"><select id="aKind">${Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select><small id="aKindHint">Picked from your words. Change it if you like.</small></div></div></div>
     <div class="grid2"><label class="field"><span>Category</span><select id="aCat">${cats.map(c => `<option ${c === a.category ? "selected" : ""}>${esc(c)}</option>`).join("")}<option value="__new">Add category</option></select></label>
@@ -4976,6 +5090,13 @@ function editAspiration(id, preset){
       const env = () => dests.find(d => d.id === $("aDest").value)?.env || "town";
       const prev = () => { const cvs = $("aPrev"); cvs.getContext("2d").clearRect(0, 0, 48, 44); drawKindPreview(cvs, {kind: kind || "fountain", tint, env: env()}); };
       if (dests.length) $("aDest").value = a.destinationId && dests.some(d => d.id === a.destinationId) ? a.destinationId : guessDest(a.title + " " + a.desc);
+      const places = new Set(placesOf(a).filter(x => dests.some(d => d.id === x))); if (!places.size && $("aDest").value) places.add($("aDest").value);
+      const drawPlaces = () => { $("aPlaces")?.querySelectorAll("[data-place]").forEach(b => b.setAttribute("aria-pressed", places.has(b.dataset.place))); };
+      const firstPlace = () => { const f = [...places][0]; if (f) $("aDest").value = f; };
+      $("aPlaces")?.querySelectorAll("[data-place]").forEach(b => b.onclick = () => { const k = b.dataset.place; destTouched = true;
+        if (places.has(k)) { if (places.size > 1) places.delete(k); } else places.add(k); /* a piece always has at least one place */
+        firstPlace(); drawPlaces(); if (image && image.gen) image = {gen: {...image.gen, b: env()}}; prev(); picker.set(image); });
+      drawPlaces();
       $("aDest").onchange = () => { destTouched = true; if (image && image.gen) image = {gen: {...image.gen, b: env()}}; prev(); picker.set(image); };
       const picker = visualPicker($("aVis"), {value: image, getText: () => $("aTitle").value + " " + $("aDesc").value, getCat: () => $("aCat").value, getEnv: env, onChange: v => {
         if (v && v.pending) { pending = v.pending; image = null; tint = v.pending.tint; }
@@ -4984,7 +5105,7 @@ function editAspiration(id, preset){
       }});
       let pt; const sync = () => { const txt = $("aTitle").value + " " + $("aDesc").value; if (!kindTouched && !(image && image.lib)) kind = guessKind(txt, $("aCat").value);
         const th = classifyDream(txt)[0], gc = th ? th.cat : KIND_CAT[kind];
-        if (!catTouched && txt.trim() && gc && S.categories.includes(gc)) $("aCat").value = gc; if (!destTouched && dests.length) $("aDest").value = guessDest(txt); $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(() => { if ($("aTitle")) picker.refresh(); }, 350); };
+        if (!catTouched && txt.trim() && gc && S.categories.includes(gc)) $("aCat").value = gc; if (!destTouched && dests.length) { $("aDest").value = guessDest(txt); places.clear(); places.add($("aDest").value); drawPlaces(); } $("aKind").value = kind; prev(); clearTimeout(pt); pt = setTimeout(() => { if ($("aTitle")) picker.refresh(); }, 350); };
       sync();
       $("aTitle").oninput = sync; $("aDesc").oninput = sync;
       $("aCat").onchange = () => { catTouched = true; $("aNewCatWrap").hidden = $("aCat").value !== "__new"; sync(); };
@@ -5014,9 +5135,11 @@ function editAspiration(id, preset){
         }
         commit(s => {
           if (!s.categories.includes(cat)) s.categories.push(cat);
-          const data = {title, desc: $("aDesc").value.trim(), category: cat, kind: kind || "fountain", destinationId: $("aDest").value || null, timeframe: $("aTime").value, image, tint: image && !image.lib ? tint : null, photos};
+          const real = x => S.destinations.some(d => d.id === x), destinationIds = [...places].filter(real); if (!destinationIds.length && real($("aDest").value)) destinationIds.push($("aDest").value);
+          const data = {title, desc: $("aDesc").value.trim(), category: cat, kind: kind || "fountain", destinationIds, destinationId: destinationIds[0] || null, timeframe: $("aTime").value, image, tint: image && !image.lib ? tint : null, photos};
           if (id) Object.assign(s.aspirations.find(x => x.id === id), data); else s.aspirations.push({id: aid, createdAt: today(), ...data});
         });
+        if (stDr.length) { const dd = stDraft(), pick = [...places].filter(x => x.startsWith("st:")).map(x => x.slice(3)); (dd.ownPlaces ||= {})[id || aid] = pick.length ? pick : $("aDest").value.startsWith("st:") ? [$("aDest").value.slice(3)] : []; save(); }
         closeSheet(); toast(id ? "Saved" : "Placed in your world, still in the dark. Link a goal to start revealing it.");
       };
     });
@@ -5043,10 +5166,29 @@ let assetOpen = null;
 function assetOpenSet(){ if (!assetOpen) { try { assetOpen = new Set(JSON.parse(localStorage.getItem(openKey()) || "[]")); } catch (e) { assetOpen = new Set(); } } return assetOpen; }
 function saveAssetOpen(){ try { localStorage.setItem(openKey(), JSON.stringify([...assetOpenSet()])); } catch (e) {} }
 const assetThumb = a => a.image ? `<img class="as-thumb" src="${esc(imgUrl(a.image))}" alt="">` : `<span class="as-thumb as-blank" aria-hidden="true">${esc((a.title || "?").trim().charAt(0).toUpperCase())}</span>`;
+/* What you're building, turned into a goal or a milestone if you say so (never on its own) */
+function tieBuilding(id){
+  const b = S.building.find(x => x.id === id); if (!b) return;
+  const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
+  openSheet("Make it a goal or milestone?", `<p class="muted" style="margin:0">“${esc(b.text)}” can become a goal of its own, or a milestone in a goal you already have. Or just keep it here.</p>
+    <div class="cklist"><button type="button" class="ck" id="sbGoal"><span>${ICON.plus}</span>A new goal</button>
+    ${goals.map(g => `<button type="button" class="ck" data-sbms="${g.id}"><span class="cb" aria-hidden="true"></span>A milestone in “${esc(g.title)}”</button>`).join("")}</div>`,
+    `<button class="btn ghost" id="sbKeep">Just keep it here</button>`, () => {
+      $("sbKeep").onclick = closeSheet;
+      $("sbGoal").onclick = () => { closeSheet(); editGoal(null, {title: b.text, onSaved: gid => commit(st => { const x = st.building.find(y => y.id === id); if (x) { x.goalId = gid; x.msId = null; } })}); };
+      $("sheetB").querySelectorAll("[data-sbms]").forEach(btn => btn.onclick = () => { const gid = btn.dataset.sbms, mid = uid();
+        commit(st => { const g = st.goals.find(x => x.id === gid); g.milestones.push({id: mid, title: b.text, desc: "", due: "", doneAt: null}); const x = st.building.find(y => y.id === id); if (x) { x.goalId = gid; x.msId = mid; } });
+        closeSheet(); toast(`Added to “${goalById(gid)?.title || "your goal"}”`); });
+    });
+}
 function renderAssets(){
   const el = $("p-assets"), open = assetOpenSet(), name = firstName(), items = id => S.assets.filter(a => a.catId === id).sort((a, b) => a.order - b.order);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="more" aria-label="Back to More">${ICON_BACK}</button><h1>My Assets</h1></div></div>
+    <div class="phead"><div class="ph-left"><h1>My studio</h1></div></div>
+    <section class="sb-hero"><h2>What are you building right now?</h2>
+      <form id="sbAdd"><input type="text" id="sbIn" placeholder="e.g. My portfolio site" aria-label="What you're building right now" maxlength="120" autocomplete="off"><button class="btn" type="submit">Add</button></form>
+      ${S.building.length ? `<ul class="sb-list">${S.building.map(b => { const g = b.goalId ? goalById(b.goalId) : null, m = g && b.msId ? g.milestones.find(x => x.id === b.msId) : null;
+        return `<li><span class="grow">${esc(b.text)}<small>${m ? `Milestone in “${esc(g.title)}”` : g ? "A goal" : `<button type="button" class="linkbtn" data-sbtie="${b.id}">Make it a goal or milestone</button>`}</small></span><button type="button" class="ibtn" data-sbdel="${b.id}" aria-label="Remove ${esc(b.text)}">×</button></li>`; }).join("")}</ul>` : ""}</section>
     <p class="as-hello">Hi${name ? " " + esc(name) : ""}, everything you've made and built, in one place. It adds up to more than it feels day to day.</p>
     ${S.assetCats.length ? S.assetCats.map(c => { const list = items(c.id); return `<section class="as-sec">
       <div class="as-sec-h">${c.image?.lib ? `<img class="cat-pic" src="${libUrl(c.image.lib)}" alt="">` : ""}<h2>${esc(c.name)}</h2><span class="acc-count">${list.length}</span>
@@ -5057,6 +5199,10 @@ function renderAssets(){
       : `<p class="muted" style="margin:0;font-size:15px">Start with a category, like Sketches, Apps or Podcast.</p>`}
     <button class="btn ghost" id="newCat">${ICON.plus}Add New Category</button>`;
   $("newCat").onclick = () => editAssetCat(null);
+  $("sbAdd").onsubmit = e => { e.preventDefault(); const v = $("sbIn").value.trim(); if (!v || needAccount()) return; const id = "b-" + uid();
+    commit(st => st.building.unshift({id, text: v, at: nowLocal(), goalId: null, msId: null})); tieBuilding(id); };
+  el.querySelectorAll("[data-sbtie]").forEach(b => b.onclick = () => tieBuilding(b.dataset.sbtie));
+  el.querySelectorAll("[data-sbdel]").forEach(b => b.onclick = () => { if (!armDelete(b, "Remove?")) return; commit(st => { st.building = st.building.filter(x => x.id !== b.dataset.sbdel); }); });
   el.querySelectorAll("[data-delasset]").forEach(b => b.onclick = () => { if (!armDelete(b, "Delete?")) return; const id = b.dataset.delasset; commit(s => { s.assets = s.assets.filter(a => a.id !== id); }); toast("Asset deleted"); });
   el.querySelectorAll("[data-editcat]").forEach(b => b.onclick = () => editAssetCat(b.dataset.editcat));
   el.querySelectorAll("[data-additem]").forEach(b => b.onclick = () => editAsset(null, b.dataset.additem));
@@ -5489,27 +5635,37 @@ function acHeroFit(){
   const back = h.querySelector(".ac-back"); if (back) back.style.transform = `translateY(${y}px)`;
 }
 $("pmain").addEventListener("scroll", acHeroFit, {passive: true});
+/* your name, edited in a drawer from the pencil beside it on Account */
+function editName(){
+  openSheet("Your name", `<div class="ac-names"><label class="field"><input type="text" id="acName" placeholder="What shall I call you, honey? Honey?" aria-label="First name" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
+      <label class="field"><input type="text" id="acMiddle" placeholder="Got a fancy middle name?" aria-label="Middle name" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
+      <label class="field"><input type="text" id="acLast" placeholder="Last name" aria-label="Last name" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
+    <p class="muted" id="acNameErr" role="alert" style="margin:0;color:var(--danger)" hidden>Add a first name.</p>`,
+    `<button class="btn ghost" id="acNameCancel">Cancel</button><button class="btn" id="acNameSave">Save</button>`, () => {
+      $("acNameCancel").onclick = closeSheet;
+      $("acNameSave").onclick = () => { const f = $("acName").value.trim(); if (!f) { $("acNameErr").hidden = false; $("acName").focus(); return; }
+        S.profile.name = f.slice(0, 30); S.profile.middleName = $("acMiddle").value.trim().slice(0, 30); S.profile.lastName = $("acLast").value.trim().slice(0, 40); save(); closeSheet(); renderAccount(); toast("Saved"); };
+    });
+}
 function renderAccount(){
   const el = $("p-account"), joined = S.profile.joined ? parseDay(S.profile.joined).toLocaleDateString(undefined, {month: "long", year: "numeric"}) : "";
   const done = S.goals.filter(g => g.status === "done").length;
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1>Account</h1></div></div>
-    <div class="ac-id"><div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small></div></div>
-    <section class="panel"><div class="eyebrow">Your name</div>
-      <div class="ac-names"><label class="field"><input type="text" id="acName" placeholder="What shall I call you, honey? Honey?" aria-label="First name" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
-      <label class="field"><input type="text" id="acMiddle" placeholder="Got a fancy middle name?" aria-label="Middle name" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
-      <label class="field"><input type="text" id="acLast" placeholder="Last name" aria-label="Last name" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
-</section>
+    <section class="ac-hero" aria-label="Your account"><canvas class="ac-bg" id="acBg" aria-hidden="true"></canvas><button class="ac-back" data-go="home" aria-label="Back to your world">${ICON_BACK}</button><h1 class="sr-only">Account</h1>
+      <canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas></section>
+    ${CFG.testFormUrl ? `<a class="ac-test" href="${esc(CFG.testFormUrl)}" target="_blank" rel="noopener"><span class="grow"><b>Help test Paint a Picture</b><small>One 10-minute task and a few questions</small></span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>` : ""}
+    <div class="ac-id"><div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small></div>
+      <button type="button" class="iconbtn ac-edit" id="acEditName" aria-label="Edit your name">${GI.edit}</button></div>
     <section class="ac-sec"><div class="eyebrow">Your character</div>
-      <div class="ac-scene"><canvas class="ac-bg" id="acBg" aria-hidden="true"></canvas><canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas></div>
+
       <div id="acAv" class="ac-av"></div></section>
-    ${usagePanel()}
     ${demoAllowed() || demoMode ? `<section class="panel"><div class="eyebrow">Demo Data</div><div class="seg" role="group" aria-label="Which data to show" style="justify-self:start"><button type="button" aria-pressed="${!demoMode}" data-mode="real">Your Profile</button><button type="button" aria-pressed="${demoMode}" data-mode="demo">Demo Data</button></div>
       <p class="muted" style="margin:0;font-size:13px">${demoMode ? "Showing fictional demo data for presenting the app. Your own goals are kept apart and come back exactly as they were." : "Demo Data shows a fictional world for presenting the app. It never shows or changes your goals."}</p></section>` : ""}
     ${accountPanel()}
     <section class="panel ac-help"><div class="eyebrow">Help</div>
       <button type="button" class="ac-row" data-tour><span>How to explore<small>Drag, zoom, tap and walk: the short tour again</small></span></button>
-      <button type="button" class="ac-row" data-replay><span>See the introduction again<small>Replay the welcome screens; your world stays as it is</small></span></button></section>
+      <button type="button" class="ac-row" data-replay><span>See the introduction again<small>Replay the welcome screens; your world stays as it is</small></span></button>
+      ${CFG.testFormUrl ? `<a class="ac-row" href="${esc(CFG.testFormUrl)}" target="_blank" rel="noopener"><span>Help test Paint a Picture<small>One 10-minute task and a few questions</small></span></a>` : ""}</section>
     <div style="display:grid;justify-items:center;gap:6px;padding:4px 0 8px"><button class="btn quiet sm tertiary" id="wipe">${demoMode ? "Reset demo data" : "Delete account"}</button>
 </div>`;
   avatarEditor($("acAv"), () => stDrawMe($("acMe")));
@@ -5517,8 +5673,7 @@ function renderAccount(){
   /* a place chip takes you to that place on your picture */
   el.querySelectorAll("[data-acplace]").forEach(b => b.onclick = () => { const id = b.dataset.acplace; go("home"); setTimeout(() => $("journey")?.querySelector(`[data-dest="${id}"]`)?.click(), 60); });
   acHeroFit();
-  let nt; const nameSave = () => { clearTimeout(nt); nt = setTimeout(() => { const f = $("acName").value.trim(); if (f) S.profile.name = f.slice(0, 30); S.profile.middleName = $("acMiddle").value.trim().slice(0, 30); S.profile.lastName = $("acLast").value.trim().slice(0, 40); save(); const h = el.querySelector(".ac-who h2"); if (h) h.textContent = fullName() || "You"; }, 500); };
-  ["acName", "acMiddle", "acLast"].forEach(id => $(id).oninput = nameSave);
+  $("acEditName").onclick = editName;
   if ($("acPhotoOff")) $("acPhotoOff").onclick = () => { delete S.profile.photo; save(); renderAccount(); };
   stDrawMe($("acMe"));
 
@@ -5851,9 +6006,9 @@ function wireDestRows(root, redraw){
   });
   root.querySelectorAll("[data-status]").forEach(s => s.onchange = () => changeStatus(s.dataset.status, s.value, () => (redraw || (() => renderPage(route)))()));
   root.querySelectorAll("[data-rmdest]").forEach(b => b.onclick = () => {
-    const id = b.dataset.rmdest, n = S.aspirations.filter(a => a.destinationId === id).length;
+    const id = b.dataset.rmdest, n = S.aspirations.filter(a => placesOf(a).includes(id)).length;
     if (n && b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.classList.add("confirm"); b.textContent = `Remove? ${n} piece${n === 1 ? "" : "s"} move`; return; }
-    commit(st => { st.destinations = st.destinations.filter(d => d.id !== id); st.aspirations.forEach(a => { if (a.destinationId === id) a.destinationId = null; }); st.goals.forEach(g => { if (g.destinationId === id) g.destinationId = null; }); });
+    commit(st => { st.destinations = st.destinations.filter(d => d.id !== id); st.aspirations.forEach(a => { a.destinationIds = placesOf(a).filter(x => x !== id); a.destinationId = a.destinationIds[0] || null; }); st.goals.forEach(g => { if (Array.isArray(g.unlockedIn)) g.unlockedIn = g.unlockedIn.filter(x => x !== id); }); st.goals.forEach(g => { if (g.destinationId === id) g.destinationId = null; }); });
     redraw && redraw();
   });
   root.querySelectorAll("[data-editdest]").forEach(b => b.onclick = () => editDestination(b.dataset.editdest));
@@ -5935,9 +6090,20 @@ function drawAvatarPreview(cvs, style){
    pieces and goal when she builds her world, so going back and forth never duplicates or removes
    anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["splash", "how", "you", "pick", "goal", "account", "reveal", "world"]; /* one idea screen, then her, her pieces and a first goal she ticks herself; only then is she asked to save it (email) or carry on as a guest */
+const OB = ["splash", "how", "you", "where", "pick", "goal", "account", "reveal", "world"]; /* one idea screen, then her, her pieces and a first goal she ticks herself; only then is she asked to save it (email) or carry on as a guest */
 // The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [ // the whole picture library, each with a first goal and the milestones that get it going
+  /* the starter set: the ten broad pieces shown in onboarding (top: true); the rest stay for older picks and the library */
+  {id: "company", t: "My own company", tab: "Company", kind: "studio", lib: "city", cat: "Career & education", top: true, goal: "Get my first customer", ms: ["Write down the idea in one page", "Talk to five people who'd use it", "Make the first sale"]},
+  {id: "fitter", t: "Fitter body", tab: "Fitter", kind: "fitness", lib: "fitness", cat: "Fitness & wellbeing", top: true, goal: "Get moving every week", ms: ["Pick one sport or class", "Go three times a week", "Keep it up for a month"]},
+  {id: "wealth", t: "More wealth", tab: "Wealth", kind: "fountain", lib: "money", cat: "Money & material", top: true, goal: "Grow my savings", ms: ["Track a month of spending", "Set up an automatic saving", "Start investing a little"]},
+  {id: "happyfam", t: "Happy family", tab: "Family", kind: "picnic", lib: "family", cat: "Relationships & lifestyle", top: true, goal: "More time together", ms: ["Plan a family day", "Have dinner together weekly", "Plan a trip together"]},
+  {id: "pet", t: "A pet", tab: "Pet", kind: "garden", lib: "dog", cat: "Home & surroundings", top: true, goal: "Get ready for a pet", ms: ["Pick the pet", "Find a vet", "Set up their corner at home"]},
+  {id: "school", t: "My top-choice school", tab: "School", kind: "campus", lib: "campus", cat: "Career & education", top: true, goal: "Get in", ms: ["Shortlist the schools", "Prepare the application", "Send the first one"]},
+  {id: "subs", t: "100K subscribers", tab: "Channel", kind: "studio", lib: "studio", cat: "Career & education", top: true, goal: "Post every week", ms: ["Pick the topic", "Post the first video", "Post for four weeks in a row"]},
+  {id: "career", t: "A career I love", tab: "Career", kind: "studio", lib: "gallery", cat: "Career & education", top: true, goal: "Find my next role", ms: ["Write down what I want", "Update my CV and portfolio", "Apply to five places"]},
+  {id: "calm", t: "Peace of mind", tab: "Calm", kind: "balloon", lib: "nature", cat: "Fitness & wellbeing", top: true, goal: "A calmer daily routine", ms: ["Ten quiet minutes a day", "Sleep by 11 for a week", "One screen-free evening a week"]},
+  {id: "skill", t: "Learn a new skill", tab: "Skill", kind: "library", lib: "books", cat: "Skills & growth", top: true, goal: "Learn the basics", ms: ["Pick the skill", "Practise twice a week", "Finish a first project"]},
   {id: "home", t: "Home by the sea", tab: "Home", kind: "villa", lib: "surf", cat: "Home & surroundings", goal: "Save the deposit", ms: ["Open a savings pot", "Save the first 10%", "Talk to a mortgage adviser"]},
   {id: "pod", t: "Podcast", old: "My podcast", tab: "Podcast", kind: "studio", lib: "studio", cat: "Career & education", goal: "Launch episode one", ms: ["Pick a name and a theme", "Record a pilot", "Book three guests"]},
   {id: "run", t: "10k run", old: "Run 10k", tab: "Run 10k", kind: "fitness", lib: "fitness", cat: "Fitness & wellbeing", goal: "Run 5k without stopping", ms: ["Run three times a week", "Run 3k", "Run 4k"]},
@@ -5963,6 +6129,8 @@ const ST_PARTS = [ // the whole picture library, each with a first goal and the 
   {id: "fit", t: "Strong, healthy body", old: "A strong, healthy body", tab: "Health", kind: "fitness", lib: "you-fit", cat: "Fitness & wellbeing", goal: "Move every day", ms: ["Find a class I love", "Go three times a week", "Keep it up for a month"]},
   {id: "style", t: "Personal style", old: "My own style", tab: "Style", kind: "studio", lib: "you-style", cat: "Relationships & lifestyle", goal: "Find my style", ms: ["Make a mood board", "Clear out my wardrobe", "Buy one piece I love"]}
 ];
+const ST_WHERE = () => [["Mumbai"], ["Delhi", "New Delhi"], ["New York"]].map(([n, as]) => { const p = stGaz(n, as); return {key: (as || n).toLowerCase().replace(/[^a-z]+/g, ""), t: as || n, p}; }).filter(pl => pl.p.name); /* the three ideas on the places step */
+const ST_MIN = 5; /* pieces she picks before moving on */
 const ST_OWN = ["Picture what it looks like", "Find the first step", "Take the first step"]; // the first goal for a piece she describes herself
 const stGaz = (n, as) => ({...GAZ.find(p => p.name === n), ...(as ? {name: as} : {})});
 // Places that can go on a map: cities, countries, islands, mountains. Search finds any other.
@@ -6208,7 +6376,7 @@ function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d");
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
-const ST_IDEA = ["how"], ST_ME = ["you", "pick", "goal", "account"], ST_STEPS = ST_ME; /* progress counts only the steps of making her picture */
+const ST_IDEA = ["how"], ST_ME = ["you", "where", "pick", "goal", "account"], ST_STEPS = ST_ME; /* progress counts only the steps of making her picture */
 // one progress line across every step, so she always knows how far along she is
 const stBar = k => { const path = ST_STEPS, i = path.indexOf(k); return `<div class="st-mbar" id="stBar"><div class="st-line" role="img" aria-label="Step ${i + 1} of ${path.length}"><i style="width:${Math.round((i + 1) / path.length * 100)}%"></i></div></div>`; };
 function startOnboarding(step){
@@ -6248,7 +6416,7 @@ function drawOb(){
     el.innerHTML = `<div class="st-stage" id="stStage"><canvas class="st-full" id="stWorld" role="img" aria-label="Your picture"></canvas></div>
       <section class="st-panel"><main class="ob-main st-pmain" id="obMain"></main><footer class="ob-foot st-pfoot" id="obFoot"></footer></section>`;
   }
-  ({splash: obSplash, how: obHow, you: obYou, pick: obPick, goal: obGoal, account: obAccount, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
+  ({splash: obSplash, how: obHow, you: obYou, where: obWhere, pick: obPick, goal: obGoal, account: obAccount, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
   const bar = $("stBar"), M = $("obMain"); if (bar && ST_ME.includes(k)) { stTopBack();
     const over = () => { const f = M.querySelector(".st-figure"); bar.classList.toggle("over", !!f && M.scrollTop < f.offsetHeight - 40); };
     over(); M.addEventListener("scroll", over, {passive: true}); }
@@ -6299,16 +6467,16 @@ function obSplash(M){
   const frame = now => {
     if (!cvs.isConnected) return;
     t += prev ? Math.min(50, now - prev) : 0; prev = now; // the clock only counts frames she sees, so a slow first frame never skips the star
-    const o = cvs.getContext("2d"), bloom = stEase((t - 1100) / 800), open = stEase((t - 800) / 900); if (move) walk(t - 1100); // with Reduce Motion she stands still
+    const o = cvs.getContext("2d"), bloom = stEase((t - 1700) / 800), open = stEase((t - 1400) / 900); if (move) walk(t - 1700); // with Reduce Motion she stands still
     sc.lens.r = move ? 62 * bloom : 62; sc.lens.a = move ? 1 : bloom; // the colour opens around the star
     stRender(cvs, sc); const k = cvs.width / w;
     night.width = w; night.height = h; const n = night.getContext("2d"); F(n, 0, 0, w, h, "#0f1420");
     if (move) { const R = Math.hypot(w, h) * open; n.globalCompositeOperation = "destination-out"; for (const [q, a] of [[1, .35], [.86, .6], [.72, 1]]) { n.globalAlpha = a; if (R * q > 1) oval(n, 100, cy, Math.round(R * q), Math.round(R * q), "#000"); } } // the dark opens like the lens
     o.imageSmoothingEnabled = false; o.globalAlpha = move ? 1 : 1 - open; o.drawImage(night, 0, 0, w * k, h * k); o.globalAlpha = 1;
     // first, the star: a tiny spark that grows to full size with a little bounce, and everything else starts from it
-    const u = Math.min(1, Math.max(0, (t - 100) / 750)), grow = u <= 0 ? 0 : !move ? 1 : Math.max(.04, 1 + 1.7 * (u - 1) ** 3 + .7 * (u - 1) ** 2); // with Reduce Motion the star fades in instead
+    const u = Math.min(1, Math.max(0, (t - 150) / 1300)), grow = u <= 0 ? 0 : !move ? .35 + .65 * stEase(u) : Math.max(.04, 1 + 1.7 * (u - 1) ** 3 + .7 * (u - 1) ** 2); /* a tiny spark that grows to full size with a little bounce; with Reduce Motion it still grows, gently, with no bounce */
     if (grow > 0) { o.save(); o.setTransform(k * grow, 0, 0, k * grow, k * 100 * (1 - grow), k * (cy - 24) * (1 - grow)); o.globalAlpha = Math.min(1, u * 4); drawDreamStar(o, 100, cy - 18, true, 3, false); o.restore(); }
-    if (t > 2400 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
+    if (t > 3000 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
     obAnim = requestAnimationFrame(frame);
   };
   obAnim = requestAnimationFrame(frame);
@@ -6318,6 +6486,10 @@ function obSplash(M){
 
 // How it works, told once and on her own picks: her milestones finish her goals, her goals unlock her pieces, and the
 // pieces, cut from her own picture, come together into it.
+const ST_STORY = [
+  "Ashima made Paint a Picture to turn her goals into a game, so she'd stay motivated.",
+  "She sets deadlines. She doesn't always meet deadline A, but she always gets there by deadline B.",
+  "Either way, she's still moving forward and unlocking things. She just doesn't always notice."];
 const ST_DOWN = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10l6 6 6-6"/></svg>';
 function stFirstPart(){ const d = stDraft(), parts = stParts(); return parts.find(p => p.key === d.first) || parts[0] || null; }
 const ST_SAMPLE = ["home", "pod", "run", "study", "family", "car"]; // a picture to explain with, before she has picked her own
@@ -6340,16 +6512,28 @@ function obHow(M, Fo){
     const cell = document.createElement("canvas"); cell.width = cell.height = 120; cell.getContext("2d").drawImage(src, c * 80 - 20, r * 80 - 20, 120, 120, 0, 0, 120, 120);
     stJig(cv, cell, {line: "#2a2730", v: [r ? -tV(c, 0) : 0, c < 2 ? tH(c, r) : 0, r ? 0 : tV(c, 0), c ? -tH(c - 1, r) : 0]}); });
   const at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
-  M.querySelectorAll(".st-ticks .cb").forEach((c, i) => at(400 + i * 280, () => c.setAttribute("aria-checked", "true")));
-  const pills = M.querySelectorAll(".st-pills b"); at(1100, () => pills[0].classList.add("on")); at(1950, () => pills[1].classList.add("on")); // three milestones finish each goal
-  pieces.forEach((c, i) => at(2300 + i * 220, () => c.classList.add("on"))); // the goals unlock her pieces, one by one
-  at(3800, () => $("stPz3").classList.add("join")); // then they come together into her picture
-  at(4700, () => $("stPz3").classList.add("done"));
-  at(4500, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
-  stNextIdea(Fo, "Start my picture");
+  /* why the app exists, in Ashima's words: each line arrives with a step of the animation above it */
+  /* typed out under the heading at reading pace, one line at a time; each rests, then the next replaces it; the last stays.
+     The milestones, goals and picture below only start once the typing is done. */
+  M.querySelector(".st-head").insertAdjacentHTML("beforeend", `<p class="st-type" id="stType" aria-hidden="true"><span></span><i class="st-caret"></i></p><p class="sr-only">${ST_STORY.join(" ")}</p>`);
+  const tEl = M.querySelector("#stType span"), caret = M.querySelector(".st-caret"), backHere = stObPrev > obStep, CH = 55, REST = 2200;
+  let chainStart = 0;
+  if (backHere) { tEl.textContent = ST_STORY[ST_STORY.length - 1]; caret.remove(); }
+  else { let ms = 500; ST_STORY.forEach((line, li) => { at(ms, () => { tEl.textContent = ""; });
+      for (let c = 1; c <= line.length; c++) at(ms + c * CH, () => { tEl.textContent = line.slice(0, c); });
+      ms += line.length * CH + (li < ST_STORY.length - 1 ? REST : 0); });
+    at(ms + 800, () => caret.remove()); chainStart = ms + 600; }
+  const atC = (ms, fn) => at(chainStart + ms, fn);
+  M.querySelectorAll(".st-ticks .cb").forEach((c, i) => atC(400 + i * 280, () => c.setAttribute("aria-checked", "true")));
+  const pills = M.querySelectorAll(".st-pills b"); atC(1100, () => pills[0].classList.add("on")); atC(1950, () => pills[1].classList.add("on")); // three milestones finish each goal
+  pieces.forEach((c, i) => atC(2300 + i * 220, () => c.classList.add("on"))); // the goals unlock her pieces, one by one
+  atC(3800, () => $("stPz3").classList.add("join")); // then they come together into her picture
+  atC(4700, () => $("stPz3").classList.add("done"));
+  atC(4500, () => { const l = $("stPzLbl"); l.classList.add("swap"); setTimeout(() => { l.textContent = "Your painted picture"; l.classList.remove("swap"); }, 300); });
+  stNextIdea(Fo, "Get started");
   if (CFG.supabaseUrl && !supaUser) { Fo.insertAdjacentHTML("beforeend", `<button type="button" class="st-have" id="obHave">I already have an account</button>`); $("obHave").onclick = stSignInSheet; }
   /* the button arrives once the picture has come together (straight away with Reduce Motion, or when coming back) */
-  if (!reduced && !(stObPrev > obStep)) { Fo.classList.add("st-wait"); at(4900, () => Fo.classList.remove("st-wait")); }
+  if (!backHere) { Fo.classList.add("st-wait"); at(chainStart, () => Fo.classList.remove("st-wait")); } /* the button arrives once her story has been told */
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
@@ -6398,9 +6582,10 @@ function stSlots(n, fw, me){
 }
 function stFigure(o){
   o = o || {}; const orbs = o.orbs ? stOrbs(o) : [], fw = Math.max(280, ($("obMain")?.clientWidth || 390) - 40), me = o.small ? [100, 222] : [118, 256]; // her drawn width, a little narrower than her canvas
-  const {pos, h} = stSlots(orbs.length, fw, me);
+  const {pos, h} = stSlots(orbs.length, fw, me), at = (S.onboarding.draft || {}).at || {}; /* a piece she dragged stays where she put it */
+  orbs.forEach((b, i) => { const a = at[b.key]; if (a) pos[i] = [Math.round(a[0] * fw), a[1]]; });
   stFigure.pos = pos; stFigure.me = me; stFigure.fw = fw;
-  const html = `<div class="st-figure${o.small ? " small" : ""}" style="height:${Math.max(o.small ? 268 : 300, h)}px"><canvas class="st-me-c" id="stMe" role="img" aria-label="You"></canvas>
+  const html = `<div class="st-figure${o.small ? " small" : ""}${o.sea ? " sea" : ""}" style="height:${Math.max(o.small ? 268 : 300, h)}px"><canvas class="st-me-c" id="stMe" role="img" aria-label="You"></canvas>
     ${orbs.map((b, i) => { const [x, y] = pos[i], r = b.isle ? 0 : hashStr(b.key) % 13 - 6;
       return `<span class="st-orb ${b.isle ? "isle" : "jig"}${stOrbSeen.has(b.key) ? "" : " pop"}" data-key="${esc(b.key)}" style="left:${x}px;top:${y}px;--r:${r}deg;--fx:${Math.round(fw / 2 - ST_OP / 2 - x)}px;--fy:${Math.round(me[1] / 2 - y)}px" role="img" aria-label="${esc(b.label)}${b.isle ? "" : ". Drag to move it"}"${b.isle ? "" : ` tabindex="0"`}><canvas data-orb='${esc(JSON.stringify(b))}'></canvas></span>`; }).join("")}</div>`;
   stOrbSeen = new Set(orbs.map(b => b.key));
@@ -6415,19 +6600,24 @@ function stHandHint(M){
     h.style.left = (el.offsetLeft + 30) + "px"; h.style.top = (el.offsetTop + 30) + "px"; el.parentNode.appendChild(h); el.classList.remove("pop"); el.classList.add("nudge");
     const tx = Math.round(stFigure.fw / 2 - el.offsetLeft - ST_OP / 2), ty = Math.round(stFigure.me[1] / 2 - el.offsetTop - ST_OP / 2) - 20; // towards her
     for (const x of [h, el]) { x.style.setProperty("--tx", Math.round(tx * .6) + "px"); x.style.setProperty("--ty", Math.round(ty * .6) + "px"); }
-    setTimeout(() => { if (h.isConnected) stHandShown = true; h.remove(); el.classList.remove("nudge"); }, 3300); }, 900);
+    const me = $("stMe"), say = document.createElement("span"); say.className = "st-say"; say.textContent = "Drag the pieces around for shits & giggles.";
+    if (me) { const pr = el.parentNode.getBoundingClientRect(), mr = me.getBoundingClientRect(); /* beside her head, inside the frame */
+      say.style.left = Math.round(Math.min(pr.width - 162, mr.left - pr.left + mr.width / 2 + 22)) + "px"; say.style.top = Math.round(Math.max(4, mr.top - pr.top + 4)) + "px"; el.parentNode.appendChild(say); }
+    setTimeout(() => { if (h.isConnected) stHandShown = true; h.remove(); el.classList.remove("nudge"); }, 3300);
+    setTimeout(() => { say.classList.add("out"); setTimeout(() => say.remove(), 400); }, 4600); }, 900);
 }
 // Where a dropped piece lands. dx, dy: how far its centre is from hers; slot: the nearest free spot, or -1 when none is close.
 function stDrop(el, cx, cy){
   const d = stDraft(), key = el.dataset.key.slice(2), F = stFigure, me = F.me, dx = cx - F.fw / 2, dy = cy - me[1] / 2;
-  const near = F.pos.map(([x, y], i) => ({i, k: Math.hypot(x + ST_OP / 2 - cx, y + ST_OP / 2 - cy)})).sort((a, b) => a.k - b.k)[0];
-  const slot = near && near.k < ST_OP ? near.i : -1;
-  // On her (within half her width and height) it becomes her first piece; near another spot, the piece moves there and the
-  // rest shift along; anywhere else it goes back.
-  const onHer = Math.abs(dx) < me[0] / 2 && Math.abs(dy) < me[1] / 2;
-  if (onHer) { d.first = key; track("first_piece_set", {piece: key}); }
-  else if (slot >= 0) { const ord = stOrdered().map(p => p.key).filter(k => k !== key); ord.splice(slot, 0, key); d.order = ord; }
-  save(); drawOb();
+  /* On her (within half her width and height) it becomes her first piece and takes its spot beside her; anywhere else it
+     stays exactly where she let go, kept inside the picture. */
+  /* Every piece keeps the spot it's in now, so nothing shuffles later, and nothing is redrawn: the page stays as it is. */
+  const onHer = Math.abs(dx) < me[0] / 2 && Math.abs(dy) < me[1] / 2, at = d.at ||= {}, fig = el.parentNode;
+  fig.querySelectorAll(".st-orb.jig").forEach(o => { const x = Math.max(0, Math.min(fig.clientWidth - ST_OP, o.offsetLeft)), y = Math.max(0, Math.min(fig.clientHeight - ST_OP, o.offsetTop));
+    o.style.left = x + "px"; o.style.top = y + "px"; at[o.dataset.key] = [+(x / F.fw).toFixed(3), Math.round(y)]; });
+  if (onHer && d.first !== key) { d.first = key; track("first_piece_set", {piece: key}); /* only the rings change: the new first piece gets one, the old one loses it */
+    fig.querySelectorAll("canvas[data-orb]").forEach((c, i) => { const was = JSON.parse(c.dataset.orb).ring, now = c.parentNode === el; if (was !== now) { const b = JSON.parse(c.dataset.orb); b.ring = now; c.dataset.orb = JSON.stringify(b); stOrbPaint(c, i, now); } }); }
+  save();
 }
 // A place as a little island, the way places sit on Home: its own scenery on the land, a sandy shore and shallow water round it.
 function stIsland(cvs, env, i){
@@ -6444,16 +6634,30 @@ function stIsland(cvs, env, i){
   }
   g.putImageData(im, 0, 0); cvs.width = cvs.height = N * 3; const o2 = cvs.getContext("2d"); o2.imageSmoothingEnabled = false; o2.drawImage(c, 0, 0, N * 3, N * 3);
 }
+// Open water for the places step: deep blue with lighter ripples, the sea round the islands on Home.
+function stSea(w, h){
+  const c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d");
+  F(g, 0, 0, w, h, "#5aaecb");
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const n = hash(x, y, 61); if (n > .9) F(g, x, y, 1, 1, "#54a6c3"); else if (n < .05) F(g, x, y, 1, 1, "#62b5d0"); }
+  for (let i = 0; i < w * h / 260; i++) { const x = hash(i, 1, 63) * w | 0, y = hash(i, 2, 64) * h | 0, l = 2 + (hash(i, 3, 65) * 3 | 0); F(g, x, y, l, 1, "#a9dbe8"); } /* calm ripples */
+  return c;
+}
+// One piece's picture, drawn into its canvas; ring marks her first piece.
+function stOrbPaint(c, i, ring){
+  const b = JSON.parse(c.dataset.orb), o = {ring: ring === undefined ? b.ring : ring, v: stJigV(i + 7)};
+  if (b.isle) stIsland(c, b.env, i); else if (b.goal) stJig(c, stTrophyPiece(), o); else if (b.lib) stJigImg(c, libUrl(b.lib), o);
+  else { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, {kind: b.kind}); stJig(c, t, o); }
+}
 function stFigureDone(M){
   const fig = M.querySelector(".st-figure"); if (fig && !fig.querySelector(".st-figbg")) { /* she stands in a little of her world, edge to edge, not on a blank page */
     const bg = document.createElement("canvas"); bg.className = "st-figbg"; bg.setAttribute("aria-hidden", "true"); fig.prepend(bg);
-    const r = bg.getBoundingClientRect(), w = 120, h = Math.max(60, Math.round(w * r.height / Math.max(1, r.width))); bg.width = w; bg.height = h; bg.getContext("2d").drawImage(stMeadow(w, h), 0, 0); }
+    const r = bg.getBoundingClientRect(), w = 120, h = Math.max(60, Math.round(w * r.height / Math.max(1, r.width))); bg.width = w; bg.height = h; bg.getContext("2d").drawImage(fig.classList.contains("sea") ? stSea(w, h) : stMeadow(w, h), 0, 0);
+    const me = $("stMe"); if (fig.classList.contains("sea") && me) { /* on the water she stands on her own little sandy island */
+      const mr = me.getBoundingClientRect(), k = w / Math.max(1, r.width), cx = (mr.left + mr.width / 2 - r.left) * k, cy = (mr.bottom - r.top) * k - 2, g = bg.getContext("2d");
+      oval(g, cx, cy + 1, 22, 6, "#a9dbe8"); oval(g, cx, cy, 19, 5, C.sand[1]); oval(g, cx, cy - 1, 15, 3, C.sand[0]); } }
   stDrawMe($("stMe"));
-  M.querySelectorAll("canvas[data-orb]").forEach((c, i) => { const b = JSON.parse(c.dataset.orb), o = {ring: b.ring, v: stJigV(i + 7)};
-    if (b.isle) stIsland(c, b.env, i); else if (b.goal) stJig(c, stTrophyPiece(), o); else if (b.lib) stJigImg(c, libUrl(b.lib), o);
-    else { const t = document.createElement("canvas"); t.width = t.height = 48; drawKindPreview(t, {kind: b.kind}); stJig(c, t, o); } });
-  // pick a piece up and put it down: on her, it becomes her first piece; on another spot, it takes that spot (nearer her is
-  // sooner); anywhere else, it goes back. Either way the pieces stay tidy and never overlap.
+  M.querySelectorAll("canvas[data-orb]").forEach((c, i) => stOrbPaint(c, i));
+  // pick a piece up and put it down: on her, it becomes her first piece; anywhere else, it stays where she let go.
   M.querySelectorAll(".st-orb.jig").forEach(el => {
     const move = (x, y) => { el.style.left = x + "px"; el.style.top = y + "px"; };
     el.onpointerdown = e => { e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.remove("pop"); el.classList.add("drag");
@@ -6468,10 +6672,10 @@ function stFigureDone(M){
 function obYou(M, Fo){
   const P = S.profile, full = !!(P.middleName || P.lastName);
   M.innerHTML = stFigure({small: true}) + stHead("Let's Paint You!")
-    + `<div id="stLook" class="st-av"></div><div class="st-fields"><input type="text" id="obName" value="${esc(P.name)}" placeholder="What should we call you?" aria-label="First name" autocomplete="given-name" maxlength="30">
-    <div id="obFull"${full ? "" : " hidden"} style="display:grid;gap:12px"><input type="text" id="obMiddle" value="${esc(P.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
+    + `<div id="stLook" class="st-av"></div><div class="st-fields"><span class="st-flabel">Your name</span><input type="text" id="obName" value="${esc(P.name)}" placeholder="What should we call you, honey? Honey?" aria-label="First name" autocomplete="given-name" maxlength="30">
+    <div id="obFull" style="display:grid;gap:12px"><input type="text" id="obMiddle" value="${esc(P.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
     <input type="text" id="obLast" value="${esc(P.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></div>
-    ${full ? "" : `<button type="button" class="st-have" id="obFullBtn" style="justify-self:start">Add your full name</button>`}</div>
+    </div>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>
     <div id="stAv" class="st-av"></div>`;
   if ($("obFullBtn")) $("obFullBtn").onclick = () => { $("obFull").hidden = false; $("obFullBtn").remove(); $("obMiddle").focus(); };
@@ -6488,14 +6692,44 @@ function obYou(M, Fo){
     S.profile.name = name.slice(0, 30); S.profile.middleName = $("obMiddle").value.trim().slice(0, 30); S.profile.lastName = $("obLast").value.trim().slice(0, 40); obGo(obStep + 1);
   });
 }
+// Her places, before her pieces: each one she picks rises out of the sea round her as a little island, the way places sit on Home.
+function obWhere(M, Fo){
+  const d = stDraft();
+  const draw = () => {
+    const all = stPlaces(), n = all.length, chips = ST_WHERE().concat(d.places.filter(x => !ST_WHERE().some(pl => pl.key === x.key)));
+    M.innerHTML = stFigure({orbs: true, small: true, sea: true}) + stHead("Add your places", "Where you live, where you've lived and where you want to go. Each one becomes an island in your world.")
+      + `<div class="search st-wsearch"><input type="search" id="stQ" placeholder="Search a city, country or university" autocomplete="off" aria-label="Search places"><ul class="search-res" id="stRes" role="listbox" hidden></ul></div><div class="st-chips st-wchips">${chips.map(pl => `<button type="button" class="st-chip" data-place="${esc(pl.key)}" aria-pressed="${(!!stHasPlace(pl.p.name) && !d.hideP.includes(pl.key)) || d.places.some(x => x.key === pl.key)}">${esc(pl.t)}</button>`).join("")}</div>`;
+    stFigureDone(M);
+    $("stNote").textContent = ""; $("stNote").classList.remove("warn"); stFillThumbs(M);
+    M.querySelectorAll("[data-place]").forEach(b => b.onclick = () => {
+      const pl = chips.find(x => x.key === b.dataset.place), sel = d.places.some(x => x.key === pl.key);
+      if (stHasPlace(pl.p.name)) { const y = $("obMain").scrollTop; d.hideP = d.hideP.includes(pl.key) ? d.hideP.filter(x => x !== pl.key) : d.hideP.concat(pl.key); save(); draw(); $("obMain").scrollTop = y; return; } // it stays in her world either way
+      if (!sel && S.destinations.length + d.places.length >= MAX_DEST) { toast(`Your world has room for ${MAX_DEST} places.`); return; }
+      const y = $("obMain").scrollTop; if (!sel) track("place_added", {source: "suggested", scenery: pl.p.env}); d.places = sel ? d.places.filter(x => x.key !== pl.key) : d.places.concat(pl); d.last = sel ? (d.places[d.places.length - 1]?.key || "") : pl.key; save(); draw(); $("obMain").scrollTop = y;
+      M.querySelector(`[data-place="${CSS.escape(pl.key)}"]`)?.focus({preventScroll: true});
+    });
+    const add = p => { const key = "x-" + p.name;
+      if (stHasPlace(p.name) || d.places.some(x => x.p.name === p.name)) { toast(`${p.name} is already in your picture.`); return; }
+      if (S.destinations.length + d.places.length >= MAX_DEST) { toast(`Your world has room for ${MAX_DEST} places.`); return; }
+      d.places = d.places.concat({key, t: p.name, p: {...p}}); track("place_added", {source: "search", scenery: p.env}); d.last = key; save(); draw(); };
+    const q = $("stQ"), res = $("stRes"); let hits = [];
+    q.oninput = () => { hits = searchPlaces(q.value).slice(0, 6); res.hidden = !q.value.trim();
+      res.innerHTML = hits.length ? hits.map((p, i) => `<li><button type="button" role="option" data-hit="${i}"><b>${esc(p.name)}</b><span>${esc(p.country || "")}</span></button></li>`).join("") : `<li class="muted" style="padding:10px 12px">No match yet. Try a city or country.</li>`;
+      res.querySelectorAll("[data-hit]").forEach(b => b.onclick = () => add(hits[+b.dataset.hit])); };
+    q.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); const r = searchPlaces(q.value); if (r[0]) add(r[0]); } };
+  };
+  stFoot(Fo, "", () => { if (!stPlaces().length) { $("stNote").textContent = "Pick at least one"; $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }); // at least one place, so no Skip
+  draw();
+}
 function obPick(M, Fo){
   const d = stDraft();
   if (stBefore) { S.aspirations.forEach(a => { if (!stBefore.has(a.id) && !d.own.includes(a.id)) d.own.push(a.id); }); stBefore = null; save(); } // one she just described herself
   const on = p => d.parts.includes(p.id) || (!!stHasPart(p) && !d.hide.includes(p.id));
+  const stTile = p => `<button type="button" class="st-tile" data-part="${p.id}" aria-pressed="${on(p)}"><canvas data-jlib="${p.lib}" aria-hidden="true"></canvas><span>${esc(p.t)}</span></button>`;
   const draw = () => {
     const n = stParts().length;
-    M.innerHTML = stFigure({orbs: true, pieces: true, small: true}) + stHead("Pick your pieces", "Tap the ones that are you, as many as you like. Drag the one you want most onto you.")
-      + stHomeRow() + [...new Set(ST_PARTS.map(p => p.cat))].map(cat => `<section class="st-grp"><h2>${esc(cat)}</h2><div class="st-tiles">${ST_PARTS.filter(p => p.cat === cat).map(p => `<button type="button" class="st-tile" data-part="${p.id}" aria-pressed="${on(p)}"><canvas data-jlib="${p.lib}" aria-hidden="true"></canvas><span>${esc(p.t)}</span></button>`).join("")}</div></section>`).join("")
+    M.innerHTML = stFigure({orbs: true, pieces: true, small: true}) + stHead("Pick your pieces", "Pick at least 5 that are you. You can change them later. Drag the one you want most onto you.")
+      + stHomeRow() + `<section class="st-grp"><div class="st-tiles">${ST_PARTS.filter(p => p.top || on(p)).map(stTile).join("")}</div></section>` /* the ten starter pieces, plus any other she already has so she can let it go */
         + (d.own.length ? `<section class="st-grp"><h2>Your own</h2><div class="st-tiles">${d.own.map(aspById).filter(Boolean).map(a => `<button type="button" class="st-tile" data-own="${a.id}" aria-pressed="true"><canvas data-jkind="${a.id}" aria-hidden="true"></canvas><span>${esc(a.title)}</span></button>`).join("")}</div></section>` : "")
       + `<button type="button" class="btn quiet st-mid" id="stOwn">${plusIcon}Describe your own</button>`;
     stFigureDone(M); stHomeWire(M);
@@ -6513,7 +6747,7 @@ function obPick(M, Fo){
     M.querySelectorAll("[data-own]").forEach(b => b.onclick = () => { stBefore = new Set(S.aspirations.map(a => a.id)); editAspiration(b.dataset.own); });
     $("stOwn").onclick = () => { stBefore = new Set(S.aspirations.map(a => a.id)); editAspiration(null); };
   };
-  stFoot(Fo, "", () => { if (!stParts().length) { $("stNote").textContent = "Pick at least one"; $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }); // at least one piece, so no Skip
+  stFoot(Fo, "", () => { const n = stParts().length; if (n < ST_MIN) { $("stNote").textContent = n ? `Pick ${ST_MIN - n} more` : `Pick at least ${ST_MIN}`; $("stNote").classList.add("warn"); return; } obGo(obStep + 1); }); /* at least five pieces, so no Skip */
   draw();
 }
 const stThumbs = {};
@@ -6556,7 +6790,7 @@ function stHomeWire(M){
 // place. Suggestions fill it to start; once she changes anything, switching piece keeps her words.
 function obGoal(M, Fo){
   const d = stDraft(), parts = stParts();
-  const fresh = p => ({part: p.key, title: p.goal, ms: p.ms.slice(0, 1)}); /* one first step; more can be added in Goals */
+  const fresh = p => ({part: p.key, title: p.goal, ms: p.ms.slice()}); /* its suggested milestones, to edit, delete or add to */
   if (parts.length && (!d.goal || !parts.some(p => p.key === d.goal.part))) d.goal = d.goal?.edited ? {...d.goal, part: stFirstPart().key} : fresh(stFirstPart()); d.noGoal = false;
   const X = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const draw = (focus) => {
@@ -6564,9 +6798,9 @@ function obGoal(M, Fo){
     M.innerHTML = stHead("Set your first goal", part ? null : "Pick a piece first, then come back for its first goal. You can also add goals any time from Goals.")
       + (!part ? "" : `<section class="st-gsec"><h2 class="st-glbl">For which piece?</h2><div class="st-tabs st-ptabs" role="group" aria-label="Which piece this goal is for">${parts.map(p => `<button type="button" class="st-tab" data-tab="${esc(p.key)}" aria-pressed="${p.key === G.part}"><canvas data-gthumb="${esc(p.key)}" aria-hidden="true"></canvas>${esc(p.tab)}</button>`).join("")}</div></section>
       <section class="st-gsec"><label class="st-glbl" for="stGT">Goal</label><div class="st-gcard"><div class="st-gtop"><span class="st-gpc"><canvas id="stGPc" aria-hidden="true"></canvas></span>
-        <span class="grow"><input type="text" id="stGT" class="st-gin" value="${esc(G.title)}" maxlength="120" placeholder="What do you want to reach?"><small>Unlocks ${esc(part.t)}</small></span></div></div></section>
-      <section class="st-gsec"><label class="st-glbl" for="stGM">First step</label><input type="text" id="stGM" data-gm="0" value="${esc(G.ms[0] || "")}" maxlength="120" placeholder="One small step towards it">
-        <p class="st-gnote">Add more steps any time in Goals.</p></section>`);
+        <span class="grow"><input type="text" id="stGT" class="st-gin" value="${esc(G.title)}" maxlength="120" placeholder="What do you want to reach?"></span></div></div></section>
+      <section class="st-gsec"><span class="st-glbl">Milestones</span><ul class="ms-edit" id="stGMs">${G.ms.map((t, i) => `<li><div class="ms-row"><input type="text" data-gm="${i}" value="${esc(t)}" maxlength="120" placeholder="Milestone ${i + 1}" aria-label="Milestone ${i + 1}"><button type="button" class="ibtn" data-gmrm="${i}" aria-label="Delete milestone">${GI.del}</button></div></li>`).join("")}</ul>
+        <button type="button" class="btn quiet sm" id="stGMAdd" style="justify-self:start">${ICON.plus}Add milestone</button></section>`); /* the same list as a goal's Milestones in Goals */
     M.scrollTop = y;
     if (!part) return;
     const lib = ST_PARTS.find(x => x.id === part.key)?.lib, own = aspById(part.key), pc = $("stGPc");
@@ -6577,12 +6811,14 @@ function obGoal(M, Fo){
     M.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { const p = parts.find(x => x.key === b.dataset.tab); d.goal = G.edited ? {...G, part: p.key} : fresh(p); save(); draw(`[data-tab="${CSS.escape(p.key)}"]`); });
     $("stGT").oninput = e => { G.title = e.target.value; edited(); };
     M.querySelectorAll("[data-gm]").forEach(inp => inp.oninput = () => { G.ms[+inp.dataset.gm] = inp.value; edited(); });
+    M.querySelectorAll("[data-gmrm]").forEach(b => b.onclick = () => { G.ms.splice(+b.dataset.gmrm, 1); edited(); draw(); });
+    $("stGMAdd").onclick = () => { G.ms.push(""); edited(); draw(); $("stGMs").lastElementChild?.querySelector("input")?.focus({preventScroll: true}); };
     if (focus) M.querySelector(focus)?.focus({preventScroll: true});
   };
   stFoot(Fo, "", () => {
-    if (d.goal && stParts().length && !d.goal.title.trim()) { $("stNote").textContent = "Write your goal, or tap Not now"; $("stNote").classList.add("warn"); $("stGT")?.focus(); return; }
+    if (d.goal && stParts().length && !d.goal.title.trim()) { $("stNote").textContent = "Write your goal, or tap Skip"; $("stNote").classList.add("warn"); $("stGT")?.focus(); return; }
     if (d.goal) d.goal.ms = d.goal.ms.map(t => String(t || "").trim()).filter(Boolean);
-    d.noGoal = !d.goal; save(); obGo(obStep + 1); }, {skip: () => { d.noGoal = true; save(); obGo(obStep + 1); }, skipLabel: "Not now"});
+    d.noGoal = !d.goal; save(); obGo(obStep + 1); }, {skip: () => { d.noGoal = true; save(); obGo(obStep + 1); }, skipLabel: "Skip"});
   draw();
 }
 
@@ -6593,9 +6829,9 @@ async function obAccount(M, Fo){
   if (!CFG.supabaseUrl || supaUser) { pass(); return; }
   const n = stParts().length, g = stDraft().goal && !stDraft().noGoal;
   M.innerHTML = stFigure({orbs: true, pieces: true, small: true}) + stHead("Save your picture", `${n ? `${["", "Your piece", "Your two pieces", "Your three pieces"][n] || `Your ${n} pieces`}${g ? " and first goal are" : n === 1 ? " is" : " are"} ready.` : "Your picture is ready."} Add your email to keep it safe and the same on every device. We'll send a code; no password.`)
-    + `<div id="obSign" class="st-sign"></div>`;
+    + `<div id="obSign" class="st-sign"></div><div class="st-skipwrap"><button type="button" class="btn quiet st-skipbtn" id="obSkip">Skip</button><p class="st-gnote">Without an email your progress is only on this phone, and it's lost if you delete the app.</p></div>`;
   stFigureDone(M);
-  Fo.innerHTML = `<button type="button" class="st-have" id="obSkip">Not now</button>`; stTopBack();
+  Fo.innerHTML = ""; Fo.hidden = true; stTopBack(); /* both choices stacked under the email box */
   $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(obStep + 1); };
   signInForm($("obSign"), () => { S.onboarding.guest = false; save(); if (S.onboarding.done) { toast("Welcome back. Your world is here."); finishOnboarding(); } else if (route === "onboard") obGo(OB.indexOf("reveal")); });
   await accountsReadyP; if (supaUser && OB[obStep] === "account") pass();
@@ -6613,13 +6849,15 @@ function obReveal(M, Fo){
 }
 // Her picks become real: places first so her pieces have somewhere to stand, then the pieces, then the first goal and her first journal line.
 function stCommit(){
-  const d = stDraft(), dests = [];
+  const d = stDraft(), dests = [], keyTo = {};
   for (const pl of stPlaces()) { const st = pl.st || "future", had = stHasPlace(pl.p.name); // where she lives and has lived are lit from the start
-    const x = had || addDestination(pl.p, st === "past" ? "loved" : st === "current" ? "live" : pl.p.type === "uni" ? "study" : "experience", st); if (x) dests.push(x); }
+    const x = had || addDestination(pl.p, st === "past" ? "loved" : st === "current" ? "live" : pl.p.type === "uni" ? "study" : "experience", st); if (x) { dests.push(x); keyTo[pl.key] = x.id; } }
   const pool = dests.length ? dests : S.destinations.slice(), want = {villa: "coast", beach: "coast", drift: "japan", campus: "boston"};
   const destFor = (kind, i) => (want[kind] && pool.find(x => x.env === want[kind])) || pool[i % Math.max(1, pool.length)] || null;
   commit(s => {
     const ids = {};
+    Object.entries(d.ownPlaces || {}).forEach(([aid, keys]) => { const a = s.aspirations.find(x => x.id === aid), add = keys.map(k => keyTo[k]).filter(Boolean); /* pieces she described, now in the places she picked for them */
+      if (a && add.length) { a.destinationIds = [...new Set(placesOf(a).concat(add))]; a.destinationId = a.destinationIds[0]; } });
     ST_PARTS.forEach((p, i) => {
       const had = s.aspirations.find(a => a.title === p.t || (p.old && a.title === p.old)); if (had) { ids[p.id] = had.id; return; }
       if (!d.parts.includes(p.id)) return;
@@ -6667,7 +6905,8 @@ const CFG = {
   posthogKey: "phc_CcNeiKWRrXGZWsHv4xXK49jXLTayvtn2jhEtbgE3CsCj", // PostHog project token: write-only, safe in the app
   posthogHost: "https://eu.i.posthog.com", // the project is on PostHog EU Cloud, beside the data in Supabase
   supabaseUrl: "https://pvovntkudeielzikntso.supabase.co",
-  supabaseAnonKey: "sb_publishable_aAZFdhVfuAvKmmiZFAGQPA_HEWTYyD_" // publishable: safe in the app; each world is protected by the row rules in supabase/schema.sql
+  supabaseAnonKey: "sb_publishable_aAZFdhVfuAvKmmiZFAGQPA_HEWTYyD_", // publishable: safe in the app; each world is protected by the row rules in supabase/schema.sql
+  testFormUrl: "https://tally.so/r/kbe21Z" /* the Tally user-testing form (tally.so/r/...); the "Help test" row in Account shows once this is set. See docs/TESTING.md */
 };
 const CONSENT_KEY = "dreamLife.consent", ANON_KEY = "dreamLife.anon";
 const consent = () => { try { return localStorage.getItem(CONSENT_KEY) || ""; } catch (e) { return ""; } };
@@ -6762,7 +7001,7 @@ async function syncWithAccount(user){
     const {data: row, error} = await supa.from("worlds").select("data, updated_at").eq("user_id", user.id).maybeSingle();
     if (error) return; // offline: keep working on this device; it catches up next time
     const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
-    const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} if (typingInPage()) pendingRender = true; else afterChange(); if (S.onboarding.done && route === "onboard") go("home"); } };
+    const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { const wasDone = !!S.onboarding?.done; S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} if (typingInPage()) pendingRender = true; else afterChange(); if (!wasDone && S.onboarding.done && route === "onboard") go("home"); } }; /* only when the world coming in finished onboarding this device hadn't; replaying the introduction (or a sync while in it) must not throw you out */
     const upload = async () => { const w = JSON.parse(JSON.stringify(demoMode ? REAL : S)), r = await worldRow(user, w); if (!r.error) setSyncMark(user, r.at, w); };
     const start = () => { docRef = {set: async d => { const r = await worldRow(user, d); if (r.error) throw r.error; setSyncMark(user, r.at, d); },
       savedNote: "Synced to your account. Only you can see it.", afterSave: () => { lastSynced = new Date().toISOString(); }}; storageNote = docRef.savedNote; if (route === "account") renderAccount(); };
@@ -6824,33 +7063,62 @@ function signInForm(root, onDone){
 // Her photo: picked from her phone, cropped square and kept small (it's saved with her world).
 /* your own photos for a piece: several at once, each shrunk to 480px on its long side so they stay light enough to sync */
 const PIECE_PHOTOS = 6;
+/* Full-quality photos live on this device (IndexedDB, no small size limit), keyed by their small copy; the small copy
+   (480px) stays in the world data so it syncs and loads fast. The viewer swaps in the full one when it's here. */
+let phDbP = null;
+const phDb = () => phDbP || (phDbP = new Promise((res, rej) => { try { const r = indexedDB.open("pap-photos", 1); r.onupgradeneeded = () => r.result.createObjectStore("full"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
+const phKey = src => { let h = 5381; for (let i = 0; i < src.length; i += 7) h = (h * 33 + src.charCodeAt(i)) | 0; return "p" + (h >>> 0).toString(36) + "-" + src.length; };
+async function phPut(k, blob){ try { const db = await phDb(); await new Promise((res, rej) => { const t = db.transaction("full", "readwrite"); t.objectStore("full").put(blob, k); t.oncomplete = res; t.onerror = () => rej(t.error); }); } catch (e) {} }
+async function phGet(k){ try { const db = await phDb(); return await new Promise(res => { const r = db.transaction("full").objectStore("full").get(k); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch (e) { return null; } }
+const PHOTO_SMALL = 480, PHOTO_FULL = 2560;
 function pickPhotos(max, done){
   const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.multiple = true;
   inp.onchange = async () => { const files = [...(inp.files || [])].slice(0, max), out = [];
     for (const f of files) { try { const url = URL.createObjectURL(f), im = new Image();
       await new Promise((res, rej) => { im.onload = res; im.onerror = rej; im.src = url; });
-      const k = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
-      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); out.push(c.toDataURL("image/jpeg", .78)); } catch (e) { toast("One photo couldn't be opened. Try another one."); } }
+      const draw = side => { const k = Math.min(1, side / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); return c; };
+      const small = draw(PHOTO_SMALL).toDataURL("image/jpeg", .8);
+      const full = await new Promise(res => draw(PHOTO_FULL).toBlob(res, "image/jpeg", .9));
+      URL.revokeObjectURL(url); if (full) await phPut(phKey(small), full); out.push(small);
+    } catch (e) { toast("One photo couldn't be opened. Try another one."); } }
     if (out.length) done(out); };
   inp.click();
 }
-function viewPhotos(list, start, title){ /* full screen, swipe or use the arrows to move between a piece's photos */
-  let i = start || 0; document.getElementById("phShow")?.remove();
+function viewPhotos(list, start, title){ /* full screen: swipe between photos; pinch, double-tap or trackpad to zoom, drag to look around */
+  let i = start || 0, fullUrl = null; document.getElementById("phShow")?.remove();
   const el = document.createElement("div"); el.className = "ph-show"; el.id = "phShow"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", title || "Photos");
-  const draw = () => { el.innerHTML = `<div class="ph-top"><span>${esc(title || "")}</span><span>${i + 1} / ${list.length}</span><button type="button" class="ph-x" aria-label="Close">×</button></div>
-      <div class="ph-stage"><img src="${esc(list[i])}" alt="Photo ${i + 1} of ${list.length}"></div>
+  let z = 1, tx = 0, ty = 0; /* zoom and pan of the current photo */
+  const img = () => el.querySelector(".ph-stage img");
+  const apply = (anim) => { const m = img(); if (!m) return; m.style.transition = anim && !reduced ? "transform .2s ease-out" : "none"; m.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`; el.classList.toggle("zoomed", z > 1.01); };
+  const clampPan = () => { const m = img(); if (!m) return; const w = m.offsetWidth, h = m.offsetHeight, st = el.querySelector(".ph-stage"), mx = Math.max(0, (w * z - st.clientWidth) / 2), my = Math.max(0, (h * z - st.clientHeight) / 2); tx = Math.max(-mx, Math.min(mx, tx)); ty = Math.max(-my, Math.min(my, ty)); };
+  const zoomAt = (nz, cx, cy, anim) => { const st = el.querySelector(".ph-stage").getBoundingClientRect(), ox = cx - (st.left + st.width / 2), oy = cy - (st.top + st.height / 2); nz = Math.max(1, Math.min(4, nz));
+    tx = ox - (ox - tx) * nz / z; ty = oy - (oy - ty) * nz / z; z = nz; if (z <= 1.01) { z = 1; tx = 0; ty = 0; } clampPan(); apply(anim); };
+  const loadFull = () => { const want = i; if (fullUrl) { URL.revokeObjectURL(fullUrl); fullUrl = null; }
+    phGet(phKey(list[i])).then(b => { if (!b || want !== i || !el.isConnected) return; fullUrl = URL.createObjectURL(b); const m = img(); if (m) m.src = fullUrl; }); };
+  const draw = () => { z = 1; tx = 0; ty = 0; el.classList.remove("zoomed");
+    el.innerHTML = `<div class="ph-top"><span>${esc(title || "")}</span><span>${i + 1} / ${list.length}</span><button type="button" class="ph-x" aria-label="Close">×</button></div>
+      <div class="ph-stage"><img src="${esc(list[i])}" alt="Photo ${i + 1} of ${list.length}" draggable="false"></div>
       ${list.length > 1 ? `<button type="button" class="ph-nav prev" aria-label="Previous photo">‹</button><button type="button" class="ph-nav next" aria-label="Next photo">›</button>
       <div class="ph-dots">${list.map((_, k) => `<i class="${k === i ? "on" : ""}"></i>`).join("")}</div>` : ""}`;
-    el.querySelector(".ph-x").onclick = close; el.querySelector(".prev")?.addEventListener("click", () => go(-1)); el.querySelector(".next")?.addEventListener("click", () => go(1)); };
+    el.querySelector(".ph-x").onclick = close; el.querySelector(".prev")?.addEventListener("click", () => go(-1)); el.querySelector(".next")?.addEventListener("click", () => go(1)); loadFull(); };
   const go = d => { i = (i + d + list.length) % list.length; draw(); };
-  const close = () => { el.remove(); document.removeEventListener("keydown", key); };
-  const key = e => { if (e.key === "Escape") close(); else if (e.key === "ArrowLeft") go(-1); else if (e.key === "ArrowRight") go(1); };
-  /* the photo follows your finger; let go past a third of the way (or flick) and it slides to the next one */
-  let sx = null, st = 0, dx = 0;
-  const img = () => el.querySelector(".ph-stage img");
-  el.addEventListener("pointerdown", e => { if (list.length < 2 || e.target.closest("button")) return; sx = e.clientX; st = performance.now(); dx = 0; el.setPointerCapture?.(e.pointerId); const m = img(); if (m) m.style.transition = "none"; });
-  el.addEventListener("pointermove", e => { if (sx == null) return; dx = e.clientX - sx; const m = img(); if (m) m.style.transform = `translateX(${dx}px)`; });
-  const release = () => { if (sx == null) return; sx = null; const m = img(), w = el.clientWidth, fast = Math.abs(dx) / Math.max(1, performance.now() - st) > .5;
+  const close = () => { if (fullUrl) URL.revokeObjectURL(fullUrl); el.remove(); document.removeEventListener("keydown", key); };
+  const key = e => { if (e.key === "Escape") close(); else if (e.key === "ArrowLeft" && z === 1) go(-1); else if (e.key === "ArrowRight" && z === 1) go(1); else if (e.key === "+" || e.key === "=") { const r = el.getBoundingClientRect(); zoomAt(z * 1.5, r.left + r.width / 2, r.top + r.height / 2, true); } else if (e.key === "-") { const r = el.getBoundingClientRect(); zoomAt(z / 1.5, r.left + r.width / 2, r.top + r.height / 2, true); } };
+  /* fingers: one finger swipes (or pans when zoomed in), two fingers pinch; a quick double tap zooms in or back out */
+  const pts = new Map(); let sx = null, st = 0, dx = 0, pinch = null, pan = null, lastTap = {t: 0, x: 0, y: 0}, moved = 0;
+  el.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; pts.set(e.pointerId, {x: e.clientX, y: e.clientY}); moved = 0; try { el.setPointerCapture?.(e.pointerId); } catch (err) {} /* capture can fail for a finger the browser already let go of */
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = {d: Math.hypot(a.x - b.x, a.y - b.y), z, cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2}; sx = null; pan = null; return; }
+    if (z > 1) { pan = {x: e.clientX, y: e.clientY, tx, ty}; return; }
+    if (list.length > 1) { sx = e.clientX; st = performance.now(); dx = 0; const m = img(); if (m) m.style.transition = "none"; } });
+  el.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; const p0 = pts.get(e.pointerId); moved += Math.abs(e.clientX - p0.x) + Math.abs(e.clientY - p0.y); pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if (pinch && pts.size >= 2) { const [a, b] = [...pts.values()]; zoomAt(pinch.z * Math.hypot(a.x - b.x, a.y - b.y) / Math.max(1, pinch.d), pinch.cx, pinch.cy); return; }
+    if (pan) { tx = pan.tx + e.clientX - pan.x; ty = pan.ty + e.clientY - pan.y; clampPan(); apply(); return; }
+    if (sx != null) { dx = e.clientX - sx; const m = img(); if (m) m.style.transform = `translateX(${dx}px)`; } });
+  const release = e => { const wasPinch = !!pinch; pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (pts.size) return; pan = null;
+    if (!wasPinch && moved < 10 && e.type === "pointerup") { const now = performance.now(); /* double tap: zoom in where you tapped, or back out */
+      if (now - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30) { lastTap.t = 0; sx = null; zoomAt(z > 1 ? 1 : 2.5, e.clientX, e.clientY, true); return; }
+      lastTap = {t: now, x: e.clientX, y: e.clientY}; }
+    if (sx == null) return; sx = null; const m = img(), w = el.clientWidth, fast = Math.abs(dx) / Math.max(1, performance.now() - st) > .5;
     if (Math.abs(dx) < 8) { if (m) m.style.transform = ""; return; }
     if (Math.abs(dx) > w / 3 || (fast && Math.abs(dx) > 30)) { const d = dx < 0 ? 1 : -1;
       if (reduced || !m) { go(d); return; }
@@ -6858,6 +7126,9 @@ function viewPhotos(list, start, title){ /* full screen, swipe or use the arrows
       setTimeout(() => { go(d); const n = img(); if (!n) return; n.style.transition = "none"; n.style.transform = `translateX(${d * w}px)`; n.getBoundingClientRect(); n.style.transition = "transform .22s ease-out"; n.style.transform = ""; }, 190);
     } else if (m) { m.style.transition = reduced ? "none" : "transform .2s ease-out"; m.style.transform = ""; } };
   el.addEventListener("pointerup", release); el.addEventListener("pointercancel", release);
+  /* trackpad pinch and ctrl/cmd + scroll zoom on a computer */
+  el.addEventListener("wheel", e => { if (!(e.ctrlKey || e.metaKey) && z === 1) return; e.preventDefault();
+    if (e.ctrlKey || e.metaKey) zoomAt(z * Math.exp(-e.deltaY * .01), e.clientX, e.clientY); else { tx -= e.deltaX; ty -= e.deltaY; clampPan(); apply(); } }, {passive: false});
   document.addEventListener("keydown", key); draw(); $("app").append(el);
 }
 function viewPhoto(src, title){ viewPhotos([src], 0, title); }
@@ -6942,10 +7213,10 @@ accountsReadyP = accountsInit(); if (S.onboarding.done && tourSeen()) askConsent
       if (incoming === lastSynced || incoming === JSON.stringify(demoMode ? REAL : S)) { lastSynced = incoming; return; }
       lastSynced = incoming;
       if (demoMode) { REAL = migrate(JSON.parse(incoming)); try { localStorage.setItem(LS_KEY, JSON.stringify(REAL)); } catch (e) {} return; } // update your real world quietly; the demo stays on screen
-      S = migrate(JSON.parse(incoming));
+      const wasDone = !!S.onboarding?.done; S = migrate(JSON.parse(incoming));
       try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
       storageNote = "Saved to your Claude account. Only you can see it.";
-      if (S.onboarding.done && route === "onboard") go("home");
+      if (!wasDone && S.onboarding.done && route === "onboard") go("home");
       if (typingInPage()) pendingRender = true; else afterChange();
     } else if (!snap.metadata.fromCache && !demoMode) save();
   }, () => {});
