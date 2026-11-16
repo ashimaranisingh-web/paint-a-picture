@@ -125,3 +125,5 @@ Rules:
 - **Glass pill** (the Journal year), Apple style: mostly clear white with a whisper of pink, strong blur behind, a hairline bright edge with a brighter top rim, and a soft wide shadow. Never a solid coloured fill. It sits at the far right of the Journal title row (and stays there while scrolling); tapping it opens a small glass list of years. No arrows.
 - **Photos:** a small copy (480px) lives in the saved world and syncs; the full-quality copy (up to 2560px) stays on the device and the full-screen viewer shows it, with pinch, double-tap and trackpad zoom.
 - Leave room for the iPhone home bar with `var(--safe-bottom)` on anything that sits at the bottom of the screen.
+- Selected state: the pink ring on swatches, the light-pink pill for tabs; no thick black outlines for selection in new UI.
+- Buttons (CTAs) are rounded rectangles (`--r`), never fully round pills. Pills stay for chips, tabs and tags.

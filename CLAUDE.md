@@ -65,3 +65,5 @@ For `main`: `git push origin world-expansion:main` with the same header, only af
 - When the owner makes a product decision or reverses one, add a line to `docs/DECISIONS.md` in the same commit.
 - When a new visual rule appears ("pink only for…", "corners never more than…"), add it to `docs/DESIGN.md`.
 - When a bug teaches a lesson, add it to "Code habits" above.
+- Session recordings keep `maskAllInputs: true`, `maskTextSelector: "*"` with `maskTextFn: phMaskText` and `maskAttributeFn: phMaskAttr`: anything she wrote (found by `phPrivate()` from her saved world) and her photos stay hidden; app words, the map and her character show (owner's choice, 16 Nov). When adding a new kind of user text to the saved world, check `phPrivate()` still picks it up. Never loosen these.
+- A brand-new world must come out of `normalize()` (migrate does `normalize(blankState())`). A field added only in normalize crashed My studio for first-time users (`S.building` missing).
