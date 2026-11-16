@@ -3337,14 +3337,14 @@ function locClarity(l){
    go up, the change plays once on the map (reveal), from what you saw last time (S.revealSeen) to now. */
 let reveal = null;
 const litKey = l => l.fixed ? "f:" + l.a.id : "a:" + l.a.id + (placesOf(l.a).length > 1 && l.D.d.id !== placesOf(l.a)[0] ? "@" + l.D.d.id : ""); /* a piece in its second place gets its own key */
-function litNow(){ const out = {}; for (const D of DIST.values()) out["d:" + D.d.id] = isLit(D.d) ? 1 : cityProgress(D.d); for (const l of locs) out[litKey(l)] = isLit(l.D.d) ? 1 : locClarity(l).c; return out; }
+function litNow(){ const out = {}; for (const D of DIST.values()) out["d:" + D.d.id] = 1; for (const l of locs) out[litKey(l)] = l.fixed ? 1 : locClarity(l).c; return out; }
 function litShown(key, now){
   if (!reveal || !(key in reveal.to)) return null;
   const k = Math.max(0, Math.min(1, (now - reveal.start) / reveal.dur)), e = k * k * (3 - 2 * k);
   return reveal.from[key] + (reveal.to[key] - reveal.from[key]) * e;
 }
-const districtLit = (D, now) => { const v = litShown("d:" + D.d.id, now); return v != null ? v : isLit(D.d) ? 1 : cityProgress(D.d); };
-const locLit = (l, now) => { const v = litShown(litKey(l), now); return v != null ? v : isLit(l.D.d) ? 1 : locClarity(l).c; };
+const districtLit = () => 1; /* every city is open and in full colour (16 Nov); only pieces still to earn stay dark */
+const locLit = (l, now) => { if (l.fixed) return 1; const v = litShown(litKey(l), now); return v != null ? v : locClarity(l).c; }; /* a piece by its own goals, wherever it is */
 /* ---------------- the character, from her sheet ---------------- */
 const AV = { // 14 × 28. Light comes from the upper left: a soft highlight across the hair, blush under the glasses, a lit top, cargos with a seam and small pockets, soles on the trainers
   front: ["....oooooo....", "...ohhhHHhho..", "..ohhHccHhhho.", ".ohhHssssshhho", ".ohhgggogggHho", "ohhhsrsSsrshho", "ohhnssllsshnho", "ohhhhsSSshhHho",
@@ -3703,7 +3703,19 @@ function composeFog(now, cx, cy){
     if (preview) { const k = Math.min(1, (now - preview.start) / 700, (preview.end - now) / 700); hole(preview.l.x - cx, preview.l.y - 14 - cy, 64, Math.max(0, k)); }
     else if (lens) hole(lens.x - cx, lens.y - cy, lensR() + 2, 1);
     fctx.globalAlpha = 1; fctx.globalCompositeOperation = "source-over";
-    ctx.drawImage(fog, 0, 0);
+    ctx.globalCompositeOperation = "source-over"; ctx.drawImage(fog, 0, 0);
+  }
+  /* pieces: still to earn = greyed and darkened; earned = a soft warm glow around them */
+  for (const l of locs) { if (l.fixed) continue;
+    const c = locLit(l, now), x = l.x - cx, y = l.y - l.h / 2 - cy, r = Math.max(14, l.h * .75); if (x < -r || x > VW + r || y < -r || y > VH + r) continue;
+    if (c < 1 && veil > .01) { const k = (1 - c) * veil, soft = (col, a) => { const gr = ctx.createRadialGradient(x, y, r * .45, x, y, r * 1.15); gr.addColorStop(0, col.replace("A", a)); gr.addColorStop(1, col.replace("A", 0)); return gr; };
+      ctx.globalCompositeOperation = "saturation"; ctx.globalAlpha = k; ctx.fillStyle = soft("rgba(128,128,128,A)", .95); ctx.fillRect(x - r * 1.2, y - r * 1.2, r * 2.4, r * 2.4);
+      ctx.globalCompositeOperation = "multiply"; ctx.globalAlpha = k; ctx.fillStyle = soft("rgba(110,118,140,A)", .8); ctx.fillRect(x - r * 1.2, y - r * 1.2, r * 2.4, r * 2.4);
+      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; } /* still to earn: soft grey and a little darker, fading out at the edges */
+    else if (c >= 1) { const pulse = reduced ? .8 : .7 + .3 * Math.sin(t / 22 + l.x), gr = ctx.createRadialGradient(x, y, r * .3, x, y, r * 1.5);
+      gr.addColorStop(0, "rgba(255,214,150,.5)"); gr.addColorStop(1, "rgba(255,214,150,0)");
+      ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .7 * pulse; ctx.fillStyle = gr; ctx.fillRect(x - r * 1.5, y - r * 1.5, r * 3, r * 3);
+      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; }
   }
   if (!preview) for (const l of locs) { // a soft beacon over fixed places still in the dark; a bold star over every dream
     const c = locLit(l, now), bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -12 || bx > VW + 12 || by < -14 || by > VH + 12) continue;
@@ -3867,7 +3879,7 @@ function saveCam(){ clearTimeout(camSaveT); camSaveT = setTimeout(() => { try { 
 
 /* --- the places strip: every destination in your world, tap to travel --- */
 function renderPlacesNav(){
-  const ds = worldDests().filter(d => !d.placeholder).sort((a, b) => (a.col ?? 0) - (b.col ?? 0) || (a.row ?? 0) - (b.row ?? 0)); /* west to east, like the map */
+  const order = S.destinations.map(d => d.id), ds = worldDests().filter(d => !d.placeholder).sort((a, b) => (order.indexOf(a.id) + 1 || 1e3) - (order.indexOf(b.id) + 1 || 1e3)); /* the order she set in Your world (16 Nov) */
   const el = $("journey"); el.style.setProperty("--n", Math.max(1, ds.length));
   el.innerHTML = `<span class="you" aria-hidden="true"></span>` + (ds.length ? ds.map(d => `<button data-dest="${d.id}"><span>${esc(d.name)}</span></button>`).join(`<i class="link" aria-hidden="true"></i>`) : `<button data-go="dreams">Add places</button>`);
   markPlaces();
@@ -4068,7 +4080,7 @@ function wayTo(){
   return `${far.D.d.name} is ${v && h ? v + " and to the " + h : v || "to the " + h}. It's still dark there.`;
 }
 function avatarSays(){
-  const wk = S.entries.filter(e => weekStart(e.date) === weekStart(today())), name = S.profile.name;
+  const wk = S.entries.filter(e => weekStart(e.date) === weekStart(today())), name = firstName();
   const next = locs.filter(l => !l.fixed).map(l => ({l, c: clarityOf(l.a)})).filter(o => o.c.c < 1).sort((a, b) => b.c.c - a.c.c)[0];
   const lines = [
     wk.length ? `${wk.length} thing${wk.length === 1 ? "" : "s"} logged this week. It shows.` : `${name ? name + ", " : ""}log something you did and the road ahead gets clearer.`,
@@ -4455,7 +4467,7 @@ function visualPicker(root, o){
 
 
 /* --- bird's-eye view: the whole world at once, each place as clear as your progress has made it --- */
-const firstName = () => (S.profile.name || "").trim().split(/\s+/)[0];
+const firstName = () => [S.profile.name, S.profile.middleName, S.profile.lastName].map(x => (x || "").trim()).find(Boolean)?.split(/\s+/)[0] || ""; /* the name to greet her by: first name, or the first one she gave */
 function updateTitle(){
   const n = firstName();
   if ($("navWorld")) $("navWorld").textContent = n ? `${n}'s World` : "Your World";
@@ -4553,7 +4565,7 @@ function syncTabbar(r){
   if ($("homeMe")) $("homeMe").innerHTML = meHTML();
 }
 /* your photo (or initial) at the top right: the way to Account */
-const meHTML = () => { const a = (S.profile.name || "").trim()[0] || "", b = (S.profile.lastName || "").trim()[0] || "", t = (a + b).toUpperCase();
+const meHTML = () => { const nm = fullName().split(/\s+/).filter(Boolean), a = (nm[0] || "")[0] || "", b = nm.length > 1 ? nm[nm.length - 1][0] : "", t = (a + b).toUpperCase();
   return t ? `<span>${esc(t)}</span>` : `<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>`; }; /* initials: the way to Account */
 /* the time the world's light follows, in 24-hour form, top right of Home */
 function tickClock(){ const c = $("homeClock"); if (!c) return; const d = new Date(), h = LIGHT_H ?? d.getHours() + d.getMinutes() / 60, hh = Math.floor(h) % 24, mm = Math.round((h - Math.floor(h)) * 60) % 60;
@@ -5896,11 +5908,13 @@ function editName(){
   openSheet("Your name", `<div class="ac-names"><label class="field"><input type="text" id="acName" placeholder="What shall I call you, honey? Honey?" aria-label="First name" value="${esc(S.profile.name)}" autocomplete="given-name" maxlength="30"></label>
       <label class="field"><input type="text" id="acMiddle" placeholder="Got a fancy middle name?" aria-label="Middle name" value="${esc(S.profile.middleName || "")}" autocomplete="additional-name" maxlength="30"></label>
       <label class="field"><input type="text" id="acLast" placeholder="Last name" aria-label="Last name" value="${esc(S.profile.lastName || "")}" autocomplete="family-name" maxlength="40"></label></div>
-    <p class="muted" id="acNameErr" role="alert" style="margin:0;color:var(--danger)" hidden>Add a first name.</p>`,
+    <p class="muted" id="acNameErr" role="alert" style="margin:0;color:var(--danger)" hidden>Add at least one name.</p>`,
     `<button class="btn ghost" id="acNameCancel">Cancel</button><button class="btn" id="acNameSave">Save</button>`, () => {
       $("acNameCancel").onclick = closeSheet;
-      $("acNameSave").onclick = () => { const f = $("acName").value.trim(); if (!f) { $("acNameErr").hidden = false; $("acName").focus(); return; }
-        S.profile.name = f.slice(0, 30); S.profile.middleName = $("acMiddle").value.trim().slice(0, 30); S.profile.lastName = $("acLast").value.trim().slice(0, 40); save(); closeSheet(); renderAccount(); toast("Saved"); };
+      $("acNameSave").onclick = () => { const f = $("acName").value.trim(), m = $("acMiddle").value.trim(), l = $("acLast").value.trim();
+        if (!f && !m && !l) { $("acNameErr").hidden = false; $("acName").focus(); return; } /* any one of the three is enough */
+        commit(st => { st.profile.name = f.slice(0, 30); st.profile.middleName = m.slice(0, 30); st.profile.lastName = l.slice(0, 40); }); /* saves, syncs and redraws every screen that shows her name */
+        closeSheet(); toast("Saved"); };
     });
 }
 function renderAccount(){
@@ -6773,27 +6787,33 @@ function obSplash(M){
   const T = stView.la ||= stTerrain("la"), la = document.createElement("canvas"); la.width = w; la.height = h; la.getContext("2d").drawImage(T, 40, 0, w, Math.min(h, T.height), 0, 0, w, Math.min(h, T.height));
   const sc = {w, h, env: "la", base: la, fog: 1, lens: {x: 100, y: cy, r: 0},
     pieces: [{kind: "balloon", x: 150, y: cy - 46, lit: 0, star: false}, {kind: "car", env: "la", x: 162, y: cy - 12, lit: 0, star: false}],
-    char: {x: 100, y: cy + 28, dir: "down", frame: 0}};
+    char: null}; /* the 2D girl and boy are drawn over the scene instead of the pixel character */
+  /* the two of them: her 5'5", him 6' (she is 65/72 of his height); after the light opens they stroll a little apart and back */
+  const DUO = [{p: "34/long/", x: 88, h: 76 * 65 / 72, dx: -16}, {p: "34/curly/male-", x: 113, h: 76, dx: 16}]; DUO.forEach(c => loadDollSet(c.p));
+  const duo = (o, k, a, t) => { o.save(); o.globalCompositeOperation = "source-over"; o.imageSmoothingEnabled = true; o.imageSmoothingQuality = "high"; o.globalAlpha = a;
+    const u = Math.max(0, Math.min(1, (t - 2300) / 1300)), out = u < .5, step = Math.sin(u * Math.PI); /* out, a pause, back again */
+    for (const c of DUO) { const moving = u > 0 && u < 1 && Math.abs(Math.cos(u * Math.PI)) < .92, side = c.dx < 0 === out ? "side-left" : "side-right";
+      const im = dollImgs[c.p + (moving ? side : "front")]; if (!loaded(im)) continue;
+      const hh = c.h, ww = hh * im.naturalWidth / im.naturalHeight, x = c.x + c.dx * step, fy = cy + 66 - (moving ? Math.abs(Math.sin(t / 120)) * 1.2 : 0); /* under the star; a small bob while walking */
+      o.fillStyle = "rgba(10,20,12,.22)"; o.beginPath(); o.ellipse(x * k, (cy + 66) * k, ww * .42 * k, 2.2 * k, 0, 0, Math.PI * 2); o.fill();
+      o.drawImage(im, (x - ww / 2) * k, (fy - hh) * k, ww * k, hh * k); }
+    o.restore(); };
   // she has a little wander in the light: right, a pause, across to the left, then back to the middle (a small sprite walking, so it plays with Reduce Motion too)
-  const WALK = [[0, 100, cy + 28], [300, 100, cy + 28], [900, 122, cy + 30], [1200, 122, cy + 30], [1900, 100, cy + 28]];
-  const walk = t => { const i = WALK.findIndex(p => p[0] > t), ch = sc.char; if (i <= 0) { ch.frame = 0; ch.dir = "down"; return; }
-    const [t0, x0, y0] = WALK[i - 1], [t1, x1, y1] = WALK[i], u = (t - t0) / (t1 - t0); ch.x = x0 + (x1 - x0) * u; ch.y = y0 + (y1 - y0) * u;
-    const moving = x0 !== x1 || y0 !== y1; ch.frame = moving ? ((t / 150 | 0) % 2) + 1 : 0; ch.dir = moving ? (x1 > x0 ? "right" : "left") : "down"; };
   const cvs = $("stSplash"), night = document.createElement("canvas"), move = !reduced; let t = 0, prev = 0;
   // with reduced motion nothing zooms: the star fades in, the dark fades away and the colour fades up around the star
   const frame = now => {
     if (!cvs.isConnected) return;
     t += prev ? Math.min(50, now - prev) : 0; prev = now; // the clock only counts frames she sees, so a slow first frame never skips the star
-    const o = cvs.getContext("2d"), bloom = stEase((t - 1700) / 800), open = stEase((t - 1400) / 900); if (move) walk(t - 1700); // with Reduce Motion she stands still
+    const o = cvs.getContext("2d"), bloom = stEase((t - 1700) / 800), open = stEase((t - 1400) / 900); 
     sc.lens.r = move ? 62 * bloom : 62; sc.lens.a = move ? 1 : bloom; // the colour opens around the star
-    stRender(cvs, sc); const k = cvs.width / w;
+    stRender(cvs, sc); const k = cvs.width / w; duo(cvs.getContext("2d"), k, 1, t); /* the two of them, standing under the star */
     night.width = w; night.height = h; const n = night.getContext("2d"); F(n, 0, 0, w, h, "#0f1420");
     if (move) { const R = Math.hypot(w, h) * open; n.globalCompositeOperation = "destination-out"; for (const [q, a] of [[1, .35], [.86, .6], [.72, 1]]) { n.globalAlpha = a; if (R * q > 1) oval(n, 100, cy, Math.round(R * q), Math.round(R * q), "#000"); } } // the dark opens like the lens
     o.imageSmoothingEnabled = false; o.globalAlpha = move ? 1 : 1 - open; o.drawImage(night, 0, 0, w * k, h * k); o.globalAlpha = 1;
     // first, the star: a tiny spark that grows to full size with a little bounce, and everything else starts from it
     const u = Math.min(1, Math.max(0, (t - 150) / 1300)), grow = u <= 0 ? 0 : !move ? .35 + .65 * stEase(u) : Math.max(.04, 1 + 1.7 * (u - 1) ** 3 + .7 * (u - 1) ** 2); /* a tiny spark that grows to full size with a little bounce; with Reduce Motion it still grows, gently, with no bounce */
     if (grow > 0) { o.save(); o.setTransform(k * grow, 0, 0, k * grow, k * 100 * (1 - grow), k * (cy - 24) * (1 - grow)); o.globalAlpha = Math.min(1, u * 4); drawDreamStar(o, 100, cy - 18, true, 3, false); o.restore(); }
-    if (t > 3000 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; }
+    if (t > 3800 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; } /* after their little stroll */
     obAnim = requestAnimationFrame(frame);
   };
   obAnim = requestAnimationFrame(frame);
@@ -6857,7 +6877,7 @@ function obHow(M, Fo){
   stNextIdea(Fo, "Get started");
   if (CFG.supabaseUrl && !supaUser) { Fo.insertAdjacentHTML("beforeend", `<button type="button" class="st-have" id="obHave">I already have an account</button>`); $("obHave").onclick = stSignInSheet; }
   /* the button arrives once the picture has come together (straight away with Reduce Motion, or when coming back) */
-  if (!backHere) { Fo.classList.add("st-wait"); at(chainStart, () => Fo.classList.remove("st-wait")); } /* the button arrives once her story has been told */
+  /* the buttons are there from the start, so nobody has to wait for the story to finish (17 Nov) */
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
@@ -7024,7 +7044,7 @@ function obYou(M, Fo){
   stFigureDone(M);
   stFoot(Fo, "", () => {
     const name = $("obName").value.trim();
-    if (!name) { $("obErr").textContent = "Add your first name to continue. A nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
+    if (!name && !$("obMiddle").value.trim() && !$("obLast").value.trim()) { $("obErr").textContent = "Add at least one name to continue. A nickname is fine."; $("obErr").hidden = false; $("obName").focus(); return; }
     S.profile.name = name.slice(0, 30); S.profile.middleName = $("obMiddle").value.trim().slice(0, 30); S.profile.lastName = $("obLast").value.trim().slice(0, 40); obGo(obStep + 1);
   });
 }
@@ -7459,8 +7479,13 @@ function signInForm(root, onDone, bar){ /* bar: put the main button there (a she
     const email = $("signEmail").value.trim(); if (!/^\S+@\S+\.\S+$/.test(email)) { err("Enter your email address."); return; }
     $("signSend").disabled = true; await accountsReadyP; if (!supa) { $("signSend").disabled = false; err("Signing in isn't available right now. Try again in a moment."); return; }
     const {error} = await supa.auth.signInWithOtp({email}); $("signSend").disabled = false;
-    if (error) { err("Couldn't send the code. Check the address and try again."); return; } err("");
-    root.querySelector(".st-signstep").innerHTML = `<p style="margin:0">We sent a code to <b>${esc(email)}</b>. It can take a minute, and may land in spam.</p>
+    if (error) { const m = String(error.message || ""), wait = m.match(/after (\d+) seconds?/); console.warn("sign-in code", error.status, m); /* say why, so it's never a dead end */
+      err(wait ? `Please wait ${wait[1]} seconds, then try again.` : error.status === 429 || /rate limit/i.test(m) ? "Too many codes have been sent in the last hour. Try again a bit later, or tap “I already have a code” to use the last one." : /invalid/i.test(m) ? "That email address doesn't look right. Check it and try again." : `Couldn't send the code${m ? `: ${m}` : ". Check your connection and try again."}`); return; } err("");
+    codeStep(email, true);
+  };
+  /* step two: the code from the email (also reachable straight away, for a code that was already sent) */
+  const codeStep = (email, sent) => { err("");
+    root.querySelector(".st-signstep").innerHTML = `<p style="margin:0">${sent ? `We sent a code to <b>${esc(email)}</b>. It can take a minute, and may land in spam.` : `Enter the code we emailed to <b>${esc(email)}</b>.`}</p>
       <label class="field"><span>The code from your email</span><input type="text" id="signCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
       <button class="btn" id="signVerify" type="button" style="justify-self:start">Sign in</button>`;
     if (bar) { $("signSend")?.remove(); const v = $("signVerify"); v.removeAttribute("style"); bar.appendChild(v); }
@@ -7468,6 +7493,8 @@ function signInForm(root, onDone, bar){ /* bar: put the main button there (a she
     $("signVerify").onclick = async () => { $("signVerify").disabled = true; const {data, error: e2} = await supa.auth.verifyOtp({email, token: $("signCode").value.trim(), type: "email"}); $("signVerify").disabled = false;
       if (e2 || !data?.user) { err("That code didn't work. Check it, or send a new one."); return; } await connectAccount(data.user); onDone && onDone(); };
   };
+  root.insertAdjacentHTML("beforeend", `<button type="button" class="linkbtn" id="signHave" style="justify-self:start">I already have a code</button>`);
+  $("signHave").onclick = () => { const email = $("signEmail")?.value.trim() || ""; if (!/^\S+@\S+\.\S+$/.test(email)) { err("Enter your email address first."); $("signEmail")?.focus(); return; } $("signHave").remove(); codeStep(email, false); };
 }
 // Her photo: picked from her phone, cropped square and kept small (it's saved with her world).
 /* your own photos for a piece: several at once, each shrunk to 480px on its long side so they stay light enough to sync */

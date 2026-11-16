@@ -28,7 +28,8 @@ Build history: 3, 4, 5, 6 uploaded (5 on 13 Nov 2026: Gallery palette, pixel pie
 daily faces journal, This week tab, places laid out like the world map, pink accent; 8 on 14 Nov 2026: glass year pill
 in the Journal title row with a year list, "Sat, Nov 1" dates; 9 on 15 Nov 2026: places step with islands, ten starter
 pieces, milestones in onboarding, My studio hero, Tally testing banner, home-bar spacing; 10 on 16 Nov 2026: new 2D characters with hairstyles and camo, character
-editor sheet, studio gallery, permission page and recordings, privacy page). Next is 11.
+editor sheet, studio gallery, permission page and recordings, privacy page; 11 on 17 Nov 2026: cities always open, locked pieces greyed and earned ones glowing, places strip in
+Your world order, any one name, 2D duo on the splash, sign-in fixes). Next is 12.
 
 ## Supabase (accounts and sync)
 - Project URL and publishable key live in `CFG` in `index.html`. Schema: `supabase/schema.sql`. Setup notes:
