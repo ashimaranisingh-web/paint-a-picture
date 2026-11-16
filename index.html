@@ -1609,6 +1609,11 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .h2d-t canvas{border-radius:10px;background:#f6eef1}
 .h2d-t[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);color:var(--accent-2)}
 .ce-opts .h2d{justify-content:safe center}
+/* onboarding's character step: the editor inline, under a slightly bigger her */
+.ce-inline{gap:12px;justify-items:stretch;padding-bottom:0}.ce-inline .ce-style{justify-self:start}.ce-inline .ce-tabs{width:auto;margin:0 -20px;padding:2px 20px;justify-content:flex-start}.ce-inline .ce-opts{justify-items:start;min-height:84px}.ce-inline .ce-sw,.ce-inline .h2d{justify-content:flex-start}
+.st-figure.st-me-big .st-me-c{width:136px;height:262px}
+/* style and body side by side in one row */
+.ce-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.ce-inline .ce-row{justify-content:flex-start}
 </style>
 
 <div id="app">
@@ -1717,9 +1722,9 @@ function setStatus(d, st){
 }
 const PURPOSES = {from: "Where I'm from", live: "Live", study: "Study", work: "Work", experience: "Travel", loved: "Done & Loved"};
 const TOPS = {white:["#f1eee8","#cfcac0"], pink:["#e3628f","#b9446f"], yellow:["#f2cf5b","#c9a43a"], blue:["#5b8fd6","#3f6aa8"], red:["#d23b3b","#a12a2a"], black:["#3a3438","#242024"]};
-const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"], olive:["#6b6a40","#4c4b2c"], camo:["#5d5a3a","#3d3c26"], zebra:["#f2f0ea","#1c1c1e"]};
+const BOTS = {black:["#3a3a40","#26262b"], grey:["#8e9299","#6a6e76"], white:["#eceae4","#c9c6c0"], olive:["#6b6a40","#4c4b2c"], camo:["#5d5a3a","#3d3c26"]};
 /* 2D 3/4 hairstyles: each is its own drawn set in avatar/34/<id>/ ("" = the first 3/4 set) */
-const HAIR2D = {girl: [["", "Classic"], ["long", "Long"], ["bob", "Bob"], ["pixie", "Pixie"]], boy: [["", "Classic"], ["curly", "Curly"], ["short", "Short"], ["buzz", "Buzz"], ["longwavy", "Long"], ["shoulder", "Shoulder"]]};
+const HAIR2D = {girl: [["long", "Long"], ["shoulder", "Shoulder"], ["bob", "Bob"], ["pixie", "Pixie"]], boy: [["curly", "Curly"], ["short", "Short"], ["buzz", "Buzz"], ["longwavy", "Long"], ["shoulder", "Shoulder"]]}; /* the first in each list is the default */
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
@@ -1783,6 +1788,7 @@ function normalize(o){
   const out = s.profile.outfit || {};
   s.profile.avatar = Object.assign({...DEFAULT_AVATAR}, out.top ? {top: out.top, bot: out.bot} : {}, s.profile.avatar || {});
   const av = s.profile.avatar; av.glasses = true; av.cap = false; // everyone wears the sunglasses; no caps
+  if (av.bot === "zebra") av.bot = "camo"; /* zebra print was removed */
   if (av.len !== "34") av.len = "full"; /* 2D cargos: full length, or 3/4 (the tank-top art in avatar/34/) */
   if (!["girl", "boy"].some(k => HAIR2D[k].some(h => h[0] === av.hair2d))) av.hair2d = ""; /* 2D 3/4 hairstyle */
   if (!s.profile.joined) s.profile.joined = [...(s.destinations || []), ...(s.aspirations || [])].map(x => x.createdAt).filter(Boolean).sort()[0] || today();
@@ -4175,29 +4181,32 @@ function renderHomeChips(){
    and shown as drawn: the woman for Female, the man (male-*) for Male. Only colour choices are painted
    over the matching parts. */
 const DOLL_VIEWS = {down: "front", up: "back", left: "side-left", right: "side-right"};
-const hair2d = () => { const a = avatarLook(), list = HAIR2D[a.look === "boy" ? "boy" : "girl"]; return list.some(h => h[0] === a.hair2d) ? a.hair2d : ""; };
-const dollSet = () => avatarLook().len === "34" ? "34/" + (hair2d() ? hair2d() + "/" : "") + (avatarLook().look === "boy" ? "male-" : "") : (avatarLook().look === "boy" ? "male-" : ""); /* "34/<hair>/" = the 3/4-cargo art */
+const hair2d = () => { const a = avatarLook(), list = HAIR2D[a.look === "boy" ? "boy" : "girl"]; return list.some(h => h[0] === a.hair2d) ? a.hair2d : list[0][0]; };
+const dollSet = () => "34/" + hair2d() + "/" + (avatarLook().look === "boy" ? "male-" : ""); /* 2D is the tank-top art for now; the earlier full-length art waits for its new version */ /* "34/<hair>/" = the 3/4-cargo art */
 const dollImgs = {}, dollParts = {};
 /* pictures load as they're needed: the set being worn now (and whichever is picked next), not all 40 at once */
+/* once a picture arrives, the character on screen (onboarding, Account, the editor preview) is drawn again */
+function dollRedraw(){ clearTimeout(dollRedraw.t); dollRedraw.t = setTimeout(() => { recolorCache.clear(); dollCache.clear(); viewDirty = true;
+  for (const id of ["stMe", "acMe"]) if ($(id)) stDrawMe($(id)); if ($("cePrev")) drawAvatarPreview($("cePrev"), avatarLook().style); }, 30); }
 function loadDollSet(p){ if (loadDollSet.done?.has(p)) return; (loadDollSet.done ||= new Set()).add(p);
-  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
-  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; }
+  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") { document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); dollRedraw(); } }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
+  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; im.addEventListener("load", dollRedraw); }
 }
-["", "male-"].forEach(loadDollSet);
+
 const loaded = im => !!(im && im.complete && im.naturalWidth);
 const dollReady = dir => { loadDollSet(dollSet()); const v = dollSet() + (DOLL_VIEWS[dir] || "front"), im = dollImgs[v]; return loaded(im) ? dollSource(v, im) : null; };
 // Her sheet is drawn with a pink top, grey cargos, white boots and this skin; his with a cream polo, beige trousers,
 // white shoes and this skin. Other choices are painted over those parts only.
 const DOLL_REFS = {"": {skin: "tan", top: "pink", bot: "grey", boots: "white"}, "male-": {skin: "tan", top: "white", bot: "grey", boots: "white"},
-  "34/": {skin: "light", top: "black", bot: "olive", boots: "black"}, "34/male-": {skin: "light", top: "black", bot: "olive", boots: "white"}}; /* the first 3/4 art: black tank, olive cargos, black sandals / white sneakers */
-for (const [k, list] of Object.entries(HAIR2D)) for (const [id] of list) if (id) DOLL_REFS["34/" + id + "/" + (k === "boy" ? "male-" : "")] = {skin: "tan", top: "black", bot: "camo", boots: k === "boy" ? "white" : "black"}; /* the hairstyle sets are painted in camo */
+};
+for (const [k, list] of Object.entries(HAIR2D)) for (const [id] of list) DOLL_REFS["34/" + id + "/" + (k === "boy" ? "male-" : "")] = {skin: "tan", top: "black", bot: "camo", boots: k === "boy" ? "white" : "black"}; /* the hairstyle sets are painted in camo */
 const recolorCache = new Map();
 function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
 function hsl2rgb(h, s, l){ if (!s) return [l * 255, l * 255, l * 255]; const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q, f = t => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; }; return [f(h + 1 / 3) * 255, f(h) * 255, f(h - 1 / 3) * 255]; }
 function dollSource(v, im){
-  const a = avatarLook(), DOLL_REF = DOLL_REFS[dollSet()] || DOLL_REFS[""], zebra = a.bot === "zebra", camoOnPlain = a.bot === "camo" && DOLL_REF.bot !== "camo";
-  const want = {1: a.skin !== DOLL_REF.skin && SKINS[a.skin], 2: a.top !== DOLL_REF.top && TOPS[a.top], 3: zebra ? BOTS.white : camoOnPlain ? BOTS.olive : a.bot !== DOLL_REF.bot && BOTS[a.bot], 4: (a.boots || "white") !== DOLL_REF.boots && BOOTS[a.boots]};
-  if (!want[1] && !want[2] && !want[3] && !want[4] && !zebra) return im;
+  const a = avatarLook(), DOLL_REF = DOLL_REFS[dollSet()] || DOLL_REFS[""], camoOnPlain = a.bot === "camo" && DOLL_REF.bot !== "camo";
+  const want = {1: a.skin !== DOLL_REF.skin && SKINS[a.skin], 2: a.top !== DOLL_REF.top && TOPS[a.top], 3: camoOnPlain ? BOTS.olive : a.bot !== DOLL_REF.bot && BOTS[a.bot], 4: (a.boots || "white") !== DOLL_REF.boots && BOOTS[a.boots]};
+  if (!want[1] && !want[2] && !want[3] && !want[4]) return im;
   const pm = dollParts[v]; if (!loaded(pm)) return im;
   const key = v + "|" + lookKey(); if (recolorCache.has(key)) return recolorCache.get(key);
   const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
@@ -4221,11 +4230,10 @@ function dollSource(v, im){
     const L = Math.max(.03, Math.min(.97, tl + (l2 - R.l) * (dark ? 1.3 : tl > .85 ? .45 : tl < .2 ? .6 : 1))), Sat = dark ? ts : Math.min(1, ts * (R.s > .02 ? s2 / R.s : 1));
     const [r, gg, b] = hsl2rgb(th, Sat, L); d[i] = r; d[i + 1] = gg; d[i + 2] = b;
   }
-  if (zebra || camoOnPlain) { /* a print over the cargos: wavy zebra stripes, or soft camo blotches; the painted shading shows through */
+  if (camoOnPlain) { /* camo printed over plain cargos: soft blotches; the painted shading shows through */
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (lab[i] !== 3 || d[i + 3] < 8) continue; const u = x / w, vv = y / h;
       let k;
-      if (zebra) { const t = Math.sin((u * 9 + vv * 2.4 + .35 * Math.sin(vv * 30 + u * 11)) * Math.PI * 2); k = t > .45 ? .22 : 1; }
-      else { const n = Math.sin(u * 23 + Math.sin(vv * 17) * 2.2) + Math.sin(vv * 29 + Math.sin(u * 13) * 2.4) + .6 * Math.sin((u + vv) * 41); k = n > 1.1 ? .55 : n > .1 ? .78 : 1.08; }
+      const n = Math.sin(u * 23 + Math.sin(vv * 17) * 2.2) + Math.sin(vv * 29 + Math.sin(u * 13) * 2.4) + .6 * Math.sin((u + vv) * 41); k = n > 1.1 ? .55 : n > .1 ? .78 : 1.08;
       d[i] *= k; d[i + 1] *= k; d[i + 2] *= k; }
   }
   g.putImageData(img, 0, 0);
@@ -6293,7 +6301,7 @@ function avatarEditor(root, onChange, opts){
   opts = opts || {};
   const A = () => S.profile.avatar;
   const set = patch => { Object.assign(S.profile.avatar, patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); save(); viewDirty = true; draw(); onChange && onChange(); };
-  const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).filter(([k]) => !(key === "bot" && (k === "camo" || k === "zebra") && !(A().style === "doll" && A().len === "34"))).map(([k, v]) => `<button type="button" class="sw" style="background:${swBg(k, v)}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
+  const sw = (key, table, label) => `<div class="field"><span>${label}</span><div class="swatches">${Object.entries(table).filter(([k]) => !(key === "bot" && k === "camo" && !(A().style === "doll" && A().len === "34"))).map(([k, v]) => `<button type="button" class="sw" style="background:${swBg(k, v)}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div></div>`;
   function draw(){
     const doll = A().style === "doll";
     const lookHTML = opts.compact ? `<div class="field"><span>You are</span><div class="st-radios" role="radiogroup" aria-label="You are">${[["girl", "A woman"], ["boy", "A man"]].map(([k, l]) => `<button type="button" role="radio" aria-checked="${A().look === k}" data-look="${k}"><span class="st-rad" aria-hidden="true"></span>${l}</button>`).join("")}</div></div>` : "";
@@ -6323,53 +6331,56 @@ function avatarEditor(root, onChange, opts){
 const LOOKS = {girl: "Female", boy: "Male"};
 // Your character, edited like a Memoji: a big live preview that never scrolls away, Pixel art or 2D, then one category
 // at a time (Body, Skin, Hair, Top, Cargos, Boots) with a single row of choices. Every tap saves; Done closes it.
-let ceTab = "body";
+let ceTab = "skin";
 /* 2D 3/4 hairstyles: a row of small portraits, each drawn from its own set */
-const swBg = (k, v) => k === "zebra" ? "repeating-linear-gradient(115deg,#f2f0ea 0 5px,#1c1c1e 5px 9px)" : k === "camo" ? "radial-gradient(circle at 30% 30%,#3d3c26 0 22%,transparent 23%),radial-gradient(circle at 70% 65%,#7c7650 0 25%,transparent 26%),radial-gradient(circle at 75% 20%,#2f2e1e 0 14%,transparent 15%),#5d5a3a" : v[0];
+const swBg = (k, v) => k === "camo" ? "radial-gradient(circle at 30% 30%,#3d3c26 0 22%,transparent 23%),radial-gradient(circle at 70% 65%,#7c7650 0 25%,transparent 26%),radial-gradient(circle at 75% 20%,#2f2e1e 0 14%,transparent 15%),#5d5a3a" : v[0];
 function hair2dPicker(){
   const A = S.profile.avatar, list = HAIR2D[A.look === "boy" ? "boy" : "girl"];
   return `<div class="h2d" role="group" aria-label="Hairstyle">${list.map(([id, label]) => `<button type="button" class="h2d-t" data-h2d="${id}" aria-pressed="${hair2d() === id}"><canvas data-h2d="${id}" width="64" height="64" aria-hidden="true"></canvas><span>${label}</span></button>`).join("")}</div>`;
 }
 function wireHair2d(root, set){ root.querySelectorAll("button[data-h2d]").forEach(b => b.onclick = () => { recolorCache.clear(); set({hair2d: b.dataset.h2d}); }); }
 function drawHair2dTile(cvs){ /* the head and shoulders of that set's front view */
-  const p = "34/" + (cvs.dataset.h2d ? cvs.dataset.h2d + "/" : "") + (avatarLook().look === "boy" ? "male-" : ""); loadDollSet(p);
+  const p = "34/" + cvs.dataset.h2d + "/" + (avatarLook().look === "boy" ? "male-" : ""); loadDollSet(p);
   const im = dollImgs[p + "front"], k = Math.min(2, devicePixelRatio || 1);
   if (!cvs.dataset.sized) { cvs.style.width = cvs.width + "px"; cvs.style.height = cvs.height + "px"; cvs.width *= k; cvs.height *= k; cvs.dataset.sized = 1; }
   const draw = () => { const g = cvs.getContext("2d"), W = cvs.width, H = cvs.height; g.clearRect(0, 0, W, H); const sw = im.naturalWidth, sh = sw * .9; g.imageSmoothingQuality = "high"; g.drawImage(im, 0, 0, sw, sh, 0, 0, W, W * sh / sw); };
   if (loaded(im)) draw(); else im.addEventListener("load", draw, {once: true});
 }
-function editCharacter(){
+/* The character editor, like a Memoji: Pixel art or 2D, then one category at a time (Body, Skin, Hair, Top, Cargos, Boots)
+   with a single row of choices. Used in its own sheet from Account (with a big preview) and inline in onboarding (her
+   figure above is the preview). */
+function charPanel(root, o){
   const A = () => S.profile.avatar, man = () => A().style === "doll" && A().look === "boy";
-  const tabs = () => [["body", "Body"], ["skin", "Skin"], ...(A().style === "doll" && A().len !== "34" ? [] : [["hair", "Hair"]]), ["top", man() ? "Shirt" : "Top"], ["bot", man() ? "Trousers" : "Cargos"], ["boots", man() ? "Shoes" : "Boots"]];
-  const sw = (key, table, label) => `<div class="swatches ce-sw">${Object.entries(table).filter(([k]) => !(key === "bot" && (k === "camo" || k === "zebra") && !(A().style === "doll" && A().len === "34"))).map(([k, v]) => `<button type="button" class="sw" style="background:${swBg(k, v)}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div>`; /* camo and zebra only for the 3/4 2D art */
+  const tabs = () => [["skin", "Skin"], ["hair", "Hair"], ["top", man() ? "Shirt" : "Top"], ["bot", man() ? "Trousers" : "Cargos"], ["boots", man() ? "Shoes" : "Boots"]];
+  const sw = (key, table, label) => `<div class="swatches ce-sw">${Object.entries(table).filter(([k]) => !(key === "bot" && k === "camo" && A().style !== "doll")).map(([k, v]) => `<button type="button" class="sw" style="background:${swBg(k, v)}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div>`; /* camo and zebra only for 2D */
   const opts = () => {
-    if (ceTab === "body") return `<div class="seg ce-seg" role="group" aria-label="Body">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div>`;
     if (ceTab === "skin") return sw("skin", SKINS, "Skin tone");
     if (ceTab === "hair" && A().style === "doll") return hair2dPicker();
     if (ceTab === "hair") return `<div class="seg ce-seg" role="group" aria-label="Hair"><button type="button" aria-pressed="${!A().curl}" data-curl="0">Straight</button><button type="button" aria-pressed="${!!A().curl}" data-curl="1">Curly</button></div>
       <div class="swatches ce-sw">${[["black", "Black"], ["brunette", "Brown"]].map(([k, l]) => `<button type="button" class="sw" style="background:${HAIRS[k][1]}" aria-label="Hair colour: ${l}" aria-pressed="${A().hair === k}" data-k="hair" data-v="${k}"></button>`).join("")}</div>`;
-    if (ceTab === "bot" && A().style === "doll") return `<div class="seg ce-seg" role="group" aria-label="Length"><button type="button" aria-pressed="${A().len !== "34"}" data-len="full">Full</button><button type="button" aria-pressed="${A().len === "34"}" data-len="34">3/4</button></div>` + sw("bot", BOTS, tabs().find(t => t[0] === "bot")[1]);
     return sw(ceTab, ceTab === "top" ? TOPS : ceTab === "bot" ? BOTS : BOOTS, tabs().find(t => t[0] === ceTab)[1]);
   };
-  const set = patch => { commit(s => Object.assign(s.profile.avatar, patch)); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); draw(); if ($("acMe")) stDrawMe($("acMe")); };
+  const set = patch => { o.apply(patch); spriteCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); recolorCache.clear(); draw(); o.onChange && o.onChange(); };
   const draw = () => {
-    if (!tabs().some(t => t[0] === ceTab)) ceTab = "body";
-    const b = $("sheetB"); if (!b) return;
-    b.innerHTML = `<div class="ce"><div class="ce-prev"><canvas id="cePrev" width="190" height="230" aria-hidden="true"></canvas></div>
-      <div class="seg ce-style" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div>
+    if (!tabs().some(t => t[0] === ceTab)) ceTab = "skin";
+    root.innerHTML = `<div class="ce${o.preview ? "" : " ce-inline"}">${o.preview ? `<div class="ce-prev"><canvas id="cePrev" width="190" height="230" aria-hidden="true"></canvas></div>` : ""}
+      <div class="ce-row"><div class="seg ce-style" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div>
+        <div class="seg ce-style" role="group" aria-label="Body">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       <div class="ce-tabs" role="tablist" aria-label="What to change">${tabs().map(([k, l]) => `<button type="button" role="tab" aria-selected="${ceTab === k}" data-tab="${k}">${l}</button>`).join("")}</div>
       <div class="ce-opts" role="tabpanel">${opts()}</div></div>`;
-    drawAvatarPreview($("cePrev"), A().style);
-    b.querySelectorAll("[data-tab]").forEach(x => x.onclick = () => { ceTab = x.dataset.tab; draw(); b.querySelector(`[data-tab="${ceTab}"]`)?.focus({preventScroll: true}); });
-    b.querySelectorAll("[data-style]").forEach(x => x.onclick = () => set({style: x.dataset.style}));
-    b.querySelectorAll("[data-look]").forEach(x => x.onclick = () => set({look: x.dataset.look}));
-    b.querySelectorAll("[data-curl]").forEach(x => x.onclick = () => set({curl: x.dataset.curl === "1"}));
-    b.querySelectorAll("[data-len]").forEach(x => x.onclick = () => { recolorCache.clear(); set({len: x.dataset.len}); });
-    wireHair2d(b, set); b.querySelectorAll("canvas[data-h2d]").forEach(drawHair2dTile);
-    b.querySelectorAll("[data-k]").forEach(x => x.onclick = () => set({[x.dataset.k]: x.dataset.v}));
+    if (o.preview) drawAvatarPreview($("cePrev"), A().style);
+    root.querySelectorAll("[data-tab]").forEach(x => x.onclick = () => { ceTab = x.dataset.tab; draw(); root.querySelector(`[data-tab="${ceTab}"]`)?.focus({preventScroll: true}); });
+    root.querySelectorAll("[data-style]").forEach(x => x.onclick = () => set({style: x.dataset.style}));
+    root.querySelectorAll("[data-look]").forEach(x => x.onclick = () => set({look: x.dataset.look}));
+    root.querySelectorAll("[data-curl]").forEach(x => x.onclick = () => set({curl: x.dataset.curl === "1"}));
+    wireHair2d(root, set); root.querySelectorAll("canvas[data-h2d]").forEach(drawHair2dTile);
+    root.querySelectorAll("[data-k]").forEach(x => x.onclick = () => set({[x.dataset.k]: x.dataset.v}));
   };
-  openSheet("Your character", "", "", sh => { sh.classList.add("ce-sheet"); const x = $("sheetX"); x.textContent = "Done"; x.classList.add("ce-done"); x.setAttribute("aria-label", "Done"); });
   draw();
+}
+function editCharacter(){
+  openSheet("Your character", "", "", sh => { sh.classList.add("ce-sheet"); const x = $("sheetX"); x.textContent = "Done"; x.classList.add("ce-done"); x.setAttribute("aria-label", "Done"); });
+  charPanel($("sheetB"), {preview: true, apply: patch => commit(s => Object.assign(s.profile.avatar, patch)), onChange: () => { if ($("acMe")) stDrawMe($("acMe")); }});
 }
 
 // A short-lived version kept an uploaded photo in this browser's IndexedDB; that step is gone, so any photo left from it is deleted.
@@ -6996,19 +7007,20 @@ function obAllow(M, Fo){
 function obYou(M, Fo){
   const P = S.profile, full = !!(P.middleName || P.lastName);
   M.innerHTML = stFigure({small: true}) + stHead("Let's Paint You!")
-    + `<div id="stLook" class="st-av"></div><div class="st-fields"><span class="st-flabel">Your name</span><input type="text" id="obName" value="${esc(P.name)}" placeholder="What should we call you, honey? Honey?" aria-label="First name" autocomplete="given-name" maxlength="30">
+    + `<div id="stCe"></div><div class="st-fields"><span class="st-flabel">Your name</span><input type="text" id="obName" value="${esc(P.name)}" placeholder="What should we call you, honey? Honey?" aria-label="First name" autocomplete="given-name" maxlength="30">
     <div id="obFull" style="display:grid;gap:12px"><input type="text" id="obMiddle" value="${esc(P.middleName || "")}" placeholder="Got a fancy middle name?" aria-label="Middle name" autocomplete="additional-name" maxlength="30">
     <input type="text" id="obLast" value="${esc(P.lastName || "")}" placeholder="Last name duh." aria-label="Last name" autocomplete="family-name" maxlength="40"></div>
     </div>
     <p class="muted" id="obErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>
-    <div id="stAv" class="st-av"></div>`;
+`;
   if ($("obFullBtn")) $("obFullBtn").onclick = () => { $("obFull").hidden = false; $("obFullBtn").remove(); $("obMiddle").focus(); };
   const photo = () => { const has = !!S.profile.photo;
     $("obPhotoBox").innerHTML = `<button type="button" class="ac-photo" id="obPhoto" aria-label="${has ? "Replace your photo" : "Add a photo"}">${photoHTML()}</button>
       <div class="st-phb">${has ? `<b>Your photo</b><span><button type="button" class="btn quiet sm" id="obPhotoNew">Replace</button><button type="button" class="btn quiet sm" id="obPhotoDel">Remove</button></span>` : `<b>Add a photo</b><small>Optional. It makes your picture feel like yours.</small>`}</div>`;
     $("obPhoto").onclick = () => pickPhoto(photo);
     if (has) { $("obPhotoNew").onclick = () => pickPhoto(photo); $("obPhotoDel").onclick = () => { delete S.profile.photo; save(); photo(); }; } };
-  avatarEditor($("stAv"), () => stDrawMe($("stMe")), {compact: true, lookRoot: $("stLook")});
+  M.querySelector(".st-figure").classList.add("st-me-big"); /* her character a little bigger on this step */
+  charPanel($("stCe"), {apply: patch => { Object.assign(S.profile.avatar, patch); save(); }, onChange: () => stDrawMe($("stMe"))});
   stFigureDone(M);
   stFoot(Fo, "", () => {
     const name = $("obName").value.trim();

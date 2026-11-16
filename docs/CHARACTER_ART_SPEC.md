@@ -75,7 +75,7 @@ Clean art with exported masks can replace these files one for one; the app picks
 
 ## Hairstyle sets (16 Nov)
 Each 3/4 hairstyle is a full set of 8 files in `avatar/34/<hair>/` (her: long, bob, pixie; him: curly, short, buzz,
-longwavy, shoulder), plus the original "Classic" set in `avatar/34/`. Cut with `scripts/cut_character_sheet2.py
+longwavy, shoulder), (the earlier "Classic" set was removed 16 Nov). Cut with `scripts/cut_character_sheet2.py
 sheet out_dir prefix heels|sneakers` from flat-background turnaround sheets (front, back, faces-right, faces-left), scaled
 to 720 px tall; every set passes the checker. Base colours: black tank, camo cargos, black heels / white sneakers.
 To add a style: cut it into a new folder, add it to `HAIR2D` in index.html.
