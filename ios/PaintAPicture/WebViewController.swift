@@ -108,7 +108,7 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
             html = html.replacingOccurrences(of: "viewport-fit=cover\"", with: "viewport-fit=cover,maximum-scale=1,user-scalable=no\"")
             data = Data(html.utf8)
         }
-        let headers = ["Content-Type": Self.mime(file.pathExtension), "Content-Length": "\(data.count)", "Cache-Control": "no-cache"]
+        let headers = ["Content-Type": Self.mime(file.pathExtension), "Content-Length": "\(data.count)", "Cache-Control": "no-cache", "Access-Control-Allow-Origin": "*"] // lets the page read its own pictures (recolouring the character)
         task.didReceive(HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)!)
         task.didReceive(data)
         task.didFinish()

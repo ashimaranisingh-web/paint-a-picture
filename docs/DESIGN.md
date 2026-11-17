@@ -127,3 +127,4 @@ Rules:
 - Leave room for the iPhone home bar with `var(--safe-bottom)` on anything that sits at the bottom of the screen.
 - Selected state: the pink ring on swatches, the light-pink pill for tabs; no thick black outlines for selection in new UI.
 - Buttons (CTAs) are rounded rectangles (`--r`), never fully round pills. Pills stay for chips, tabs and tags.
+- Two buttons sit side by side, equal width: the main action on the right, the other (Cancel, Skip, Not now) on the left as a white button with a thin border. Never stacked.

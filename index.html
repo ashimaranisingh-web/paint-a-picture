@@ -1614,6 +1614,12 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .st-figure.st-me-big .st-me-c{width:136px;height:262px}
 /* style and body side by side in one row */
 .ce-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.ce-inline .ce-row{justify-content:flex-start}
+.ac-other{display:grid;gap:6px;margin-top:-6px;padding:14px 16px;border-radius:14px;background:#fff7e6;border:1px solid #f1d9a6}.ac-other small{color:var(--ink-2);font-size:13px}.ac-other-b{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+/* two buttons always side by side: the other one on the left, the main one on the right */
+.st-pair{display:flex;gap:10px}.st-pair .btn{flex:1;min-width:0}
+.st-ibtns .btn{flex:1;min-width:0}.st-ibtns #obHave{font-size:16px}
+.consent-b{display:flex;gap:8px;justify-content:flex-end;flex-wrap:nowrap}.consent-scrim .consent-b{width:100%}.consent-scrim .consent-b .btn{flex:1}
+.btn.ghost.st-big{background:#fff;color:var(--ink);box-shadow:none;border:1px solid var(--line)}
 </style>
 
 <div id="app">
@@ -3705,16 +3711,12 @@ function composeFog(now, cx, cy){
     fctx.globalAlpha = 1; fctx.globalCompositeOperation = "source-over";
     ctx.globalCompositeOperation = "source-over"; ctx.drawImage(fog, 0, 0);
   }
-  /* pieces: still to earn = greyed and darkened; earned = a soft warm glow around them */
+  /* pieces: earned ones get a soft pink glow around them; the rest look as they are (17 Nov) */
   for (const l of locs) { if (l.fixed) continue;
     const c = locLit(l, now), x = l.x - cx, y = l.y - l.h / 2 - cy, r = Math.max(14, l.h * .75); if (x < -r || x > VW + r || y < -r || y > VH + r) continue;
-    if (c < 1 && veil > .01) { const k = (1 - c) * veil, soft = (col, a) => { const gr = ctx.createRadialGradient(x, y, r * .45, x, y, r * 1.15); gr.addColorStop(0, col.replace("A", a)); gr.addColorStop(1, col.replace("A", 0)); return gr; };
-      ctx.globalCompositeOperation = "saturation"; ctx.globalAlpha = k; ctx.fillStyle = soft("rgba(128,128,128,A)", .95); ctx.fillRect(x - r * 1.2, y - r * 1.2, r * 2.4, r * 2.4);
-      ctx.globalCompositeOperation = "multiply"; ctx.globalAlpha = k; ctx.fillStyle = soft("rgba(110,118,140,A)", .8); ctx.fillRect(x - r * 1.2, y - r * 1.2, r * 2.4, r * 2.4);
-      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; } /* still to earn: soft grey and a little darker, fading out at the edges */
-    else if (c >= 1) { const pulse = reduced ? .8 : .7 + .3 * Math.sin(t / 22 + l.x), gr = ctx.createRadialGradient(x, y, r * .3, x, y, r * 1.5);
-      gr.addColorStop(0, "rgba(255,214,150,.5)"); gr.addColorStop(1, "rgba(255,214,150,0)");
-      ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .7 * pulse; ctx.fillStyle = gr; ctx.fillRect(x - r * 1.5, y - r * 1.5, r * 3, r * 3);
+    if (c >= 1) { const pulse = reduced ? .8 : .7 + .3 * Math.sin(t / 22 + l.x), gr = ctx.createRadialGradient(x, y, r * .3, x, y, r * 1.5);
+      gr.addColorStop(0, "rgba(234,76,142,.55)"); gr.addColorStop(1, "rgba(234,76,142,0)");
+      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = .75 * pulse; ctx.fillStyle = gr; /* a pink haze, not a white bloom */ ctx.fillRect(x - r * 1.5, y - r * 1.5, r * 3, r * 3);
       ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; }
   }
   if (!preview) for (const l of locs) { // a soft beacon over fixed places still in the dark; a bold star over every dream
@@ -4011,7 +4013,7 @@ function edgeNudge(e){
 function endPtr(e){
   const p = ptrs.get(e.pointerId); if (!p) return;
   ptrs.delete(e.pointerId);
-  if ((mode === "pan?" || mode === "lens?") && ptrs.size === 0 && e.type === "pointerup") tapAt(toWorld(e.clientX, e.clientY));
+  if ((mode === "pan?" || mode === "lens?") && ptrs.size === 0 && e.type === "pointerup") tapAt(toWorld(e.clientX, e.clientY), e.clientX, e.clientY);
   if ((mode === "pan" || mode === "lens") && ptrs.size === 0) tourDid("drag"); // moving the map or the lens both count as exploring
   if (mode === "pan" && ptrs.size === 0 && panV && performance.now() - panV.t < 80 && !reduced && Math.hypot(panV.vx, panV.vy) > .02) inertia = {vx: panV.vx, vy: panV.vy, last: performance.now()};
   if (ptrs.size < 2) pinch0 = null;
@@ -4040,10 +4042,12 @@ $("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av
 function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
 let lastTap = null;
 function closeUpOnMe(){ av.travel = null; av.path = []; /* stop the walk the first tap started, so the camera lands on her */ setZoom(ZMAX, null, null, true); setTimeout(() => glideTo(av.x, av.y - 14, reduced ? 0 : 500), reduced ? 0 : 240); lens = {x: av.x, y: av.y - 40, moved: true}; }
-function tapAt({x, y}){
-  const now = performance.now(); /* a double tap closes in on her */
-  if (lastTap && now - lastTap.t < 320 && Math.hypot(x - lastTap.x, y - lastTap.y) < 24 / Math.sqrt(zoom)) { lastTap = null; closeUpOnMe(); return; }
-  lastTap = {t: now, x, y};
+function tapAt({x, y}, sx, sy){
+  /* a double tap closes in on her. Measured on the screen, not the map: the first tap can start the camera moving (a walk,
+     a piece opening), so the same finger spot lands on a different part of the map the second time (17 Nov). */
+  const now = performance.now(); sx = sx ?? x; sy = sy ?? y;
+  if (lastTap && now - lastTap.t < 400 && Math.hypot(sx - lastTap.sx, sy - lastTap.sy) < 40) { lastTap = null; closeUpOnMe(); return; }
+  lastTap = {t: now, sx, sy};
   const ak = avatarLook().style === "doll" ? dollWorldH() / 28 : 1;
   if (Math.abs(x - av.x) < 9 * ak && y > av.y - 29 * ak && y < av.y + 3) { avatarSays(); return; }
   const l = locAt(x, y);
@@ -4201,8 +4205,8 @@ const dollImgs = {}, dollParts = {};
 function dollRedraw(){ clearTimeout(dollRedraw.t); dollRedraw.t = setTimeout(() => { recolorCache.clear(); dollCache.clear(); viewDirty = true;
   for (const id of ["stMe", "acMe"]) if ($(id)) stDrawMe($(id)); if ($("cePrev")) drawAvatarPreview($("cePrev"), avatarLook().style); }, 30); }
 function loadDollSet(p){ if (loadDollSet.done?.has(p)) return; (loadDollSet.done ||= new Set()).add(p);
-  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.decoding = "async"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") { document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); dollRedraw(); } }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
-  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; im.addEventListener("load", dollRedraw); }
+  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); im.decoding = "async"; if (location.protocol === "paintapicture:") im.crossOrigin = "anonymous"; im.onload = () => { dollCache.clear(); libCache.clear(); viewDirty = true; if (route === "account" || route === "onboard") { document.querySelectorAll("canvas[data-prev]").forEach(c => drawAvatarPreview(c, c.dataset.prev || undefined)); dollRedraw(); } }; im.src = "avatar/" + v + ".webp"; dollImgs[v] = im; }
+  for (const v of Object.values(DOLL_VIEWS).map(x => p + x)) { const im = new Image(); if (location.protocol === "paintapicture:") im.crossOrigin = "anonymous"; im.onload = () => { recolorCache.clear(); dollCache.clear(); libCache.clear(); genCache.clear(); viewDirty = true; }; im.src = "avatar/" + v + "-parts.png"; dollParts[v] = im; im.addEventListener("load", dollRedraw); }
 }
 
 const loaded = im => !!(im && im.complete && im.naturalWidth);
@@ -4222,8 +4226,9 @@ function dollSource(v, im){
   const pm = dollParts[v]; if (!loaded(pm)) return im;
   const key = v + "|" + lookKey(); if (recolorCache.has(key)) return recolorCache.get(key);
   const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
-  const g = c.getContext("2d"); g.drawImage(pm, 0, 0, w, h); const lab = g.getImageData(0, 0, w, h).data;
-  g.clearRect(0, 0, w, h); g.drawImage(im, 0, 0); const img = g.getImageData(0, 0, w, h), d = img.data;
+  const g = c.getContext("2d"); let lab, img; /* if the picture can't be read (the iPhone app treats its own files as another site unless allowed), she still shows, in the colours she was painted in */
+  try { g.drawImage(pm, 0, 0, w, h); lab = g.getImageData(0, 0, w, h).data; g.clearRect(0, 0, w, h); g.drawImage(im, 0, 0); img = g.getImageData(0, 0, w, h); } catch (e) { console.warn("recolour skipped", e); recolorCache.set(key, im); return im; }
+  const d = img.data;
   // dark seams and outlines inside the cargos and boots join them, so a light colour doesn't leave black specks
   for (const part of [3, 4]) if (want[part]) for (let pass = 0; pass < 2; pass++) {
     const add = [];
@@ -5170,13 +5175,28 @@ function dreamCard(a){
       <div class="gc-dates"><span>${placesOf(a).length ? esc(placesOf(a).map(id => S.destinations.find(x => x.id === id)?.name).filter(Boolean).join(" · ")) : d ? esc(d.name) : ""}</span><span>${a.achievedAt ? "Achieved" : gs.length ? `${c.done} of ${gs.length} goal${gs.length === 1 ? "" : "s"}` : "No goals yet"}</span><span>${esc(a.timeframe || "")}</span></div></div>
     ${open ? `<div class="gc-body">
       ${(a.photos || []).length ? `<div class="pc-strip">${a.photos.map((src, i) => `<button type="button" class="pc-ph" data-viewph="${a.id}:${i}" aria-label="Open photo ${i + 1}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>` : ""}
-      ${gs.length ? `<ul class="steps ms-list dc-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><span class="cb" aria-hidden="true" ${g.status === "done" ? 'aria-checked="true"' : ""}></span><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
+      ${gs.length ? `<ul class="steps ms-list dc-goals">${gs.map(g => `<li class="${g.status === "done" ? "done" : ""}"><button type="button" class="cb" role="checkbox" aria-checked="${g.status === "done"}" aria-label="Finish ${esc(g.title)}" data-gdone="${g.id}"></button><button class="ms-text" data-opengoal="${g.id}"><span>${esc(g.title)}</span><small>${g.status === "done" ? "Finished" : g.status === "paused" ? "Paused" : `${goalProgress(g).done} of ${g.milestones.length} milestones`}</small></button></li>`).join("")}</ul>`
         : `<p class="muted" style="margin:0;font-size:13px">No goals yet. Each goal you finish brings this to life in your world.</p>`}
       <div class="dc-actions"><button class="ibtn dc-del" data-deldream="${a.id}" aria-label="Delete piece">${GI.del}</button><button class="ibtn" data-editdream="${a.id}" aria-label="Paint a Picture">${GI.edit}</button><button class="btn quiet sm" data-addgoal="${a.id}">${ICON.plus}Add a goal</button></div></div>` : ""}</li>`;
+}
+/* ticking a goal straight from its piece: say which milestones will be ticked off with it, then finish it (17 Nov) */
+function finishGoalFromPiece(id){
+  const g = goalById(id); if (!g) return;
+  if (g.status === "done") { goalTab = "finished"; openGoal = g.id; go("goals"); return; } /* already finished: open it, where it can be reopened */
+  const left = g.milestones.filter(m => !m.doneAt);
+  const finish = where => { commit(s => { const x = s.goals.find(x => x.id === id); const d = today(); x.milestones.forEach(m => { if (!m.doneAt) m.doneAt = d; }); x.status = "done"; x.doneAt = d; if (where) x.unlockedIn = where; else delete x.unlockedIn; });
+    closeSheet(); renderDreams(); toast(left.length ? `Finished, with ${left.length} milestone${left.length === 1 ? "" : "s"} ticked off.` : "Finished."); };
+  openSheet("Finish this goal?", `<p style="margin:0;font-size:15px"><b>${esc(g.title)}</b></p>
+    ${left.length ? `<p class="muted" style="margin:0;font-size:13px">These milestones will be ticked off too:</p><ul class="steps ms-list">${left.map(m => `<li class="done"><span class="cb" aria-checked="true" aria-hidden="true"></span><span>${esc(m.title)}</span></li>`).join("")}</ul>` : `<p class="muted" style="margin:0;font-size:13px">All its milestones are already done.</p>`}`,
+    `<button class="btn ghost" id="fgNo">Cancel</button><button class="btn" id="fgYes">Finish goal</button>`, () => {
+      $("fgNo").onclick = closeSheet;
+      $("fgYes").onclick = () => { const places = goalPlaces(g); if (places.length > 1) { closeSheet(); askWhereTrue(g, places, finish); } else finish(null); };
+    });
 }
 function wireDreamCards(el){
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
   on("[data-dream]", b => { openDream = openDream === b.dataset.dream ? null : b.dataset.dream; renderDreams(); });
+  on("[data-gdone]", b => finishGoalFromPiece(b.dataset.gdone));
   on("[data-opengoal]", b => { const g = goalById(b.dataset.opengoal); goalTab = g.status === "done" ? "finished" : "active"; openGoal = g.id; go("goals"); });
   on("[data-addgoal]", b => linkGoalsSheet(b.dataset.addgoal));
   on("[data-editdream]", b => editAspiration(b.dataset.editdream));
@@ -5917,6 +5937,22 @@ function editName(){
         closeSheet(); toast("Saved"); };
     });
 }
+/* When the account's copy replaced this device's world, the device's version was kept aside (dreamLife.otherWorld).
+   This shows it in Account and lets her switch to it; the version she switches away from is kept aside in turn, so
+   nothing is ever lost either way (17 Nov). */
+function otherWorldOf(){ try { const w = JSON.parse(localStorage.getItem("dreamLife.otherWorld") || "null"); return w && Array.isArray(w.goals) ? migrate(w) : null; } catch (e) { return null; } }
+function otherWorldCard(){
+  if (demoMode) return ""; const w = otherWorldOf(); if (!w || fingerprint(w) === fingerprint(S)) return "";
+  const places = (w.destinations || []).map(d => d.name).slice(0, 5).join(", ");
+  return `<section class="ac-other"><b>Another version of your world is on this device</b><small>${esc(places || "No places")} · ${w.aspirations.length} piece${w.aspirations.length === 1 ? "" : "s"} · ${w.goals.length} goal${w.goals.length === 1 ? "" : "s"}${w.profile?.name || w.profile?.lastName ? ` · ${esc([w.profile.name, w.profile.lastName].filter(Boolean).join(" "))}` : ""}</small>
+    <div class="ac-other-b"><button type="button" class="btn ghost sm" id="otherDl">Save a copy</button><button type="button" class="btn sm" id="otherUse">Use this version</button></div></section>`;
+}
+function wireOtherWorld(){
+  if ($("otherDl")) $("otherDl").onclick = downloadOtherWorld;
+  if ($("otherUse")) $("otherUse").onclick = () => { const w = otherWorldOf(); if (!w) return; if (!armDelete($("otherUse"), "Tap again to switch")) return;
+    keepOtherWorld(JSON.parse(JSON.stringify(S))); /* the one being replaced is kept aside, so this can be undone */
+    S = w; S.onboarded = true; S.onboarding.done = true; afterChange(); save(); toast("Switched. This version is now your world."); renderAccount(); };
+}
 function renderAccount(){
   const el = $("p-account"), joined = S.profile.joined ? parseDay(S.profile.joined).toLocaleDateString(undefined, {month: "long", year: "numeric"}) : "";
   const done = S.goals.filter(g => g.status === "done").length;
@@ -5925,6 +5961,7 @@ function renderAccount(){
       <canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas>
     <div class="ac-id"><div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small></div>
       <button type="button" class="iconbtn ac-edit" id="acEditName" aria-label="Edit your name">${GI.edit}</button></div></section>
+    ${otherWorldCard()}
     ${CFG.testFormUrl ? `<a class="ac-test" href="${esc(CFG.testFormUrl)}" target="_blank" rel="noopener"><span class="grow"><b>Test Paint a Picture (10 min)</b></span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>` : ""}
     <section class="panel ac-list"><button type="button" class="ac-row ac-chev" id="acEditMe"><span>Edit character<small>Style, body, skin and outfit</small></span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></section>
     ${usagePanel()}
@@ -5951,7 +5988,7 @@ function renderAccount(){
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
   if ($("acUsage")) $("acUsage").onchange = e => { setConsent(e.target.checked ? "yes" : "no"); renderAccount(); };
-  wireAccountPanel(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
+  wireAccountPanel(); wireOtherWorld(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
   $("wipe").onclick = () => { // a pop-up, so the choice is clear and can't be missed
     const what = demoMode ? "This resets the demo to its starting state. Your real goals aren't affected." : supaUser ? "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone." : "This deletes every piece, goal and entry on this device. It can't be undone.";
     popup(demoMode ? "Reset the demo?" : "Delete your account?", what, demoMode ? "Reset" : "Delete", () => wipeNow()); };
@@ -5991,7 +6028,7 @@ async function restoreBackup(file){
   const incoming = migrate(st), box = $("restoreConfirm");
   const when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleDateString(undefined, {day: "numeric", month: "short", year: "numeric"}) : "an earlier date";
   box.innerHTML = `<div><b>Restore the backup from ${esc(when)}?</b> It has ${incoming.aspirations.length} pieces, ${incoming.goals.length} goals and ${incoming.entries.length} entries. It replaces what's here now, so download a backup of the current data first if you might want it.</div>
-    <div class="actions"><button class="btn sm" id="restoreYes" type="button">Replace with backup</button><button class="btn sm ghost" id="restoreNo" type="button">Cancel</button></div>`;
+    <div class="actions"><button class="btn sm ghost" id="restoreNo" type="button">Cancel</button><button class="btn sm" id="restoreYes" type="button">Replace with backup</button></div>`;
   box.hidden = false;
   $("restoreNo").onclick = () => { box.hidden = true; };
   $("restoreYes").onclick = () => {
@@ -6767,7 +6804,7 @@ const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" i
 // The panel's footer: back, a note, then a quiet Skip on the steps that can wait, then Next.
 function stFoot(Fo, note, next, o){
   o = o || {};
-  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span><button class="btn st-cta" id="obNext">${o.label || "Next"}</button>${o.skip ? `<button type="button" class="st-have" id="obSkip">${o.skipLabel || "Skip"}</button>` : ""}`;
+  Fo.innerHTML = `<span class="st-note" id="stNote" aria-live="polite">${note || ""}</span>${o.skip ? `<div class="st-pair"><button type="button" class="btn ghost" id="obSkip">${o.skipLabel || "Skip"}</button><button class="btn st-cta" id="obNext">${o.label || "Next"}</button></div>` : `<button class="btn st-cta" id="obNext">${o.label || "Next"}</button>`}`; /* two buttons sit side by side: the other one left, the main one right (17 Nov) */
   $("obNext").onclick = next; stTopBack();
   if (o.skip) $("obSkip").onclick = typeof o.skip === "function" ? o.skip : () => obGo(obStep + 1);
 }
@@ -6875,16 +6912,16 @@ function obHow(M, Fo){
   ticks.forEach(t => t.onclick = () => { t.setAttribute("aria-checked", t.getAttribute("aria-checked") === "true" ? "false" : "true"); M.querySelector(".st-ticks").classList.remove("nudge"); show(); });
   atC(300, () => { if (!ticks.some(t => t.getAttribute("aria-checked") === "true")) M.querySelector(".st-ticks").classList.add("nudge"); });
   stNextIdea(Fo, "Get started");
-  if (CFG.supabaseUrl && !supaUser) { Fo.insertAdjacentHTML("beforeend", `<button type="button" class="st-have" id="obHave">I already have an account</button>`); $("obHave").onclick = stSignInSheet; }
+  if (CFG.supabaseUrl && !supaUser) { Fo.querySelector(".st-ibtns").insertAdjacentHTML("afterbegin", `<button type="button" class="btn ghost st-big" id="obHave">I have an account</button>`); $("obHave").onclick = stSignInSheet; } /* side by side with Get started, which stays on the right */
   /* the button arrives once the picture has come together (straight away with Reduce Motion, or when coming back) */
   /* the buttons are there from the start, so nobody has to wait for the story to finish (17 Nov) */
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
-  openSheet("Sign in", `<p class="muted" style="margin:0">We'll email you a code; no password.</p><div id="stSign" class="st-sign"></div>`, "", () => signInForm($("stSign"), () => {
+  openSheet("Sign in", `<p class="muted" style="margin:0">We'll email you a code; no password.</p><div id="stSign" class="st-sign"></div>`, `<button class="btn ghost" id="siNo">Cancel</button>`, () => { $("siNo").onclick = closeSheet; signInForm($("stSign"), () => {
     S.onboarding.guest = false; save(); closeSheet();
     if (S.onboarding.done) { toast("Welcome back. Your world is here."); finishOnboarding(); } else if (route === "onboard") obGo(obStep + 1);
-  }));
+  }, $("sheetF")); });
 }
 /* --- Act 2, her picture. She names herself and steps in; she stands in the middle of the page, and every piece, place
    and goal she picks gathers around her. Then they all go into her picture. --- */
@@ -7355,7 +7392,7 @@ function askConsent(){
     <h2 id="consentT">Help make Paint a Picture better</h2>
     <p id="consentD">Share anonymous counts of which steps people finish, so we know what to improve.</p>
     <ul class="consent-l"><li><b>We see</b> which screens you use, your taps and scrolls, and your map, so we can find where people get stuck.</li></ul><div class="consent-never"><b>We can never see</b><ul><li>Your name and email</li><li>Anything you type</li><li>Your pieces, goals and milestones</li><li>Your journal, notes and to-dos</li><li>Your photos</li></ul><p>They're hidden on your phone before anything is sent, so write freely.</p></div><ul hidden></ul>
-    <div class="consent-b"><button type="button" class="btn" id="consentYes">Share anonymous usage</button><button type="button" class="btn quiet" id="consentNo">Don't share</button></div>
+    <div class="consent-b"><button type="button" class="btn quiet" id="consentNo">Don't share</button><button type="button" class="btn" id="consentYes">Share</button></div>
     <small>You can change this any time in Account.</small></div>`;
   $("app").appendChild(el);
   $("consentYes").onclick = () => setConsent("yes"); $("consentNo").onclick = () => setConsent("no"); $("consentYes").focus();

@@ -214,3 +214,9 @@ line rather than editing the old one.
 - 17 Nov: The splash screen shows the 2D girl (Long hair) and boy (Curly) standing together under the star, instead of the walking pixel character.
 - 17 Nov: On the splash the girl is drawn 5'5" and the boy 6' (she is 65/72 of his height); after the light opens they take a short walk apart in profile and come back to face you, then the story screen follows (splash ~0.8 s longer). The walk plays with Reduce Motion too, as the pixel walk did.
 - 17 Nov: Story screen shows Get started and I already have an account from the start. Sign-in says why a code could not be sent (rate limit, wait, bad address, or the server's message) and offers "I already have a code". iOS build 11 sent to TestFlight.
+- 17 Nov: Removed the grey shade over locked pieces (they look as they are); unlocked pieces get a soft pink glow.
+- 17 Nov: Double tap on the map (close in on your character) is measured on the screen, not the map, and allows 400 ms: the first tap often moved the camera, so the second landed elsewhere and the double tap was missed.
+- 17 Nov: Any screen with two buttons shows them side by side: the main one on the right, the other (Skip, Cancel, Not now, I have an account, Don't share) on the left. Covers onboarding, the story screen, sign-in, restore and consent.
+- 17 Nov: Ticking a goal's box from its piece asks first ("Finish this goal?") and lists the milestones that will be ticked off with it.
+- 17 Nov: Account shows "Another version of your world is on this device" when the device kept its own world after taking the account's copy; Use this version switches to it (and keeps the one it replaces), Save a copy downloads it.
+- 17 Nov: The iPhone app lets the 2D character's pictures be recoloured (they were blocked as "from another site", so only the shadow drew); if recolouring ever fails the plain picture shows instead.
