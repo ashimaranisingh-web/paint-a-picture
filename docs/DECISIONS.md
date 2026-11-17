@@ -230,3 +230,4 @@ line rather than editing the old one.
 - 17 Nov: A double tap on the map undoes the walk the first tap started, then closes in on her facing you. The 2D figure shows only its own soft shadow.
 - 17 Nov: "I already have a code" is removed everywhere (sign-in sheet and onboarding); the code field appears once a code is sent.
 - 17 Nov: The back arrow on the story screen is removed again (the splash already plays on every launch).
+- 17 Nov: Account has a Reset button to the left of Delete account: after a confirm it empties the world (places, pieces, goals, milestones, journal) on this device and in the account, and starts the introduction again; the account, name and character stay. A copy of the old world is kept on the device (dreamLife.resetBackup). Not shown in Demo Data, which has its own reset.
