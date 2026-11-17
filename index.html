@@ -1622,7 +1622,6 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 /* the second button of a pair is plain text: no fill, no outline (17 Nov) */
 .btn.ghost,.btn.ghost.st-big,.sheet-f .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--ink)}
 .btn.ghost:hover{background:rgba(20,20,20,.05)}
-.st-iback{position:absolute;z-index:3;top:calc(var(--safe-top) + 10px);left:12px;width:40px;height:40px;background:transparent;box-shadow:none}
 .pills:empty{display:none}
 .st-gnote.st-gnote-l{text-align:left;margin:2px 0 0}
 .dmark.locked{color:#f2a3c2}/* same as the map: light pink and a lock until unlocked, bright pink once it is */
@@ -6781,7 +6780,6 @@ function drawOb(){
   } else if (ST_IDEA.includes(k)) {
     el.classList.add("st-idea");
     el.innerHTML = `<main class="ob-main st-imain" id="obMain"></main><footer class="st-ifoot" id="obFoot"></footer>`; /* the welcome isn't a step, so no progress line */
-    if (k === ST_IDEA[0]) { el.insertAdjacentHTML("afterbegin", `<button class="st-back st-iback" id="obBack" aria-label="Back to the start">${ICON.left}</button>`); stWireBack(); } /* back to the splash (17 Nov) */
   } else if (ST_ME.includes(k)) {
     el.classList.add("st-me");
     el.innerHTML = `${stBar(k)}<main class="ob-main st-mmain" id="obMain"></main><footer class="ob-foot st-mfoot" id="obFoot"></footer>`;
