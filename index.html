@@ -1619,7 +1619,16 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .st-pair{display:flex;gap:10px}.st-pair .btn{flex:1;min-width:0}
 .st-ibtns .btn{flex:1;min-width:0}.st-ibtns #obHave{font-size:16px}
 .consent-b{display:flex;gap:8px;justify-content:flex-end;flex-wrap:nowrap}.consent-scrim .consent-b{width:100%}.consent-scrim .consent-b .btn{flex:1}
-.btn.ghost.st-big{background:#fff;color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+/* the second button of a pair is plain text: no fill, no outline (17 Nov) */
+.btn.ghost,.btn.ghost.st-big,.sheet-f .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:var(--ink)}
+.btn.ghost:hover{background:rgba(20,20,20,.05)}
+.st-iback{position:absolute;z-index:3;top:calc(var(--safe-top) + 10px);left:12px;width:40px;height:40px;background:transparent;box-shadow:none}
+.pills:empty{display:none}
+.st-gnote.st-gnote-l{text-align:left;margin:2px 0 0}
+.dmark.locked{color:#f2a3c2}/* same as the map: light pink and a lock until unlocked, bright pink once it is */
+.sheet.tall{height:92%}.sheet.tall .sheet-b{flex:1;overflow-y:auto}
+/* My studio: photos as small square tiles, tap one for full screen (17 Nov) */
+.as-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.as-tile{all:unset;cursor:pointer;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#f1efeb}.as-tile img{width:100%;height:100%;object-fit:cover;display:block}.as-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 
 <div id="app">
@@ -1926,7 +1935,7 @@ function dreamMark(a, starOnly){
   if (open && lockShown.get(a.id)) unlockedAt.set(a.id, now); // seen locked earlier this visit: let the lock fall away once
   lockShown.set(a.id, !open);
   const going = open && now - (unlockedAt.get(a.id) ?? -1e9) < 1600;
-  return `<span class="dmark" role="img" aria-label="${open ? "Piece, unlocked" : "Piece, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
+  return `<span class="dmark${open ? "" : " locked"}" role="img" aria-label="${open ? "Piece, unlocked" : "Piece, locked"}">${GI.star}${open ? going ? `<span class="dlock going">${ICON_LOCK}</span>` : "" : `<span class="dlock">${ICON_LOCK}</span>`}</span>`;
 }
 function clarityRaw(a, placeId){
   const gs = S.goals.filter(g => (g.aspirationIds || []).includes(a.id) && g.status !== "cancelled"), ids = new Set(gs.map(g => g.id));
@@ -3531,7 +3540,7 @@ function renderView(now){
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   for (const c of chimneys) if (inV(c.x, c.y, 30)) for (let k = 0; k < 3; k++) { const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1; }
   for (const f of fountains) if (inV(f.x, f.y, 10)) for (let i = 0; i < 4; i++) F(g, f.x - 2 + i, f.y - ((t + i * 2) % 4), 1, 1, "#d4f1f4");
-  oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)");
+  if (avatarLook().style !== "doll") oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)"); /* the 2D figure brings its own soft shadow; this blocky one sat off to her side */
   const frame = avFrame();
   // her: the pixel sprite lives in the world canvas; the Detailed 2D figure is drawn crisp on the HUD
   if (avatarLook().style !== "doll") drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame);
@@ -3711,17 +3720,10 @@ function composeFog(now, cx, cy){
     fctx.globalAlpha = 1; fctx.globalCompositeOperation = "source-over";
     ctx.globalCompositeOperation = "source-over"; ctx.drawImage(fog, 0, 0);
   }
-  /* pieces: earned ones get a soft pink glow around them; the rest look as they are (17 Nov) */
-  for (const l of locs) { if (l.fixed) continue;
-    const c = locLit(l, now), x = l.x - cx, y = l.y - l.h / 2 - cy, r = Math.max(14, l.h * .75); if (x < -r || x > VW + r || y < -r || y > VH + r) continue;
-    if (c >= 1) { const pulse = reduced ? .8 : .7 + .3 * Math.sin(t / 22 + l.x), gr = ctx.createRadialGradient(x, y, r * .3, x, y, r * 1.5);
-      gr.addColorStop(0, "rgba(234,76,142,.55)"); gr.addColorStop(1, "rgba(234,76,142,0)");
-      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = .75 * pulse; ctx.fillStyle = gr; /* a pink haze, not a white bloom */ ctx.fillRect(x - r * 1.5, y - r * 1.5, r * 3, r * 3);
-      ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1; }
-  }
+  /* no glow on pieces (17 Nov): the star says it instead, bright pink when unlocked, light pink with a lock when not */
   if (!preview) for (const l of locs) { // a soft beacon over fixed places still in the dark; a bold star over every dream
     const c = locLit(l, now), bx = l.x - cx, by = l.y - l.h - 8 - cy; if (bx < -12 || bx > VW + 12 || by < -14 || by > VH + 12) continue;
-    if (!l.fixed) { drawDreamStar(ctx, bx, by - (reduced ? 0 : (t >> 4) % 2), c >= 1, Math.max(1, Math.round(1.8 / scale)), !isUnlocked(l.a)); continue; }
+    if (!l.fixed) { { const un = isUnlocked(l.a); drawDreamStar(ctx, bx, by - (reduced ? 0 : (t >> 4) % 2), un, Math.max(1, Math.round(1.8 / scale)), !un); } continue; }
     if (veil <= .3 || c >= 1) continue;
     ctx.globalAlpha = .55 + ((t >> 3) % 2) * .3;
     F(ctx, bx, by - 2, 1, 1, "#ffc2d6"); F(ctx, bx - 1, by - 1, 3, 1, "#ffc2d6"); F(ctx, bx - 2, by, 5, 1, "#ffc2d6"); F(ctx, bx - 1, by + 1, 3, 1, "#ffc2d6"); F(ctx, bx, by + 2, 1, 1, "#ffc2d6");
@@ -3949,7 +3951,7 @@ cv.addEventListener("pointermove", e => {
     if (pinch0 && pinch0.d > 20) { const m = toLocal((a.x + b.x) / 2, (a.y + b.y) / 2), nz = pinch0.z * d / pinch0.d; if (Math.abs(nz - zoom) > .02) { setZoom(nz, m.x, m.y); tourDid("zoom"); } }
     hideHint(); saveCam(); return;
   }
-  const far = Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 6;
+  const far = Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 10; /* a finger wobbles a little on a tap; 6px turned some taps into drags */
   if (mode === "lens?" && far) mode = "lens";
   if (mode === "pan?" && far) { mode = "pan"; cv.style.cursor = "grabbing"; }
   if (mode === "pan") {
@@ -4041,13 +4043,18 @@ $("recenter").onclick = () => { glideTo(av.x, av.y - 14); lens = {x: av.x, y: av
 
 function locAt(x, y){ return locs.find(l => x > l.x - 22 && x < l.x + 22 && y > l.y - l.h - 6 && y < l.y + 8); }
 let lastTap = null;
-function closeUpOnMe(){ av.travel = null; av.path = []; /* stop the walk the first tap started, so the camera lands on her */ setZoom(ZMAX, null, null, true); setTimeout(() => glideTo(av.x, av.y - 14, reduced ? 0 : 500), reduced ? 0 : 240); lens = {x: av.x, y: av.y - 40, moved: true}; }
+function closeUpOnMe(){ av.travel = null; av.path = []; av.dir = "down"; av.step = 0; av.wait = Math.max(av.wait, 90); /* she turns to face you and stands still */ /* stop the walk the first tap started, so the camera lands on her */ setZoom(ZMAX, null, null, true); setTimeout(() => glideTo(av.x, av.y - 14, reduced ? 0 : 500), reduced ? 0 : 240); lens = {x: av.x, y: av.y - 40, moved: true}; }
 function tapAt({x, y}, sx, sy){
   /* a double tap closes in on her. Measured on the screen, not the map: the first tap can start the camera moving (a walk,
      a piece opening), so the same finger spot lands on a different part of the map the second time (17 Nov). */
   const now = performance.now(); sx = sx ?? x; sy = sy ?? y;
-  if (lastTap && now - lastTap.t < 400 && Math.hypot(sx - lastTap.sx, sy - lastTap.sy) < 40) { lastTap = null; closeUpOnMe(); return; }
-  lastTap = {t: now, sx, sy};
+  if (lastTap && now - lastTap.t < 400 && Math.hypot(sx - lastTap.sx, sy - lastTap.sy) < 40) {
+    /* the first tap sent her walking (sometimes out over the water) and moved the card: undo that, so a double tap only closes in on her where she stood */
+    const L = lastTap; lastTap = null;
+    if (av.travel && av.travel.s >= L.t - 1) { av.travel = L.travel; av.x = L.ax; av.y = L.ay; }
+    if (L.card) $("loccard").hidden = true;
+    closeUpOnMe(); return; }
+  lastTap = {t: now, sx, sy, ax: av.x, ay: av.y, travel: av.travel, card: $("loccard").hidden};
   const ak = avatarLook().style === "doll" ? dollWorldH() / 28 : 1;
   if (Math.abs(x - av.x) < 9 * ak && y > av.y - 29 * ak && y < av.y + 3) { avatarSays(); return; }
   const l = locAt(x, y);
@@ -4066,7 +4073,17 @@ function endPreview(){ preview = null; holdStart = 0; }
 // The map card leads to the dream's own card in Paint a Picture, opened and scrolled into view.
 function openDreamCard(id){
   openDream = id; go("dreams");
-  requestAnimationFrame(() => { const c = document.querySelector(`#p-dreams [data-dream="${id}"]`)?.closest(".gcard"); if (c) { c.scrollIntoView({block: "start", behavior: reduced ? "auto" : "smooth"}); c.classList.add("arrive"); setTimeout(() => c.classList.remove("arrive"), 2700); } });
+  requestAnimationFrame(() => { const c = document.querySelector(`#p-dreams [data-dream="${id}"]`)?.closest(".gcard"); if (c) { bringCard(c); c.classList.add("arrive"); setTimeout(() => c.classList.remove("arrive"), 2700); } });
+}
+/* a card she's sent to sits fully in view: below the page's sticky header and above the tab bar, centred when it fits, its top showing when it doesn't (17 Nov) */
+function bringCard(c, smooth){
+  const sc = $("pmain"); if (!c || !sc) return;
+  const head = c.closest(".page")?.querySelector(":scope > .phead"), tb = $("tabbar"), sr = sc.getBoundingClientRect();
+  const top = Math.max(sr.top, head ? head.getBoundingClientRect().bottom : sr.top) + 12, bot = Math.min(sr.bottom, tb && !tb.hidden && tb.offsetParent ? tb.getBoundingClientRect().top : sr.bottom) - 12;
+  const r = c.getBoundingClientRect(), room = bot - top;
+  const want = r.height <= room ? top + (room - r.height) / 2 : top; /* where the card's top should be */
+  if (Math.abs(r.top - want) < 2) return;
+  sc.scrollBy({top: r.top - want, behavior: smooth === false || reduced ? "auto" : "smooth"});
 }
 let bubbleTimer;
 function say(text, wx, wy){
@@ -4157,7 +4174,7 @@ function showLoc(l){
   }
   const a = l.a, pct = Math.round(locClarity(l).c * 100), img = a.image ? imgUrl(a.image) : null;
   card.innerHTML = `<div class="row"><div class="lc-pic">${img ? `<img src="${esc(img)}" alt="">` : `<canvas width="48" height="48" data-kind="${a.id}" aria-hidden="true"></canvas>`}</div>
-      <button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a, true)}${esc(a.title)}</h3>${a.desc ? `<p class="lc-desc lc-clamp">${esc(a.desc)}</p>` : ""}
+      <button class="lc-open" data-enter="${a.id}" aria-label="See ${esc(a.title)}"><span class="meta">${esc(a.category)}</span><h3>${dreamMark(a)}${esc(a.title)}</h3>${a.desc ? `<p class="lc-desc lc-clamp">${esc(a.desc)}</p>` : ""}
       <span class="clar-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></button>
       <div class="lc-side"><button class="iconbtn x" id="locX" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       <button class="iconbtn x" id="locGo" aria-label="Open ${esc(a.title)} in Paint a Picture">${ICON.right}</button></div></div>`;
@@ -4704,7 +4721,7 @@ addEventListener("resize", closeDD); document.addEventListener("scroll", e => { 
 let sheetReturn = null;
 function openSheet(title, body, foot, mount){
   sheetReturn = document.activeElement;
-  const sh = $("sheet");
+  const sh = $("sheet"); sh.classList.remove("tall");
   sh.innerHTML = `<div class="sheet-h"><h2 id="sheetTitle">${title}</h2><button class="pbtn" id="sheetX" aria-label="Close"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="sheet-b" id="sheetB">${body}</div>${foot ? `<div class="sheet-f" id="sheetF">${foot}</div>` : ""}`;
   sh.hidden = false; $("scrim").hidden = false;
@@ -4757,7 +4774,7 @@ function renderGoals(){
   el.innerHTML = `
     <div class="phead"><div class="ph-left"><h1>Goals</h1></div><button class="btn quiet" id="newGoal">${ICON.plus}Add Goal</button></div>
     ${pastReviewHTML()}
-    ${list.length ? `<ul class="gcards">${list.map(goalCard).join("")}</ul>` : `<div class="empty"><b>Nothing in motion yet</b>Add a goal and connect it to the pieces it moves you towards.</div>`}
+    ${list.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Active · ${list.length}</div><ul class="gcards">${list.map(goalCard).join("")}</ul></section>` : `<div class="empty"><b>Nothing in motion yet</b>Add a goal and connect it to the pieces it moves you towards.</div>`}
     ${done.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Finished · ${done.length}</div><ul class="gcards">${done.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}
     ${gone.length ? `<section><div class="eyebrow" style="margin:6px 0 8px">Let go · ${gone.length}</div><ul class="gcards">${gone.sort(byEnd).map(goalCard).join("")}</ul></section>` : ""}`;
   $("newGoal").onclick = () => editGoal(null);
@@ -5066,43 +5083,19 @@ function logEntry(editId){
   let photo = null; // a newly chosen photo, kept until Save
   let points = (f.notes || "").split(/\n+/).map(t => t.trim()).filter(Boolean); if (!points.length) points = [""]; // the description, one pointer per line
   const readPoints = () => { const rows = $("ePoints")?.querySelectorAll("textarea"); if (rows) points = [...rows].map(i => i.value); };
-  let step = 1;
-  const dots = () => `<div class="progress-dots" aria-label="Step ${step} of 3"><i class="on"></i><i class="${step > 1 ? "on" : ""}"></i><i class="${step > 2 ? "on" : ""}"></i></div>`;
+  /* one page that scrolls (17 Nov): how much it moved things first, then the words, the goals, tags, photo and reflections */
+  const keep = () => { if (!$("eTitle")) return; f.text = $("eTitle").value.trim(); readPoints(); f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim(); };
   function draw(){
-    const B = $("sheetB"), Fo = $("sheetF");
-    if (step === 1) {
-      B.innerHTML = `${dots()}
+    const B = $("sheetB"), Fo = $("sheetF"); $("sheet").classList.add("tall");
+    const goals = S.goals.filter(g => g.status === "active" || g.status === "paused" || f.goalIds.includes(g.id));
+    const tags = [...new Set(JOURNAL_TAGS.concat(f.tags))], pic = photo ? photo.dataUrl : f.image ? imgUrl(f.image) : "";
+    B.innerHTML = `
+        <div class="field"><span>How much did it move things?</span><div class="seg" role="group">${[1, 2, 3].map(n => `<button type="button" aria-pressed="${f.size === n}" data-size="${n}">${SIZE_LABEL[n]}</button>`).join("")}</div></div>
         <label class="field"><span>${ex ? "Title" : "Give it a title"}</span><input type="text" id="eTitle" value="${esc(f.text)}" placeholder="e.g. A week of little victories"></label>
+        <p class="muted" id="eErr" role="alert" style="margin:-6px 0 0;color:var(--danger)" hidden></p>
         <div class="field"><span>Write it down</span><ul class="ms-edit" id="ePoints">${points.map((t, i) => `<li><div class="ms-row"><textarea class="fit pt" rows="1" placeholder="${i ? "Another pointer" : "e.g. Booked my first driving lesson"}" aria-label="Pointer ${i + 1}">${esc(t)}</textarea>${points.length > 1 ? `<button type="button" class="ibtn" data-rmpoint="${i}" aria-label="Remove this pointer">${GI.del}</button>` : ""}</div></li>`).join("")}</ul>
           <button type="button" class="btn quiet sm" id="eAddPoint" style="justify-self:start">${ICON.plus}Add another pointer</button></div>
-        <p class="muted" id="eErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
-      Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eNext">Next</button>`;
-      const keep = () => { f.text = $("eTitle").value.trim(); readPoints(); };
-      const addPoint = at => { keep(); points.splice(at, 0, ""); draw(); $("ePoints").children[at].querySelector("textarea").focus(); };
-      B.querySelectorAll("[data-rmpoint]").forEach(b => b.onclick = () => { keep(); points.splice(+b.dataset.rmpoint, 1); draw(); });
-      $("eAddPoint").onclick = () => addPoint(points.length);
-      $("ePoints").querySelectorAll("textarea").forEach(fitArea);
-      $("ePoints").querySelectorAll("textarea").forEach((inp, i) => inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); addPoint(i + 1); } }); // Enter starts the next pointer
-      $("eCancel").onclick = closeSheet;
-      $("eNext").onclick = () => {
-        keep(); points = points.map(t => t.trim()).filter(Boolean); f.notes = points.join("\n"); if (!points.length) points = [""];
-        if (!f.text) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; return; }
-        step = 2; draw();
-      };
-    } else if (step === 2) {
-      const goals = S.goals.filter(g => g.status === "active" || g.status === "paused");
-      B.innerHTML = `${dots()}
-        <p class="quote" style="margin:0;font-weight:700">“${esc(f.text)}”</p>
         <div class="field"><span>Which goal did this add towards?</span>${goals.length ? `<div class="cklist">${goals.map(g => `<button type="button" class="ck" aria-pressed="${f.goalIds.includes(g.id)}" data-pick="${g.id}"><span class="cb" aria-hidden="true" ${f.goalIds.includes(g.id) ? 'aria-checked="true"' : ""}></span>${esc(g.title)}</button>`).join("")}</div>` : `<p class="muted" style="margin:0">You don't have any active goals yet. You can still log this.</p>`}</div>
-        <div class="field"><span>How much did it move things?</span><div class="seg" role="group">${[1, 2, 3].map(n => `<button type="button" aria-pressed="${f.size === n}" data-size="${n}">${SIZE_LABEL[n]}</button>`).join("")}</div></div>`;
-      Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eNext">${f.goalIds.length ? "Next" : "Next, without a goal"}</button>`;
-      B.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { const id = b.dataset.pick; f.goalIds = f.goalIds.includes(id) ? f.goalIds.filter(x => x !== id) : [...f.goalIds, id]; draw(); });
-      B.querySelectorAll("[data-size]").forEach(b => b.onclick = () => { f.size = +b.dataset.size; draw(); });
-      $("eBack").onclick = () => { step = 1; draw(); };
-      $("eNext").onclick = () => { step = 3; draw(); };
-    } else {
-      const tags = [...new Set(JOURNAL_TAGS.concat(f.tags))], pic = photo ? photo.dataUrl : f.image ? imgUrl(f.image) : "";
-      B.innerHTML = `${dots()}
         <div class="field"><span>Tags</span><div class="pills" id="eTags">${tags.map(t => `<button type="button" class="pill" aria-pressed="${f.tags.includes(t)}" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}</div>
           <div class="cat-row"><input type="text" id="eTagNew" placeholder="Your own tag" aria-label="Your own tag" maxlength="24"><button type="button" class="ibtn add-ic" id="eTagAdd" aria-label="Add tag">${ICON.plus}</button></div></div>
         <div class="field"><span>Photo (optional)</span>${pic ? `<div class="jp-pic" style="margin:0"><img src="${esc(pic)}" alt="" style="max-height:200px"></div>` : ""}
@@ -5110,27 +5103,32 @@ function logEntry(editId){
         <label class="field"><span>What I learned</span><input type="text" id="eLearn" value="${esc(f.learned)}" placeholder="e.g. Morning lessons are cheaper"></label>
         <label class="field"><span>What got in the way</span><input type="text" id="eBlock" value="${esc(f.blocked)}" placeholder="e.g. Work trip ate the weekend"></label>
         <label class="field"><span>What I'll do next</span><input type="text" id="eNextT" value="${esc(f.next)}" placeholder="e.g. Book the first lesson"></label>`;
-      Fo.innerHTML = `<button class="btn ghost" id="eBack">Back</button><button class="btn" id="eSave">Save</button>`;
-      const keep = () => { f.learned = $("eLearn").value.trim(); f.blocked = $("eBlock").value.trim(); f.next = $("eNextT").value.trim(); };
-      B.querySelectorAll("[data-tag]").forEach(b => b.onclick = () => { const t = b.dataset.tag, on = !f.tags.includes(t); f.tags = on ? f.tags.concat(t) : f.tags.filter(x => x !== t); b.setAttribute("aria-pressed", on); });
-      $("eTagAdd").onclick = () => { const t = $("eTagNew").value.trim(); if (!t) return; keep(); if (!f.tags.includes(t)) f.tags.push(t); draw(); };
-      $("ePhoto").onchange = async ev => { const file = ev.target.files[0]; if (!file) return; keep(); try { photo = await readImage(file); draw(); } catch (err) { toast("That file couldn't be read as an image. Try a JPG or PNG."); } };
-      if ($("ePhotoRm")) $("ePhotoRm").onclick = () => { keep(); photo = null; f.image = null; draw(); };
-      $("eBack").onclick = () => { keep(); step = 2; draw(); };
-      $("eSave").onclick = async () => {
-        keep();
-        if (photo) { // kept on this device like other pictures; entries saved together share one copy
-          const key = "je-" + uid();
-          if (assetsApi) { try { f.image = {assetId: (await assetsApi.upload(photo.blob)).id}; } catch (err) { f.image = ex ? ex.image : null; toast("The photo couldn't upload; saved without it."); } }
-          else { try { localStorage.setItem("dreamLife.img." + key, photo.dataUrl); f.image = {local: key}; } catch (err) { f.image = ex ? ex.image : null; toast("No room on this device for the photo; saved without it."); } }
-        }
-        const before = new Map(S.aspirations.map(a => [a.id, clarityOf(a).c]));
-        commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f); else s.entries.push({id: uid(), ...f, goalIds: f.goalIds.slice(), tags: f.tags.slice()}); });
-        const grew = S.aspirations.filter(a => clarityOf(a).c > (before.get(a.id) || 0));
-        closeSheet();
-        toast("Logged. Finishing the goal is what lights up its place.");
-      };
-    }
+    Fo.innerHTML = `<button class="btn ghost" id="eCancel">Cancel</button><button class="btn" id="eSave">Save</button>`;
+    const redraw = () => { const y = B.scrollTop; keep(); draw(); $("sheetB").scrollTop = y; };
+    const addPoint = at => { keep(); points.splice(at, 0, ""); const y = B.scrollTop; draw(); $("sheetB").scrollTop = y; $("ePoints").children[at].querySelector("textarea").focus(); };
+    B.querySelectorAll("[data-rmpoint]").forEach(b => b.onclick = () => { keep(); points.splice(+b.dataset.rmpoint, 1); redraw(); });
+    $("eAddPoint").onclick = () => addPoint(points.length);
+    $("ePoints").querySelectorAll("textarea").forEach(fitArea);
+    $("ePoints").querySelectorAll("textarea").forEach((inp, i) => inp.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); addPoint(i + 1); } }); // Enter starts the next pointer
+    B.querySelectorAll("[data-size]").forEach(b => b.onclick = () => { f.size = +b.dataset.size; B.querySelectorAll("[data-size]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    B.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { const id = b.dataset.pick, on = !f.goalIds.includes(id); f.goalIds = on ? [...f.goalIds, id] : f.goalIds.filter(x => x !== id); b.setAttribute("aria-pressed", on); const cb = b.querySelector(".cb"); if (on) cb.setAttribute("aria-checked", "true"); else cb.removeAttribute("aria-checked"); });
+    B.querySelectorAll("[data-tag]").forEach(b => b.onclick = () => { const t = b.dataset.tag, on = !f.tags.includes(t); f.tags = on ? f.tags.concat(t) : f.tags.filter(x => x !== t); b.setAttribute("aria-pressed", on); });
+    $("eTagAdd").onclick = () => { const t = $("eTagNew").value.trim(); if (!t) return; if (!f.tags.includes(t)) f.tags.push(t); redraw(); };
+    $("ePhoto").onchange = async ev => { const file = ev.target.files[0]; if (!file) return; try { keep(); photo = await readImage(file); redraw(); } catch (err) { toast("That file couldn't be read as an image. Try a JPG or PNG."); } };
+    if ($("ePhotoRm")) $("ePhotoRm").onclick = () => { photo = null; f.image = null; redraw(); };
+    $("eCancel").onclick = closeSheet;
+    $("eSave").onclick = async () => {
+      keep(); points = points.map(t => t.trim()).filter(Boolean); f.notes = points.join("\n"); if (!points.length) points = [""];
+      if (!f.text) { $("eErr").textContent = "Give your entry a title."; $("eErr").hidden = false; $("eTitle").focus(); $("eTitle").scrollIntoView({block: "center"}); return; }
+      if (photo) { // kept on this device like other pictures; entries saved together share one copy
+        const key = "je-" + uid();
+        if (assetsApi) { try { f.image = {assetId: (await assetsApi.upload(photo.blob)).id}; } catch (err) { f.image = ex ? ex.image : null; toast("The photo couldn't upload; saved without it."); } }
+        else { try { localStorage.setItem("dreamLife.img." + key, photo.dataUrl); f.image = {local: key}; } catch (err) { f.image = ex ? ex.image : null; toast("No room on this device for the photo; saved without it."); } }
+      }
+      commit(s => { if (ex) Object.assign(s.entries.find(e => e.id === editId), f); else s.entries.push({id: uid(), ...f, goalIds: f.goalIds.slice(), tags: f.tags.slice()}); });
+      closeSheet();
+      toast("Logged. Finishing the goal is what lights up its place.");
+    };
   }
   openSheet(ex ? "Edit entry" : "Log progress", "", " ", draw);
 }
@@ -5182,7 +5180,7 @@ function dreamCard(a){
 /* ticking a goal straight from its piece: say which milestones will be ticked off with it, then finish it (17 Nov) */
 function finishGoalFromPiece(id){
   const g = goalById(id); if (!g) return;
-  if (g.status === "done") { goalTab = "finished"; openGoal = g.id; go("goals"); return; } /* already finished: open it, where it can be reopened */
+  if (g.status === "done") { openGoalCard(g.id); return; } /* already finished: open it, where it can be reopened */
   const left = g.milestones.filter(m => !m.doneAt);
   const finish = where => { commit(s => { const x = s.goals.find(x => x.id === id); const d = today(); x.milestones.forEach(m => { if (!m.doneAt) m.doneAt = d; }); x.status = "done"; x.doneAt = d; if (where) x.unlockedIn = where; else delete x.unlockedIn; });
     closeSheet(); renderDreams(); toast(left.length ? `Finished, with ${left.length} milestone${left.length === 1 ? "" : "s"} ticked off.` : "Finished."); };
@@ -5193,11 +5191,18 @@ function finishGoalFromPiece(id){
       $("fgYes").onclick = () => { const places = goalPlaces(g); if (places.length > 1) { closeSheet(); askWhereTrue(g, places, finish); } else finish(null); };
     });
 }
+/* from a piece to one of its goals: Goals opens with that goal open and in full view (going to Goals used to close it again) */
+function openGoalCard(id){
+  const g = goalById(id); if (!g) return;
+  goalTab = g.status === "done" ? "finished" : "active"; go("goals"); openGoal = g.id; renderGoals();
+  requestAnimationFrame(() => { const c = document.querySelector(`#p-goals [data-goal="${id}"]`)?.closest(".gcard"); if (c) { bringCard(c, false); c.classList.add("arrive"); setTimeout(() => c.classList.remove("arrive"), 2700); } });
+}
 function wireDreamCards(el){
   const on = (sel, fn) => el.querySelectorAll(sel).forEach(b => b.onclick = e => { e.stopPropagation(); fn(b); });
-  on("[data-dream]", b => { openDream = openDream === b.dataset.dream ? null : b.dataset.dream; renderDreams(); });
+  on("[data-dream]", b => { openDream = openDream === b.dataset.dream ? null : b.dataset.dream; renderDreams();
+    if (openDream) { const c = document.querySelector(`#p-dreams [data-dream="${openDream}"]`)?.closest(".gcard"), r = c?.getBoundingClientRect(), tb = $("tabbar")?.getBoundingClientRect(); if (c && (r.bottom > (tb?.top || innerHeight) - 8 || r.top < 120)) bringCard(c); } }); /* an opened card that runs off the screen comes into view */
   on("[data-gdone]", b => finishGoalFromPiece(b.dataset.gdone));
-  on("[data-opengoal]", b => { const g = goalById(b.dataset.opengoal); goalTab = g.status === "done" ? "finished" : "active"; openGoal = g.id; go("goals"); });
+  on("[data-opengoal]", b => openGoalCard(b.dataset.opengoal));
   on("[data-addgoal]", b => linkGoalsSheet(b.dataset.addgoal));
   on("[data-editdream]", b => editAspiration(b.dataset.editdream));
   on("[data-deldream]", b => {
@@ -5438,7 +5443,7 @@ function openAsset(id){
   const a = S.assets.find(x => x.id === id); if (!a) return;
   const f = (S.assetFolders || []).find(x => x.id === a.folderId), when = a.date || a.createdAt;
   openSheet(esc(a.title), `<div class="as-view">
-      ${(ph => ph.length ? `<div class="as-slides" id="avSlides">${ph.map((src, k) => `<button type="button" class="as-hero" data-avph="${k}" aria-label="Open photo ${k + 1} of ${ph.length}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>${ph.length > 1 ? `<div class="as-dots" id="avDots">${ph.map((_, k) => `<i${k ? "" : ` class="on"`}></i>`).join("")}</div>` : ""}`
+      ${(ph => ph.length ? `<div class="as-tiles" id="avSlides">${ph.map((src, k) => `<button type="button" class="as-tile" data-avph="${k}" aria-label="Open photo ${k + 1} of ${ph.length}"><img src="${esc(src)}" alt=""></button>`).join("")}</div>`
         : `<div class="as-hero as-hero-art"><img src="${esc(asArt(a))}" alt="" class="as-art"></div>`)(asPhotos(a))}
       ${(a.tags || []).length || f ? `<div class="as-chips">${f ? `<span class="as-chip as-fchip">${esc(f.name)}</span>` : ""}${(a.tags || []).map(t => `<span class="as-chip">${esc(t)}</span>`).join("")}</div>` : ""}
       ${a.note ? `<p class="as-note">${esc(a.note)}</p>` : ""}
@@ -5451,7 +5456,6 @@ function openAsset(id){
       const ph = asPhotos(a), sl = $("avSlides");
       document.querySelectorAll("[data-avph] img").forEach((im, k) => phGet(phKey(ph[k])).then(b => { if (b && im.isConnected) { const u = URL.createObjectURL(b); im.onload = () => URL.revokeObjectURL(u); im.src = u; } })); /* the sharp copy, when this phone has it */
       document.querySelectorAll("[data-avph]").forEach(b => b.onclick = () => viewPhotos(ph, +b.dataset.avph, a.title)); /* tap: full screen, swipe and zoom */
-      if (sl && $("avDots")) sl.onscroll = () => { const k = Math.round(sl.scrollLeft / sl.clientWidth); $("avDots").querySelectorAll("i").forEach((d, j) => d.classList.toggle("on", j === k)); };
     });
 }
 function moveIn(list, id, dir){ const i = list.findIndex(x => x.id === id), j = i + dir; if (i < 0 || j < 0 || j >= list.length) return false; [list[i], list[j]] = [list[j], list[i]]; return true; }
@@ -6259,20 +6263,21 @@ function addDestination(p, purpose, stage){
   commit(s => s.destinations.push(d));
   return d;
 }
-function placeSearch(root, onPick){
-  let custom = false;
+function placeSearch(root, onPick, o){
+  o = o || {}; let custom = false;
+  const ideas = o.ideas || ["LA", "Boston", "Tokyo", "London", "New York", "Bali"].map(n => GAZ.find(p => p.name === n)).filter(Boolean);
   function draw(){
     root.innerHTML = `<div class="search"><input type="search" id="psQ" placeholder="Search a city, country or university" autocomplete="off" aria-label="Search places"><ul class="search-res" id="psRes" role="listbox" hidden></ul></div>
-      <div class="pills" aria-label="Ideas">${["LA", "Boston", "Tokyo", "London", "New York", "Bali"].map(n => `<button type="button" class="pill" data-quick="${n}">${plusIcon}${n}</button>`).join("")}</div>
+      <div class="pills" aria-label="Ideas">${ideas.map((p, i) => `<button type="button" class="pill" data-quick="${i}">${plusIcon}${esc(p.name)}</button>`).join("")}</div>
       ${custom ? `<div class="panel" style="gap:10px"><div class="eyebrow">A place that isn't listed</div>
         <div class="grid2"><label class="field"><span>Name</span><input type="text" id="pcName" placeholder="e.g. Nani's village"></label><label class="field"><span>Country</span><input type="text" id="pcCountry" placeholder="e.g. India"></label></div>
         <label class="field"><span>What it's like</span><select id="pcEnv">${GENERIC_ENVS.map(k => `<option value="${k}">${ENV_LABEL[k]}</option>`).join("")}</select><small>Places without their own artwork use this scenery, labelled with your name for the place.</small></label>
         <div class="actions"><button type="button" class="btn sm" id="pcAdd">Add place</button><button type="button" class="btn quiet sm" id="pcCancel">Cancel</button></div></div>`
-      : `<button type="button" class="btn quiet sm" id="psCustom" style="justify-self:start">Add a place that isn't listed</button>`}`;
+      : o.noCustom ? "" : `<button type="button" class="btn quiet sm" id="psCustom" style="justify-self:start">Add a place that isn't listed</button>`}`;
     const q = $("psQ"), res = $("psRes");
     const show = () => { const r = searchPlaces(q.value); res.hidden = !q.value.trim(); res.innerHTML = r.length ? r.map((p, i) => `<li><button type="button" role="option" data-i="${i}"><b>${esc(p.name)}</b><span>${esc(p.country)}${p.type === "uni" ? " · University" : ""} · ${esc(ENV_LABEL[p.env])}${GENERIC_ENVS.includes(p.env) ? " scenery" : " artwork"}</span></button></li>`).join("") : `<li class="muted" style="padding:10px 12px;font-size:13px">No match. Add it as a place that isn't listed.</li>`; res.querySelectorAll("[data-i]").forEach(b => b.onclick = () => { onPick(r[+b.dataset.i]); q.value = ""; res.hidden = true; }); };
     q.oninput = show; q.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); const r = searchPlaces(q.value); if (r[0]) { onPick(r[0]); q.value = ""; res.hidden = true; } } };
-    root.querySelectorAll("[data-quick]").forEach(b => b.onclick = () => onPick(GAZ.find(p => p.name === b.dataset.quick)));
+    root.querySelectorAll("[data-quick]").forEach(b => b.onclick = () => onPick(ideas[+b.dataset.quick]));
     const c = $("psCustom"); if (c) c.onclick = () => { custom = true; draw(); $("pcName").focus(); };
     const add = $("pcAdd"); if (add) add.onclick = () => { const name = $("pcName").value.trim(); if (!name) { $("pcName").focus(); return; } if (!$("pcCountry").value.trim()) { $("pcCountry").focus(); return; } /* every place is somewhere real: it needs its country */ onPick({name, country: $("pcCountry").value.trim(), env: $("pcEnv").value, custom: true}); custom = false; draw(); };
     const cc = $("pcCancel"); if (cc) cc.onclick = () => { custom = false; draw(); };
@@ -6776,6 +6781,7 @@ function drawOb(){
   } else if (ST_IDEA.includes(k)) {
     el.classList.add("st-idea");
     el.innerHTML = `<main class="ob-main st-imain" id="obMain"></main><footer class="st-ifoot" id="obFoot"></footer>`; /* the welcome isn't a step, so no progress line */
+    if (k === ST_IDEA[0]) { el.insertAdjacentHTML("afterbegin", `<button class="st-back st-iback" id="obBack" aria-label="Back to the start">${ICON.left}</button>`); stWireBack(); } /* back to the splash (17 Nov) */
   } else if (ST_ME.includes(k)) {
     el.classList.add("st-me");
     el.innerHTML = `${stBar(k)}<main class="ob-main st-mmain" id="obMain"></main><footer class="ob-foot st-mfoot" id="obFoot"></footer>`;
@@ -6850,12 +6856,25 @@ function obSplash(M){
     // first, the star: a tiny spark that grows to full size with a little bounce, and everything else starts from it
     const u = Math.min(1, Math.max(0, (t - 150) / 1300)), grow = u <= 0 ? 0 : !move ? .35 + .65 * stEase(u) : Math.max(.04, 1 + 1.7 * (u - 1) ** 3 + .7 * (u - 1) ** 2); /* a tiny spark that grows to full size with a little bounce; with Reduce Motion it still grows, gently, with no bounce */
     if (grow > 0) { o.save(); o.setTransform(k * grow, 0, 0, k * grow, k * 100 * (1 - grow), k * (cy - 24) * (1 - grow)); o.globalAlpha = Math.min(1, u * 4); drawDreamStar(o, 100, cy - 18, true, 3, false); o.restore(); }
-    if (t > 3800 && !obSplash.left) { obSplash.left = 1; obGo(obStep + 1); return; } /* after their little stroll */
+    if (t > 3800 && !obSplash.left) { obSplash.left = 1; obSplashLeave(); return; } /* after their little stroll */
     obAnim = requestAnimationFrame(frame);
   };
   obAnim = requestAnimationFrame(frame);
   obSplash.left = 0;
-  M.onclick = () => { if (!obSplash.left) { obSplash.left = 1; obGo(obStep + 1); } }; // a tap skips it
+  M.onclick = () => { if (!obSplash.left) { obSplash.left = 1; obSplashLeave(); } }; // a tap skips it
+}
+/* the splash opens the app every time (17 Nov). At launch it hands over to Home, or back to the step she was on; inside the introduction it moves on to the story */
+function obSplashLeave(){
+  const L = obSplash.launch; obSplash.launch = null;
+  if (!L) { obGo(obStep + 1); return; }
+  cancelAnimationFrame(obAnim);
+  if (!S.onboarding.done) { startOnboarding(Math.max(1, S.onboarding.step || 1)); return; }
+  const dest = obSplash.dest || "home"; $("onboard").hidden = true; go(dest); if (dest === "home") sizeScene();
+  if (tourSeen()) setTimeout(askConsent, 1500);
+}
+function launchSplash(){
+  obSplash.launch = 1; obSplash.dest = route && route !== "onboard" ? route : "home"; obStep = 0; route = "onboard"; closeMenu(); closeSheet();
+  $("home").hidden = true; $("pages").hidden = true; $("onboard").hidden = false; drawOb();
 }
 
 // How it works, told once and on her own picks: her milestones finish her goals, her goals unlock her pieces, and the
@@ -7171,12 +7190,15 @@ function stHomeRow(){
 function stHomeWire(M){
   stFillThumbs(M); const b = $("stHomeSet"); if (!b) return;
   b.onclick = () => openSheet("Where do you live now?", `<p class="muted" style="margin:0">A city or a country. You can add places you've lived and want to go later, on your map.</p><div id="stSearch" style="display:grid;gap:12px"></div>`,
-    stDraft().places.some(x => x.st === "current") ? `<button class="btn ghost" id="stHomeOff">Leave it out</button>` : "", () => {
+    stDraft().places.some(x => x.st === "current") ? `<button class="btn ghost" id="stHomeOff">Skip</button>` : "", () => {
       const d = stDraft();
       if ($("stHomeOff")) $("stHomeOff").onclick = () => { d.places = d.places.filter(x => x.st !== "current"); save(); closeSheet(); };
       const g = stTzGuess(); if (g && !d.places.some(x => x.st === "current")) $("stSearch").insertAdjacentHTML("beforebegin", `<button type="button" class="st-chip" id="stTzPick" style="justify-self:start"><img data-st-thumb="${esc(g.env)}" alt="">${esc(g.name)}<small style="color:var(--muted);font-weight:400">&nbsp;· your time zone</small></button>`);
       if ($("stTzPick")) { stFillThumbs($("sheet")); $("stTzPick").onclick = () => { d.places = d.places.filter(x => x.st !== "current").concat({key: "x-" + g.name, t: g.name, p: {...g}, st: "current"}); d.last = "x-" + g.name; track("place_added", {source: "onboarding_home", scenery: g.env}); save(); closeSheet(); }; }
-      placeSearch($("stSearch"), p => { d.places = d.places.filter(x => x.st !== "current" && x.p.name !== p.name).concat({key: "x-" + p.name, t: p.name, p: {...p}, st: "current"}); d.last = "x-" + p.name; track("place_added", {source: "onboarding_home", scenery: p.env}); save(); closeSheet(); });
+      placeSearch($("stSearch"), p => { d.places = d.places.filter(x => x.st !== "current" && x.p.name !== p.name).concat({key: "x-" + p.name, t: p.name, p: {...p}, st: "current"}); d.last = "x-" + p.name; track("place_added", {source: "onboarding_home", scenery: p.env}); save(); closeSheet(); },
+        {noCustom: true, ideas: (() => { const seen = new Set(), out = []; /* only places she has already added; anything else, she searches (17 Nov) */
+          for (const p of [...d.places.filter(x => x.st !== "current").map(x => x.p), ...S.destinations]) if (p?.name && !seen.has(p.name)) { seen.add(p.name); out.push(p); }
+          return out; })()});
     });
 }
 // Her first goal: the piece it's for, the goal in her words, and the milestones that get her there, all editable in
@@ -7227,9 +7249,11 @@ async function obAccount(M, Fo){
     + `<div id="obSign" class="st-sign"></div>`;
   stFigureDone(M);
   /* at the bottom: the warning, then Email me a code and Skip, 8px apart */
-  Fo.classList.add("st-acfoot"); Fo.innerHTML = `<p class="st-gnote">Without an email your progress is only on this phone, and it's lost if you delete the app.</p><button type="button" class="btn quiet st-skipbtn" id="obSkip">Skip</button>`; stTopBack();
+  Fo.classList.add("st-acfoot"); Fo.innerHTML = `<button type="button" class="btn quiet st-skipbtn" id="obSkip">Skip to home</button>`; stTopBack();
   $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(obStep + 1); };
   signInForm($("obSign"), () => { S.onboarding.guest = false; save(); if (S.onboarding.done) { toast("Welcome back. Your world is here."); finishOnboarding(); } else if (route === "onboard") obGo(OB.indexOf("world")); });
+  $("signHave")?.remove(); /* not here (17 Nov); the code step still opens once a code is sent */
+  $("obSign").querySelector(".st-signstep")?.insertAdjacentHTML("beforeend", `<p class="st-gnote st-gnote-l">Without an email your progress is only on this phone, and it's lost if you delete the app.</p>`); /* under the email, left aligned */
   { const send = $("signSend"), inp = $("signEmail"); send.hidden = true; /* no button: the keyboard's Send key emails the code */
     inp.setAttribute("enterkeyhint", "send"); inp.setAttribute("placeholder", "you@example.com, then Send");
     inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); send.onclick(); } }; }
@@ -7664,11 +7688,11 @@ addEventListener("resize", () => { if (route === "home") { sizeScene(); drawOver
 updateTitle();
 go(location.hash.slice(1) || "home");
 requestAnimationFrame(loop);
-if (!S.onboarding.done) startOnboarding();
+launchSplash(); /* every launch, signed in or not */
 // Every page's line sits below its header rule: move it out of the sticky header whenever a page draws.
 new MutationObserver(() => document.querySelectorAll(".page > .phead .sub").forEach(sub => { sub.classList.add("psub"); sub.closest(".phead").after(sub); })).observe($("pmain"), {childList: true, subtree: true});
 
-accountsReadyP = accountsInit(); startReplay(); if (S.onboarding.done && tourSeen()) askConsent(); /* never on top of onboarding or the Home hints */ track("app_opened", {onboarded: !!S.onboarding.done});
+accountsReadyP = accountsInit(); startReplay(); /* consent is asked after the splash, never on top of it */ /* never on top of onboarding or the Home hints */ track("app_opened", {onboarded: !!S.onboarding.done});
 
 (async () => {
   if (!window.claude?.use) return;

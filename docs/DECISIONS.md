@@ -220,3 +220,11 @@ line rather than editing the old one.
 - 17 Nov: Ticking a goal's box from its piece asks first ("Finish this goal?") and lists the milestones that will be ticked off with it.
 - 17 Nov: Account shows "Another version of your world is on this device" when the device kept its own world after taking the account's copy; Use this version switches to it (and keeps the one it replaces), Save a copy downloads it.
 - 17 Nov: The iPhone app lets the 2D character's pictures be recoloured (they were blocked as "from another site", so only the shadow drew); if recolouring ever fails the plain picture shows instead.
+- 17 Nov: The splash plays on every launch, signed in or not, then goes to Home (or back to the introduction step she was on). The story screen has a back arrow to the splash.
+- 17 Nov: The second button of a pair is plain text, with no fill or outline (replaces the white outlined button from earlier today).
+- 17 Nov: "Where do you live now?" in onboarding suggests only places she has already added; anything else is searched. "Add a place that isn't listed" and the six city ideas are gone from that sheet (the Add place sheet in the app keeps them). "Leave it out" is now "Skip".
+- 17 Nov: The onboarding sign-in step: "Skip to home"; the "Without an email…" note sits under the email, left aligned; no "I already have a code" link there.
+- 17 Nov: Pieces on the map have no glow. Locked: light pink star with a lock. Unlocked: bright pink star. The same star and lock show in the map card and the Pieces list.
+- 17 Nov: A piece or goal she's sent to opens fully in view (centred below the header when it fits). Goals has an "Active" header like "Finished".
+- 17 Nov: Log progress is one scrolling page (how much it moved things first) instead of three steps. My studio shows an item's photos as small square tiles instead of a slideshow.
+- 17 Nov: A double tap on the map undoes the walk the first tap started, then closes in on her facing you. The 2D figure shows only its own soft shadow.
