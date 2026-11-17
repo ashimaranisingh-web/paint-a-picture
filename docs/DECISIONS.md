@@ -228,3 +228,4 @@ line rather than editing the old one.
 - 17 Nov: A piece or goal she's sent to opens fully in view (centred below the header when it fits). Goals has an "Active" header like "Finished".
 - 17 Nov: Log progress is one scrolling page (how much it moved things first) instead of three steps. My studio shows an item's photos as small square tiles instead of a slideshow.
 - 17 Nov: A double tap on the map undoes the walk the first tap started, then closes in on her facing you. The 2D figure shows only its own soft shadow.
+- 17 Nov: "I already have a code" is removed everywhere (sign-in sheet and onboarding); the code field appears once a code is sent.
