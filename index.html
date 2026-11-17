@@ -5945,18 +5945,6 @@ function editName(){
    This shows it in Account and lets her switch to it; the version she switches away from is kept aside in turn, so
    nothing is ever lost either way (17 Nov). */
 function otherWorldOf(){ try { const w = JSON.parse(localStorage.getItem("dreamLife.otherWorld") || "null"); return w && Array.isArray(w.goals) ? migrate(w) : null; } catch (e) { return null; } }
-function otherWorldCard(){
-  if (demoMode) return ""; const w = otherWorldOf(); if (!w || fingerprint(w) === fingerprint(S)) return "";
-  const places = (w.destinations || []).map(d => d.name).slice(0, 5).join(", ");
-  return `<section class="ac-other"><b>Another version of your world is on this device</b><small>${esc(places || "No places")} · ${w.aspirations.length} piece${w.aspirations.length === 1 ? "" : "s"} · ${w.goals.length} goal${w.goals.length === 1 ? "" : "s"}${w.profile?.name || w.profile?.lastName ? ` · ${esc([w.profile.name, w.profile.lastName].filter(Boolean).join(" "))}` : ""}</small>
-    <div class="ac-other-b"><button type="button" class="btn ghost sm" id="otherDl">Save a copy</button><button type="button" class="btn sm" id="otherUse">Use this version</button></div></section>`;
-}
-function wireOtherWorld(){
-  if ($("otherDl")) $("otherDl").onclick = downloadOtherWorld;
-  if ($("otherUse")) $("otherUse").onclick = () => { const w = otherWorldOf(); if (!w) return; if (!armDelete($("otherUse"), "Tap again to switch")) return;
-    keepOtherWorld(JSON.parse(JSON.stringify(S))); /* the one being replaced is kept aside, so this can be undone */
-    S = w; S.onboarded = true; S.onboarding.done = true; afterChange(); save(); toast("Switched. This version is now your world."); renderAccount(); };
-}
 function renderAccount(){
   const el = $("p-account"), joined = S.profile.joined ? parseDay(S.profile.joined).toLocaleDateString(undefined, {month: "long", year: "numeric"}) : "";
   const done = S.goals.filter(g => g.status === "done").length;
@@ -5965,7 +5953,6 @@ function renderAccount(){
       <canvas class="ac-me" id="acMe" role="img" aria-label="Your character"></canvas>
     <div class="ac-id"><div class="ac-who"><h2>${esc(fullName() || "You")}</h2><small>${supaUser ? esc(supaUser.email || "") : "Guest"}</small></div>
       <button type="button" class="iconbtn ac-edit" id="acEditName" aria-label="Edit your name">${GI.edit}</button></div></section>
-    ${otherWorldCard()}
     ${CFG.testFormUrl ? `<a class="ac-test" href="${esc(CFG.testFormUrl)}" target="_blank" rel="noopener"><span class="grow"><b>Test Paint a Picture (10 min)</b></span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>` : ""}
     <section class="panel ac-list"><button type="button" class="ac-row ac-chev" id="acEditMe"><span>Edit character<small>Style, body, skin and outfit</small></span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></section>
     ${usagePanel()}
@@ -5992,7 +5979,7 @@ function renderAccount(){
 
   el.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setDemoMode(b.dataset.mode === "demo"));
   if ($("acUsage")) $("acUsage").onchange = e => { setConsent(e.target.checked ? "yes" : "no"); renderAccount(); };
-  wireAccountPanel(); wireOtherWorld(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
+  wireAccountPanel(); el.querySelectorAll("[data-consent]").forEach(b => b.onclick = () => { setConsent(b.dataset.consent); renderAccount(); });
   $("wipe").onclick = () => { // a pop-up, so the choice is clear and can't be missed
     const what = demoMode ? "This resets the demo to its starting state. Your real goals aren't affected." : supaUser ? "This deletes your account and every piece, goal and entry, on this device and in your account. It can't be undone." : "This deletes every piece, goal and entry on this device. It can't be undone.";
     popup(demoMode ? "Reset the demo?" : "Delete your account?", what, demoMode ? "Reset" : "Delete", () => wipeNow()); };
@@ -7463,6 +7450,10 @@ async function accountsInit(){
   if (demoMode && !demoAllowed()) await setDemoMode(false); // Demo Data is only for accounts given access
   if (route === "account") renderAccount();
 }
+/* the account this device's world belongs to; set the first time it syncs with an account, kept after signing out */
+const OWNER_KEY = "dreamLife.owner";
+const worldOwner = () => { try { return localStorage.getItem(OWNER_KEY) || null; } catch (e) { return null; } };
+const setWorldOwner = id => { try { if (id) localStorage.setItem(OWNER_KEY, id); else localStorage.removeItem(OWNER_KEY); } catch (e) {} };
 // Which world to keep when she signs in: the one on this device, the one in her account, or ask her.
 function isEmptyWorld(w){ return !w || (!w.onboarding?.done && !(w.destinations || []).length && !(w.aspirations || []).length && !(w.goals || []).length && !(w.notes || []).length); }
 // Where this device and her account last agreed: when the account's copy was saved, and a fingerprint of the world then.
@@ -7498,8 +7489,20 @@ async function syncWithAccount(user){
     const local = demoMode ? REAL : S, remote = row ? migrate(row.data) : null;
     const use = w => { if (demoMode) { REAL = w; try { localStorage.setItem(LS_KEY, JSON.stringify(w)); } catch (e) {} } else { const wasDone = !!S.onboarding?.done; S = w; try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} if (typingInPage()) pendingRender = true; else afterChange(); if (!wasDone && S.onboarding.done && route === "onboard") go("home"); } }; /* only when the world coming in finished onboarding this device hadn't; replaying the introduction (or a sync while in it) must not throw you out */
     const upload = async () => { const w = JSON.parse(JSON.stringify(demoMode ? REAL : S)), r = await worldRow(user, w); if (!r.error) setSyncMark(user, r.at, w); };
-    const start = () => { docRef = {set: async d => { const r = await worldRow(user, d); if (r.error) throw r.error; setSyncMark(user, r.at, d); },
+    const start = () => { setWorldOwner(user.id); docRef = {set: async d => { const r = await worldRow(user, d); if (r.error) throw r.error; setSyncMark(user, r.at, d); },
       savedNote: "Synced to your account. Only you can see it.", afterSave: () => { lastSynced = new Date().toISOString(); }}; storageNote = docRef.savedNote; if (route === "account") renderAccount(); };
+    /* whose world is on this device (17 Nov): a world that belongs to another account is never uploaded into this one.
+       It's put aside on this device under its owner, and this account gets its own world (or a fresh one) */
+    const owner = worldOwner();
+    if (owner && owner !== user.id) {
+      try { localStorage.setItem(OWNER_KEY + "." + owner, JSON.stringify(local)); } catch (e) {}
+      let mine = remote; if (!mine) { try { const k = JSON.parse(localStorage.getItem(OWNER_KEY + "." + user.id) || "null"); if (k) mine = migrate(k); } catch (e) {} }
+      if (mine && remote) { use(remote); setSyncMark(user, row.updated_at, remote); }
+      else { const fresh = mine || migrate(null); if (!mine) fresh.profile.email = user.email || ""; use(fresh); await upload(); }
+      setWorldOwner(user.id); start();
+      if (!demoMode && !S.onboarding.done && route !== "onboard") startOnboarding(0);
+      return;
+    }
     const pick = chooseWorld(local, remote, row?.updated_at, user);
     if (pick === "same") { setSyncMark(user, row.updated_at, local); start(); }
     else if (pick === "remote") { use(remote); setSyncMark(user, row.updated_at, remote); start(); }
@@ -7532,7 +7535,7 @@ async function deleteAccount(){
   track("account_deleted");
   try { await supa.auth.signOut(); } catch (e) {}
   supaUser = null; docRef = null; storageNote = "Saved in this browser.";
-  try { localStorage.removeItem(SYNC_KEY); localStorage.removeItem("dreamLife.otherWorld"); } catch (e) {}
+  try { localStorage.removeItem(SYNC_KEY); localStorage.removeItem("dreamLife.otherWorld"); } catch (e) {} setWorldOwner(null); /* the blank world that follows belongs to no one yet */
   S = blankState(); afterChange(); save(); toast("Your account and everything in it is deleted"); startOnboarding(0);
 }
 async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser = null; docRef = null; try { localStorage.removeItem(SYNC_KEY); } catch (e) {} storageNote = "Saved in this browser."; renderAccount(); toast("Signed out. Your world stays on this device."); }
