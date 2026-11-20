@@ -1658,6 +1658,17 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 #p-account .ac-back{top:max(calc(var(--safe-top) + 8px), 20px)}
 .st-sign-nolabel .st-signstep .field > span{display:none} /* the sheet title says it's email (20 Nov) */
 .linkbtn.sign-edit{display:inline;padding:0;margin-left:2px;font-size:inherit}
+/* places strip: the same frosted background as the tab bar (20 Nov) */
+#journey{background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.48));-webkit-backdrop-filter:blur(26px) saturate(1.9) brightness(1.06);backdrop-filter:blur(26px) saturate(1.9) brightness(1.06);border-color:rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 0 rgba(20,20,20,.08)}
+body.on-home.world-night #journey{background:linear-gradient(180deg,rgba(22,26,38,.58),rgba(16,19,27,.5));border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);-webkit-backdrop-filter:blur(26px) saturate(1.6);backdrop-filter:blur(26px) saturate(1.6)}
+/* tab bar: icons only; the selected tab grows into a soft pill with its name beside the icon (20 Nov) */
+.tabbar{display:flex;justify-content:space-around;align-items:center}
+.tabbar button{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;min-height:44px;padding:0 12px;border-radius:99px;font-size:14px;transition:background .35s ease,gap .35s ease,padding .35s ease}
+.tabbar button .tl{display:inline-block;max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .4s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+.tabbar button[aria-current="page"]{gap:6px;padding:0 14px;background:rgba(234,76,142,.12)}
+.tabbar button[aria-current="page"] .tl{max-width:120px;opacity:1}
+body.on-home.world-night .tabbar button[aria-current="page"]{background:rgba(255,141,179,.16)}
+@media (prefers-reduced-motion:reduce){.tabbar button .tl{transition:opacity .3s ease!important}.tabbar button{transition:background .3s ease!important}} /* a gentle fade still plays */
 </style>
 
 <div id="app">
@@ -1702,11 +1713,11 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 
   <!-- the floating tab bar: the four places of the app, the same on every screen -->
   <nav class="tabbar" id="tabbar" aria-label="Primary">
-    <button data-go="home" data-tab="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 18h18M6 21h12"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 5v3M5.2 9.2l2.1 2.1M18.8 9.2l-2.1 2.1M2.5 14.5h2.5M19 14.5h2.5"/></svg>My Picture</button>
-    <button data-go="goals" data-tab="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Goals</button>
-    <button data-go="week" data-tab="week"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>This week</button>
-    <button data-go="journal" data-tab="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>Journal</button>
-    <button data-go="assets" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M4.5 9.5h15M6.5 10v7M10 10v7M14 10v7M17.5 10v7M4.5 17.5h15M3 20.5h18"/></svg>My studio</button>
+    <button data-go="home" data-tab="home"><svg class="ico" viewBox="0 0 24 24"><path d="M3 18h18M6 21h12"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 5v3M5.2 9.2l2.1 2.1M18.8 9.2l-2.1 2.1M2.5 14.5h2.5M19 14.5h2.5"/></svg><span class="tl">My Picture</span></button>
+    <button data-go="goals" data-tab="goals"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span class="tl">Goals</span></button>
+    <button data-go="week" data-tab="week"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span class="tl">This week</span></button>
+    <button data-go="journal" data-tab="journal"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5.5c2.6-1 5.4-.8 8 .8 2.6-1.6 5.4-1.8 8-.8V19c-2.6-1-5.4-.8-8 .8-2.6-1.6-5.4-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg><span class="tl">Journal</span></button>
+    <button data-go="assets" data-tab="more"><svg class="ico" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M4.5 9.5h15M6.5 10v7M10 10v7M14 10v7M17.5 10v7M4.5 17.5h15M3 20.5h18"/></svg><span class="tl">My studio</span></button>
   </nav>
 
   <section class="screen ob" id="onboard" hidden></section>

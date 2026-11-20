@@ -131,3 +131,4 @@ Rules:
 - Back arrows never have a background or shadow: just the arrow (onboarding, the Account picture, everywhere).
 - Over a picture (the map at the top of onboarding) the back arrow is white with a faint shadow on the arrow itself; over white it's dark.
 - Every page's first row (title, back arrow, top buttons) starts 8px below the iPhone status bar (at least 20px from the top on the web) and is 44px tall, with everything centred in it. Onboarding, the intro pages, the main pages and Account all line up.
+- Tab bar: icons only; the selected tab is a soft pink pill with its name beside the icon. The places strip uses the tab bar's frosted background.
