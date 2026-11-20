@@ -1656,6 +1656,7 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .ob.st-idea .st-imain{padding-top:max(calc(var(--safe-top) + 8px), 20px)!important}
 .st-head.st-head-back{min-height:44px}.st-head-back .st-back{width:44px;height:44px;margin-left:-10px}
 #p-account .ac-back{top:max(calc(var(--safe-top) + 8px), 20px)}
+.st-sign-nolabel .st-signstep .field > span{display:none} /* the sheet title says it's email (20 Nov) */
 </style>
 
 <div id="app">
@@ -7056,7 +7057,7 @@ function obAbout(M, Fo){
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
-  openSheet("Sign in", `<p class="muted" style="margin:0">We'll email you a code; no password.</p><div id="stSign" class="st-sign"></div>`, `<button class="btn ghost" id="siNo">Cancel</button>`, () => { $("siNo").onclick = closeSheet; signInForm($("stSign"), () => {
+  openSheet("Sign in with email", `<div id="stSign" class="st-sign st-sign-nolabel"></div>`, `<button class="btn ghost" id="siNo">Cancel</button>`, () => { $("siNo").onclick = closeSheet; signInForm($("stSign"), () => {
     S.onboarding.guest = false; save(); closeSheet();
     if (S.onboarding.done) { toast("Welcome back. Your world is here."); finishOnboarding(); } else if (route === "onboard") obGo(obStep + 1);
   }, $("sheetF")); });
@@ -7665,8 +7666,8 @@ async function signOutAccount(){ if (supa) await supa.auth.signOut(); supaUser =
 // The account panel on the Account page: sign in with a code, or see who's signed in.
 // Email → code → signed in. root gets the form; onDone runs once she's in and her world is connected.
 function signInForm(root, onDone, bar){ /* bar: put the main button there (a sheet footer) instead of under the box */
-  root.innerHTML = `<div class="st-signstep"><label class="field"><span>Email</span><input type="email" id="signEmail" autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
-    <button class="btn" id="signSend" type="button" style="justify-self:start">Email me a code</button></div><p class="muted" id="signErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
+  root.innerHTML = `<div class="st-signstep"><label class="field"><span>Email</span><input type="email" id="signEmail" aria-label="Email" autocomplete="email" inputmode="email" placeholder="you@example.com"></label>
+    <button class="btn" id="signSend" type="button" style="justify-self:start">Send code</button></div><p class="muted" id="signErr" role="alert" style="margin:0;color:var(--danger)" hidden></p>`;
   const err = t => { $("signErr").textContent = t; $("signErr").hidden = !t; };
   if (bar) { const b = $("signSend"); b.removeAttribute("style"); bar.appendChild(b); }
   $("signSend").onclick = async () => {
