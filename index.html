@@ -2661,7 +2661,78 @@ function bungalow(g, x, by, w, k){ /* a Craftsman bungalow: painted siding, a lo
 }
 /* one LA house along a street: Spanish revival, a Craftsman bungalow or (now and then) a glass villa with a pool */
 function laHouse(g, x, by, w, k){ const v = hash(x, by, 95); if (v > .86 && w > 26) villaPool(g, x, by - 8, k); else if (v > .45) bungalow(g, x, by - 3, w, k); else spanishHouse(g, x, by - 4, w, pick(LA_STUCCO, k), hash(x, by, 94)); }
+/* ---------------- Tokyo outskirts (21 Nov): shop streets with hanging signs, a scramble crossing, a canal of cherry trees,
+   a temple with its gate and pagoda, the bullet-train line carried on to both shores ---------------- */
+function shopHouse(g, x, by, w, k){
+  const fl = 2 + (k * 2.6 | 0), h = fl * 8 + 2, top = by - h, wall = pick(["#e9e4da", "#d8d3c8", "#c9ced3", "#efe6d6", "#b9bfc6", "#e4d6c6", "#d6dccf"], k);
+  const sign = pick(["#d93b2b", "#f2c14e", "#2c8fd6", "#f04f85", "#38b07a", "#f2efe8"], k * 5 % 1), awn = pick(["#d93b2b", "#2c4f7a", "#38b07a", "#e0782a", "#5d6a73"], k * 3 % 1);
+  oval(g, x + (w >> 1) + 2, by + 1, (w >> 1) + 2, 2, "rgba(25,30,20,.3)");
+  F(g, x - 1, top - 1, w + 2, h + 1, C.out); F(g, x, top, w, h, wall); F(g, x, top, w, 1, shade(wall, .35)); F(g, x + w - 2, top, 2, h, shade(wall, -.1));
+  for (let f = 0; f < fl - 1; f++) { const wy = top + 2 + f * 8; for (let wx = x + 2; wx < x + w - 4; wx += 4) F(g, wx, wy, 2, 4, hash(wx, wy, 96) > .55 ? "#ffd98a" : "#3a4a5c"); }
+  F(g, x, by - 9, w, 2, awn); for (let i = x; i < x + w; i += 3) F(g, i, by - 9, 1, 2, "#f2efe8");
+  F(g, x + 1, by - 7, w - 2, 7, "#2b2f38"); F(g, x + 2, by - 6, w - 4, 3, "#f2e6c2");
+  if (h > 16) { F(g, x + w - 1, top + 2, 4, h - 12, C.out); F(g, x + w, top + 3, 2, h - 14, sign); for (let yy = top + 4; yy < by - 11; yy += 3) F(g, x + w, yy, 1, 1, sign === "#f2efe8" ? "#d93b2b" : "#ffffff"); }
+  if (k > .62) { F(g, x + 2, top - 4, 5, 3, C.out); F(g, x + 3, top - 3, 3, 2, "#9aa0a8"); }
+  if (k > .9) { F(g, x + 1, top + 2, w - 5, 6, "#1a2530"); F(g, x + 2, top + 3, w - 7, 4, pick(["#f04f85", "#2c8fd6", "#7fd6e8"], k * 9 % 1)); } /* a big screen */
+}
+function templeHall(g, x, by){
+  oval(g, x + 3, by + 1, 28, 4, "rgba(25,30,20,.3)");
+  F(g, x - 26, by - 3, 53, 4, C.out); F(g, x - 25, by - 3, 51, 3, "#c9c2b2");
+  F(g, x - 21, by - 17, 43, 15, C.out); F(g, x - 20, by - 16, 41, 13, "#c8402e"); for (let i = x - 18; i < x + 20; i += 6) F(g, i, by - 16, 1, 13, "#8a2a1e");
+  F(g, x - 6, by - 12, 13, 9, "#2b211c"); F(g, x - 5, by - 11, 11, 2, "#c9a24a");
+  for (let r = 0; r < 11; r++) { const half = 13 + Math.round(r * 1.5) + (r > 8 ? r - 7 : 0), y = by - 28 + r; F(g, x - half - 1, y, 2 * half + 3, 1, C.out); F(g, x - half, y, 2 * half + 1, 1, r < 2 ? "#646c7e" : r % 3 ? "#3a404d" : "#4c5363"); }
+  F(g, x - 14, by - 29, 29, 1, "#c9a24a"); F(g, x - 15, by - 30, 2, 2, "#c9a24a"); F(g, x + 14, by - 30, 2, 2, "#c9a24a");
+}
+function templeGate(g, x, by){
+  F(g, x - 10, by - 15, 3, 15, "#c8302a"); F(g, x + 8, by - 15, 3, 15, "#c8302a");
+  for (let r = 0; r < 6; r++) { const half = 12 + r, y = by - 21 + r; F(g, x - half - 1, y, 2 * half + 3, 1, C.out); F(g, x - half, y, 2 * half + 1, 1, r < 2 ? "#4c5363" : "#3a404d"); }
+  oval(g, x, by - 9, 4, 5, C.out); oval(g, x, by - 9, 3, 4, "#d93b2b"); F(g, x - 3, by - 9, 7, 1, "#2b211c"); F(g, x - 1, by - 4, 3, 1, "#2b211c");
+}
+const OUT_TOKYO = {
+  big(g, O){
+    const {D, mask} = O, tx = D.pack.tx, ty = D.pack.ty, held = [], land = (x, y) => { const X = x + tx | 0, Y = y + ty | 0; return X >= 0 && Y >= 0 && X < CW && Y < CH && mask[Y * CW + X]; };
+    const row = (y, x0, x1, gap) => { streetRow(g, x0, x1, y, {w: k => 12 + (k * 8 | 0), gap: k => gap || 1, skip: (x, w) => !O.ok(x + tx + w / 2, y + ty - 6, w / 2 + 2), draw: (g, x, by, w, k) => shopHouse(g, x, by + 2, w, k)}); held.push([x0 + tx - 2, y + ty - 40, x1 + tx + 6, y + ty + 6]); };
+    const lane = (y, x0, x1) => { for (let x = x0; x < x1; x++) if (land(x, y + 2)) { F(g, x, y - 1, 1, 6, "#bdb6a8"); if (x % 6 < 3) F(g, x, y + 1, 1, 1, "#a8a092"); } };
+    g.save(); g.translate(tx, ty);
+    /* the bullet-train line runs on to both shores */
+    for (const [a, b] of [[-FX, 0], [400, 400 + FX]]) { F(g, a, 194, b - a, 6, "#8d8a85"); F(g, a, 195, b - a, 1, "#c9cbd0"); F(g, a, 198, b - a, 1, "#c9cbd0"); for (let x = a; x < b; x += 4) F(g, x, 196, 2, 2, "#6e6a63"); for (let x = a + 2; x < b; x += 14) F(g, x, 200, 2, 5, "#7b7872"); }
+    held.push([0, 194 + ty - 4, CW, 194 + ty + 12]);
+    /* west: a canal lined with cherry trees, shop streets either side of it */
+    for (let y = 214; y < 740; y++) if (land(-58, y)) { F(g, -63, y, 1, 1, "#9a968b"); F(g, -62, y, 9, 1, (y >> 2) % 2 ? "#3483a8" : "#3a8db2"); F(g, -53, y, 1, 1, "#9a968b"); if (hash(y, 1, 97) > .93) F(g, -60 + (hash(y, 2, 97) * 5 | 0), y, 2, 1, SAKURA[3]); }
+    for (let y = 222; y < 730; y += 22) { if (O.ok(-70 + tx, y + ty, 4)) roundTree(g, -70, y, 5 + (y % 3), SAKURA); if (O.ok(-46 + tx, y + 11 + ty, 4)) roundTree(g, -46, y + 11, 5 + (y % 2), SAKURA); }
+    held.push([-80 + tx, 205 + ty, -38 + tx, 740 + ty]);
+    for (let y = 250; y < 720; y += 40) { lane(y + 2, -FX, -80); row(y, -FX + 4, -82); }
+    for (let y = 250; y < 720; y += 40) { lane(y + 2, -38, -2); row(y, -36, -4, 2); }
+    /* east, between the mountain and the bay: more shop streets */
+    for (let y = 236; y < 450; y += 38) { lane(y + 2, 404, 400 + FX); row(y, 406, 400 + FX - 4); }
+    /* south: a main street with a scramble crossing, and a temple with its gate and pagoda */
+    const sy = 604, sx = 168;
+    for (let x = -FX; x < 236; x++) if (land(x, sy + 5)) { F(g, x, sy - 2, 1, 2, "#bdb2a0"); F(g, x, sy, 1, 10, C.asphalt[1]); F(g, x, sy + 10, 1, 2, "#bdb2a0"); if (x % 8 < 4 && Math.abs(x - sx) > 16) F(g, x, sy + 5, 1, 1, "#e8e2d6"); }
+    for (let y = 528; y < 740; y++) if (land(sx, y)) { F(g, sx - 6, y, 2, 1, "#bdb2a0"); F(g, sx - 4, y, 10, 1, C.asphalt[1]); F(g, sx + 6, y, 2, 1, "#bdb2a0"); }
+    for (let i = -3; i <= 3; i++) { F(g, sx - 15, sy + 5 + i, 6, 1, i % 2 ? C.asphalt[1] : "#f2efe8"); F(g, sx + 10, sy + 5 + i, 6, 1, i % 2 ? C.asphalt[1] : "#f2efe8"); F(g, sx + i + 1, sy - 9, 1, 6, i % 2 ? C.asphalt[1] : "#f2efe8"); F(g, sx + i + 1, sy + 14, 1, 6, i % 2 ? C.asphalt[1] : "#f2efe8"); }
+    for (let i = -4; i <= 4; i++) { F(g, sx + 1 + i, sy + 5 + i, 2, 1, "#f2efe8"); F(g, sx + 1 + i, sy + 5 - i, 2, 1, "#f2efe8"); }
+    held.push([-FX + tx, sy + ty - 4, 236 + tx, sy + ty + 14], [sx - 8 + tx, 520 + ty, sx + 10 + tx, CH]);
+    row(sy - 1, -FX + 4, sx - 18); row(sy - 1, sx + 18, 232);
+    const ty2 = 676; if (O.ok(40 + tx, ty2 + ty, 26)) { lane(ty2 + 22, -20, 100); templeHall(g, 40, ty2); pagoda(g, 92, ty2 + 2); if (O.ok(40 + tx, ty2 + 26 + ty, 12)) templeGate(g, 40, ty2 + 26); held.push([-20 + tx, ty2 - 50 + ty, 110 + tx, ty2 + 30 + ty]); }
+    row(ty2 - 6, 116, sx - 14, 2);
+    g.restore();
+    return held;
+  },
+  piece(g, env, x, y, k, k2){ /* what's left: pines on the hills, cherry trees, now and then a wooden house */
+    if (k < .25) japaneseHouse(g, x - 12, y, 22 + (k2 * 6 | 0), k2 > .6 ? pick(["#8a3b2e", "#3a5a78", "#4f6a3c"], k2) : null);
+    else if (k < .62) pine(g, x, y, 11 + (k2 * 9 | 0));
+    else if (k < .9) { roundTree(g, x, y, 4 + (k2 * 3 | 0), SAKURA); if (k2 > .5) roundTree(g, x + 8, y + 3, 4, SAKURA); }
+    else bush(g, x, y, 3, k2 > .5 ? SAKURA[2] : null);
+  },
+  life(g, D, vis){ /* people crossing the scramble, in every direction at once, while the lights are with them */
+    const sx = 168, sy = 604; if (!vis(sx, sy, 30) || (t % 600) > 360) return;
+    for (let i = 0; i < 18; i++) { const L = i % 6, u = ((t * .25 + i * 13) % 34) - 17, c = pick(["#2b2f38", "#d93b2b", "#f2efe8", "#2c4f7a", "#e6b84a"], hash(i, 1, 98));
+      const [x, y] = L === 0 ? [sx + u, sy + 2] : L === 1 ? [sx - u, sy + 8] : L === 2 ? [sx, sy + 5 + u * .8] : L === 3 ? [sx + 3, sy + 5 - u * .8] : L === 4 ? [sx + 1 + u * .5, sy + 5 + u * .5] : [sx + 1 + u * .5, sy + 5 - u * .5];
+      F(g, Math.round(x), Math.round(y) - 2, 1, 2, c); F(g, Math.round(x), Math.round(y) - 3, 1, 1, "#3a2a20"); }
+  }
+};
 const OUTSKIRTS = {
+  japan: OUT_TOKYO,
   la: {
     big(g, O){
       const {D, mask} = O, tx = D.pack.tx, ty = D.pack.ty, shore = y => coastL(y - ty) + tx;
@@ -3440,7 +3511,7 @@ function buildDistrictTerrain(D){
     ag.putImageData(ai, 0, 0); lg.globalCompositeOperation = "destination-in"; lg.drawImage(ac, 0, 0); }
   g.drawImage(lc, 0, 0);
   }
-  D.terrain = c; D.mask = mask;
+  D.terrain = c; D.mask = mask; D.pgrid = null;
   const mc = document.createElement("canvas"); mc.width = CW; mc.height = CH; const mg = mc.getContext("2d"), mi = mg.createImageData(CW, CH); for (let i = 0; i < N; i++) if (mask[i]) mi.data[i * 4 + 3] = 255; mg.putImageData(mi, 0, 0); D.maskC = mc;
   for (let i = 0; i < 70; i++) { const x = hash(i, 9, D.seed) * CW | 0, y = hash(i, 10, D.seed) * CH | 0; if (!mask[y * CW + x] && dist[y * CW + x] > 6) sparkles.push({x: D.ox + x, y: D.oy + y, s: i + D.seed, d: D.d.id}); }
 }
@@ -3710,6 +3781,7 @@ function renderView(now){
     const tx = D.ox + (D.pack.tx || 0), ty = D.oy + (D.pack.ty || 0);
     g.setTransform(1, 0, 0, 1, tx - cx, ty - cy);
     D.pack.life(g, D, (x, y, m) => inV(x + tx, y + ty, m || 40));
+    const OS = OUTSKIRTS[D.d.env]; if (OS && OS.life) OS.life(g, D, (x, y, m) => inV(x + tx, y + ty, m || 40)); /* the outskirts' own life (Tokyo's crossing) */
   }
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   for (const c of chimneys) if (inV(c.x, c.y, 30)) for (let k = 0; k < 3; k++) { const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1; }
@@ -4092,7 +4164,12 @@ function travelAvatar(D, d){
 function moveTraveller(ts){
   const T = av.travel; if (!T) return;
   const k = Math.min(1, (ts - T.s) / T.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-  av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
+  if (T.route) { /* along the streets at an even walking pace, turning to face each new stretch */
+    const R = T.route, L = T.cum[T.cum.length - 1] * k; let i = 1; while (i < R.length - 1 && T.cum[i] < L) i++;
+    const [ax, ay] = R[i - 1], [bx, by] = R[i], f = Math.max(0, Math.min(1, (L - T.cum[i - 1]) / Math.max(1e-6, T.cum[i] - T.cum[i - 1])));
+    av.x = ax + (bx - ax) * f; av.y = ay + (by - ay) * f; if (k < 1 && Math.hypot(bx - ax, by - ay) > .5) av.dir = Math.abs(bx - ax) > Math.abs(by - ay) ? (bx > ax ? "right" : "left") : (by > ay ? "down" : "up");
+  } else { av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; }
+  av.step += .4; viewDirty = true;
   if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0;
     if (T.stay && (T.wet || !onLandAt(av.x, av.y))) { const L = T.wet ? SEA_LINES.slice(1) : SEA_LINES; setTimeout(() => say(L[Math.floor(Math.random() * L.length)], av.x, av.y - 30), reduced ? 0 : 250); } } /* at the water's edge she still has something to say about the sea (not the drowning one) */
 }
@@ -4155,6 +4232,52 @@ function boatWake(g, x, y){
   for (let i = 1; i <= 4; i++) { g.globalAlpha = .75 * (1 - i / 5); F(g, x - dx * (13 + i * 5) - 2, y + 1 - dy * (6 + i * 4) + (i % 2), 3 + i, 1, "#eef9fb"); F(g, x - dx * (13 + i * 5) - 2, y - 3 - dy * (6 + i * 4) - (i % 2), 3 + i, 1, "#eef9fb"); }
   g.globalAlpha = 1;
 }
+/* On land she walks the streets (21 Nov). The roads and paths are read from each island's own drawing (their exact colours),
+   and a tap sends her along them the shortest way; she only steps off a road for the first and last few steps. */
+const PATH_HEX = ["#3b3a3c", "#4a494b", "#5a595a", "#bdb2a0", "#bdb6a8", "#a8a092", "#cfcac0"], PG = 4;
+let PATH_COLS = null; /* built on first use, so it never reads anything declared further down */
+function pathGrid(D){
+  if (D.pgrid) return D.pgrid;
+  if (!D.terrain) buildDistrictTerrain(D);
+  PATH_COLS ||= new Set(PATH_HEX.map(h => { const c = hex(h); return (c[0] << 16) | (c[1] << 8) | c[2]; }));
+  const gw = CW / PG | 0, gh = CH / PG | 0, n = new Uint8Array(gw * gh), px = D.terrain.getContext("2d").getImageData(0, 0, CW, CH).data;
+  for (let y = 0; y < CH; y++) for (let x = 0; x < CW; x++) { const i = y * CW + x, o = i * 4; if (D.mask[i] && px[o + 3] > 200 && PATH_COLS.has((px[o] << 16) | (px[o + 1] << 8) | px[o + 2])) n[(y / PG | 0) * gw + (x / PG | 0)]++; }
+  const grid = new Uint8Array(gw * gh); for (let i = 0; i < n.length; i++) grid[i] = n[i] >= 5 ? 1 : 0;
+  return D.pgrid = {gw, gh, grid};
+}
+function nearestPathCell(P, cx, cy, R){
+  let best = -1, bd = 1e9;
+  for (let r = 0; r <= R && best < 0; r++) for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) {
+    if (Math.max(Math.abs(x - cx), Math.abs(y - cy)) !== r || x < 0 || y < 0 || x >= P.gw || y >= P.gh || !P.grid[y * P.gw + x]) continue;
+    const d = (x - cx) ** 2 + (y - cy) ** 2; if (d < bd) { bd = d; best = y * P.gw + x; } }
+  return best;
+}
+/* her route on one island, as points in world coordinates, or null to walk straight (no road near either end, or none joining them) */
+function pathRoute(D, ax, ay, bx, by){
+  const P = pathGrid(D), c = (x, y) => [Math.max(0, Math.min(P.gw - 1, (x - D.ox) / PG | 0)), Math.max(0, Math.min(P.gh - 1, (y - D.oy) / PG | 0))];
+  const [sx, sy] = c(ax, ay), [gx, gy] = c(bx, by), s = nearestPathCell(P, sx, sy, 16), goal = nearestPathCell(P, gx, gy, 16);
+  if (s < 0 || goal < 0) return null;
+  const N = P.gw * P.gh, cost = new Float32Array(N).fill(Infinity), from = new Int32Array(N).fill(-1), heap = [[0, s]]; cost[s] = 0;
+  const hx = goal % P.gw, hy = goal / P.gw | 0, H = i => { const dx = Math.abs(i % P.gw - hx), dy = Math.abs((i / P.gw | 0) - hy); return Math.max(dx, dy) + .414 * Math.min(dx, dy); };
+  const push = e => { heap.push(e); let i = heap.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
+  const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } } return top; };
+  let found = false;
+  while (heap.length) {
+    const [, i] = pop(); if (i === goal) { found = true; break; }
+    const x = i % P.gw, y = i / P.gw | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { if (!dx && !dy) continue; const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= P.gw || Y >= P.gh) continue;
+      const j = Y * P.gw + X; if (!P.grid[j]) continue; const nc = cost[i] + (dx && dy ? 1.414 : 1); if (nc < cost[j]) { cost[j] = nc; from[j] = i; push([nc + H(j), j]); } }
+  }
+  if (!found) return null;
+  const cells = []; for (let i = goal; i >= 0; i = from[i]) { cells.push(i); if (i === s) break; } cells.reverse();
+  const pts = [[ax, ay]], at = i => [D.ox + (i % P.gw) * PG + PG / 2, D.oy + (i / P.gw | 0) * PG + PG / 2];
+  for (let k = 0; k < cells.length; k++) { /* only the corners: straight runs of the street stay one line */
+    const prev = cells[k - 1], cur = cells[k], next = cells[k + 1];
+    if (prev === undefined || next === undefined || (cur - prev) !== (next - cur)) pts.push(at(cur)); }
+  pts.push([bx, by]);
+  return pts.filter((p, i) => i === 0 || i === pts.length - 1 || Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) > 6); /* no tiny wiggles where a road edge is ragged */
+}
+
 /* the nearest dry ground to a point out at sea, a few steps in from the water's edge */
 function nearestShore(x, y){
   for (let r = 6; r < 600; r += 6) for (let i = 0; i < 36; i++) { const a = i / 36 * 6.2832, c = Math.cos(a), s = Math.sin(a);
@@ -4166,6 +4289,9 @@ function walkHere({x, y}, keepCard){
   let wet = false; if (!onLandAt(x, y + 12)) { const p = nearestShore(x, y + 12); if (p) { x = p.x; y = p.y - 12; wet = true; } } /* a tap on the sea: she goes to the water's edge instead */
   const dist = Math.hypot(x - av.x, y - av.y), d = Math.min(3000, 300 + dist * 9);
   av.travel = {x0: av.x, y0: av.y, x1: x, y1: y + 12, s: performance.now(), d, D, i: 0, pts: [[x, y + 12]], stay: true, wet};
+  const here = districtAt(av.x, av.y, true), there = districtAt(x, y + 12, true);
+  if (here && here === there && onLandAt(av.x, av.y)) { const r = pathRoute(here, av.x, av.y, x, y + 12); /* on her own island she keeps to the streets */
+    if (r) { const cum = [0]; for (let i = 1; i < r.length; i++) cum.push(cum[i - 1] + Math.hypot(r[i][0] - r[i - 1][0], r[i][1] - r[i - 1][1])); Object.assign(av.travel, {route: r, cum, d: Math.min(9000, 300 + cum[cum.length - 1] * 9)}); } }
   av.path = []; av.wait = 0; av.dir = Math.abs(x - av.x) > Math.abs(y + 12 - av.y) ? (x > av.x ? "right" : "left") : (y + 12 > av.y ? "down" : "up");
   if (!keepCard) { $("loccard").hidden = true; lensHover = null; holdStart = 0; }
   viewDirty = true; return true;

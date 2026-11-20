@@ -47,6 +47,7 @@ shipping), [docs/RELEASE.md](docs/RELEASE.md) (web, TestFlight, Supabase, PostHo
 - New "create" actions for guests go behind `needAccount(then)`. Places and pieces stay open to guests.
 - Anything `position:sticky` inside the page scroller needs `top:calc(-1 * var(--safe-top))` and that much extra top padding, or content shows through the notch strip above it (seen in the desktop frame and on iPhone).
 - Map cells are `CW × CH` (720 × 960); each city's own drawing is made for a 400 × 560 frame (`BW × BH`) placed `FX`/`FY` in, folded into `pack.tx`/`pack.ty`. Always go through `pack.tx/ty`, never assume the old 400 × 560 cell. Each island draws into its own canvas (`D.cv`, land in `D.maskC`); there is no world-sized canvas any more, so don't add one (iPhones refuse canvases over 16.7M pixels).
+- She walks along roads found by their exact colours (`PATH_HEX`). A new road or path colour in a city's drawing must be added there, or she'll cut across it.
 - On the map canvas, set `globalCompositeOperation` right before every `drawImage`. A mode left on from an earlier layer ("screen" from the streetlight glow) turned the evening sea white.
 - The 8776 test tab is signed in to the owner's account, so test edits sync to her real world. Snapshot before testing and undo every change after.
 - Anything that applies a synced world must not change the screen you're on unless the incoming data truly calls for it (a blanket "onboarding done → go Home" kept throwing people out of a replayed introduction).
