@@ -1672,6 +1672,8 @@ body.on-home.world-night .tabbar button[aria-current="page"]{background:rgba(255
 #journey button[data-go="dreams"]{flex:none;overflow:visible;text-overflow:clip;min-width:max-content;width:auto;max-width:none} /* "Add places" shows in full (20 Nov) */
 .ap-list{margin:4px 0 0}.ap-list .grow{display:grid;min-width:0}.ap-list .grow small{color:var(--muted);font-size:12px}
 .dest-grip{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}body.reordering,body.reordering *{-webkit-user-select:none!important;user-select:none!important}
+/* places strip: the places share the whole width, however many there are; when they no longer fit, it scrolls (20 Nov) */
+#journey button{flex:1 0 auto;width:auto;min-width:max-content;padding:0 6px;overflow:visible}#journey .link{flex:0 0 10px;width:10px}
 </style>
 
 <div id="app">

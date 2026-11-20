@@ -247,3 +247,4 @@ line rather than editing the old one.
 - 20 Nov: Splash walk: each character walks to the star in straight lines with turns (across, then up or down, a random route each launch) at an even pace, with a small step lift and sway, instead of gliding diagonally.
 - 20 Nov: Your pieces has a back arrow left of its title (back to the picture), and no tab is selected while it's open.
 - 20 Nov: Add places picks several at once: each picked place joins a list under the search with its own status dropdown (Travel by default, Study for universities) and a remove button; the single Status block is gone; "Add N places" adds them all.
+- 20 Nov: The places strip on Home spreads its places across the full width, however many there are; it scrolls only when they no longer fit.
