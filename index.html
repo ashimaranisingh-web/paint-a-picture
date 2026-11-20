@@ -1671,6 +1671,7 @@ body.on-home.world-night .tabbar button[aria-current="page"]{background:rgba(255
 @media (prefers-reduced-motion:reduce){.tabbar button .tl{transition:opacity .3s ease!important}.tabbar button{transition:background .3s ease!important}} /* a gentle fade still plays */
 #journey button[data-go="dreams"]{flex:none;overflow:visible;text-overflow:clip;min-width:max-content;width:auto;max-width:none} /* "Add places" shows in full (20 Nov) */
 .ap-list{margin:4px 0 0}.ap-list .grow{display:grid;min-width:0}.ap-list .grow small{color:var(--muted);font-size:12px}
+.dest-grip{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}body.reordering,body.reordering *{-webkit-user-select:none!important;user-select:none!important}
 </style>
 
 <div id="app">
@@ -6378,24 +6379,33 @@ function wireDestRows(root, redraw){
   const saveOrder = () => { const ids = [...root.querySelectorAll("[data-dest]")].map(li => li.dataset.dest); commit(st => { st.destinations.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); }); };
   root.querySelectorAll("[data-grip]").forEach(h => {
     const li = h.closest("li");
-    // the dragged row never leaves the DOM (moving it would drop the pointer); its neighbours step around it instead
+    // the dragged row never leaves the DOM (moving it would drop the pointer); its neighbours glide around it instead.
+    // On a phone (20 Nov): the page can't scroll under the finger, a long press never selects text, neighbours slide
+    // rather than jump, and holding near the top or bottom edge scrolls the list.
     h.onpointerdown = e => {
       if (e.button) return;
       e.preventDefault(); li.classList.add("dragging"); try { h.setPointerCapture(e.pointerId); } catch (err) {}
-      let y0 = e.clientY, moved = false; // y0: where the row's resting place sits under the finger
-      const move = ev => {
-        if (ev.pointerId !== e.pointerId) return;
-        const next = li.nextElementSibling, prev = li.previousElementSibling, dy = ev.clientY - y0;
-        if (next && dy > next.offsetHeight / 2) { li.parentNode.insertBefore(next, li); y0 += next.offsetHeight; moved = true; }
-        else if (prev && dy < -prev.offsetHeight / 2) { li.parentNode.insertBefore(prev, li.nextSibling); y0 -= prev.offsetHeight; moved = true; }
-        li.style.transform = `translateY(${ev.clientY - y0}px)`;
-      };
+      const sc = li.closest("#pmain, .sheet-b") || document.scrollingElement, ov = sc.style.overflowY; sc.style.overflowY = "hidden"; document.body.classList.add("reordering");
+      let y0 = e.clientY + sc.scrollTop, moved = false, lastY = e.clientY, raf = 0, auto = 0;
+      const glide = (el, from) => { el.style.transition = "none"; el.style.transform = `translateY(${from}px)`; el.getBoundingClientRect(); el.style.transition = "transform .18s ease"; el.style.transform = ""; };
+      const step = () => { raf = 0; const y = lastY + sc.scrollTop;
+        for (let guard = 0; guard < 4; guard++) { const next = li.nextElementSibling, prev = li.previousElementSibling, dy = y - y0;
+          if (next && dy > next.offsetHeight / 2) { const h0 = next.offsetHeight; li.parentNode.insertBefore(next, li); glide(next, h0); y0 += h0; moved = true; }
+          else if (prev && dy < -prev.offsetHeight / 2) { const h0 = prev.offsetHeight; li.parentNode.insertBefore(prev, li.nextSibling); glide(prev, -h0); y0 -= h0; moved = true; }
+          else break; }
+        li.style.transform = `translateY(${y - y0}px)`; };
+      const edge = () => { const r = sc.getBoundingClientRect(), m = 56, v = lastY < r.top + m ? -6 : lastY > r.bottom - m ? 6 : 0;
+        if (v) { sc.scrollTop += v; step(); auto = requestAnimationFrame(edge); } else auto = 0; };
+      const move = ev => { if (ev.pointerId !== e.pointerId) return; ev.preventDefault(); lastY = ev.clientY; if (!raf) raf = requestAnimationFrame(step); if (!auto) auto = requestAnimationFrame(edge); };
       const end = ev => {
         if (ev.pointerId !== e.pointerId) return;
         removeEventListener("pointermove", move); removeEventListener("pointerup", end); removeEventListener("pointercancel", end);
-        li.classList.remove("dragging"); li.style.transform = ""; if (moved) saveOrder();
+        cancelAnimationFrame(raf); cancelAnimationFrame(auto); sc.style.overflowY = ov; document.body.classList.remove("reordering");
+        li.style.transition = "transform .15s ease"; li.style.transform = ""; setTimeout(() => { li.style.transition = ""; li.classList.remove("dragging"); }, 160);
+        [...li.parentNode.children].forEach(x => { if (x !== li) setTimeout(() => { x.style.transition = ""; }, 200); });
+        if (moved) saveOrder();
       };
-      addEventListener("pointermove", move); addEventListener("pointerup", end); addEventListener("pointercancel", end);
+      addEventListener("pointermove", move, {passive: false}); addEventListener("pointerup", end); addEventListener("pointercancel", end);
     };
     h.onkeydown = e => {
       const up = e.key === "ArrowUp", sib = up ? li.previousElementSibling : e.key === "ArrowDown" ? li.nextElementSibling : null; if (!sib) return;
