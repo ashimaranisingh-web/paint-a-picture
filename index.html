@@ -7675,7 +7675,7 @@ function signInForm(root, onDone, bar){ /* bar: put the main button there (a she
     $("signSend").disabled = true; await accountsReadyP; if (!supa) { $("signSend").disabled = false; err("Signing in isn't available right now. Try again in a moment."); return; }
     const {error} = await supa.auth.signInWithOtp({email}); $("signSend").disabled = false;
     if (error) { const m = String(error.message || ""), wait = m.match(/after (\d+) seconds?/); console.warn("sign-in code", error.status, m); /* say why, so it's never a dead end */
-      err(wait ? `Please wait ${wait[1]} seconds, then try again.` : error.status === 429 || /rate limit/i.test(m) ? "Too many codes have been sent in the last hour. Try again a bit later, or tap “I already have a code” to use the last one." : /invalid/i.test(m) ? "That email address doesn't look right. Check it and try again." : `Couldn't send the code${m ? `: ${m}` : ". Check your connection and try again."}`); return; } err("");
+      err(wait ? `Please wait ${wait[1]} seconds, then try again.` : error.status === 429 || /rate limit/i.test(m) ? "Too many codes have been sent in the last hour. Try again a bit later." : /invalid/i.test(m) ? "That email address doesn't look right. Check it and try again." : `Couldn't send the code${m ? `: ${m}` : ". Check your connection and try again."}`); return; } err("");
     codeStep(email, true);
   };
   /* step two: the code from the email (also reachable straight away, for a code that was already sent) */
