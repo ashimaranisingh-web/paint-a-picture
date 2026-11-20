@@ -1635,6 +1635,7 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 /* the about page (20 Nov) */
 .st-qa{display:grid;gap:18px;text-align:left;margin-top:8px}.st-qa h2{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--ink)}.st-qa p{margin:0;font-size:15px;line-height:1.5;color:var(--ink-2)}
 .st-perm.st-perm-row{display:flex;align-items:center;gap:14px;text-align:left}.st-perm-row .consent-ic{flex:none}.st-perm-row .st-head{text-align:left;justify-items:start;margin:0}.st-perm-row .st-h{text-align:left}.st-perm-row .st-sub{text-align:left;margin-top:4px}
+.st-head.st-head-back{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:12px;text-align:left}.st-head-back .st-back{width:40px;height:40px;grid-row:1}.st-head-back .st-h{grid-column:2;text-align:left}.st-head-back > :not(.st-back):not(.st-h){grid-column:1 / -1}
 </style>
 
 <div id="app">
@@ -6880,8 +6881,10 @@ const stWireBack = () => { if ($("obBack")) $("obBack").onclick = () => obGo(obS
 // The idea's footer: where you are in the pages, then back and one wide button (or a pair, for playing the weeks).
 function stIdeaFoot(Fo, buttons){
   const k = OB[obStep];
-  Fo.innerHTML = `<div class="st-ibtns">${k !== ST_IDEA[0] ? stBack() : ""}${buttons}</div>`;
-  stWireBack();
+  Fo.innerHTML = `<div class="st-ibtns">${buttons}</div>`; /* back sits left of the heading on these pages (20 Nov) */
+  const head = $("obMain")?.querySelector(".st-head");
+  if (head && !head.querySelector(".st-back")) { head.classList.add("st-head-back"); head.insertAdjacentHTML("afterbegin", stBack());
+    $("obBack").onclick = () => obGo(k === ST_IDEA[0] ? 0 : obStep - 1); } /* the first page goes back to the splash */
 }
 const stNextIdea = (Fo, label) => { stIdeaFoot(Fo, `<button class="btn st-big" id="obNext">${label || "Next"}</button>`); $("obNext").onclick = () => obGo(obStep + 1); };
 // The panel's footer: back, a note, then a quiet Skip on the steps that can wait, then Next.
