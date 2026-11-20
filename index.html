@@ -2036,7 +2036,7 @@ function spendClearView(){ commit(s => { s.rewards.dayUsed = today(); }); }
    Layers: district terrain (built lazily, once) → world canvas with dream landmarks → per-frame life,
    character, fog + lens → HUD canvas (place names).
    ===================================================================== */
-const CW = 400, CH = 560, PAD = 120, AH = 520, MAX_DEST = 12;
+const CW = 720, CH = 960, BW = 400, BH = 560, FX = (CW - BW) / 2, FY = (CH - BH) / 2, PAD = 120, AH = 520, MAX_DEST = 12; /* 21 Nov: cells grew from 400 x 560 to 720 x 960 so islands have room for outskirts; each city's own drawing (made for a BW x BH frame) sits in the middle, FX/FY in */
 
 /* ---------------- places people can search for ----------------
    name | country | lat | lon | environment | kind (place or uni) | other names */
@@ -2418,7 +2418,7 @@ function cottage(g, bx, by, roof, wall){
   F(g, bx + 7, by - 32, 5, 8, C.out); F(g, bx + 8, by - 31, 3, 7, C.stone[1]); F(g, bx + 8, by - 31, 3, 1, C.stone[3]);
   F(g, bx - 3, by - 10, 7, 10, C.out); F(g, bx - 2, by - 9, 5, 9, roof[1]); F(g, bx + 1, by - 5, 1, 1, "#f2cf5b");
   for (const x of [bx - 11, bx + 6]) { F(g, x, by - 11, 6, 6, C.out); F(g, x + 1, by - 10, 4, 4, C.glass[1]); F(g, x + 1, by - 10, 2, 1, C.glass[2]); F(g, x, by - 5, 6, 1, C.wood[2]); F(g, x + 1, by - 6, 1, 1, "#ef8fa0"); }
-  if (g === bctx) chimneys.push({x: bx + 9 + LMO.x, y: by - 33 + LMO.y, d: LMO.d});
+  if (g === LMO.g) chimneys.push({x: bx + 9 + LMO.x, y: by - 33 + LMO.y, d: LMO.d});
   return 34;
 }
 function villa(g, bx, by, tint){
@@ -2490,7 +2490,7 @@ function fountain(g, bx, by){
   oval(g, bx, by - 5, 20, 8, C.stone[2]);
   oval(g, bx, by - 6, 14, 6, C.out); oval(g, bx, by - 6, 13, 5, C.stone[1]); oval(g, bx, by - 7, 13, 4, C.stone[3]); oval(g, bx, by - 6, 10, 3, C.water[1]);
   F(g, bx - 2, by - 17, 4, 11, C.out); F(g, bx - 1, by - 17, 2, 11, C.stone[2]); oval(g, bx, by - 17, 5, 1, C.stone[1]);
-  if (g === bctx) fountains.push({x: bx + LMO.x, y: by - 19 + LMO.y, d: LMO.d});
+  if (g === LMO.g) fountains.push({x: bx + LMO.x, y: by - 19 + LMO.y, d: LMO.d});
   return 24;
 }
 
@@ -2609,10 +2609,10 @@ function buildLA(g){
   // neighbourhoods
   for (const y of ROADS) streetRow(g, cl(y) + 76, LAX1 - 4, y, {w: k => 24 + (k * 10 | 0), gap: k => 10 + (k * 6 | 0),
     skip: (x, w) => (x < 1161 && x + w > 1148) || (y === 420 && x + w > 1104),
-    draw: (g, x, by, w, k) => spanishHouse(g, x, by - 4, w, pick(STUCCO, k), hash(x, 2, 2))});
+    draw: laHouse});
   for (const y of ROADS) for (let x = 1004; x < LAX1 - 10; x += 44) roundTree(g, x + 6, y + 40, 6, hash(x, y, 65) > .55 ? ["#4a3a78", "#6a54a8", "#8b74c9", "#b39ae6"] : C.leaf);
   for (const y of [236, 380, 508]) streetRow(g, cl(y) + 78, LAX1 - 4, y, {w: k => 24 + (k * 8 | 0), gap: k => 6 + (k * 8 | 0),
-    skip: (x, w) => x < 1162 && x + w > 1146, draw: (g, x, by, w, k) => spanishHouse(g, x, by - 4, w, pick(STUCCO, k), hash(x, 5, 2))});
+    skip: (x, w) => x < 1162 && x + w > 1146, draw: laHouse});
 }
 function lifeLA(g, D, vis){
   for (let k = 0; k < 4; k++) { const y = AH - (((t * (1.1 + k * .12)) + k * 130) % (AH + 40)) + 20; const x = coastL(y) + 52 + (k % 2) * 7; if (vis(x, y, 20)) { F(g, x - 1, y - 1, 7, 12, C.out); F(g, x, y, 5, 10, ["#f2efe8", "#2e3138", "#7d1f2a", "#5d7f9a"][k]); F(g, x + 1, y + 6, 3, 2, "#3b4f66"); } }
@@ -2624,6 +2624,83 @@ function lifeLA(g, D, vis){
     for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + t * .01; line(g, fwx, fwy, fwx + Math.cos(a) * 14, fwy + Math.sin(a) * 14, "#c9c5bd"); F(g, fwx + Math.cos(a) * 14 - 1, fwy + Math.sin(a) * 14, 3, 2, ["#f04f85", "#f2cf5b", "#5aa7d6", "#7fb85a"][i % 4]); }
   }
 }
+
+/* ---------------- LA outskirts (21 Nov): Mulholland and its villas, the coast road on past the city, beach houses on stilts ---------------- */
+function villaPool(g, x, by, k){
+  const w = 30, top = by - 11, col = pick(["#f4f1ea", "#efe6d6", "#e9eef0", "#f3e3d3"], k);
+  oval(g, x + w / 2 + 3, by + 1, w / 2 + 3, 3, "rgba(30,30,15,.28)");
+  F(g, x - 3, by - 1, w + 6, 12, "#7fae52"); F(g, x - 3, by + 10, w + 6, 1, "#6a9a45");
+  F(g, x - 1, top - 1, w + 2, 12, C.out); F(g, x, top, w, 10, col); F(g, x, top + 9, w, 1, shade(col, -.15));
+  F(g, x - 3, top - 4, w + 6, 3, C.out); F(g, x - 2, top - 4, w + 4, 2, pick(["#d9d4c8", "#c9b9a0", "#b9b2a4"], k));
+  F(g, x + 3, top + 2, w - 12, 6, "#3d6f8f"); F(g, x + 3, top + 2, w - 12, 1, "#9fd0e6"); for (let i = x + 8; i < x + w - 9; i += 5) F(g, i, top + 2, 1, 6, C.out);
+  F(g, x + w - 7, top + 2, 4, 7, C.wood[1]);
+  F(g, x + 2, by + 1, w - 6, 8, "#ece4d2"); F(g, x + 3, by + 2, w - 8, 6, "#35b2d6"); F(g, x + 3, by + 2, w - 8, 1, "#8fe1f2"); F(g, x + 6 + (k * 10 | 0), by + 5, 3, 1, "#c8f3fb");
+  F(g, x + w - 2, by + 2, 2, 4, pick(["#f2a7bf", "#f2d36b", "#ffffff"], k)); palm(g, x - 4, by + 4, 18 + (k * 8 | 0));
+}
+function stiltHouse(g, x, by, k){
+  const w = 20, top = by - 19, col = pick(["#f2efe8", "#cfe3ea", "#f2dccb", "#e4ecd8", "#f6e7b8"], k);
+  oval(g, x + w / 2 + 2, by + 1, w / 2 + 2, 2, "rgba(30,30,15,.25)");
+  for (const px of [x + 1, x + (w >> 1), x + w - 2]) F(g, px, by - 7, 1, 7, C.wood[0]);
+  F(g, x - 2, by - 8, w + 4, 2, C.wood[1]); F(g, x - 2, by - 8, w + 4, 1, C.wood[2]);
+  F(g, x - 1, top, w + 2, 12, C.out); F(g, x, top + 1, w, 10, col); for (let i = x + 1; i < x + w; i += 3) F(g, i, top + 1, 1, 10, shade(col, -.07));
+  F(g, x + 3, top + 4, 5, 4, "#2f4256"); F(g, x + 3, top + 4, 5, 1, "#9fc6dc"); F(g, x + w - 7, top + 4, 4, 7, C.wood[2]);
+  F(g, x - 3, top - 4, w + 6, 4, C.out); F(g, x - 2, top - 3, w + 4, 2, pick(["#6f8ca3", "#9e5a3e", "#5d6a73", "#c96a45"], k * 7 % 1));
+}
+const LA_STUCCO = ["#f3ece0", "#efe2cf", "#f2d9cf", "#e9e4d8", "#f6efe6", "#f4d6c2", "#dfe8ea", "#f3e2b8", "#e8d3e6"];
+function bungalow(g, x, by, w, k){ /* a Craftsman bungalow: painted siding, a low gable with deep eaves, a porch on two posts */
+  const wall = pick(["#8a9a6e", "#c9a24a", "#6f8ca3", "#a85a42", "#b8a27a", "#7d6b8f", "#5f8a7a"], k), trim = "#f4efe4", top = by - 11, cx = x + (w >> 1), rc = pick(["#4a3a30", "#5d5a55", "#6b3a2a", "#3e4a40"], k * 7 % 1);
+  oval(g, cx + 3, by + 1, (w >> 1) + 2, 3, "rgba(30,30,15,.28)");
+  F(g, x - 2, by + 1, w + 4, 4, "#7fae52"); F(g, x - 2, by + 4, w + 4, 1, "#6a9a45");
+  F(g, x - 1, top, w + 2, 12, C.out); F(g, x, top, w, 11, wall); for (let r = top + 2; r < by; r += 2) F(g, x, r, w, 1, shade(wall, -.12));
+  for (let r = 0; r < 7; r++) { const half = 3 + Math.round(r * ((w >> 1) + 1) / 6); F(g, cx - half - 1, top - 7 + r, 2 * half + 2, 1, C.out); F(g, cx - half, top - 7 + r, 2 * half, 1, r < 2 ? shade(rc, .2) : rc); }
+  F(g, x - 4, top, w + 8, 1, C.out); F(g, cx - 1, top - 4, 3, 2, trim);
+  for (const wx of [x + 3, x + w - 8]) { F(g, wx - 1, top + 2, 6, 5, trim); F(g, wx, top + 3, 4, 3, "#2f4256"); }
+  F(g, x + 1, by - 7, w - 2, 1, trim); F(g, x + 2, by - 7, 2, 7, trim); F(g, x + w - 4, by - 7, 2, 7, trim); F(g, cx - 2, by - 7, 4, 7, C.wood[1]);
+  if (k > .6) bush(g, x + w - 2, by + 2, 2, "#f2d36b");
+  return 24;
+}
+/* one LA house along a street: Spanish revival, a Craftsman bungalow or (now and then) a glass villa with a pool */
+function laHouse(g, x, by, w, k){ const v = hash(x, by, 95); if (v > .86 && w > 26) villaPool(g, x, by - 8, k); else if (v > .45) bungalow(g, x, by - 3, w, k); else spanishHouse(g, x, by - 4, w, pick(LA_STUCCO, k), hash(x, by, 94)); }
+const OUTSKIRTS = {
+  la: {
+    big(g, O){
+      const {D, mask} = O, tx = D.pack.tx, ty = D.pack.ty, shore = y => coastL(y - ty) + tx;
+      /* the hills across the north, carrying on the city's own */
+      for (let x = 0; x < CW; x++) { const top = 70 + Math.round(9 * Math.sin(x / 29) + 5 * Math.sin(x / 9)), px = x - tx, foot = x >= FX + BW ? FY + 38 + Math.round(10 * Math.sin(px / 31) + 6 * Math.sin(px / 11)) : FY + 12 + Math.round(6 * Math.sin(x / 23) + 3 * Math.sin(x / 9)); /* a wavy foot, never a straight seam */ /* east of the city the hills come down as far as the city's own */
+        for (let y = 0; y < foot; y++) { if (x < shore(y) + 60 || !mask[y * CW + x]) continue; const n = vnoise(x, y, 14, 7);
+          F(g, x, y, 1, 1, y > foot - 3 ? "#7b7646" : y < top ? (n > .55 ? "#9a9358" : "#8f8a52") : n > .5 ? "#a39b5e" : "#958e55"); } }
+      for (let i = 0; i < 120; i++) { const x = hash(i, 1, 91) * CW | 0, y = hash(i, 2, 91) * FY | 0; if (x > shore(y) + 64 && mask[y * CW + x]) F(g, x, y, 3, 2, hash(i, 3, 91) > .5 ? "#5f6e3c" : "#6d7a44"); }
+      /* Mulholland: a road winding along the ridge, glass villas with pools looking down on the city (the sign and the observatory are the city's own landmarks) */
+      const ridge = x => FY - 92 + Math.round(14 * Math.sin(x / 47) + 5 * Math.sin(x / 13));
+      for (let x = shore(FY) + 66; x < CW; x++) { const y = ridge(x); if (mask[y * CW + x] && mask[(y + 6) * CW + x]) { F(g, x, y - 1, 1, 1, "#bdb2a0"); F(g, x, y, 1, 5, C.asphalt[1]); F(g, x, y + 5, 1, 1, "#bdb2a0"); if (x % 8 < 4) F(g, x, y + 2, 1, 1, "#e6c34a"); } }
+      for (let x = shore(FY) + 84; x < CW - 34; x += 50 + (hash(x, 1, 93) * 24 | 0)) { const y = ridge(x + 15) + 26; if (O.ok(x + 15, y + 8, 15)) villaPool(g, x, y, hash(x, 2, 93)); }
+      for (let i = 0; i < 26; i++) { const x = hash(i, 4, 93) * CW | 0, y = ridge(x) - 8 - (hash(i, 5, 93) * 30 | 0); if (O.ok(x, y, 3)) (i % 3 ? bush(g, x, y, 2 + (i % 2), i % 4 ? null : "#e8b04a") : palm(g, x, y, 16 + i % 8)); }
+      /* the coast road, the Strand and the beach carry on past the city's own stretch */
+      g.save(); g.translate(tx, ty); const cl = coastL, rows = [];
+      for (let y = -FY; y < -24; y++) rows.push(y); for (let y = AH + 24; y < CH - FY; y++) rows.push(y);
+      for (const y of rows) { const c = cl(y); F(g, c + 44, y, 4, 1, "#cfcac0"); F(g, c + 50, y, 15, 1, hash(c, y, 63) > .8 ? C.asphalt[2] : C.asphalt[1]); if (y % 10 < 5) F(g, c + 57, y, 1, 1, "#e6c34a"); F(g, c + 49, y, 1, 1, "#bdb2a0"); F(g, c + 65, y, 1, 1, "#bdb2a0"); }
+      for (const y of rows) if (y % 26 === 4 && O.ok(cl(y) + 68 - tx, y + ty, 3)) palm(g, cl(y) + 68, y, 20 + (hash(y, 1, 92) * 10 | 0));
+      for (const y of rows) if (y % 44 === 0 && O.ok(cl(y) + 22 - tx, y + ty, 4)) stiltHouse(g, cl(y) + 12, y, hash(y, 2, 92));
+      /* the city's streets run on to the east shore, with houses along them; a new street across the south, and the avenue north up to Mulholland */
+      const held = [[shore(FY) + 30, 0, CW, FY + 4], [FX + BW, FY, CW, FY + 60]], east = yc => { let x = FX + BW; while (x < CW - 2 && mask[yc * CW + x + 10]) x += 2; return x - 8 - tx; };
+      const row = (y, x0, x1) => { if (x1 - x0 < 30) return; streetRow(g, x0, x1, y, {w: k => 22 + (k * 12 | 0), gap: k => 8 + (k * 10 | 0), skip: (x, w) => !O.ok(x + tx + w / 2, y + ty - 8, w / 2 + 2) || (x < 1161 && x + w > 1148), draw: laHouse}); held.push([x0 + tx - 4, y + ty - 34, x1 + tx + 4, y + ty + 8]); };
+      for (const y of ROADS) { const x1 = east(y + ty + 5); if (x1 > LAX1 + 8) { road(g, LAX1, y, x1 + 6 - LAX1, 10, false, "#e8e2d6"); held.push([LAX1 + tx, y + ty - 4, CW, y + ty + 14]); } row(y, LAX1 + 6, x1); }
+      for (const y of [236, 380, 508]) row(y, LAX1 + 6, east(y + ty - 6));
+      const yS = AH + 70, xS = cl(yS) + 66, xE = east(yS + ty + 5);
+      if (xE - xS > 60) { road(g, xS, yS, xE + 6 - xS, 10, false, "#e8e2d6"); road(g, 1150, AH + 6, 9, yS - AH - 6, true); held.push([xS + tx, yS + ty - 4, CW, yS + ty + 14], [1150 + tx - 4, AH + ty, 1150 + tx + 14, yS + ty]); row(yS, xS + 10, xE); row(yS + 84, cl(yS + 84) + 76, east(yS + 84 + ty - 6)); }
+      const yN = ridge(1150 + tx) - ty + 5; road(g, 1150, yN, 9, -6 - yN, true); held.push([1150 + tx - 4, 0, 1150 + tx + 14, FY]);
+      g.restore();
+      return held;
+    },
+    skip: (O, x, y) => x < coastL(y - O.D.pack.ty) + O.D.pack.tx + 80 || ROADS.some(r => Math.abs(y - (r + O.D.pack.ty + 5)) < 14),
+    piece(g, env, x, y, k, k2){
+      if (k < .12) villaPool(g, x - 15, y - 6, k2);
+      else if (k < .6) { palm(g, x, y, 18 + (k2 * 12 | 0), k2 > .5); if (k2 > .4) palm(g, x + 8, y + 3, 14 + (k2 * 9 | 0)); }
+      else if (k < .88) roundTree(g, x, y, 5 + (k2 * 3 | 0), ["#4a3a78", "#6a54a8", "#8b74c9", "#b39ae6"]);
+      else { bush(g, x, y, 3 + (k2 * 2 | 0), k2 > .4 ? "#c63a8f" : null); if (k2 < .5) rock(g, x + 5, y - 2, 6, 3); }
+    }
+  }
+};
 
 /* ---------------- dream landmarks, drawn in the style of the place they're in ---------------- */
 const KIND_H = {villa: 30, home: 34, studio: 28, campus: 34, car: 24, drift: 22, fitness: 20, beach: 24, balloon: 40, garden: 26, picnic: 24, library: 34, fountain: 24};
@@ -3020,6 +3097,7 @@ const PACKS = {
     fixed: [{id: "square", title: "The square", desc: "A fountain, a café and the market on Saturdays.", x: 200, y: 214, h: 24}],
     walk: () => step(24, 376, 8).map(x => [x, 290])}
 };
+for (const P of Object.values(PACKS)) { P.tx = (P.tx || 0) + FX; P.ty = (P.ty || 0) + FY; } /* the city's frame sits in the middle of its (bigger) cell */
 
 /* ---------------- city landmarks ----------------
    Each place can carry one landmark that makes it recognisable, drawn in the world's pixel style at the
@@ -3216,9 +3294,9 @@ function drawLandmarkAt(g, L, x, y){
 /* ---------------- the world canvas: layout, district terrain, landmarks ---------------- */
 let W = CW + PAD * 2, H = CH + PAD * 2;
 const DIST = new Map(); let EMPTY = [];
-const bg = document.createElement("canvas"), bctx = bg.getContext("2d"), landC = document.createElement("canvas"), lctx = landC.getContext("2d");
+const bctx = document.createElement("canvas").getContext("2d"); /* only for making the sea pattern: since 21 Nov each island keeps its own picture (D.cv), so the world can grow past the size an iPhone will draw in one canvas */
 let locs = [], chimneys = [], fountains = [], sparkles = [], fx = [], seaPattern = null, layoutKey = "", landKey = "";
-const LMO = {x: 0, y: 0, d: ""}; // where the landmark being drawn sits in the world
+const LMO = {x: 0, y: 0, d: "", g: null}; // where the landmark being drawn sits in the world
 const hashStr = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return (h >>> 0) % 997; };
 const PLACEHOLDER = {id: "d-here", name: "Your world", country: "", env: "town", purpose: "live", col: 0, row: 0, placeholder: true};
 const worldDests = () => S.destinations.length ? S.destinations : [PLACEHOLDER];
@@ -3231,27 +3309,29 @@ function makeSeaPattern(){
 function buildLayout(){
   const ds = worldDests(); layoutAll(ds);
   const c0 = Math.min(...ds.map(d => d.col)), r0 = Math.min(...ds.map(d => d.row)), c1 = Math.max(...ds.map(d => d.col)), r1 = Math.max(...ds.map(d => d.row));
-  W = (c1 - c0 + 1) * CW + PAD * 2; H = (r1 - r0 + 1) * CH + PAD * 2;
+  /* a column or row with no place in it is a narrower stretch of open sea: wide cells for islands, without a canvas too big for an iPhone */
+  const usedC = new Set(ds.map(d => d.col)), usedR = new Set(ds.map(d => d.row)), XS = {}, YS = {}, CWs = {}, CHs = {};
+  let ax = PAD; for (let c = c0; c <= c1; c++) { XS[c] = ax; CWs[c] = usedC.has(c) ? CW : SEA_GAP * CW | 0; ax += CWs[c]; }
+  let ay = PAD; for (let r = r0; r <= r1; r++) { YS[r] = ay; CHs[r] = usedR.has(r) ? CH : SEA_GAP * CH | 0; ay += CHs[r]; }
+  W = ax + PAD; H = ay + PAD;
   DIST.clear();
   const at = new Map(ds.map(d => [d.col + "," + d.row, d]));
   ds.forEach(d => {
     // neighbouring places in the same country share one landmass; everything else is an island
     const same = (c, r) => { const n = at.get(c + "," + r); return !!(n && n.country && n.country === d.country); };
-    DIST.set(d.id, {d, pack: PACKS[d.env] || PACKS.town, seed: hashStr(d.id), terrain: null, mask: null, drawn: false, ox: PAD + (d.col - c0) * CW, oy: PAD + (d.row - r0) * CH,
+    DIST.set(d.id, {d, pack: PACKS[d.env] || PACKS.town, seed: hashStr(d.id), terrain: null, mask: null, drawn: false, ox: XS[d.col], oy: YS[d.row],
       open: {w: same(d.col - 1, d.row), e: same(d.col + 1, d.row), n: same(d.col, d.row - 1), s: same(d.col, d.row + 1)}});
   });
   EMPTY = [];
-  for (let c = c0; c <= c1; c++) for (let r = r0; r <= r1; r++) if (!at.has(c + "," + r)) EMPTY.push({c, r, ox: PAD + (c - c0) * CW, oy: PAD + (r - r0) * CH});
-  bg.width = W; bg.height = H; seaPattern = makeSeaPattern();
-  bctx.fillStyle = seaPattern; bctx.fillRect(0, 0, W, H);
+  for (let c = c0; c <= c1; c++) for (let r = r0; r <= r1; r++) if (!at.has(c + "," + r)) EMPTY.push({c, r, ox: XS[c], oy: YS[r], w: CWs[c], h: CHs[r]});
+  seaPattern = makeSeaPattern();
   sparkles = [];
   for (let i = 0; i < W * H / 2600; i++) { const x = hash(i, 1, 66) * W | 0, y = hash(i, 2, 66) * H | 0; if (!districtAt(x, y, true)) sparkles.push({x, y, s: i}); }
-  landC.width = W; landC.height = H; // where the land is, so the fog of the future only ever covers land
   landShapes(ds); FILL = [];
   const NOPACK = {slots: [], fixed: [], build(){}, life(){}, lm: null};
   // a coastal city's own shore faces open sea: no land is added on that side of it
   const seaSide = (c, r) => [[1, 0, CW - 4, CH / 2], [-1, 0, 4, CH / 2], [0, 1, CW / 2, CH - 4], [0, -1, CW / 2, 4]].some(([dc, dr, x, y]) => { const d = ds.find(d => d.col === c - dc && d.row === r - dr), P = d && (PACKS[d.env] || PACKS.town); return P && P.land && !P.land(x - (P.tx || 0), y - (P.ty || 0)); });
-  for (const e of EMPTY) { if (seaSide(e.c, e.r)) continue; let hit = false; for (let y = 0; y < CH && !hit; y += 20) for (let x = 0; x < CW && !hit; x += 20) hit = landAt(e.ox + x, e.oy + y); if (!hit) continue;
+  for (const e of EMPTY) { if (seaSide(e.c, e.r)) continue; let hit = false; if (e.w < CW || e.h < CH) continue; for (let y = 0; y < CH && !hit; y += 20) for (let x = 0; x < CW && !hit; x += 20) hit = landAt(e.ox + x, e.oy + y); if (!hit) continue;
     const near = ds.reduce((b, d) => { const D = DIST.get(d.id), k = Math.hypot(D.ox - e.ox, D.oy - e.oy); return !b || k < b.k ? {d, k} : b; }, null).d;
     FILL.push({d: {id: "fill-" + e.c + "-" + e.r, env: GENERIC_ENVS.includes(near.env) ? near.env : "nature", filler: true}, pack: NOPACK, ox: e.ox, oy: e.oy, seed: hashStr("f" + e.c + e.r), filler: true, terrain: null, drawn: false}); }
   chimneys = []; fountains = [];
@@ -3266,6 +3346,7 @@ function districtAt(x, y, strict){
 // running between them; the land between isn't a place, so it stays in the fog of the future. Far-apart places are their own
 // coasts across open water. Each place's cell is a soft rounded block; links are broad strips; noise makes the shoreline.
 let LANDS = [], FILL = [];
+const SEA_GAP = .45, SHORE_IN = 52; /* an empty column is this much of a cell; the shore sits this far inside the cell, so neighbouring islands have a real channel between them */
 function landShapes(ds){
   LANDS = []; const ctr = d => { const D = DIST.get(d.id); return [D.ox + CW / 2, D.oy + CH / 2]; };
   ds.forEach(d => LANDS.push({box: ctr(d)}));
@@ -3274,7 +3355,7 @@ function landShapes(ds){
 function landAt(x, y){
   let v = -1;
   for (const L of LANDS) {
-    if (L.box) { const q = Math.pow(Math.pow(Math.abs(x - L.box[0]) / (CW / 2 - 24), 4) + Math.pow(Math.abs(y - L.box[1]) / (CH / 2 - 24), 4), .25); v = Math.max(v, 1 - q); } // the shore falls inside the cell, never on its edge
+    if (L.box) { const q = Math.pow(Math.pow(Math.abs(x - L.box[0]) / (CW / 2 - SHORE_IN), 4) + Math.pow(Math.abs(y - L.box[1]) / (CH / 2 - SHORE_IN), 4), .25); v = Math.max(v, 1 - q); } // the shore falls inside the cell, never on its edge
     else { const [x0, y0, x1, y1] = L.seg, dx = x1 - x0, dy = y1 - y0, k = Math.max(0, Math.min(1, ((x - x0) * dx + (y - y0) * dy) / (dx * dx + dy * dy))); v = Math.max(v, 1 - Math.hypot(x - x0 - dx * k, y - y0 - dy * k) / 170); }
   }
   return v + .16 * (vnoise(x, y, 70, 5) - .5) + .07 * (vnoise(x, y, 19, 6) - .5) > 0;
@@ -3286,6 +3367,39 @@ function baseLand(x, y, open, seed){
   return ex >= R || ey >= R || Math.hypot(R - ex, R - ey) < R;
 }
 function sandCol(sd, x, y){ return sd < 4 ? hex("#b99a62") : hash(x, y, 79) > .8 ? hex(C.sand[0]) : sd < 14 ? hex(C.sand[1]) : hex(C.sand[2]); }
+/* The land around a city's own drawing (21 Nov). Each plot takes one of the place's own pieces, in its own colour and
+   size, so the streets don't repeat; a place with its own set (OUTSKIRTS) also gets its big features. */
+function outskirtPiece(g, env, x, y, k, k2){
+  if (k < .4) {
+    if (env === "japan") japaneseHouse(g, x - 13, y, 22 + (k2 * 8 | 0), k2 > .6 ? pick(["#8a3b2e", "#3a5a78", "#4f6a3c"], k2) : null);
+    else if (env === "nature") pine(g, x, y, 14 + (k2 * 8 | 0));
+    else drawFiller(g, env, [x, y, "any"]);
+    return;
+  }
+  if (k < .8) {
+    const r = 4 + (k2 * 4 | 0), two = k2 > .55;
+    if (env === "japan") { if (k2 < .5) roundTree(g, x, y, r + 1, SAKURA); else pine(g, x, y, 12 + (k2 * 8 | 0)); }
+    else if (env === "boston") roundTree(g, x, y, r, k2 < .45 ? AUTUMN[(k2 * 7 | 0) % 3] : C.leaf); /* Boston's own autumn colours */
+    else if (env === "delhi") roundTree(g, x, y, r + 1, C.neem);
+    else if (env === "la" || env === "coast" || env === "mumbai") palm(g, x, y, 16 + (k2 * 10 | 0), k2 > .5);
+    else if (env === "nature") pine(g, x, y, 12 + (k2 * 10 | 0));
+    else roundTree(g, x, y, r, C.leaf);
+    if (two) roundTree(g, x + 9, y + 3, Math.max(3, r - 2), env === "japan" ? SAKURA : C.leaf);
+    return;
+  }
+  if (k2 < .6) bush(g, x, y, 3 + (k2 * 3 | 0), k2 > .3 ? pick(["#c63a8f", "#f2d36b", "#ffffff", "#e8604a"], k) : null); else rock(g, x - 3, y - 3, 6 + (k * 4 | 0), 3 + (k2 * 2 | 0));
+}
+function outskirts(g, D, mask, dist){
+  const seed = D.seed, inFrame = (x, y, m) => x > FX - m && x < FX + BW + m && y > FY - 24 - m && y < FY + BH + 24 + m;
+  const ok = (x, y, r) => { for (const [dx, dy] of [[0, 0], [-r, 0], [r, 0], [0, -r * 1.4], [-r, -r], [r, -r]]) { const X = x + dx | 0, Y = y + dy | 0; if (X < 0 || Y < 0 || X >= CW || Y >= CH || !mask[Y * CW + X] || dist[Y * CW + X] < 6) return false; } return true; };
+  const O = {D, mask, dist, ok}, set = OUTSKIRTS[D.d.env], held = set && set.big ? set.big(g, O) || [] : [], items = [];
+  for (let gy = 0; gy < CH; gy += 30) for (let gx = 0; gx < CW; gx += 34) {
+    const x = gx + 6 + hash(gx, gy, seed + 31) * 22 | 0, y = gy + 12 + hash(gx, gy, seed + 32) * 14 | 0;
+    if (inFrame(x, y, 20) || !ok(x, y, 16) || held.some(([a, b, c, d]) => x > a && x < c && y > b && y < d) || (set && set.skip && set.skip(O, x, y))) continue;
+    items.push({x, y, k: hash(x, y, seed + 33), k2: hash(y, x, seed + 34)});
+  }
+  items.sort((a, b) => a.y - b.y).forEach(({x, y, k, k2}) => (set && set.piece || outskirtPiece)(g, D.d.env, x, y, k, k2));
+}
 function buildDistrictTerrain(D){
   const {pack} = D, tx = pack.tx || 0, ty = pack.ty || 0, c = document.createElement("canvas"); c.width = CW; c.height = CH;
   const g = c.getContext("2d"), img = g.createImageData(CW, CH), px = img.data, N = CW * CH, mask = new Uint8Array(N), dist = new Float32Array(N);
@@ -3318,6 +3432,7 @@ function buildDistrictTerrain(D){
   if (!D.filler) { // the city is built on its own layer, then kept to its land (and to the water the city itself is designed around: piers, bridges, harbours)
   const lc = document.createElement("canvas"); lc.width = CW; lc.height = CH; const lg = lc.getContext("2d"); lg.imageSmoothingEnabled = false;
   CUR_SLOTS = pack.slots;
+  outskirts(lg, D, mask, dist);
   lg.save(); lg.translate(tx, ty); pack.build(lg, D); const L = districtLandmark(D); if (L) drawLandmarkAt(lg, L, pack.lm[0], pack.lm[1]);
   otherLandmarks(D).forEach(o => drawLandmarkAt(lg, o, o.x, o.y)); lg.restore();
   if (!D.allLand) { const ac = document.createElement("canvas"); ac.width = CW; ac.height = CH; const ag = ac.getContext("2d"), ai = ag.createImageData(CW, CH);
@@ -3372,21 +3487,25 @@ function drawFiller(g, env, slot){
 }
 function drawDistrict(D){
   if (!D.terrain) buildDistrictTerrain(D);
-  bctx.fillStyle = seaPattern; bctx.fillRect(D.ox, D.oy, CW, CH);
-  bctx.drawImage(D.terrain, D.ox, D.oy); lctx.drawImage(D.maskC, D.ox, D.oy);
+  if (!D.cv) { D.cv = document.createElement("canvas"); D.cv.width = CW; D.cv.height = CH; }
+  const g = D.cv.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "source-over"; g.clearRect(0, 0, CW, CH); g.imageSmoothingEnabled = false;
+  g.drawImage(D.terrain, 0, 0);
   chimneys = chimneys.filter(c => c.d !== D.d.id); fountains = fountains.filter(f => f.d !== D.d.id);
-  const tx = D.ox + (D.pack.tx || 0), ty = D.oy + (D.pack.ty || 0);
-  LMO.x = tx; LMO.y = ty; LMO.d = D.d.id;
-  bctx.save(); bctx.translate(tx, ty);
+  const tx = D.pack.tx || 0, ty = D.pack.ty || 0;
+  LMO.x = D.ox + tx; LMO.y = D.oy + ty; LMO.d = D.d.id; LMO.g = g;
+  g.save(); g.translate(tx, ty);
   const taken = new Set((D.assigned || []).map(o => o.slot));
   const items = (D.assigned || []).map(o => ({slot: o.slot, a: o.a})).concat(D.pack.slots.filter(sl => !taken.has(sl)).map(slot => ({slot})));
-  items.sort((p, q) => p.slot[1] - q.slot[1]).filter(({a, slot}) => a || !D.mask || D.mask[Math.min(CH - 1, Math.max(0, slot[1] + (D.pack.ty || 0) - 2)) * CW + Math.min(CW - 1, Math.max(0, slot[0] + (D.pack.tx || 0)))]).forEach(({a, slot}) => a ? drawKind(bctx, a, slot[0], slot[1], D.d.env, slot[3]) : drawFiller(bctx, D.d.env, slot));
-  bctx.restore();
+  items.sort((p, q) => p.slot[1] - q.slot[1]).filter(({a, slot}) => a || !D.mask || D.mask[Math.min(CH - 1, Math.max(0, slot[1] + ty - 2)) * CW + Math.min(CW - 1, Math.max(0, slot[0] + tx))]).forEach(({a, slot}) => a ? drawKind(g, a, slot[0], slot[1], D.d.env, slot[3]) : drawFiller(g, D.d.env, slot));
+  g.restore();
   if (D.filler) for (let i = 0; i < 26; i++) { // the land between places: open country, a few trees and copses, nothing built
     const x = 20 + hash(i, 3, D.seed) * (CW - 40) | 0, y = 30 + hash(i, 4, D.seed) * (CH - 50) | 0; if (!D.mask[y * CW + x] || !D.mask[(y - 20) * CW + x]) continue;
-    const k = hash(i, 5, D.seed); if (k < .55) roundTree(bctx, D.ox + x, D.oy + y, 4 + (k * 6 | 0)); else if (k < .8) bush(bctx, D.ox + x, D.oy + y, 3); else rock(bctx, D.ox + x, D.oy + y, 6, 4); }
+    const k = hash(i, 5, D.seed); if (k < .55) roundTree(g, x, y, 4 + (k * 6 | 0)); else if (k < .8) bush(g, x, y, 3); else rock(g, x, y, 6, 4); }
   D.drawn = true;
 }
+/* every built island's picture, and its land mask (where the land is, so sea effects and the fog of the future know it) */
+const worldCells = () => [...FILL, ...DIST.values()];
+function drawLandMask(g, cx, cy, w, h){ for (const D of worldCells()) if (D.drawn && D.maskC && D.ox < cx + w && D.ox + CW > cx && D.oy < cy + h && D.oy + CH > cy) g.drawImage(D.maskC, D.ox - cx, D.oy - cy); }
 function ensureDrawn(x0, y0, x1, y1){
   for (const D of [...DIST.values(), ...FILL]) if (!D.drawn && D.ox < x1 && D.ox + CW > x0 && D.oy < y1 && D.oy + CH > y0) drawDistrict(D);
 }
@@ -3571,8 +3690,7 @@ function renderView(now){
   ensureDrawn(cx - 20, cy - 20, cx + VW + 20, cy + VH + 20);
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.setTransform(1, 0, 0, 1, -cx, -cy); g.fillStyle = seaPattern || "#94d1e5"; g.fillRect(cx, cy, VW, VH); g.setTransform(1, 0, 0, 1, 0, 0); // the sea goes on forever
-  const sx = Math.max(0, cx), sy = Math.max(0, cy), sw = Math.min(W, cx + VW) - sx, sh = Math.min(H, cy + VH) - sy;
-  if (sw > 0 && sh > 0) g.drawImage(bg, sx, sy, sw, sh, sx - cx, sy - cy, sw, sh);
+  for (const D of worldCells()) if (D.drawn && D.cv && D.ox < cx + VW && D.ox + CW > cx && D.oy < cy + VH && D.oy + CH > cy) g.drawImage(D.cv, D.ox - cx, D.oy - cy);
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   const inV = (x, y, m) => x > cx - m && x < cx + VW + m && y > cy - m && y < cy + VH + m;
   /* the glints of light on the water are drawn with the light of the hour (applyLight), so they take its colour */
@@ -3596,10 +3714,11 @@ function renderView(now){
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   for (const c of chimneys) if (inV(c.x, c.y, 30)) for (let k = 0; k < 3; k++) { const ph = (t * .45 + k * 9) % 27; g.globalAlpha = (1 - ph / 27) * .8; F(g, c.x + Math.round(Math.sin((ph + k) / 4) * 1.5), c.y - ph, ph < 12 ? 2 : 3, 2, "#eceef2"); g.globalAlpha = 1; }
   for (const f of fountains) if (inV(f.x, f.y, 10)) for (let i = 0; i < 4; i++) F(g, f.x - 2 + i, f.y - ((t + i * 2) % 4), 1, 1, "#d4f1f4");
-  if (avatarLook().style !== "doll") oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)"); /* the 2D figure brings its own soft shadow; this blocky one sat off to her side */
+  const afloat = !onLandAt(av.x, av.y); if (afloat) boatWake(g, av.x, av.y);
+  if (avatarLook().style !== "doll" && !afloat) oval(g, av.x + 1, av.y, 5, 1, "rgba(10,25,15,.38)"); /* the 2D figure brings its own soft shadow; this blocky one sat off to her side */
   const frame = avFrame();
   // her: the pixel sprite lives in the world canvas; the Detailed 2D figure is drawn crisp on the HUD
-  if (avatarLook().style !== "doll") drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame);
+  if (avatarLook().style !== "doll") { drawAvatar(g, av.x - 7, av.y - 27 - (frame === 1 || frame === 2 ? (av.step >> 3) % 2 : 0), av.dir, frame); if (afloat) g.drawImage(boatImg(), Math.round(av.x - 15), Math.round(av.y - 9 + boatBob())); }
   fx = fx.filter(p => p.life-- > 0);
   for (const p of fx) { p.y -= .4; g.globalAlpha = Math.min(1, p.life / 15); F(g, p.x, p.y, 1, 1, p.c); F(g, p.x - 1, p.y + 1, 3, 1, p.c); F(g, p.x, p.y + 2, 1, 1, p.c); g.globalAlpha = 1; }
   g.setTransform(1, 0, 0, 1, 0, 0);
@@ -3641,7 +3760,7 @@ function seaShade(g){
   s.fillStyle = v; s.fillRect(0, 0, VW, VH);
   const r = s.createRadialGradient(VW * .3, VH * .18, 0, VW * .3, VH * .18, Math.max(VW, VH) * .7); r.addColorStop(0, "rgba(255,255,255,.16)"); r.addColorStop(1, "rgba(255,255,255,0)");
   s.fillStyle = r; s.fillRect(0, 0, VW, VH);
-  s.globalCompositeOperation = "destination-out"; s.drawImage(landC, -cx, -cy); // only the water
+  s.globalCompositeOperation = "destination-out"; drawLandMask(s, cx, cy, VW, VH); // only the water
   g.drawImage(seaC, 0, 0);
 }
 // Light on Home follows the clock on her phone and changes gradually through the day: moonlight at night, a blue hour and a
@@ -3683,8 +3802,7 @@ function seaLightOf(h){
 }
 const lightC = document.createElement("canvas");
 /* draw just the part of the land mask that's in view (clipped to the mask's own edges, which Safari needs) */
-function landInView(g, cx, cy, W, H){ const x0 = Math.max(0, cx), y0 = Math.max(0, cy), x1 = Math.min(landC.width, cx + W), y1 = Math.min(landC.height, cy + H);
-  if (x1 > x0 && y1 > y0) g.drawImage(landC, x0, y0, x1 - x0, y1 - y0, x0 - cx, y0 - cy, x1 - x0, y1 - y0); }
+function landInView(g, cx, cy, w, h){ drawLandMask(g, cx, cy, w, h); }
 function applyLight(g, now){
   const L = currentLight(), h = LIGHT_H ?? (new Date().getHours() + new Date().getMinutes() / 60), W = VW, H = VH;
   if (lightC.width !== W || lightC.height !== H) { lightC.width = W; lightC.height = H; } /* resizing a canvas every frame clears and reallocates it, which made panning stutter */
@@ -3760,7 +3878,7 @@ function composeFog(now, cx, cy){
     fctx.globalCompositeOperation = "copy"; fctx.globalAlpha = 1; fctx.drawImage(cv, 0, 0);
     fctx.globalCompositeOperation = "saturation"; fctx.globalAlpha = .85 * veil; fctx.fillStyle = "#808080"; fctx.fillRect(0, 0, VW, VH);
     fctx.globalCompositeOperation = "multiply"; fctx.globalAlpha = veil; fctx.fillStyle = toHex(hex("#46506e").map((v, i) => v + (hex("#9aa2ba")[i] - v) * disc)); fctx.fillRect(0, 0, VW, VH);
-    fctx.globalCompositeOperation = "destination-in"; fctx.globalAlpha = 1; fctx.drawImage(landC, -cx, -cy); // the land is locked, never the sea
+    fctx.globalCompositeOperation = "destination-in"; fctx.globalAlpha = 1; drawLandMask(fctx, cx, cy, VW, VH); // the land is locked, never the sea
     fctx.globalCompositeOperation = "destination-out"; fctx.fillStyle = "#000";
     for (const D of DIST.values()) {
       const L = Math.max(districtLit(D, now), .3); // a future city is never a blank silhouette: its streets show faintly
@@ -3816,9 +3934,10 @@ function drawHud(now){
   if (avatarLook().style === "doll" && route === "home") {
     const hpx = dollWorldH() * scale, fx = (av.x - camX) * scale, fy = (av.y - camY) * scale;
     if (fx > -hpx && fx < hud.width / hudDpr + hpx && fy > -20 && fy < hud.height / hudDpr + hpx) {
-      const walking = !(av.wait > 0 || av.step === 0);
-      const img = dollSprite(av.dir, walking ? (av.step >> 2) % 8 : -1, Math.round(hpx / 4) * 4);
-      g.drawImage(img.c, fx - img.ax / hudDpr, fy - img.ay / hudDpr, img.c.width / hudDpr, img.c.height / hudDpr);
+      const afloat = !onLandAt(av.x, av.y), walking = !afloat && !(av.wait > 0 || av.step === 0); /* in the boat she stands still */
+      const img = dollSprite(av.dir, walking ? (av.step >> 2) % 8 : -1, Math.round(hpx / 4) * 4), bob = afloat ? boatBob() * scale + 10 * dollWorldH() / 30 * scale : 0; /* afloat she sits down in the boat, the hull hiding her to the thigh */
+      g.drawImage(img.c, fx - img.ax / hudDpr, fy - img.ay / hudDpr + bob, img.c.width / hudDpr, img.c.height / hudDpr);
+      if (afloat) { const u = dollWorldH() / 30 * scale, sm = g.imageSmoothingEnabled; g.imageSmoothingEnabled = false; g.drawImage(boatImg(), fx - 15 * u, fy - 3 * u + boatBob() * scale, 30 * u, 12 * u); g.imageSmoothingEnabled = sm; }
     }
   }
 }
@@ -3975,7 +4094,7 @@ function moveTraveller(ts){
   const k = Math.min(1, (ts - T.s) / T.d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
   av.x = T.x0 + (T.x1 - T.x0) * e; av.y = T.y0 + (T.y1 - T.y0) * e; av.step += .4; viewDirty = true;
   if (k >= 1) { av.travel = null; av.dest = T.D.d.id; av.pts = T.pts; av.idx = T.i; av.path = []; av.wait = T.stay ? 1e9 : 30; av.dir = "down"; av.step = 0;
-    if (T.stay && !onLandAt(av.x, av.y)) setTimeout(() => say(SEA_LINES[Math.floor(Math.random() * SEA_LINES.length)], av.x, av.y - 30), reduced ? 0 : 250); }
+    if (T.stay && (T.wet || !onLandAt(av.x, av.y))) { const L = T.wet ? SEA_LINES.slice(1) : SEA_LINES; setTimeout(() => say(L[Math.floor(Math.random() * L.length)], av.x, av.y - 30), reduced ? 0 : 250); } } /* at the water's edge she still has something to say about the sea (not the drowning one) */
 }
 /* she can be sent into the water; when she ends up there she says something silly */
 const SEA_LINES = ["Ahhh, I'm drowning!", "Look, a shark!", "Where is my yacht?", "Should've packed a towel.", "Is this the way to Santorini?", "The water's lovely, actually."];
@@ -4018,10 +4137,35 @@ cv.addEventListener("pointermove", e => {
 });
 // A deliberate tap on the ground (not a drag or a pinch) sends her walking there; she stays until you send her somewhere else.
 // Only inside the world: a tap off its edge does nothing.
+/* She never walks on the sea (21 Nov): out on the water she's in a little rowing boat, rocking gently, a wake behind her. */
+let boatC = null;
+function boatImg(){
+  if (boatC) return boatC;
+  boatC = document.createElement("canvas"); boatC.width = 30; boatC.height = 12; const g = boatC.getContext("2d");
+  F(g, 0, 1, 3, 2, C.out); F(g, 27, 1, 3, 2, C.out); F(g, 2, 2, 26, 2, C.out); F(g, 3, 2, 24, 1, C.wood[3]);
+  for (let r = 0; r < 8; r++) { const i = 1 + Math.round(r * r / 10); F(g, i, 4 + r, 30 - 2 * i, 1, C.out); if (r < 7) F(g, i + 1, 4 + r, 28 - 2 * i, 1, r < 2 ? "#f2efe8" : r < 5 ? "#d84a4a" : "#a8332f"); }
+  F(g, 4, 6, 3, 1, "#f2efe8"); F(g, 23, 6, 3, 1, "#f2efe8");
+  return boatC;
+}
+const boatBob = () => Math.round(Math.sin(performance.now() / 380)); /* a one-pixel rock, gentle enough to keep with Reduce Motion on */
+function boatWake(g, x, y){
+  const T = av.travel, dx = T ? Math.sign(Math.round(T.x1 - T.x0)) : 0, dy = T ? Math.sign(Math.round(T.y1 - T.y0)) : 0;
+  oval(g, x, y + 2, 17, 2, "rgba(20,70,100,.25)");
+  if (!T) return;
+  for (let i = 1; i <= 4; i++) { g.globalAlpha = .75 * (1 - i / 5); F(g, x - dx * (13 + i * 5) - 2, y + 1 - dy * (6 + i * 4) + (i % 2), 3 + i, 1, "#eef9fb"); F(g, x - dx * (13 + i * 5) - 2, y - 3 - dy * (6 + i * 4) - (i % 2), 3 + i, 1, "#eef9fb"); }
+  g.globalAlpha = 1;
+}
+/* the nearest dry ground to a point out at sea, a few steps in from the water's edge */
+function nearestShore(x, y){
+  for (let r = 6; r < 600; r += 6) for (let i = 0; i < 36; i++) { const a = i / 36 * 6.2832, c = Math.cos(a), s = Math.sin(a);
+    if (onLandAt(x + c * r, y + s * r) && onLandAt(x + c * (r + 10), y + s * (r + 10))) return {x: x + c * (r + 8), y: y + s * (r + 8)}; }
+  return null;
+}
 function walkHere({x, y}, keepCard){
   const D = districtAt(x, y); if (!D) return false;
+  let wet = false; if (!onLandAt(x, y + 12)) { const p = nearestShore(x, y + 12); if (p) { x = p.x; y = p.y - 12; wet = true; } } /* a tap on the sea: she goes to the water's edge instead */
   const dist = Math.hypot(x - av.x, y - av.y), d = Math.min(3000, 300 + dist * 9);
-  av.travel = {x0: av.x, y0: av.y, x1: x, y1: y + 12, s: performance.now(), d, D, i: 0, pts: [[x, y + 12]], stay: true};
+  av.travel = {x0: av.x, y0: av.y, x1: x, y1: y + 12, s: performance.now(), d, D, i: 0, pts: [[x, y + 12]], stay: true, wet};
   av.path = []; av.wait = 0; av.dir = Math.abs(x - av.x) > Math.abs(y + 12 - av.y) ? (x > av.x ? "right" : "left") : (y + 12 > av.y ? "down" : "up");
   if (!keepCard) { $("loccard").hidden = true; lensHover = null; holdStart = 0; }
   viewDirty = true; return true;
@@ -4615,7 +4759,7 @@ function drawOverview(){
   ovFit = {f, ox, oy};
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
   g.save();
-  g.drawImage(bg, 0, 0, W, H, ox, oy, W * f, H * f);
+  g.fillStyle = "#94d1e5"; g.fillRect(ox, oy, W * f, H * f); for (const D of worldCells()) if (D.cv) g.drawImage(D.cv, ox + D.ox * f, oy + D.oy * f, CW * f, CH * f);
   g.fillStyle = "rgba(15,20,32,.45)"; g.fillRect(0, 0, r.width, r.height); // the open sea, dimmed
   for (const D of DIST.values()) { const a = .78 * (1 - placeReveal(D)); if (a > .01) { g.fillStyle = `rgba(15,20,32,${a.toFixed(3)})`; g.fillRect(ox + D.ox * f, oy + D.oy * f, CW * f, CH * f); } }
   g.restore();
@@ -6703,7 +6847,7 @@ function stTerrain(env){
 function stCrop(env, w, h){
   const key = env + w + "x" + h; if (stView[key]) return stView[key];
   const T = stView[env] ||= stTerrain(env), P = PACKS[env] || PACKS.town, c = document.createElement("canvas"); c.width = w; c.height = h;
-  const [cx, cy, bottom = T.height] = ST_VIEW[env] || (P.lm ? [P.lm[0] + (P.tx || 0), P.lm[1] + (P.ty || 0)] : [200, 280]);
+  const [cx, cy, bottom = T.height] = ST_VIEW[env] ? [ST_VIEW[env][0] + FX, ST_VIEW[env][1] + FY, ST_VIEW[env][2] + FY] : P.lm ? [P.lm[0] + (P.tx || 0), P.lm[1] + (P.ty || 0)] : [200 + FX, 280 + FY];
   c.getContext("2d").drawImage(T, Math.max(0, Math.min(T.width - w, cx - w / 2)), Math.max(0, Math.min(bottom - h, cy - h * .62)), w, h, 0, 0, w, h);
   return stView[key] = c;
 }
