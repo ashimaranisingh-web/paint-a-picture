@@ -1670,6 +1670,7 @@ body.on-home.world-night #journey{background:linear-gradient(180deg,rgba(22,26,3
 body.on-home.world-night .tabbar button[aria-current="page"]{background:rgba(255,141,179,.16)}
 @media (prefers-reduced-motion:reduce){.tabbar button .tl{transition:opacity .3s ease!important}.tabbar button{transition:background .3s ease!important}} /* a gentle fade still plays */
 #journey button[data-go="dreams"]{flex:none;overflow:visible;text-overflow:clip;min-width:max-content;width:auto;max-width:none} /* "Add places" shows in full (20 Nov) */
+.ap-list{margin:4px 0 0}.ap-list .grow{display:grid;min-width:0}.ap-list .grow small{color:var(--muted);font-size:12px}
 </style>
 
 <div id="app">
@@ -6428,11 +6429,32 @@ function editDestination(id){
     });
 }
 function addPlaceSheet(after){
-  openSheet("Add a place", `<p class="muted" style="margin:0">Somewhere you'd love to live, study, work or explore. It becomes a part of your map.</p><div id="apSearch" style="display:grid;gap:12px"></div>
-<div class="field"><span>Status</span><div class="pills" id="apStatus">${Object.entries(STATUS).map(([k, v]) => `<button type="button" class="pill" aria-pressed="${k === "travel"}" data-st="${k}">${v}</button>`).join("")}</div></div>`, "", () => {
-    let status = "travel";
-    $("apStatus").querySelectorAll("[data-st]").forEach(b => b.onclick = () => { status = b.dataset.st; $("apStatus").querySelectorAll("[data-st]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
-    placeSearch($("apSearch"), p => { const d = addDestination(p, p.type === "uni" ? "study" : "experience", "future"); if (d) { closeSheet(); toast(`${d.name} added to your world`); changeStatus(d.id, status, () => after && after(d)); } });
+  /* pick several places, each with its own status in the list below, then add them all at once (20 Nov) */
+  const picked = []; /* {p, st} */
+  const keyOf = p => p.name + "|" + (p.country || "");
+  openSheet("Add places", `<p class="muted" style="margin:0">Somewhere you'd love to live, study, work or explore. It becomes a part of your map.</p><div id="apSearch" style="display:grid;gap:12px"></div><div id="apList"></div>`,
+    `<button class="btn ghost" id="apNo">Cancel</button><button class="btn" id="apAdd" disabled>Add</button>`, () => {
+    const draw = () => {
+      $("apList").innerHTML = picked.length ? `<ul class="list dests ap-list">${picked.map((x, i) => `<li class="dest-row"><span class="grow"><b>${esc(x.p.name)}</b>${x.p.country ? `<small>${esc(x.p.country)}</small>` : ""}</span>
+        <select data-apst="${i}" aria-label="Status of ${esc(x.p.name)}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${x.st === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+        <button type="button" class="ibtn icon-sm" data-aprm="${i}" aria-label="Remove ${esc(x.p.name)}"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></li>`).join("")}</ul>` : "";
+      $("apList").querySelectorAll("[data-apst]").forEach(sel => sel.onchange = () => { picked[+sel.dataset.apst].st = sel.value; });
+      $("apList").querySelectorAll("[data-aprm]").forEach(btn => btn.onclick = () => { picked.splice(+btn.dataset.aprm, 1); draw(); });
+      $("apAdd").disabled = !picked.length; $("apAdd").textContent = picked.length > 1 ? `Add ${picked.length} places` : "Add";
+    };
+    $("apNo").onclick = closeSheet;
+    placeSearch($("apSearch"), p => {
+      if (!p) return;
+      if (!p.custom && S.destinations.some(d => d.name === p.name)) { toast(`${p.name} is already in your world.`); return; }
+      if (picked.some(x => keyOf(x.p) === keyOf(p))) return;
+      if (S.destinations.length + picked.length >= MAX_DEST) { toast(`Your world has room for ${MAX_DEST} places.`); return; }
+      picked.push({p, st: p.type === "uni" ? "study" : "travel"}); draw();
+    });
+    $("apAdd").onclick = () => { const list = picked.slice(); closeSheet(); let last = null;
+      const next = i => { if (i >= list.length) { if (last) { toast(list.length > 1 ? `${list.length} places added to your world` : `${last.name} added to your world`); after && after(last); } return; }
+        const x = list[i], d = addDestination(x.p, x.p.type === "uni" ? "study" : "experience", "future"); if (!d) { next(i + 1); return; } last = d; changeStatus(d.id, x.st, () => next(i + 1)); };
+      next(0); };
+    draw();
   });
 }
 function avatarEditor(root, onChange, opts){
