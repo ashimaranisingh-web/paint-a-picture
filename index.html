@@ -4662,7 +4662,7 @@ function go(r){
   else { renderPage(r); $("pmain").scrollTop = 0; }
 }
 /* the four tabs: World, Picture, Goals (with To-do), Journal (Weekly, Journal, Assets). Journal reopens on the tab last used. */
-const TAB_OF = {home: "home", dreams: "home", /* Pieces opens from the puzzle button on Home, so Home stays lit */ goals: "goals", week: "week", journal: "journal", entry: "week", more: "more", todo: "more", assets: "more"};
+const TAB_OF = {home: "home", /* Pieces has its own back arrow, so no tab is selected there (20 Nov) */ goals: "goals", week: "week", journal: "journal", entry: "week", more: "more", todo: "more", assets: "more"};
 const TAB_ROOTS = ["dreams", "goals", "week", "journal", "more"];
 function lastJournalTab(){ try { const v = localStorage.getItem("pap.journalTab"); return ["week", "journal"].includes(v) ? v : "week"; } catch (e) { return "week"; } }
 function syncTabbar(r){
@@ -5228,7 +5228,7 @@ function renderDreams(){
   if (orphan.length) byCat.push(["Other", orphan]);
   const waiting = S.destinations.reduce((n, d) => n + Math.max(0, S.aspirations.filter(a => inPlace(a, d.id)).length - (PACKS[d.env] || PACKS.town).slots.length), 0);
   el.innerHTML = `
-    <div class="phead"><div class="ph-left"><h1>Your pieces</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button>
+    <div class="phead"><div class="ph-left"><button class="iconbtn" data-go="home" aria-label="Back to your picture">${ICON_BACK}</button><h1>Your pieces</h1></div><button class="btn quiet" id="newAsp" aria-label="New piece">${ICON.plus}New</button>
       <p class="pp-intro">Everything you add here is a piece of the bigger picture you're painting. The life you're building.</p></div>
     ${waiting ? `<p class="muted" style="margin:0;font-size:13px">${waiting} piece${waiting === 1 ? " is" : "s are"} waiting for room; add another place or move them.</p>` : ""}
     <section class="pp-world"><button type="button" class="pl-head pw-head" id="placesToggle" aria-expanded="${placesOpen}"><span class="pw-title"><span class="sec">Your world</span><span class="muted">${S.destinations.length} place${S.destinations.length === 1 ? "" : "s"}</span></span><span class="acc-chev">${ICON_DOWN}</span></button>
