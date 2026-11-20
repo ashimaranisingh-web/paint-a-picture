@@ -128,3 +128,4 @@ Rules:
 - Selected state: the pink ring on swatches, the light-pink pill for tabs; no thick black outlines for selection in new UI.
 - Buttons (CTAs) are rounded rectangles (`--r`), never fully round pills. Pills stay for chips, tabs and tags.
 - Two buttons sit side by side, equal width: the main action on the right, the other (Cancel, Skip, Not now) on the left as a white button with a thin border. Never stacked.
+- Back arrows never have a background or shadow: just the arrow (onboarding, the Account picture, everywhere).
