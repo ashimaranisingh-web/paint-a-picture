@@ -1657,6 +1657,7 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .st-head.st-head-back{min-height:44px}.st-head-back .st-back{width:44px;height:44px;margin-left:-10px}
 #p-account .ac-back{top:max(calc(var(--safe-top) + 8px), 20px)}
 .st-sign-nolabel .st-signstep .field > span{display:none} /* the sheet title says it's email (20 Nov) */
+.linkbtn.sign-edit{display:inline;padding:0;margin-left:2px;font-size:inherit}
 </style>
 
 <div id="app">
@@ -7371,10 +7372,11 @@ async function obAccount(M, Fo){
   Fo.classList.add("st-acfoot"); Fo.innerHTML = `<button type="button" class="btn quiet st-skipbtn" id="obSkip">Skip to home</button>`; stTopBack();
   $("obSkip").onclick = () => { S.onboarding.guest = true; save(); track("onboarding_skipped_sign_in"); obGo(obStep + 1); };
   signInForm($("obSign"), () => { S.onboarding.guest = false; save(); if (S.onboarding.done) { toast("Welcome back. Your world is here."); finishOnboarding(); } else if (route === "onboard") obGo(OB.indexOf("world")); });
+  ($("obSign").__after = () => {
   $("obSign").querySelector(".st-signstep")?.insertAdjacentHTML("beforeend", `<p class="st-gnote st-gnote-l">Without an email your progress is only on this phone, and it's lost if you delete the app.</p>`); /* under the email, left aligned */
   { const send = $("signSend"), inp = $("signEmail"); send.hidden = true; /* no button: the keyboard's Send key emails the code */
     inp.setAttribute("enterkeyhint", "send"); inp.setAttribute("placeholder", "you@example.com, then Send");
-    inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); send.onclick(); } }; }
+    inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); send.onclick(); } }; } })();
   await accountsReadyP; if (supaUser && OB[obStep] === "account") pass();
 }
 let stObPrev = 0; // which way she was going, so a skipped step is passed in the same direction
@@ -7680,11 +7682,12 @@ function signInForm(root, onDone, bar){ /* bar: put the main button there (a she
   };
   /* step two: the code from the email (also reachable straight away, for a code that was already sent) */
   const codeStep = (email, sent) => { err("");
-    root.querySelector(".st-signstep").innerHTML = `<p style="margin:0">${sent ? `We sent a code to <b>${esc(email)}</b>. It can take a minute, and may land in spam.` : `Enter the code we emailed to <b>${esc(email)}</b>.`}</p>
+    root.querySelector(".st-signstep").innerHTML = `<p style="margin:0">${sent ? `We sent a code to <b>${esc(email)}</b>. It can take a minute, and may land in spam.` : `Enter the code we emailed to <b>${esc(email)}</b>.`} <button type="button" class="linkbtn sign-edit" id="signEdit">Edit</button></p>
       <label class="field"><span>The code from your email</span><input type="text" id="signCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></label>
       <button class="btn" id="signVerify" type="button" style="justify-self:start">Sign in</button>`;
     if (bar) { $("signSend")?.remove(); const v = $("signVerify"); v.removeAttribute("style"); bar.appendChild(v); }
     $("signCode").focus();
+    $("signEdit").onclick = () => { $("signVerify")?.remove(); signInForm(root, onDone, bar); root.__after?.(); const i = $("signEmail"); i.value = email; i.focus(); }; /* back to the email, filled in (20 Nov) */
     $("signVerify").onclick = async () => { $("signVerify").disabled = true; const {data, error: e2} = await supa.auth.verifyOtp({email, token: $("signCode").value.trim(), type: "email"}); $("signVerify").disabled = false;
       if (e2 || !data?.user) { err("That code didn't work. Check it, or send a new one."); return; } await connectAccount(data.user); onDone && onDone(); };
   };

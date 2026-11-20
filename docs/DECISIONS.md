@@ -242,3 +242,4 @@ line rather than editing the old one.
 - 20 Nov: One top line for every page: the first row starts 8px below the status bar (20px minimum on the web), 44px tall, centred.
 - 20 Nov: On the splash the girl and boy start at random spots each launch (her on the left, him on the right), wander via a random point and meet under the star, facing the way they walk (side, back or front); they end facing you.
 - 20 Nov: The sign-in sheet is titled "Sign in with email", with just the email box (no line about codes, no Email label) and Cancel | Send code. The button reads "Send code" wherever the sign-in form appears.
+- 20 Nov: After a code is sent, the sentence naming the email ends with an "Edit" text button that goes back to the email step with the address filled in.
