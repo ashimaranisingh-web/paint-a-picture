@@ -1,0 +1,27 @@
+{
+ "sheet": "art/wardrobe-sheets/f-medium-stripe-cargo-sneakers.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right",
+  "side-left"
+ ],
+ "parts": {
+  "shoe": {
+   "plain": true,
+   "sample": [
+    0.06,
+    0.955,
+    0.3,
+    0.995
+   ],
+   "band": [
+    0.925,
+    1
+   ],
+   "ab": 9,
+   "dL": 22
+  }
+ },
+ "out": "avatar/w/f-medium-stripe-cargo-sneakers/"
+}

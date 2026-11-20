@@ -1,0 +1,28 @@
+{
+ "_about": "The 2D wardrobe (20 Nov 2026). Each look is one complete outfit cut from the owner's sheets into avatar/w/<id>/ (front, back, side-right, side-left, each with a -parts.png colour map). Only plain items are marked in the map, so stripes and camo are never recoloured. Rebuild the maps with: python3 scripts/build_wardrobe_masks.py. Bands are fractions of the picture's height (0 = top of the hair, 1 = soles).",
+ "looks": [
+  {"id": "f-long-black-cargo-heels", "who": "girl", "hair": "long", "top": ["spaghetti", "black", "plain"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["heels", "black", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.17, 0.43], "smax": 0.34}}},
+  {"id": "f-long-brown-wide-boots", "who": "girl", "hair": "long", "top": ["spaghetti", "brown", "plain"], "bottom": ["wide", "white", "plain"], "shoes": ["boots", "white", "plain"],
+   "note": "the sheet's side views show heels, not boots",
+   "mask": {"top": {"kind": "dark", "band": [0.17, 0.43], "vmin": 0.17, "busy": 40, "back": {"vmin": 0.21, "busy": 34}}, "bot": {"kind": "light", "band": [0.40, 0.95], "side": {"band": [0.40, 0.985]}, "back": {"band": [0.40, 0.965]}}, "shoe": {"kind": "light", "from": 0.93, "side": {"from": 0.98}, "back": {"from": 0.955}}}},
+  {"id": "f-long-stripe-wide-sneakers", "who": "girl", "hair": "long", "top": ["spaghetti", "stripe-pink", "pattern"], "bottom": ["wide", "white", "plain"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"bot": {"kind": "light", "band": [0.40, 0.95]}, "shoe": {"kind": "light", "from": 0.95}}},
+  {"id": "f-medium-stripe-cargo-sneakers", "who": "girl", "hair": "medium", "top": ["spaghetti", "stripe-pink", "pattern"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"shoe": {"kind": "light", "from": 0.92}}},
+  {"id": "f-shoulder-joggers-boots", "who": "girl", "hair": "shoulder", "top": ["spaghetti", "stripe-pink", "pattern"], "bottom": ["cargo-full", "white", "plain"], "shoes": ["boots", "white", "plain"],
+   "mask": {"bot": {"kind": "light", "band": [0.34, 0.83]}, "shoe": {"kind": "light", "from": 0.83}}},
+  {"id": "f-shoulder-joggers-heels", "who": "girl", "hair": "shoulder", "top": ["spaghetti", "stripe-pink", "pattern"], "bottom": ["cargo-full", "white", "plain"], "shoes": ["heels", "white", "plain"],
+   "mask": {"bot": {"kind": "light", "band": [0.34, 0.91]}}},
+  {"id": "m-buzz-tank-cargo-sneakers", "who": "boy", "hair": "buzz", "top": ["tank", "black", "plain"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.12, 0.42]}, "shoe": {"kind": "light", "from": 0.93}}},
+  {"id": "m-curly-tank-cargo-sneakers", "who": "boy", "hair": "curly", "top": ["tank", "black", "plain"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.12, 0.42]}, "shoe": {"kind": "light", "from": 0.93}}},
+  {"id": "m-longwavy-tank-cargo-sneakers", "who": "boy", "hair": "longwavy", "top": ["tank", "black", "plain"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.12, 0.42]}, "shoe": {"kind": "light", "from": 0.93}}},
+  {"id": "m-short-polo-trousers-sneakers", "who": "boy", "hair": "short", "top": ["polo", "navy", "plain"], "bottom": ["trousers", "beige", "plain"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.11, 0.42]}, "bot": {"kind": "light", "band": [0.38, 0.94]}, "shoe": {"kind": "light", "from": 0.935}}},
+  {"id": "m-short-tank-cargo-sneakers", "who": "boy", "hair": "short", "top": ["tank", "black", "plain"], "bottom": ["cargo-full", "camo", "pattern"], "shoes": ["sneakers", "white", "plain"],
+   "mask": {"top": {"kind": "dark", "band": [0.12, 0.42]}, "shoe": {"kind": "light", "from": 0.93}}}
+ ]
+}

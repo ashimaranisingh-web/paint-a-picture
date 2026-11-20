@@ -1629,6 +1629,9 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 /* My studio: photos as small square tiles, tap one for full screen (17 Nov) */
 .as-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.as-tile{all:unset;cursor:pointer;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#f1efeb}.as-tile img{width:100%;height:100%;object-fit:cover;display:block}.as-tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ac-endbtns{display:flex;gap:8px;justify-content:center}
+/* the 2D wardrobe (20 Nov) */
+.h2d-t.wd-far{opacity:.5}.h2d-t.wd-far:hover{opacity:.8}
+.wd-note{margin:8px 0 0;font-size:13px;color:var(--muted)}
 </style>
 
 <div id="app">
@@ -1743,7 +1746,13 @@ const HAIR2D = {girl: [["long", "Long"], ["shoulder", "Shoulder"], ["bob", "Bob"
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
-const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", len: "full", glasses: true, cap: false, capColor: "black"};
+const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", len: "full", glasses: true, cap: false, capColor: "black", fit: "", wtop: "", wbot: "", wshoes: "", wv: 1};
+/* 2D wardrobe colours (20 Nov): only plain items take them. "" means as drawn. The colours each look is drawn in are here
+   too, so picking that colour simply shows the picture unchanged. */
+const WCOL = {
+  top: {black: ["#2b2729"], brown: ["#4b2b21"], navy: ["#1d2337"], pink: ["#e0457f"], red: ["#c8323a"], yellow: ["#f2cf5b"], blue: ["#4f7fc4"], white: ["#f1eee8"]},
+  bot: {white: ["#eeebe5"], beige: ["#d8c9b2"], grey: ["#8e9299"], olive: ["#6b6a40"], navy: ["#283149"], black: ["#2f2f34"]},
+  shoes: {white: ["#f2f0ec"], grey: ["#9a9ea6"], black: ["#26262b"]}};
 
 let S = null;               // the whole state (one document)
 let docRef = null, sampleFn = null, assetsApi = null, downloadsApi = null;
@@ -1806,6 +1815,11 @@ function normalize(o){
   if (av.bot === "zebra") av.bot = "camo"; /* zebra print was removed */
   if (av.len !== "34") av.len = "full"; /* 2D cargos: full length, or 3/4 (the tank-top art in avatar/34/) */
   if (!["girl", "boy"].some(k => HAIR2D[k].some(h => h[0] === av.hair2d))) av.hair2d = ""; /* 2D 3/4 hairstyle */
+  if (typeof av.fit !== "string") av.fit = ""; for (const k of ["wtop", "wbot", "wshoes"]) if (typeof av[k] !== "string") av[k] = ""; /* the 2D wardrobe (20 Nov) */
+  if (!av.wv) { if (av.style === "doll") { /* a 2D character from before the wardrobe keeps the top and shoe colour she picked; camo is never recoloured now */
+      if (WCOL.top[av.top] && av.top !== "black") av.wtop = av.top;
+      if (WCOL.shoes[av.boots] && av.boots !== (av.look === "boy" ? "white" : "black")) av.wshoes = av.boots; }
+    av.wv = 1; }
   if (!s.profile.joined) s.profile.joined = [...(s.destinations || []), ...(s.aspirations || [])].map(x => x.createdAt).filter(Boolean).sort()[0] || today();
   if (!TOPS[av.top]) av.top = {ivory: "white", blush: "pink"}[av.top] || "pink"; if (!BOTS[av.bot]) av.bot = {sand: "white"}[av.bot] || "grey"; if (!BOOTS[av.boots]) av.boots = "white"; if (!SKINS[av.skin]) av.skin = "tan"; if (!HAIRS[av.hair]) av.hair = "brunette";
   av.cap = !!av.cap; av.curl = !!av.curl; if (!TOPS[av.capColor]) av.capColor = "black";
@@ -3379,7 +3393,7 @@ const AV_W = 14, AV_H = 28;
 
 // Her character: these colours feed the pixel sprite.
 function avatarLook(){ return S.profile.avatar || DEFAULT_AVATAR; }
-const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.curl ? "curl" : "", a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || "", a.cap ? a.capColor : "", a.len || "full", a.hair2d || ""].join("."); };
+const lookKey = () => { const a = avatarLook(); return [a.style, a.skin, a.hair, a.curl ? "curl" : "", a.top, a.bot, a.boots, a.glasses ? 1 : 0, a.look || "", a.cap ? a.capColor : "", a.len || "full", a.hair2d || "", a.fit || "", a.wtop || "", a.wbot || "", a.wshoes || ""].join("."); };
 function avatarPal(){
   const a = avatarLook(), sk = SKINS[a.skin], hr = HAIRS[a.hair], tp = TOPS[a.top], bt = BOTS[a.bot], cp = TOPS[a.capColor] || TOPS.black;
   const mixed = (a, b, k) => toHex(hex(a).map((v, n) => v + (hex(b)[n] - v) * k));
@@ -4215,7 +4229,44 @@ function renderHomeChips(){
    over the matching parts. */
 const DOLL_VIEWS = {down: "front", up: "back", left: "side-left", right: "side-right"};
 const hair2d = () => { const a = avatarLook(), list = HAIR2D[a.look === "boy" ? "boy" : "girl"]; return list.some(h => h[0] === a.hair2d) ? a.hair2d : list[0][0]; };
-const dollSet = () => "34/" + hair2d() + "/" + (avatarLook().look === "boy" ? "male-" : ""); /* 2D is the tank-top art for now; the earlier full-length art waits for its new version */ /* "34/<hair>/" = the 3/4-cargo art */
+/* ---------------- the 2D wardrobe (20 Nov) ----------------
+   Each look is one complete outfit cut from the owner's sheets into avatar/w/<id>/ (art/wardrobe.json, scripts/
+   cut_wardrobe_sheet.py, scripts/build_wardrobe_masks.py), plus the earlier 3/4-cargo hairstyle sets in avatar/34/<hair>/.
+   Picking a hairstyle, top, bottoms or shoes switches to the look that has it and keeps as much of the rest as it can.
+   Each item: [style, colour it's drawn in, plain?]. rc lists the items that take a colour (t top, b bottoms, s shoes): only
+   plain ones whose colour map marks them. Stripes and camo always show exactly as drawn. */
+const WLOOKS = (() => {
+  const L = [], add = (id, who, path, hair, top, bottom, shoes, rc) => L.push({id, who, path, hair, top, bottom, shoes, rc});
+  add("f-medium-stripe-cargo-sneakers", "girl", "w/f-medium-stripe-cargo-sneakers/", "medium", ["spaghetti", "stripe-pink", 0], ["cargo-full", "camo", 0], ["sneakers", "white", 1], "s");
+  add("f-long-black-cargo-heels", "girl", "w/f-long-black-cargo-heels/", "long", ["spaghetti", "black", 1], ["cargo-full", "camo", 0], ["heels", "black", 1], "t");
+  add("f-long-brown-wide-boots", "girl", "w/f-long-brown-wide-boots/", "long", ["spaghetti", "brown", 1], ["wide", "white", 1], ["boots", "white", 1], "tbs");
+  add("f-long-stripe-wide-sneakers", "girl", "w/f-long-stripe-wide-sneakers/", "long", ["spaghetti", "stripe-pink", 0], ["wide", "white", 1], ["sneakers", "white", 1], "bs");
+  add("f-shoulder-joggers-boots", "girl", "w/f-shoulder-joggers-boots/", "shoulder", ["spaghetti", "stripe-pink", 0], ["cargo-full", "white", 1], ["boots", "white", 1], "bs");
+  add("f-shoulder-joggers-heels", "girl", "w/f-shoulder-joggers-heels/", "shoulder", ["spaghetti", "stripe-pink", 0], ["cargo-full", "white", 1], ["heels", "white", 1], "b");
+  add("m-buzz-tank-cargo-sneakers", "boy", "w/m-buzz-tank-cargo-sneakers/", "buzz", ["tank", "black", 1], ["cargo-full", "camo", 0], ["sneakers", "white", 1], "ts");
+  add("m-short-polo-trousers-sneakers", "boy", "w/m-short-polo-trousers-sneakers/", "short", ["polo", "navy", 1], ["trousers", "beige", 1], ["sneakers", "white", 1], "tbs");
+  add("m-short-tank-cargo-sneakers", "boy", "w/m-short-tank-cargo-sneakers/", "short", ["tank", "black", 1], ["cargo-full", "camo", 0], ["sneakers", "white", 1], "ts");
+  add("m-curly-tank-cargo-sneakers", "boy", "w/m-curly-tank-cargo-sneakers/", "curly", ["tank", "black", 1], ["cargo-full", "camo", 0], ["sneakers", "white", 1], "ts");
+  add("m-longwavy-tank-cargo-sneakers", "boy", "w/m-longwavy-tank-cargo-sneakers/", "longwavy", ["tank", "black", 1], ["cargo-full", "camo", 0], ["sneakers", "white", 1], "ts");
+  /* the 3/4-cargo sets that were live before (kept as they are) */
+  for (const [h] of HAIR2D.girl) add("34g-" + h, "girl", "34/" + h + "/", h, ["tank", "black", 1], ["cargo-half", "camo", 0], ["heels", "black", 1], "ts");
+  for (const [h] of HAIR2D.boy) add("34b-" + h, "boy", "34/" + h + "/male-", h, ["tank", "black", 1], ["cargo-half", "camo", 0], ["sneakers", "white", 1], "ts");
+  return L;
+})();
+const W_CATS = ["hair", "top", "bottom", "shoes"];
+const W_LABEL = {hair: {long: "Long", medium: "Medium", shoulder: "Shoulder", bob: "Bob", pixie: "Pixie", curly: "Curly", short: "Short", buzz: "Buzz", longwavy: "Long"},
+  top: {"spaghetti|plain": "Strappy", "spaghetti|stripe-pink": "Striped", "tank|plain": "Tank", "polo|plain": "Polo"},
+  bottom: {"cargo-full|camo": "Camo cargos", "cargo-half|camo": "3/4 camo", "wide|plain": "Wide leg", "cargo-full|plain": "Cargos", "trousers|plain": "Trousers"},
+  shoes: {sneakers: "Sneakers", boots: "Boots", heels: "Heels"}};
+const wLooks = who => WLOOKS.filter(l => l.who === who);
+const wKey = (l, cat) => cat === "hair" ? l.hair : cat === "shoes" ? l.shoes[0] : l[cat][0] + "|" + (l[cat][2] ? "plain" : l[cat][1]); /* plain items match whatever their colour */
+function wLook(){ const a = avatarLook(), who = a.look === "boy" ? "boy" : "girl", L = wLooks(who);
+  return L.find(l => l.id === a.fit) || L.find(l => l.id === (who === "boy" ? "34b-" : "34g-") + hair2d()) || L[0]; } /* no pick yet: the 3/4 set she had before */
+/* the look that has this choice and keeps the most of what she's wearing (hair counts most, then top and bottoms, then shoes) */
+function wBest(cat, val){ const cur = wLook(), W = {hair: 4, top: 2, bottom: 2, shoes: 1}; let best = null, bs = -1;
+  for (const l of wLooks(cur.who)) { if (wKey(l, cat) !== val) continue; let sc = l.id === cur.id ? .5 : 0; for (const c of W_CATS) if (c !== cat && wKey(l, c) === wKey(cur, c)) sc += W[c]; if (sc > bs) { bs = sc; best = l; } }
+  return best; }
+const dollSet = () => wLook().path;
 const dollImgs = {}, dollParts = {};
 /* pictures load as they're needed: the set being worn now (and whichever is picked next), not all 40 at once */
 /* once a picture arrives, the character on screen (onboarding, Account, the editor preview) is drawn again */
@@ -4228,17 +4279,14 @@ function loadDollSet(p){ if (loadDollSet.done?.has(p)) return; (loadDollSet.done
 
 const loaded = im => !!(im && im.complete && im.naturalWidth);
 const dollReady = dir => { loadDollSet(dollSet()); const v = dollSet() + (DOLL_VIEWS[dir] || "front"), im = dollImgs[v]; return loaded(im) ? dollSource(v, im) : null; };
-// Her sheet is drawn with a pink top, grey cargos, white boots and this skin; his with a cream polo, beige trousers,
-// white shoes and this skin. Other choices are painted over those parts only.
-const DOLL_REFS = {"": {skin: "tan", top: "pink", bot: "grey", boots: "white"}, "male-": {skin: "tan", top: "white", bot: "grey", boots: "white"},
-};
-for (const [k, list] of Object.entries(HAIR2D)) for (const [id] of list) DOLL_REFS["34/" + id + "/" + (k === "boy" ? "male-" : "")] = {skin: "tan", top: "black", bot: "camo", boots: k === "boy" ? "white" : "black"}; /* the hairstyle sets are painted in camo */
 const recolorCache = new Map();
 function rgb2hsl(r, g, b){ r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0; if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; } return [h, s, l]; }
 function hsl2rgb(h, s, l){ if (!s) return [l * 255, l * 255, l * 255]; const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q, f = t => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; }; return [f(h + 1 / 3) * 255, f(h) * 255, f(h - 1 / 3) * 255]; }
 function dollSource(v, im){
-  const a = avatarLook(), DOLL_REF = DOLL_REFS[dollSet()] || DOLL_REFS[""], camoOnPlain = a.bot === "camo" && DOLL_REF.bot !== "camo";
-  const want = {1: a.skin !== DOLL_REF.skin && SKINS[a.skin], 2: a.top !== DOLL_REF.top && TOPS[a.top], 3: camoOnPlain ? BOTS.olive : a.bot !== DOLL_REF.bot && BOTS[a.bot], 4: (a.boots || "white") !== DOLL_REF.boots && BOOTS[a.boots]};
+  /* only plain items take a new colour, and only the parts her colour map marks; a pattern is never recoloured (20 Nov) */
+  const a = avatarLook(), L = wLook(), camoOnPlain = false;
+  const pick = (code, key, table, painted) => L.rc.includes(code) && a[key] && a[key] !== painted && table[a[key]];
+  const want = {1: a.skin !== "tan" && SKINS[a.skin], 2: pick("t", "wtop", WCOL.top, L.top[1]), 3: pick("b", "wbot", WCOL.bot, L.bottom[1]), 4: pick("s", "wshoes", WCOL.shoes, L.shoes[1])};
   if (!want[1] && !want[2] && !want[3] && !want[4]) return im;
   const pm = dollParts[v]; if (!loaded(pm)) return im;
   const key = v + "|" + lookKey(); if (recolorCache.has(key)) return recolorCache.get(key);
@@ -6403,11 +6451,13 @@ function drawHair2dTile(cvs){ /* the head and shoulders of that set's front view
    figure above is the preview). */
 function charPanel(root, o){
   const A = () => S.profile.avatar, man = () => A().style === "doll" && A().look === "boy";
-  const tabs = () => [["skin", "Skin"], ["hair", "Hair"], ["top", man() ? "Shirt" : "Top"], ["bot", man() ? "Trousers" : "Cargos"], ["boots", man() ? "Shoes" : "Boots"]];
+  const doll = () => A().style === "doll";
+  const tabs = () => doll() ? [["skin", "Skin"], ["hair", "Hair"], ["top", "Top"], ["bottom", "Bottoms"], ["shoes", "Shoes"]] /* the 2D wardrobe (20 Nov) */
+    : [["skin", "Skin"], ["hair", "Hair"], ["top", man() ? "Shirt" : "Top"], ["bot", man() ? "Trousers" : "Cargos"], ["boots", man() ? "Shoes" : "Boots"]];
   const sw = (key, table, label) => `<div class="swatches ce-sw">${Object.entries(table).filter(([k]) => !(key === "bot" && k === "camo" && A().style !== "doll")).map(([k, v]) => `<button type="button" class="sw" style="background:${swBg(k, v)}" aria-label="${label}: ${k}" aria-pressed="${A()[key] === k}" data-k="${key}" data-v="${k}"></button>`).join("")}</div>`; /* camo and zebra only for 2D */
   const opts = () => {
     if (ceTab === "skin") return sw("skin", SKINS, "Skin tone");
-    if (ceTab === "hair" && A().style === "doll") return hair2dPicker();
+    if (doll() && ceTab !== "skin") return wardrobeOpts(ceTab);
     if (ceTab === "hair") return `<div class="seg ce-seg" role="group" aria-label="Hair"><button type="button" aria-pressed="${!A().curl}" data-curl="0">Straight</button><button type="button" aria-pressed="${!!A().curl}" data-curl="1">Curly</button></div>
       <div class="swatches ce-sw">${[["black", "Black"], ["brunette", "Brown"]].map(([k, l]) => `<button type="button" class="sw" style="background:${HAIRS[k][1]}" aria-label="Hair colour: ${l}" aria-pressed="${A().hair === k}" data-k="hair" data-v="${k}"></button>`).join("")}</div>`;
     return sw(ceTab, ceTab === "top" ? TOPS : ceTab === "bot" ? BOTS : BOOTS, tabs().find(t => t[0] === ceTab)[1]);
@@ -6427,8 +6477,37 @@ function charPanel(root, o){
     root.querySelectorAll("[data-curl]").forEach(x => x.onclick = () => set({curl: x.dataset.curl === "1"}));
     wireHair2d(root, set); root.querySelectorAll("canvas[data-h2d]").forEach(drawHair2dTile);
     root.querySelectorAll("[data-k]").forEach(x => x.onclick = () => set({[x.dataset.k]: x.dataset.v}));
+    root.querySelectorAll("[data-wd]").forEach(x => x.onclick = () => { const [cat, val] = x.dataset.wd.split("~"), l = wBest(cat, val); if (l) set({fit: l.id}); });
+    root.querySelectorAll("canvas[data-wdt]").forEach(drawWardrobeTile);
   };
   draw();
+}
+/* --- the 2D wardrobe in the editor: one row of pictures per category, each cut from the look that has it. A choice
+   that also needs another part to change (no look has that exact mix yet) is shown softer and says what changes.
+   Below it, colours, but only for a plain item; stripes and camo keep their own. --- */
+const W_CROP = {hair: [0, .2], top: [.1, .46], bottom: [.4, .93], shoes: [.86, 1]};
+function wardrobeOpts(cat){
+  const cur = wLook(), a = avatarLook(), vals = [...new Set(wLooks(cur.who).map(l => wKey(l, cat)))];
+  const name = (c, v) => W_LABEL[c][v] || v;
+  const tiles = vals.map(val => { const b = wBest(cat, val), on = wKey(cur, cat) === val;
+    const other = on ? [] : W_CATS.filter(c => c !== cat && wKey(b, c) !== wKey(cur, c));
+    const also = other.length ? `Also changes ${(w => w.length > 1 ? w.slice(0, -1).join(", ") + " and " + w[w.length - 1] : w[0])(other.map(c => ({hair: "hair", top: "top", bottom: "bottoms", shoes: "shoes"})[c]))}` : "";
+    return `<button type="button" class="h2d-t${also ? " wd-far" : ""}" data-wd="${cat}~${val}" aria-pressed="${on}" aria-label="${esc(name(cat, val))}${also ? ". " + also : ""}"${also ? ` title="${also}"` : ""}><canvas data-wdt="${b.id}" data-wcat="${cat}" width="64" height="64" aria-hidden="true"></canvas><span>${esc(name(cat, val))}</span></button>`; }).join("");
+  if (cat === "hair") return `<div class="h2d wd" role="group" aria-label="Hairstyle">${tiles}</div>`;
+  const code = {top: "t", bottom: "b", shoes: "s"}[cat], key = {top: "wtop", bottom: "wbot", shoes: "wshoes"}[cat], table = WCOL[{top: "top", bottom: "bot", shoes: "shoes"}[cat]];
+  const item = cur[cat], painted = item[1], now = a[key] && table[a[key]] ? a[key] : painted;
+  const colours = item[2] && cur.rc.includes(code)
+    ? `<div class="swatches ce-sw" role="group" aria-label="Colour">${Object.entries(table).map(([k, v]) => `<button type="button" class="sw" style="background:${v[0]}" aria-label="Colour: ${k}" aria-pressed="${now === k}" data-k="${key}" data-v="${k === painted ? "" : k}"></button>`).join("")}</div>`
+    : `<p class="wd-note">${item[2] ? "These come in one colour for now." : `The ${item[1] === "camo" ? "camo" : "stripes"} keep${item[1] === "camo" ? "s" : ""} ${item[1] === "camo" ? "its" : "their"} own colours.`}</p>`;
+  return `<div class="h2d wd" role="group" aria-label="${{top: "Top", bottom: "Bottoms", shoes: "Shoes"}[cat]}">${tiles}</div>${colours}`;
+}
+function drawWardrobeTile(cvs){ /* the part of that look's front view that shows this choice, as drawn */
+  const l = WLOOKS.find(x => x.id === cvs.dataset.wdt); if (!l) return; loadDollSet(l.path);
+  const im = dollImgs[l.path + "front"], [y0, y1] = W_CROP[cvs.dataset.wcat] || [0, 1], k = Math.min(2, devicePixelRatio || 1);
+  if (!cvs.dataset.sized) { cvs.style.width = cvs.width + "px"; cvs.style.height = cvs.height + "px"; cvs.width *= k; cvs.height *= k; cvs.dataset.sized = 1; }
+  const draw = () => { const g = cvs.getContext("2d"), W = cvs.width, H = cvs.height, iw = im.naturalWidth, ih = im.naturalHeight, sy = ih * y0, sh = ih * (y1 - y0);
+    const sc = Math.min(W / iw, H / sh), dw = iw * sc, dh = sh * sc; g.clearRect(0, 0, W, H); g.imageSmoothingQuality = "high"; g.drawImage(im, 0, sy, iw, sh, (W - dw) / 2, (H - dh) / 2, dw, dh); };
+  if (loaded(im)) draw(); else im.addEventListener("load", draw, {once: true});
 }
 function editCharacter(){
   openSheet("Your character", "", "", sh => { sh.classList.add("ce-sheet"); const x = $("sheetX"); x.textContent = "Done"; x.classList.add("ce-done"); x.setAttribute("aria-label", "Done"); });

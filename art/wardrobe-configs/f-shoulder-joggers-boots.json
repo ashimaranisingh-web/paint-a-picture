@@ -1,0 +1,75 @@
+{
+ "sheet": "art/wardrobe-sheets/f-shoulder-stripe-joggers-boots-heels.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right"
+ ],
+ "pick": [
+  0,
+  1,
+  2
+ ],
+ "mirror": {
+  "side-left": "side-right"
+ },
+ "parts": {
+  "bot": {
+   "plain": true,
+   "sample": [
+    0.3,
+    0.52,
+    0.44,
+    0.66
+   ],
+   "band": [
+    0.36,
+    0.875
+   ],
+   "ab": 9,
+   "dL": 26
+  },
+  "shoe": {
+   "plain": true,
+   "sample": [
+    0.1,
+    0.92,
+    0.32,
+    0.99
+   ],
+   "band": [
+    0.875,
+    1
+   ],
+   "ab": 9,
+   "dL": 26
+  }
+ },
+ "out": "avatar/w/f-shoulder-joggers-boots/",
+ "xranges": [
+  [
+   57,
+   296
+  ],
+  [
+   296,
+   544
+  ],
+  [
+   577,
+   717
+  ],
+  [
+   825,
+   1064
+  ],
+  [
+   1064,
+   1311
+  ],
+  [
+   1345,
+   1485
+  ]
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "sheet": "art/wardrobe-sheets/f-long-stripe-wide-sneakers.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right",
+  "side-left"
+ ],
+ "parts": {
+  "bot": {
+   "plain": true,
+   "sample": [
+    0.3,
+    0.52,
+    0.44,
+    0.68
+   ],
+   "band": [
+    0.36,
+    0.95
+   ],
+   "ab": 9,
+   "dL": 26
+  }
+ },
+ "out": "avatar/w/f-long-stripe-wide-sneakers/"
+}

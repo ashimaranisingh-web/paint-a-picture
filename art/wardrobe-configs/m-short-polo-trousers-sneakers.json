@@ -1,0 +1,57 @@
+{
+ "sheet": "art/wardrobe-sheets/m-short-polo-trousers-sneakers.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right",
+  "side-left"
+ ],
+ "parts": {
+  "top": {
+   "plain": true,
+   "sample": [
+    0.38,
+    0.2,
+    0.62,
+    0.32
+   ],
+   "band": [
+    0.1,
+    0.45
+   ],
+   "ab": 10,
+   "dL": 18
+  },
+  "bot": {
+   "plain": true,
+   "sample": [
+    0.3,
+    0.55,
+    0.44,
+    0.7
+   ],
+   "band": [
+    0.38,
+    0.93
+   ],
+   "ab": 8,
+   "dL": 24
+  },
+  "shoe": {
+   "plain": true,
+   "sample": [
+    0.06,
+    0.955,
+    0.3,
+    0.995
+   ],
+   "band": [
+    0.925,
+    1
+   ],
+   "ab": 9,
+   "dL": 22
+  }
+ },
+ "out": "avatar/w/m-short-polo-trousers-sneakers/"
+}

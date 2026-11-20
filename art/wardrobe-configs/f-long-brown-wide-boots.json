@@ -1,0 +1,42 @@
+{
+ "sheet": "art/wardrobe-sheets/f-long-brown-wide-boots.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right",
+  "side-left"
+ ],
+ "parts": {
+  "top": {
+   "plain": true,
+   "sample": [
+    0.38,
+    0.31,
+    0.62,
+    0.35
+   ],
+   "band": [
+    0.12,
+    0.42
+   ],
+   "ab": 10,
+   "dL": 16
+  },
+  "bot": {
+   "plain": true,
+   "sample": [
+    0.3,
+    0.52,
+    0.44,
+    0.68
+   ],
+   "band": [
+    0.36,
+    0.93
+   ],
+   "ab": 9,
+   "dL": 26
+  }
+ },
+ "out": "avatar/w/f-long-brown-wide-boots/"
+}

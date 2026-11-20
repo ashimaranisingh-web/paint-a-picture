@@ -1,0 +1,27 @@
+{
+ "sheet": "art/wardrobe-sheets/f-long-black-cargo-heels.webp",
+ "figures": [
+  "front",
+  "back",
+  "side-right",
+  "side-left"
+ ],
+ "parts": {
+  "top": {
+   "plain": true,
+   "sample": [
+    0.38,
+    0.31,
+    0.62,
+    0.35
+   ],
+   "band": [
+    0.12,
+    0.42
+   ],
+   "ab": 7,
+   "dL": 14
+  }
+ },
+ "out": "avatar/w/f-long-black-cargo-heels/"
+}

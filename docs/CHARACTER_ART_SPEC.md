@@ -79,3 +79,15 @@ longwavy, shoulder), (the earlier "Classic" set was removed 16 Nov). Cut with `s
 sheet out_dir prefix heels|sneakers` from flat-background turnaround sheets (front, back, faces-right, faces-left), scaled
 to 720 px tall; every set passes the checker. Base colours: black tank, camo cargos, black heels / white sneakers.
 To add a style: cut it into a new folder, add it to `HAIR2D` in index.html.
+
+## The wardrobe looks (20 Nov)
+Each look is one full outfit in `avatar/w/<id>/` (front, back, side-right, side-left, 720 px tall, each with a
+`-parts.png`). They're cut from the sheets in `art/wardrobe-sheets/` by `scripts/cut_wardrobe_sheet.py` (settings per look in
+`art/wardrobe-configs/`), and their colour maps are built by `scripts/build_wardrobe_masks.py` from `art/wardrobe.json`,
+which also says which items are plain. Only plain items are marked in the map, so patterns can never be recoloured.
+- The cutter tells the sheet's pale pink background from white fabric by its pink lean (more blue than green); the
+  earlier cutter only used closeness to the pink and left white trousers see-through.
+- To add a look: put the sheet in `art/wardrobe-sheets/`, add a config and an entry in `art/wardrobe.json`, run both
+  scripts, check the maps, then add one `add(...)` line to `WLOOKS` in index.html.
+- Known art quirks: the brown-top sheet has boots in front and back but heels in the side views; the boots/heels sheet
+  has one side view, mirrored for the other.
