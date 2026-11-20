@@ -7045,12 +7045,12 @@ function obAbout(M, Fo){
   M.innerHTML = stHead("Welcome to Paint a Picture")
     + `<div class="st-wel-pic"><canvas id="stWelPic" role="img" aria-label="A little world with your pieces in it"></canvas></div>
     <ul class="st-wel">${rows.map(([ic, b, t], i) => `<li style="--i:${i}"><span class="st-wel-ic" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24">${IC[ic]}</svg></span><span><b>${b}</b><small>${t}</small></span></li>`).join("")}</ul>
-    <button type="button" class="linkbtn st-wel-why" id="stWhy">Why I made this</button>`;
+    <button type="button" class="linkbtn st-wel-why" id="stWhy">Why Paint a Picture?</button>`;
   const mine = stParts(), parts = mine.length ? mine : stSample();
   const sc = stPicture({w: 240, h: 120, char: true, parts}); sc.fog = 0; sc.pieces.forEach(p => { p.lit = 1; p.open = 1; });
   const big = document.createElement("canvas"); stRender(big, sc);
   const pic = $("stWelPic"); pic.width = 480; pic.height = 240; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(big, 0, 0, 480, 240);
-  $("stWhy").onclick = () => openSheet("Why I made this", `<p style="margin:0;font-size:16px;line-height:1.55">I built Paint a Picture as a way to gamify my progress and goals. I wanted a way to stay motivated and track my progress week on week across goals I set for myself. The picture is painted a little in some weeks and a lot in others. Either way it is painted. That is how life works too but we don't always notice it. Through Paint a Picture I will and so will you ❤️</p><p class="muted" style="margin:0">— Ashima Rani Singh</p>`, "", () => {});
+  $("stWhy").onclick = () => openSheet("Note from the designer", `<p style="margin:0;font-size:16px;line-height:1.55">I built Paint a Picture as a way to gamify my progress and goals. I wanted a way to stay motivated and track my progress week on week across goals I set for myself. The picture is painted a little in some weeks and a lot in others. Either way it is painted. That is how life works too but we don't always notice it. Through Paint a Picture I will and so will you ❤️</p><p class="muted" style="margin:0">— Ashima Rani Singh</p>`, "", () => {});
   stNextIdea(Fo, "Next");
   if (CFG.supabaseUrl && !supaUser) { Fo.querySelector(".st-ibtns").insertAdjacentHTML("afterbegin", `<button type="button" class="btn ghost st-big" id="obHave">I have an account</button>`); $("obHave").onclick = stSignInSheet; } /* side by side with Next, which stays on the right */
 }
