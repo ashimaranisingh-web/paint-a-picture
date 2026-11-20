@@ -7050,7 +7050,7 @@ function obAbout(M, Fo){
   const sc = stPicture({w: 240, h: 120, char: true, parts}); sc.fog = 0; sc.pieces.forEach(p => { p.lit = 1; p.open = 1; });
   const big = document.createElement("canvas"); stRender(big, sc);
   const pic = $("stWelPic"); pic.width = 480; pic.height = 240; const pg = pic.getContext("2d"); pg.imageSmoothingEnabled = false; pg.drawImage(big, 0, 0, 480, 240);
-  $("stWhy").onclick = () => openSheet("Why I made this", `<p style="margin:0;font-size:16px;line-height:1.55">${ST_STORY.map(esc).join(" ")}</p><p class="muted" style="margin:0">— Ashima</p>`, "", () => {});
+  $("stWhy").onclick = () => openSheet("Why I made this", `<p style="margin:0;font-size:16px;line-height:1.55">I built Paint a Picture as a way to gamify my progress and goals. I wanted a way to stay motivated and track my progress week on week across goals I set for myself. The picture is painted a little in some weeks and a lot in others. Either way it is painted. That is how life works too but we don't always notice it. Through Paint a Picture I will and so will you ❤️</p><p class="muted" style="margin:0">— Ashima Rani Singh</p>`, "", () => {});
   stNextIdea(Fo, "Next");
   if (CFG.supabaseUrl && !supaUser) { Fo.querySelector(".st-ibtns").insertAdjacentHTML("afterbegin", `<button type="button" class="btn ghost st-big" id="obHave">I have an account</button>`); $("obHave").onclick = stSignInSheet; } /* side by side with Next, which stays on the right */
 }
