@@ -2773,6 +2773,115 @@ const OUTSKIRTS = {
   }
 };
 
+/* ---------------- every other place (21 Nov): outskirts that build themselves for wherever a place is ----------------
+   Streets ring the city and run out to the shore, buildings line them in the place's own style, and the land between gets
+   trees, gardens, fields or forest. The kind of place comes from its scenery (a city's own art, or city, small town, coast,
+   mountains & lakes, university town); the climate and the look of its houses come from where it is on the globe. So a
+   town in Provence gets pale walls, terracotta roofs and cypresses, one in Norway red and yellow clapboard under dark roofs
+   among pines, one in Bali palms, and a place with no position at all a mild, temperate look. */
+function regionOf(d){
+  const lat = d && d.lat, lon = d && d.lon;
+  if (lat == null || lon == null || isNaN(lat) || isNaN(lon)) return {clim: "temperate", zone: "americas"};
+  const a = Math.abs(lat), clim = a < 23.5 ? "tropic" : a < 37 ? "warm" : a < 54 ? "temperate" : "cold";
+  let zone;
+  if (lon < -30) zone = lat < 23 ? "latam" : "americas";
+  else if (lon < 60) zone = lat >= 35 ? "europe" : lat >= 15 ? "desert" : "africa";
+  else if (lon < 150) zone = lat < -10 ? "oceania" : "asia";
+  else zone = "oceania";
+  return {clim, zone};
+}
+const RSTYLE = {
+  europe: {walls: ["#efe6d2", "#e8d3b0", "#f2e8d8", "#d9c3a0", "#c98a6a", "#e9dcc4"], roofs: ["#a9502f", "#bd5b38", "#8f3f27"], coldWalls: ["#b24a3a", "#e9e4d8", "#d8c06a", "#5d7f9a", "#f2efe8"], coldRoofs: ["#3e4652", "#2f3640", "#5c3a2a"], flat: 0},
+  americas: {walls: ["#f2efe8", "#cfe0e6", "#e9dcc4", "#b9c9d6", "#d6b9a0", "#c9d6c0"], roofs: ["#4f5560", "#3e4652", "#6b4a3a"], flat: 0},
+  latam: {walls: ["#f2d36b", "#f2a7bf", "#8fd0c8", "#f2efe8", "#e0782a", "#9ec46a"], roofs: ["#a9502f", "#bd5b38"], flat: .5},
+  desert: {walls: ["#e8d3a8", "#dcc08a", "#efe2c4", "#d9b88a", "#f2ead8"], roofs: ["#b89a6a"], flat: 1},
+  africa: {walls: ["#d9a76a", "#e8c49b", "#c98a5a", "#f2e8d8", "#b9c9a0"], roofs: ["#8a6a3a", "#6b5a40", "#9aa0a8"], flat: .3},
+  asia: {walls: ["#e9e6df", "#d8dde0", "#efe0cf", "#cdd6d4", "#f2e6c2"], roofs: ["#3a404d", "#5a3a2a", "#2c4f7a", "#7a2b2b"], flat: .4},
+  oceania: {walls: ["#f2efe8", "#e9dcc4", "#cfe0e6", "#f2dccb"], roofs: ["#5d6a73", "#9aa0a8", "#a9502f"], flat: .2}
+};
+function rStyle(R, k, extra){
+  const Z = RSTYLE[R.zone] || RSTYLE.americas, cold = R.clim === "cold" && Z.coldWalls;
+  return {wall: pick(cold ? Z.coldWalls : Z.walls, k), roof: pick(cold ? Z.coldRoofs : Z.roofs, k * 7 % 1), flat: (k * 13 % 1) < Z.flat, chimney: R.clim === "temperate" || R.clim === "cold", ...extra};
+}
+function regionHouse(g, x, by, w, k, st){
+  const fl = st.floors || 1, wall = st.wall, h = 10 + (fl - 1) * 8, top = by - h, cx = x + (w >> 1);
+  oval(g, cx + 3, by + 1, (w >> 1) + 2, 3, "rgba(30,30,15,.28)");
+  F(g, x - 1, top, w + 2, h + 1, C.out); F(g, x, top, w, h, wall); F(g, x + w - 3, top, 3, h, shade(wall, -.1)); F(g, x, by - 1, w, 1, shade(wall, -.18));
+  for (let f = 0; f < fl; f++) { const wy = top + 3 + f * 8; for (let wx = x + 3; wx < x + w - 5; wx += 6) { if (f === fl - 1 && Math.abs(wx + 1 - cx) < 4) continue; F(g, wx - 1, wy - 1, 5, 5, shade(wall, -.25)); F(g, wx, wy, 3, 3, hash(wx, wy, 99) > .72 ? "#ffd98a" : "#2f4256"); } }
+  F(g, cx - 2, by - 7, 5, 7, st.door || C.wood[1]);
+  if (st.flat) { F(g, x - 2, top - 2, w + 4, 2, C.out); F(g, x - 1, top - 2, w + 2, 1, shade(wall, .25)); if (k > .7) { F(g, x + 2, top - 5, 4, 3, C.out); F(g, x + 3, top - 4, 2, 2, "#9aa0a8"); } }
+  else { const roof = st.roof, half0 = (w >> 1) + 2, rh = Math.max(5, Math.min(9, half0 >> 1));
+    if (st.chimney && k > .5) { F(g, x + w - 8, top - rh - 2, 4, rh + 2, C.out); F(g, x + w - 7, top - rh - 1, 2, rh, "#8a4434"); }
+    for (let r = 0; r < rh; r++) { const half = Math.round(half0 * (r + 1) / rh) + 1; F(g, cx - half - 1, top - rh + r, 2 * half + 2, 1, C.out); F(g, cx - half, top - rh + r, 2 * half, 1, r === rh - 1 ? shade(roof, -.2) : (r + cx) % 3 ? roof : shade(roof, .15)); } }
+  if (st.garden && k * 7 % 1 > .5) bush(g, x - 1, by + 2, 2, pick(["#c63a8f", "#f2d36b", "#ffffff", "#e8604a"], k));
+}
+const OLIVE = ["#4f5a3a", "#6b7a4c", "#8a9a66", "#b0bd8a"], BIRCH = ["#4a5a2a", "#6b7a3a", "#a0a84a", "#d8d06a"], JUNGLE = ["#1f5a2a", "#2e7a34", "#3f9a3e", "#6cc04f"];
+function cypress(g, x, by, h){ oval(g, x + 2, by, 3, 1, "rgba(15,30,15,.3)"); for (let r = 0; r < h; r++) { const half = Math.round(Math.sin(Math.PI * Math.min(1, (r + 2) / (h + 1))) * 2.4); F(g, x - half, by - r - 1, 2 * half + 1, 1, r % 4 === 1 ? "#2f4a2c" : "#24402a"); F(g, x - half, by - r - 1, 1, 1, "#3d5e36"); } }
+function climateTree(g, x, y, k2, clim, env){
+  if (env === "delhi") return roundTree(g, x, y, 5 + (k2 * 3 | 0), C.neem);
+  if (clim === "tropic") { if (k2 < .55) palm(g, x, y, 16 + (k2 * 12 | 0), k2 > .3); else roundTree(g, x, y, 5 + (k2 * 3 | 0), JUNGLE); }
+  else if (clim === "warm") { if (k2 < .35) cypress(g, x, y, 14 + (k2 * 10 | 0)); else if (k2 < .75) roundTree(g, x, y, 4 + (k2 * 3 | 0), OLIVE); else palm(g, x, y, 16 + (k2 * 8 | 0)); }
+  else if (clim === "cold") { if (k2 < .75) pine(g, x, y, 11 + (k2 * 10 | 0)); else roundTree(g, x, y, 4, BIRCH); }
+  else if (env === "nature" && k2 < .6) pine(g, x, y, 12 + (k2 * 14 | 0)); /* mountains & lakes: mostly pines */
+  else { roundTree(g, x, y, 4 + (k2 * 4 | 0), k2 < .22 ? AUTUMN[(k2 * 15 | 0) % 3] : C.leaf); if (k2 > .82) pine(g, x + 8, y + 2, 12); }
+}
+function cropField(g, x, y, k){ const w = 30, h = 14, c = pick([["#c9a24a", "#e0bf62"], ["#5f8a3a", "#7aa64a"], ["#8a6ab0", "#a98ad0"], ["#8a6a3a", "#a58550"]], k); F(g, x - 1, y - 1, w + 2, h + 2, "#6b5a3a"); for (let r = 0; r < h; r++) F(g, x, y + r, w, 1, r % 3 ? c[0] : c[1]); }
+function pond(g, x, y, r){ oval(g, x, y, r + 2, (r >> 1) + 2, "#9ad0a0"); oval(g, x, y, r + 1, (r >> 1) + 1, "#3483a8"); oval(g, x, y, r, r >> 1, "#55a9c6"); F(g, x - (r >> 1), y - 1, 3, 1, "#d4f1f4"); }
+function stall(g, x, by, k){ const c = pick(["#e0782a", "#d93b2b", "#f2c14e", "#38b07a", "#2c8fd6"], k);
+  F(g, x, by - 10, 1, 10, C.wood[0]); F(g, x + 13, by - 10, 1, 10, C.wood[0]); F(g, x - 2, by - 13, 18, 1, C.out); F(g, x - 1, by - 12, 16, 3, c); for (let i = x - 1; i < x + 15; i += 4) F(g, i, by - 12, 2, 3, "#f2efe8");
+  F(g, x + 1, by - 5, 12, 3, C.wood[2]); for (let i = 0; i < 5; i++) F(g, x + 2 + i * 2, by - 6, 1, 1, pick(["#e8604a", "#f2d36b", "#7fb85a", "#f2a03a"], hash(x, i, 9))); }
+/* how each kind of place builds its neighbourhoods: the street, how far apart streets run, and what lines them */
+const NB = {
+  town: R => ({street: "lane", gap: 58, w: k => 22 + (k * 12 | 0), gx: k => 8 + (k * 12 | 0), build: (g, x, by, w, k) => regionHouse(g, x, by, w, k, rStyle(R, k, {floors: k > .82 ? 2 : 1, garden: 1}))}),
+  city: R => ({street: "road", gap: 66, w: k => 18 + (k * 14 | 0), gx: k => 2 + (k * 4 | 0), build: (g, x, by, w, k) => { const v = hash(x, by, 101);
+    if (v < .45) tower(g, x, by, w, 5 + (k * 4 | 0), pick(["#d9dde2", "#c9d2d8", "#e5e1d8", "#b9c6cf", "#dcd3c6", "#a9b8c4"], k)); else if (v < .8) regionHouse(g, x, by, w, k, rStyle(R, k, {floors: 3 + (k * 2 | 0), flat: true})); else shopHouse(g, x, by, Math.min(w, 18), k); }}),
+  coast: R => ({street: "lane", gap: 60, w: k => 22 + (k * 10 | 0), gx: k => 10 + (k * 12 | 0), build: (g, x, by, w, k) => {
+    if (R.zone === "europe" && R.clim === "warm" && k > .4) whiteHouse(g, x, by, w, k); else if (R.clim === "tropic" && k > .6) stiltHouse(g, x, by, k); else regionHouse(g, x, by, w, k, rStyle(R, k, {floors: k > .75 ? 2 : 1, garden: 1})); }}),
+  nature: R => ({street: "trail", gap: 76, w: k => 18 + (k * 6 | 0), gx: k => 50 + (k * 60 | 0), build: (g, x, by, w, k) => regionHouse(g, x, by, w, k, {wall: pick(["#8a5a3a", "#6b4a2a", "#a0703a", "#7a5a40"], k), roof: pick(["#3e4652", "#5c3a2a", "#4a5a3a"], k * 7 % 1), chimney: true})}),
+  campus: R => ({street: "lane", gap: 72, w: k => 36 + (k * 10 | 0), gx: k => 16 + (k * 16 | 0), build: (g, x, by, w, k) => campusHall(g, x, by, w, pick(["#ddd2b8", "#e5dccb", "#cfc2a6", "#b98a6a", "#c9a48a"], k))}),
+  delhi: R => ({street: "road", gap: 60, w: k => 24 + (k * 8 | 0), gx: k => 3 + (k * 6 | 0), build: (g, x, by, w, k) => hash(x, by, 102) < .18 ? stall(g, x, by, k) : indianHouse(g, x, by, w, 2 + (k * 2 | 0), pick(DELHI_WALLS, k), k)}),
+  mumbai: R => ({street: "road", gap: 68, w: k => 20 + (k * 10 | 0), gx: k => 3 + (k * 5 | 0), build: (g, x, by, w, k) => hash(x, by, 103) < .5 ? tower(g, x, by, w, 6 + (k * 3 | 0), pick(["#dfe3e6", "#d9dde2", "#e5e1d8", "#efe3c8"], k)) : indianHouse(g, x, by, w, 3 + (k * 2 | 0), pick(["#efe3c8", "#e8cfb7", "#cfe0d6", "#f1d9a6", "#bfcad6"], k), k)}),
+  boston: R => ({street: "road", gap: 62, w: k => 22 + (k * 6 | 0), gx: k => k > .8 ? 10 : 0, build: (g, x, by, w, k) => brownstone(g, x, by, w, pick(["#9a4a3a", "#a85a42", "#8a4434", "#7a4a38", "#b07a5a"], k), k > .5)})
+};
+const ENV_CLIM = {delhi: "warm", mumbai: "tropic", boston: "temperate"};
+const SW = {road: 12, lane: 5, trail: 3};
+function streetPx(g, x, y, kind, vertical){ /* one pixel column (or row) of a street */
+  const P = (a, b, w, h, c) => vertical ? F(g, x + a, y + b, h, w, c) : F(g, x + b, y + a, w, h, c); /* a: across the street, b: along it */
+  if (kind === "road") { P(-2, 0, 1, 2, "#bdb2a0"); P(0, 0, 1, 10, C.asphalt[1]); P(10, 0, 1, 2, "#bdb2a0"); if (((vertical ? y : x) & 7) < 4) P(5, 0, 1, 1, "#e8e2d6"); }
+  else if (kind === "lane") { P(0, 0, 1, 5, "#bdb6a8"); if (((vertical ? y : x) % 6) < 2) P(2, 0, 1, 1, "#a8a092"); }
+  else P(0, 0, 1, 3, "#c8b48a");
+}
+function neighbourhood(g, O, S){
+  const {mask, dist} = O, land = (x, y) => x >= 0 && y >= 0 && x < CW && y < CH && mask[(y | 0) * CW + (x | 0)] && dist[(y | 0) * CW + (x | 0)] >= 2, w = SW[S.street];
+  const A = FX - 20 - w, B = FX + BW + 20, T = FY - 20 - w, U = FY + BH + 20, held = [], hs = [], vs = [];
+  const H = (x0, x1, y) => { for (let x = Math.max(0, x0); x < Math.min(CW, x1); x++) if (land(x, y + w / 2) && land(x, y - 2) && land(x, y + w + 1)) streetPx(g, x, S.street === "trail" ? y + Math.round(2 * Math.sin(x / 17)) : y, S.street, false); hs.push([x0, x1, y]); held.push([x0, y - 3, x1, y + w + 3]); };
+  const V = (x, y0, y1) => { for (let y = Math.max(0, y0); y < Math.min(CH, y1); y++) if (land(x + w / 2, y) && land(x - 2, y) && land(x + w + 1, y)) streetPx(g, S.street === "trail" ? x + Math.round(2 * Math.sin(y / 17)) : x, y, S.street, true); vs.push(x); held.push([x - 3, y0, x + w + 3, y1]); };
+  /* a street all the way round the city, and out to the shore every way */
+  H(A, B + w, T); H(A, B + w, U); V(A, T, U + w); V(B, T, U + w);
+  for (let y = T - S.gap; y > 24; y -= S.gap) H(0, CW, y);
+  for (let y = U + S.gap; y < CH - 24; y += S.gap) H(0, CW, y);
+  for (let y = T + S.gap; y < U - 20; y += S.gap) { H(0, A, y); H(B + w, CW, y); }
+  V(A, 0, T); V(A, U, CH); V(B, 0, T); V(B, U, CH); V(CW / 2 - w / 2 | 0, 0, T); V(CW / 2 - w / 2 | 0, U + w, CH);
+  /* buildings along the north side of every street, never on the city's own ground */
+  const lots = [];
+  for (const [x0, x1, y] of hs) { let x = Math.max(4, x0 + 4);
+    while (x < Math.min(CW - 4, x1 - 4)) { const k = hash(x, y, O.D.seed + 104), bw = S.w(k), by = y - 3;
+      const clash = vs.some(v => x < v + w + 3 && x + bw > v - 3) || (x + bw > FX - 6 && x < FX + BW + 6 && by > FY - 8 && by - 30 < FY + BH);
+      if (!clash && O.ok(x + bw / 2, by - 6, bw / 2 + 2) && O.ok(x + bw / 2, by - 22, 4)) { lots.push({x, by, bw, k}); x += bw + S.gx(k); } else x += 6; }
+    held.push([x0, y - 32, x1, y]); }
+  lots.sort((a, b) => a.by - b.by).forEach(L => S.build(g, L.x, L.by, L.bw, L.k));
+  return held;
+}
+function genericPiece(g, env, x, y, k, k2, D){
+  const R = regionOf(D.d), clim = ENV_CLIM[env] || R.clim;
+  if (env === "town" && k < .3) return cropField(g, x - 15, y - 14, k2);
+  if (env === "nature") { if (k < .08) return pond(g, x, y - 4, 7 + (k2 * 5 | 0)); if (k < .14) return rock(g, x - 4, y - 3, 7 + (k2 * 4 | 0), 4); climateTree(g, x, y, k2, clim, env); climateTree(g, x + 9, y + 4, k2 * 3 % 1, clim, env); if (k > .6) climateTree(g, x - 8, y + 7, k2 * 5 % 1, clim, env); return; }
+  if (k < .72) { climateTree(g, x, y, k2, clim, env); if (k2 > .6) climateTree(g, x + 9, y + 3, k2 * 3 % 1, clim, env); }
+  else if (k < .9) bush(g, x, y, 3 + (k2 * 2 | 0), k2 > .4 ? pick(["#c63a8f", "#f2d36b", "#ffffff", "#e8604a"], k) : null);
+  else rock(g, x - 3, y - 3, 6 + (k * 4 | 0), 3);
+}
+for (const env of Object.keys(NB)) OUTSKIRTS[env] = {big: (g, O) => neighbourhood(g, O, NB[env](regionOf(O.D.d))), piece: genericPiece};
+
 /* ---------------- dream landmarks, drawn in the style of the place they're in ---------------- */
 const KIND_H = {villa: 30, home: 34, studio: 28, campus: 34, car: 24, drift: 22, fitness: 20, beach: 24, balloon: 40, garden: 26, picnic: 24, library: 34, fountain: 24};
 function driftPad(g, bx, by, tint){
@@ -3469,7 +3578,7 @@ function outskirts(g, D, mask, dist){
     if (inFrame(x, y, 20) || !ok(x, y, 16) || held.some(([a, b, c, d]) => x > a && x < c && y > b && y < d) || (set && set.skip && set.skip(O, x, y))) continue;
     items.push({x, y, k: hash(x, y, seed + 33), k2: hash(y, x, seed + 34)});
   }
-  items.sort((a, b) => a.y - b.y).forEach(({x, y, k, k2}) => (set && set.piece || outskirtPiece)(g, D.d.env, x, y, k, k2));
+  items.sort((a, b) => a.y - b.y).forEach(({x, y, k, k2}) => (set && set.piece || outskirtPiece)(g, D.d.env, x, y, k, k2, D));
 }
 function buildDistrictTerrain(D){
   const {pack} = D, tx = pack.tx || 0, ty = pack.ty || 0, c = document.createElement("canvas"); c.width = CW; c.height = CH;
@@ -4234,7 +4343,7 @@ function boatWake(g, x, y){
 }
 /* On land she walks the streets (21 Nov). The roads and paths are read from each island's own drawing (their exact colours),
    and a tap sends her along them the shortest way; she only steps off a road for the first and last few steps. */
-const PATH_HEX = ["#3b3a3c", "#4a494b", "#5a595a", "#bdb2a0", "#bdb6a8", "#a8a092", "#cfcac0"], PG = 4;
+const PATH_HEX = ["#3b3a3c", "#4a494b", "#5a595a", "#bdb2a0", "#bdb6a8", "#a8a092", "#cfcac0", "#c8b48a"], PG = 4;
 let PATH_COLS = null; /* built on first use, so it never reads anything declared further down */
 function pathGrid(D){
   if (D.pgrid) return D.pgrid;
@@ -7245,7 +7354,7 @@ function obSplash(M){
   M.innerHTML = `<canvas class="st-full" id="stSplash" role="img" aria-label="Paint a Picture"></canvas>`;
   const r = M.getBoundingClientRect(), w = 200, h = Math.max(200, Math.round(w * r.height / Math.max(1, r.width))), cy = Math.round(h * .42);
   // Los Angeles, from the world's own map: the ocean, the beach and its pier, the palm-lined road, the hills and the streets of houses
-  const T = stView.la ||= stTerrain("la"), la = document.createElement("canvas"); la.width = w; la.height = h; la.getContext("2d").drawImage(T, 40, 0, w, Math.min(h, T.height), 0, 0, w, Math.min(h, T.height));
+  const T = stView.la ||= stTerrain("la"), la = document.createElement("canvas"); la.width = w; la.height = h; la.getContext("2d").drawImage(T, 40 + FX, FY, w, Math.min(h, T.height - FY), 0, 0, w, Math.min(h, T.height - FY)); /* the city sits FX/FY inside its (bigger) cell */
   const sc = {w, h, env: "la", base: la, fog: 1, lens: {x: 100, y: cy, r: 0},
     pieces: [{kind: "balloon", x: 150, y: cy - 46, lit: 0, star: false}, {kind: "car", env: "la", x: 162, y: cy - 12, lit: 0, star: false}],
     char: null}; /* the 2D girl and boy are drawn over the scene instead of the pixel character */
