@@ -240,3 +240,4 @@ line rather than editing the old one.
 - 20 Nov: The first page after the splash follows Apple's Welcome pattern: "Welcome to Paint a Picture", a picture of a little world, then three rows (icon, bold claim, one grey line): Your goals, as a world · Made for real life · Tick, finish, light up. Ashima's full story sits behind "Why I made this". Rows fade in one after another (a plain fade with Reduce Motion).
 - 20 Nov: Back arrows have no background anywhere.
 - 20 Nov: One top line for every page: the first row starts 8px below the status bar (20px minimum on the web), 44px tall, centred.
+- 20 Nov: On the splash the girl and boy start at random spots each launch (her on the left, him on the right), wander via a random point and meet under the star, facing the way they walk (side, back or front); they end facing you.

@@ -6932,13 +6932,21 @@ function obSplash(M){
     pieces: [{kind: "balloon", x: 150, y: cy - 46, lit: 0, star: false}, {kind: "car", env: "la", x: 162, y: cy - 12, lit: 0, star: false}],
     char: null}; /* the 2D girl and boy are drawn over the scene instead of the pixel character */
   /* the two of them: her 5'5", him 6' (she is 65/72 of his height); after the light opens they stroll a little apart and back */
-  const DUO = [{p: "34/long/", x: 88, h: 76 * 65 / 72, dx: -16}, {p: "34/curly/male-", x: 113, h: 76, dx: 16}]; DUO.forEach(c => loadDollSet(c.p));
+  const DUO = [{p: "34/long/", x: 88, h: 76 * 65 / 72}, {p: "34/curly/male-", x: 113, h: 76}]; DUO.forEach(c => loadDollSet(c.p));
+  /* each launch they start somewhere different, on opposite sides of the light, wander via a random point and meet under
+     the star (20 Nov). Facing follows the way they walk: sideways, away from you going up, towards you coming down. */
+  { const R = Math.random, foot = cy + 66;
+    DUO.forEach((c, i) => { const sg = i ? 1 : -1; /* she comes from the left, he from the right, so they never walk through each other */
+      c.pts = [{x: 100 + sg * (34 + R() * 26), y: foot - 34 + R() * 70}, {x: 100 + sg * (8 + R() * 30) + (R() - .5) * 20, y: foot - 26 + R() * 52}, {x: c.x, y: foot}]; }); }
   const duo = (o, k, a, t) => { o.save(); o.globalCompositeOperation = "source-over"; o.imageSmoothingEnabled = true; o.imageSmoothingQuality = "high"; o.globalAlpha = a;
-    const u = Math.max(0, Math.min(1, (t - 2300) / 1300)), out = u < .5, step = Math.sin(u * Math.PI); /* out, a pause, back again */
-    for (const c of DUO) { const moving = u > 0 && u < 1 && Math.abs(Math.cos(u * Math.PI)) < .92, side = c.dx < 0 === out ? "side-left" : "side-right";
-      const im = dollImgs[c.p + (moving ? side : "front")]; if (!loaded(im)) continue;
-      const hh = c.h, ww = hh * im.naturalWidth / im.naturalHeight, x = c.x + c.dx * step, fy = cy + 66 - (moving ? Math.abs(Math.sin(t / 120)) * 1.2 : 0); /* under the star; a small bob while walking */
-      o.fillStyle = "rgba(10,20,12,.22)"; o.beginPath(); o.ellipse(x * k, (cy + 66) * k, ww * .42 * k, 2.2 * k, 0, 0, Math.PI * 2); o.fill();
+    const u = Math.max(0, Math.min(1, (t - 1500) / 1900)); /* walking from 1.5s to 3.4s, then standing together facing you */
+    const at = c => { const [p0, p1, p2] = c.pts, seg = u < .5 ? 0 : 1, v = seg ? (u - .5) * 2 : u * 2, A = seg ? p1 : p0, B = seg ? p2 : p1, e = v * v * (3 - 2 * v);
+      const dx = B.x - A.x, dy = B.y - A.y, view = u >= 1 ? "front" : Math.abs(dx) > Math.abs(dy) * .8 ? (dx < 0 ? "side-left" : "side-right") : dy < 0 ? "back" : "front";
+      return {x: A.x + dx * e, y: A.y + dy * e, view, moving: u > 0 && u < 1}; };
+    const now = DUO.map(c => ({c, ...at(c)})).sort((p, q) => p.y - q.y); /* the one further back is drawn first */
+    for (const {c, x, y, view, moving} of now) { const im = dollImgs[c.p + view]; if (!loaded(im)) continue;
+      const hh = c.h, ww = hh * im.naturalWidth / im.naturalHeight, fy = y - (moving ? Math.abs(Math.sin(t / 120)) * 1.2 : 0); /* a small bob while walking */
+      o.fillStyle = "rgba(10,20,12,.22)"; o.beginPath(); o.ellipse(x * k, y * k, ww * .42 * k, 2.2 * k, 0, 0, Math.PI * 2); o.fill();
       o.drawImage(im, (x - ww / 2) * k, (fy - hh) * k, ww * k, hh * k); }
     o.restore(); };
   // she has a little wander in the light: right, a pause, across to the left, then back to the middle (a small sprite walking, so it plays with Reduce Motion too)
