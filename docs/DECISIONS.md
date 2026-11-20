@@ -244,3 +244,4 @@ line rather than editing the old one.
 - 20 Nov: The sign-in sheet is titled "Sign in with email", with just the email box (no line about codes, no Email label) and Cancel | Send code. The button reads "Send code" wherever the sign-in form appears.
 - 20 Nov: After a code is sent, the sentence naming the email ends with an "Edit" text button that goes back to the email step with the address filled in.
 - 20 Nov: The tab bar shows icons only; the selected tab grows into a soft pink pill with its name to the right of the icon (it slides open; with Reduce Motion the name fades in). The places strip on Home has the same frosted background as the tab bar.
+- 20 Nov: Splash walk: each character walks to the star in straight lines with turns (across, then up or down, a random route each launch) at an even pace, with a small step lift and sway, instead of gliding diagonally.
