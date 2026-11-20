@@ -1648,6 +1648,14 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 .st-back,.st-back.st-back,.ob.st-me .st-mbar .st-back,.ob.st-me .st-mbar.over .st-back,.st-pfoot .st-back,.ac-back{background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 /* over the picture at the top of onboarding the arrow is white, with a faint shadow on the arrow itself so it reads on light grass */
 .ob.st-me .st-mbar.over .st-back{color:#fff!important}.ob.st-me .st-mbar.over .st-back .ico{filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.45))}
+/* one top line for every page (20 Nov): the first row starts 8px below the status bar and is 44px tall, with the title and
+   any back arrow or button centred in it. Onboarding steps, the intro pages, the main pages and Account all share it. */
+.page>.phead{padding-top:max(calc(var(--safe-top) + 8px), 20px)!important}
+.page>.phead>.ph-left,.page>.phead>div:first-child{min-height:44px;display:flex;align-items:center}
+.ob.st-me .st-mbar{padding-top:max(calc(var(--safe-top) + 8px), 20px)!important}.ob.st-me .st-mbar .st-back{width:44px;height:44px}
+.ob.st-idea .st-imain{padding-top:max(calc(var(--safe-top) + 8px), 20px)!important}
+.st-head.st-head-back{min-height:44px}.st-head-back .st-back{width:44px;height:44px;margin-left:-10px}
+#p-account .ac-back{top:max(calc(var(--safe-top) + 8px), 20px)}
 </style>
 
 <div id="app">

@@ -239,3 +239,4 @@ line rather than editing the old one.
 - 20 Nov: On the two intro pages the back button sits left of the heading (the first one goes back to the splash); their footers hold only the main buttons.
 - 20 Nov: The first page after the splash follows Apple's Welcome pattern: "Welcome to Paint a Picture", a picture of a little world, then three rows (icon, bold claim, one grey line): Your goals, as a world · Made for real life · Tick, finish, light up. Ashima's full story sits behind "Why I made this". Rows fade in one after another (a plain fade with Reduce Motion).
 - 20 Nov: Back arrows have no background anywhere.
+- 20 Nov: One top line for every page: the first row starts 8px below the status bar (20px minimum on the web), 44px tall, centred.

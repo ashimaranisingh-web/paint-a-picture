@@ -130,3 +130,4 @@ Rules:
 - Two buttons sit side by side, equal width: the main action on the right, the other (Cancel, Skip, Not now) on the left as a white button with a thin border. Never stacked.
 - Back arrows never have a background or shadow: just the arrow (onboarding, the Account picture, everywhere).
 - Over a picture (the map at the top of onboarding) the back arrow is white with a faint shadow on the arrow itself; over white it's dark.
+- Every page's first row (title, back arrow, top buttons) starts 8px below the iPhone status bar (at least 20px from the top on the web) and is 44px tall, with everything centred in it. Onboarding, the intro pages, the main pages and Account all line up.
