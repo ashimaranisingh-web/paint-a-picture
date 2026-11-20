@@ -1632,6 +1632,9 @@ body.world-night .home-eye.ready,body.world-night .home-eye.open{color:#f0c96a}
 /* the 2D wardrobe (20 Nov) */
 .h2d-t.wd-far{opacity:.5}.h2d-t.wd-far:hover{opacity:.8}
 .wd-note{margin:8px 0 0;font-size:13px;color:var(--muted)}
+/* the about page (20 Nov) */
+.st-qa{display:grid;gap:18px;text-align:left;margin-top:8px}.st-qa h2{margin:0 0 4px;font-size:15px;font-weight:700;color:var(--ink)}.st-qa p{margin:0;font-size:15px;line-height:1.5;color:var(--ink-2)}
+.st-perm.st-perm-row{display:flex;align-items:center;gap:14px;text-align:left}.st-perm-row .consent-ic{flex:none}.st-perm-row .st-head{text-align:left;justify-items:start;margin:0}.st-perm-row .st-h{text-align:left}.st-perm-row .st-sub{text-align:left;margin-top:4px}
 </style>
 
 <div id="app">
@@ -1746,7 +1749,7 @@ const HAIR2D = {girl: [["long", "Long"], ["shoulder", "Shoulder"], ["bob", "Bob"
 const BOOTS = {black:["#2c2c31","#151518"], grey:["#9a9ea6","#6e727a"], white:["#f2f0ec","#c9c6c0"]};
 const SKINS = {fair:["#f1c9a5","#d6a582"], light:["#e2ad85","#c48d66"], tan:["#c98e62","#a8714c"], brown:["#a46a45","#865436"], deep:["#7a4a2f","#5f3922"]};
 const HAIRS = {brunette:["#3b2218","#7a4a2a","#a8693a"], black:["#17131a","#3a3040","#5a4a5c"], auburn:["#4a1d14","#8f3f26","#c0643a"], blonde:["#8a6334","#c9a05c","#ecd08e"]};
-const DEFAULT_AVATAR = {style: "pixel", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", len: "full", glasses: true, cap: false, capColor: "black", fit: "", wtop: "", wbot: "", wshoes: "", wv: 1};
+const DEFAULT_AVATAR = {style: "doll", look: "girl", skin: "tan", hair: "brunette", curl: false, top: "pink", bot: "grey", boots: "white", len: "full", glasses: true, cap: false, capColor: "black", fit: "", wtop: "", wbot: "", wshoes: "", wv: 1};
 /* 2D wardrobe colours (20 Nov): only plain items take them. "" means as drawn. The colours each look is drawn in are here
    too, so picking that colour simply shows the picture unchanged. */
 const WCOL = {
@@ -6466,7 +6469,7 @@ function charPanel(root, o){
   const draw = () => {
     if (!tabs().some(t => t[0] === ceTab)) ceTab = "skin";
     root.innerHTML = `<div class="ce${o.preview ? "" : " ce-inline"}">${o.preview ? `<div class="ce-prev"><canvas id="cePrev" width="190" height="230" aria-hidden="true"></canvas></div>` : ""}
-      <div class="ce-row"><div class="seg ce-style" role="group" aria-label="Character style">${[["pixel", "Pixel art"], ["doll", "2D"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div>
+      <div class="ce-row"><div class="seg ce-style" role="group" aria-label="Character style">${[["doll", "2D"], ["pixel", "Pixel art"]].map(([k, l]) => `<button type="button" aria-pressed="${A().style === k}" data-style="${k}">${l}</button>`).join("")}</div>
         <div class="seg ce-style" role="group" aria-label="Body">${Object.entries(LOOKS).map(([k, v]) => `<button type="button" aria-pressed="${A().look === k}" data-look="${k}">${v}</button>`).join("")}</div></div>
       <div class="ce-tabs" role="tablist" aria-label="What to change">${tabs().map(([k, l]) => `<button type="button" role="tab" aria-selected="${ceTab === k}" data-tab="${k}">${l}</button>`).join("")}</div>
       <div class="ce-opts" role="tabpanel">${opts()}</div></div>`;
@@ -6538,7 +6541,7 @@ function drawAvatarPreview(cvs, style){
    pieces and goal when she builds her world, so going back and forth never duplicates or removes
    anything she already has. Progress is saved after every step; the steps after her name can be skipped.
    ===================================================================== */
-const OB = ["splash", "how", "allow", "you", "where", "pick", "goal", "account", "world"]; /* "Here's your picture" was removed (16 Nov): her picks become her world as the world step starts */ /* one idea screen, then her, her pieces and a first goal she ticks herself; only then is she asked to save it (email) or carry on as a guest */
+const OB = ["splash", "about", "how", "allow", "you", "where", "pick", "goal", "account", "world"]; /* "Here's your picture" was removed (16 Nov): her picks become her world as the world step starts */ /* one idea screen, then her, her pieces and a first goal she ticks herself; only then is she asked to save it (email) or carry on as a guest */
 // The pieces she can pick. Each comes with a first goal and the milestones that get it going.
 const ST_PARTS = [ // the whole picture library, each with a first goal and the milestones that get it going
   /* the starter set: the ten broad pieces shown in onboarding (top: true); the rest stay for older picks and the library */
@@ -6824,7 +6827,7 @@ function stTrophyIcon(c){ c.width = c.height = 22; const g = c.getContext("2d");
 function stTrophyPiece(){ const c = document.createElement("canvas"); c.width = c.height = 60; const g = c.getContext("2d"); grassBand(g, 60, 60, 0); oval(g, 30, 48, 14, 4, C.grass[1]); g.drawImage(stTrophy(), 0, 0); return c; }
 
 /* --- moving between steps --- */
-const ST_IDEA = ["how"], ST_ME = ["allow", "you", "where", "pick", "goal", "account"], ST_STEPS = ST_ME; /* progress counts only the steps of making her picture */
+const ST_IDEA = ["about", "how"], ST_ME = ["allow", "you", "where", "pick", "goal", "account"], ST_STEPS = ST_ME; /* progress counts only the steps of making her picture */
 // one progress line across every step, so she always knows how far along she is
 const stBar = k => { const path = ST_STEPS, i = path.indexOf(k); return `<div class="st-mbar" id="stBar"><div class="st-line" role="img" aria-label="Step ${i + 1} of ${path.length}"><i style="width:${Math.round((i + 1) / path.length * 100)}%"></i></div></div>`; };
 function startOnboarding(step){
@@ -6864,7 +6867,7 @@ function drawOb(){
     el.innerHTML = `<div class="st-stage" id="stStage"><canvas class="st-full" id="stWorld" role="img" aria-label="Your picture"></canvas></div>
       <section class="st-panel"><main class="ob-main st-pmain" id="obMain"></main><footer class="ob-foot st-pfoot" id="obFoot"></footer></section>`;
   }
-  ({splash: obSplash, how: obHow, allow: obAllow, you: obYou, where: obWhere, pick: obPick, goal: obGoal, account: obAccount, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
+  ({splash: obSplash, about: obAbout, how: obHow, allow: obAllow, you: obYou, where: obWhere, pick: obPick, goal: obGoal, account: obAccount, reveal: obReveal, world: obWorld})[k]($("obMain"), $("obFoot"));
   const bar = $("stBar"), M = $("obMain"); if (bar && ST_ME.includes(k)) { stTopBack();
     const over = () => { const f = M.querySelector(".st-figure"); bar.classList.toggle("over", !!f && M.scrollTop < f.offsetHeight - 40); };
     over(); M.addEventListener("scroll", over, {passive: true}); }
@@ -6963,7 +6966,7 @@ const ST_SAMPLE = ["home", "pod", "run", "study", "family", "car"]; // a picture
 const stSample = () => ST_PARTS.filter(p => ST_SAMPLE.includes(p.id)).map(p => ({key: p.id, t: p.t, tab: p.tab, kind: p.kind, goal: p.goal, ms: p.ms}));
 function obHow(M, Fo){
   const mine = stParts(), parts = mine.length ? mine : stSample(), first = mine.length ? stFirstPart() : parts[0], goals = [...new Set([first, ...parts.filter(p => p !== first)].filter(Boolean).map(p => p.goal).concat(["Make a start", "Keep going"]))].slice(0, 2); /* two different goals */
-  M.innerHTML = stHead("Paint the future you want, <em>piece by piece</em>.")
+  M.innerHTML = stHead("How it works")
     + `<div class="st-chainv">
       <div class="st-lvl" data-l="0"><span>Milestones</span><div class="st-ticks" role="group" aria-label="Tick off milestones">${[0, 1, 2, 3, 4, 5].map(i => `<button type="button" class="cb st-tick" role="checkbox" aria-checked="false" aria-label="Milestone ${i + 1}"></button>`).join("")}</div><small class="st-tickhint" id="stTickHint">Tap to tick them off</small></div>${ST_DOWN}
       <div class="st-lvl" data-l="1"><span>Goals</span><div class="st-pills">${goals.map(g => `<b><canvas data-tro></canvas>${esc(g)}</b>`).join("")}</div></div>${ST_DOWN}
@@ -6979,17 +6982,7 @@ function obHow(M, Fo){
     const cell = document.createElement("canvas"); cell.width = cell.height = 120; cell.getContext("2d").drawImage(src, c * 80 - 20, r * 80 - 20, 120, 120, 0, 0, 120, 120);
     stJig(cv, cell, {line: "#2a2730", v: [r ? -tV(c, 0) : 0, c < 2 ? tH(c, r) : 0, r ? 0 : tV(c, 0), c ? -tH(c - 1, r) : 0]}); });
   const at = (ms, fn) => setTimeout(() => { if (pic.isConnected) fn(); }, ms);
-  /* why the app exists, in Ashima's words: each line arrives with a step of the animation above it */
-  /* typed out under the heading at reading pace, one line at a time; each rests, then the next replaces it; the last stays.
-     The milestones, goals and picture below only start once the typing is done. */
-  M.querySelector(".st-head").insertAdjacentHTML("beforeend", `<p class="st-type" id="stType" aria-hidden="true"><span></span><i class="st-caret"></i></p><p class="sr-only">${ST_STORY.join(" ")}</p>`);
-  const tEl = M.querySelector("#stType span"), caret = M.querySelector(".st-caret"), backHere = stObPrev > obStep, CH = 55, REST = 2200;
-  let chainStart = 0;
-  if (backHere) { tEl.textContent = ST_STORY[ST_STORY.length - 1]; caret.remove(); }
-  else { let ms = 500; ST_STORY.forEach((line, li) => { at(ms, () => { tEl.textContent = ""; });
-      for (let c = 1; c <= line.length; c++) at(ms + c * CH, () => { tEl.textContent = line.slice(0, c); });
-      ms += line.length * CH + (li < ST_STORY.length - 1 ? REST : 0); });
-    at(ms + 800, () => caret.remove()); chainStart = ms + 600; }
+  const chainStart = 0; /* the story now has its own page before this one (20 Nov) */
   const atC = (ms, fn) => at(chainStart + ms, fn);
   /* she plays it herself: each milestone she ticks lights one piece, every three finish a goal, all six bring her picture
      together. Tapping a ticked one unticks it. Once the story is told, the first box nudges to show it can be tapped. */
@@ -7005,9 +6998,20 @@ function obHow(M, Fo){
   ticks.forEach(t => t.onclick = () => { t.setAttribute("aria-checked", t.getAttribute("aria-checked") === "true" ? "false" : "true"); M.querySelector(".st-ticks").classList.remove("nudge"); show(); });
   atC(300, () => { if (!ticks.some(t => t.getAttribute("aria-checked") === "true")) M.querySelector(".st-ticks").classList.add("nudge"); });
   stNextIdea(Fo, "Get started");
-  if (CFG.supabaseUrl && !supaUser) { Fo.querySelector(".st-ibtns").insertAdjacentHTML("afterbegin", `<button type="button" class="btn ghost st-big" id="obHave">I have an account</button>`); $("obHave").onclick = stSignInSheet; } /* side by side with Get started, which stays on the right */
   /* the button arrives once the picture has come together (straight away with Reduce Motion, or when coming back) */
   /* the buttons are there from the start, so nobody has to wait for the story to finish (17 Nov) */
+}
+/* What Paint a Picture is, why it exists and how it works, in three short answers, right after the splash (20 Nov).
+   "I have an account" lives here, the first page, beside Next. */
+function obAbout(M, Fo){
+  M.innerHTML = stHead("Paint the future you want, <em>piece by piece</em>.")
+    + `<div class="st-qa">
+      <section><h2>What is Paint a Picture?</h2><p>A goal journal set in a little world built from your own places. You picture the life you want, one piece at a time, and watch it come to life as you get there.</p></section>
+      <section><h2>Why?</h2><p>${ST_STORY.map(esc).join(" ")}</p></section>
+      <section><h2>How?</h2><p>Every piece of your picture is made of goals, and every goal of small milestones. Tick off a milestone and your world moves; finish a goal and a piece of your picture lights up.</p></section>
+    </div>`;
+  stNextIdea(Fo, "Next");
+  if (CFG.supabaseUrl && !supaUser) { Fo.querySelector(".st-ibtns").insertAdjacentHTML("afterbegin", `<button type="button" class="btn ghost st-big" id="obHave">I have an account</button>`); $("obHave").onclick = stSignInSheet; } /* side by side with Next, which stays on the right */
 }
 // Coming back on a new device: sign in first, and her saved world opens instead of a new one.
 function stSignInSheet(){
@@ -7148,8 +7152,7 @@ function stFigureDone(M){
 // already allowed (a replayed introduction), it's passed in the direction she's going.
 function obAllow(M, Fo){
   if (!CFG.posthogKey || demoMode || consent() === "yes") { obGo(obStep + (stObPrev > obStep ? -1 : 1)); return; }
-  M.innerHTML = `<div class="st-perm"><span class="consent-ic" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span></div>`
-    + stHead("Help make Paint a Picture better", "Allow anonymous usage data so we can see where people get stuck and fix it.")
+  M.innerHTML = `<div class="st-perm st-perm-row"><span class="consent-ic" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>${stHead("Help make Paint a Picture better", "Allow anonymous usage data so we can see where people get stuck and fix it.")}</div>` /* the heading sits beside the icon (20 Nov) */
     + `<ul class="consent-l st-perm-l"><li><b>We see</b> which screens you use, your taps and scrolls, and your map, so we can find where people get stuck.</li></ul><div class="consent-never"><b>We can never see</b><ul><li>Your name and email</li><li>Anything you type</li><li>Your pieces, goals and milestones</li><li>Your journal, notes and to-dos</li><li>Your photos</li></ul><p>They're hidden on your phone before anything is sent, so write freely.</p></div><ul hidden></ul>
       <p class="st-gnote">More in the <a href="${esc(CFG.privacyUrl)}" target="_blank" rel="noopener">privacy policy</a>.</p>`;
   stFoot(Fo, "", () => { setConsent("yes"); track("permission_answered", {allowed: true}); obGo(obStep + 1); }, {label: "Allow", skip: () => { setConsent("no"); obGo(obStep + 1); }, skipLabel: "Not now"});
